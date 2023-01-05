@@ -1,4 +1,4 @@
-BHHT: Brief History of Human Time
+# BHHT: Brief History of Human Time
 
 General information about the project:
 
@@ -9,9 +9,6 @@ link below using a web browser.  You may need to accept the terms
 of use.
 
 https://data.sciencespo.fr/dataset.xhtml?persistentId=doi:10.21410/7E4/RDAG3O
-
-To use the scripts in this directory, the data file and scripts must be in the
-same directory.
 
 This is a compressed text file in CSV format. Do not decompress the file, the
 scripts will read the file directly in its compressed format.  The contents
