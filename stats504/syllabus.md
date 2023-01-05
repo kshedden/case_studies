@@ -174,28 +174,29 @@ Are findings appropriately qualified?
 
 ## Expectations for student writing
 
-All statisticians must frequently communicate and document their
-findings in written form.  Writing about your analytic plans and research
-findings, is an  excellent ways to organize your thoughts, strengthen
-your arguments, and identify weaknesses in your claims.
+All statisticians must frequently communicate and document their findings
+in written form.  Writing about your analytic plans and research findings
+is an excellent way to organize your thoughts, strengthen your arguments,
+and identify weaknesses in your claims.
 
 The memos written in this course reflect the type of routine writing
 done by data analysts in many business and academic settings.  These are
-short writing assignments and are intended to document a data analysis
--- they are not essays written for general audiences.  Nearly all of
-your writing should focus on your analysis and findings.  You generally
-should provide one short paragraph motivating the research question, and
-this motivating paragraph may be somewhat less technical.  Outside from
-this brief introduction you should exclusively focus on your analysis
+short writing assignments and are intended to document a data analysis --
+they are not essays written for general audiences.  Nearly all of your
+writing should focus on your analysis and findings.  You generally should
+provide one short paragraph motivating the research question, and this
+motivating paragraph may be somewhat less technical.  Apart from this
+brief introduction your writing should exclusively focus on analysis
 and findings.
 
 For the writing assignments in this course, you should imagine that
 you are writing a memo to be read by colleagues or collaborators.
-Your audience consists of people familiar with the data and scientific or
-industrial context behind the data, and who are also knowledgeable about
-statistics at a master's level or higher.  You do not need to didactically
-review all methods, but you should state the key properties of analytic
-methods that justify their application, along with any limitations.
+Your audience consists of people familiar with the data and scientific
+or industrial context behind the data, and who are also knowledgeable
+about statistics at a master's level or higher.  You do not need to
+didactically review all methods that you use, but you should state
+the key properties of analytic methods that justify their application,
+along with any relevant limitations.
 
 Below are some guidelines for writing in this course.  These are a few
 of the most important things to keep in mind.  We will expand on this
@@ -221,7 +222,7 @@ a lot during the semester.
   Do not write in a way that requires the reader to re-read your writing
   multiple times to understand your point.  Favor short sentences in the
   active voice with one clause, and paragraphs that focus on one topic
-  and do not extend for more than half a page.
+  and that do not extend for more than 5-6 sentences.
 
 * Write for an audience that may include non-native English speakers.
   Avoid colloquialisms and obscure cultural references or metaphors.
