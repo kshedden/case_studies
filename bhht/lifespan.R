@@ -3,7 +3,10 @@ library(readr)
 library(ggplot2)
 library(locpol)
 
-da = read_csv("cross-verified-database.csv.gz")
+# Change this as needed to point to the directory holding the data file.
+pa = "/home/kshedden/mynfs/data/Teaching/bhht"
+
+da = read_csv(file.path(pa, "cross-verified-database.csv.gz"))
 
 da$lifespan = da$death - da$birth
 

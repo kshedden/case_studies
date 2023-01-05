@@ -7,8 +7,11 @@ The main tool here is a form of local regression known as
 
 using DataFrames, CSV, DataFrames, UnicodePlots, Loess
 
+# Change this as needed to point to the directory holding the data file.
+pa = "/home/kshedden/mynfs/data/Teaching/bhht"
+
 # Load the dataset.
-df = open("cross-verified-database.csv.gz") do io
+df = open(joinpath(pa, "cross-verified-database.csv.gz")) do io
     CSV.read(io, DataFrame)
 end
 
