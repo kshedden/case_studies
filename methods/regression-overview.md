@@ -2,10 +2,10 @@
 
 ## Introduction
 
-Regression analysis is arguably the most widely-used tool in applied
+Regression analysis is arguably the most widely used tool in applied
 statistics, and has also inspired many important developments in statistical
 theory.  Here we discuss some concepts that can be used to understand
-several of the most widely-used approaches to regression.  Then we review
+several of the most popular approaches to regression analysis.  Then we review
 some specific regression methods along with their key properties.
 
 Before proceeding, note that regression itself is somewhat difficult to
@@ -15,7 +15,7 @@ distribution of a variable $y$ given another variable $x$.  The symbols $y$
 and $x$ may denote either scalars or vectors.  Any analysis focusing on such
 a conditional distribution can be seen as a form of regression analysis.
 
-The variables $y$ and $x$ have various essentially equivalent names.
+The variables $y$ and $x$ are referred to by numerous equivalent names.
 The variable $y$ is known as the "outcome", the "response variable", and
 the "dependent variable", while "x" may be referred to as a "covariate", a
 "predictor", a "regressor", or an "explanatory variable".
@@ -26,11 +26,11 @@ the "dependent variable", while "x" may be referred to as a "covariate", a
 "forecast") unobserved values of the dependent variable $y$ when the
 explanatory variables $x$ are observed.  However not all applications
 of regression analysis focus on prediction.  In basic research we may use
-regression analysis to understand whether and how two quantities are related,
-even when there is no practical need to make predictions.  It is also often
-of interest to understand relationships between variables that are too
-weak to be useful for prediction.  This can give insight into mechanisms
-relating the phenomena measured by $x$ and $y$.
+regression analysis to understand whether and how two quantities are related
+even when there is no practical role for prediction.  Moreover, in many research domains,
+the strength of the relationship between two variables may be too
+weak to be useful for prediction.  This use of regression analysis aims to provide insight into mechanisms
+behind $x$ and $y$.
 
 * __Mean regression__: this term refers to any regression analysis where the
 population target is the conditional mean function $E[y | x]$; also known as
@@ -39,7 +39,8 @@ population target is the conditional mean function $E[y | x]$; also known as
 * __Variance regression__: this is a class of approaches that model the
 conditional variance ${\rm var}[y|x]$ alone, or that model the conditional
 variance along with the conditional mean.  A common technique is to model
-$\log {\rm var}[y|x]$ since a variance is always positive.
+$\log {\rm var}[y|x]$ since variance is a non-negative quantity.  This area
+is also known as "variance structure modeling".
 
 * __Quantile regression__: this refers to any method that models a conditional
 quantile in terms of covariates.  A common form of quantile reqression is
@@ -49,9 +50,11 @@ Quantile regression using probability points other than 0.5 can be used to
 understand the tails of the conditional distribution of $y$ given $x$.
 
 * __Single index models__: a single index model is any regression model that
-is expressed in terms of one "linear predictor" involving the covariates, i.e.
-$b_1x_1 + \cdots + b_px_p$, where the $x_j$ are observed covariates (data)
-and the $b_j$ are unknown coefficients (parameters).  This means that all
+is expressed in terms of one "linear predictor" involving the covariates, where
+a linear predictor has the form
+$b_1x_1 + \cdots + b_px_p$, with the $x_j$ being the observed covariates (data)
+and the $b_j$ being unknown coefficients (parameters).  In a single index model,
+all
 the information in $x$ that is related to $y$ is contained in the given
 linear combination of the components of $x$.
 

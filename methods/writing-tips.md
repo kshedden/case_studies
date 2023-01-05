@@ -14,7 +14,7 @@ is appropriate to do so.
   evidence and arguments.
 
 * Focus on findings that follow directly from your analysis of the
-  data at hand.  For this class, you do not need to provide independent
+  data.  For this class, you do not need to provide independent
   sources to corroborate or support your findings.
 
 * Don't use "hedge words" unnecessarily, but do use qualifications
