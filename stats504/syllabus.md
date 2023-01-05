@@ -111,7 +111,7 @@ statistical analyses, substantial data manipulations will be required.
 Every report that you write for this class should reflect your own
 independently-developed ideas.  Each student must complete their own
 analysis and writing, but you may discuss analysis strategies and coding
-issuses with other students. Each student should develop and maintain
+issues with other students. Each student should develop and maintain
 their own code to conduct the analysis in each project.
 
 In the submitted writings, plagiarism from the instructor's lectures,
@@ -126,26 +126,26 @@ Your course grade will be an unweighted average of scores received on
 all submitted assignments. Each assignment will be scored according to
 the following rubric:
 
-    * Focus (25 points): Does the report primarily contain analysis
-    and interpretation of results?  Is the report focused on a single
-    clearly-stated question? Is the analysis goal clearly and explicitly
-    stated and motivated?
+* Focus (25 points): Does the report primarily contain analysis
+and interpretation of results?  Is the report focused on a single
+clearly-stated question? Is the analysis goal clearly and explicitly
+stated and motivated?
 
-    * Methods/approach (25 points): Is the analytic approach appropriate?
-    Are analytic decisions justified?  Are strengths and limitations
-    of the chosen approaches adequately discussed?  Are all analysis
-    methods adequately documented so that the analyis can be reproduced?
+* Methods/approach (25 points): Is the analytic approach appropriate?
+Are analytic decisions justified?  Are strengths and limitations of
+the chosen approaches adequately discussed?  Are all analysis methods
+adequately documented so that the analyis can be reproduced?
 
-    * Writing/organization (25 points): Is the writing well-organized,
-    straightforward to read, and accessible to the intended audience?
-    Is statistical terminology used appropriately and defined where
-    appropriate?  Does the report have an informative title?  Does the
-    report include one informative graph if appropriate?
+* Writing/organization (25 points): Is the writing well-organized,
+straightforward to read, and accessible to the intended audience?  Is
+statistical terminology used appropriately and defined where appropriate?
+Does the report have an informative title?  Does the report include one
+informative graph if appropriate?
 
-    * Findings/interpretation (25 points): Does the analysis provide
-    insight related to the primary motivating question?  Are the
-    conclusions stated explicitly and supported by the analysis and
-    reported results?  Are findings appropriately qualified?
+* Findings/interpretation (25 points): Does the analysis provide
+insight related to the primary motivating question?  Are the conclusions
+stated explicitly and supported by the analysis and reported results?
+Are findings appropriately qualified?
 
 ## Some major themes of this course are:
 
