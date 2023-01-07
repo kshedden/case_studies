@@ -222,14 +222,20 @@ This approximate statement is closer to being true over time intervals
 where the hazard function is approximately constant.
 
 Note that the hazard function is not a probability and can be greater
-than 1 (but it must be non-negative).
+than 1 (but it must be non-negative).  It is also not a density, although
+if the density exists it can be determined from the hazard function.
 
 The hazard function is related to the survival function in a fairly
 simple way.  First, define the *cumulative hazard function* as
 
 $$ H(t) = \int_0^t h(s)ds.  $$
 
-Then the identity $S(t) = \exp(-H(t))$ holds.
+Then the identity $S(t) = \exp(-H(t))$ holds.  If $T$ has a density $f$,
+then $f = F^\prime = -S^\prime$.  Thus
+
+$$
+f(t) = h(t)\exp(-H(t)).
+$$
 
 The cumulative survival function is easier to estimate than the
 hazard function, but is more difficult to interpret.  The most basic
