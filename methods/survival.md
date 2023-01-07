@@ -41,7 +41,7 @@ is assumed.
 An important concept in survival analysis is the potential selection
 bias induced by *truncation*.  If units (e.g. people) are selected into
 the sample conditionally on their event time, then this must be taken
-into account.  The most common form of truncation is "left truncation"
+into account.  The most common form of truncation is *left truncation*
 in which there is a value $Q$ (which may be specific to each person)
 such that if the event occurs before time $Q$ (i.e. if $T < Q$) then
 the person would not have been included in our sample.
@@ -59,8 +59,8 @@ studying the incidence of stroke.  Suppose we use age as our time scale
 people into our study based on some eligibility criteria.  Usually we
 would not recruit people into our study if they have already had a stroke.
 Suppose we recruit someone into the study who is currently 65 years
-of age.  We are selecting this subject conditionally on the event $T\ge
-65$, and $Q=65$ is the subject's left truncation time.
+of age.  We are selecting this subject conditionally on the event $T
+\ge 65$, and $Q=65$ is the subject's left truncation time.
 
 ## Censoring
 
