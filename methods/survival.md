@@ -2,38 +2,39 @@
 
 Survival analysis is a set of techniques for characterizing distributions
 and bulding models.  Traditionally, survival analysis methods are used
-with "time to event" data, such as assessing the distribution of failure
-times (e.g. the duration of time from when a person is diagnosed with
+with *time to event* data, such as assessing the distribution of *failure
+times* (e.g. the duration of time from when a person is diagnosed with
 a disease until they progress to a more advanced stage of the disease).
-However there are many other applications of survival analysis methods
-that have nothing to do with "survival" or "failure", and these methods
-can even be applied in settings where "time" does not play a central role
-(although usually it does).
+There are many other applications of survival analysis methods that
+have nothing to do with "survival" or "failure", and these methods can
+even be applied in settings where "time" does not play a central role
+(although this is less common).
 
-## Time origins
+## Time origin
 
-To be concrete, consider a setting where we are observing a person over
-time, and we are interested in the time $T$ at which some event occurs.
-First, it is very important to define the *origin* against which time
+Consider a setting where we are observing a person over time, and
+we are interested in the time $T$ at which some event of interest
+occurs.  It is very important to define the *origin* from which time
 is measured, i.e. what is the meaning of time zero?  In the case of
 human-centered studies, we may let $T$ denote the age of the person when
 the event occurs, in which case the time origin is the date of birth.
-Alternatively, there may be an event that must occur before the event
-of interest, and this event may make a more sensible time origin.
+Alternatively, there may be an event that must occur before the event of
+interest, and the time of this event may make a more sensible time origin.
 For example, if $T$ corresponds to graduating from university, we may
-choose the date of matriculationmas the time origin, so that e.g. $T=4$
+choose the date of matriculation as the time origin, so that e.g. $T=4$
 means that the person graduated four years after beginning their studies.
 
 ## Event time distributions
 
 The theoretical basis of conventional survival analysis is that we are
-studying the distribution of a random variable $T$, which corresponds to
-the time at which an event occurs.  In conventional survival analysis,
-the event will eventually happen to everyone (i.e. $P(T<\infty) = 1$).
-We note that in some situations this may not be completely realistic and
-there is a subdomain of survival analysis ("cure modeling") in which
-this assumption is not made.  However this document deals exclusively
-with the conventional setting where $P(T<\infty) = 1$ is assumed.
+studying the distribution of a random variable $T$, corresponding to
+the time at which an event of interest occurs.  In conventional survival
+analysis, the event will eventually happen to everyone (i.e. $P(T<\infty)
+= 1$).  We note that in some situations this may not be completely
+realistic and there is a subdomain of survival analysis ("cure modeling")
+in which this assumption is not made.  However this document deals
+exclusively with the conventional setting where $P(T<\infty) = 1$
+is assumed.
 
 ## Truncation
 
@@ -42,15 +43,15 @@ bias induced by *truncation*.  If units (e.g. people) are selected into
 the sample conditionally on their event time, then this must be taken
 into account.  The most common form of truncation is "left truncation"
 in which there is a value $Q$ (which may be specific to each person)
-such that if the event occurs before time $Q$ (i.e. if $T<Q$) then the
-person would not have been included in our sample.
+such that if the event occurs before time $Q$ (i.e. if $T < Q$) then
+the person would not have been included in our sample.
 
 More formally, if we have left truncation then we are working with
-the conditional distribution $P(T|T\ge Q)$, while if there is no left
+the conditional distribution $P(T | T\ge Q)$, while if there is no left
 truncation then we are working with the unconditional distribution $P(T)$.
 If we are doing regression analysis with covariates $X$, then with left
-truncation we are studying $P(T|T\ge Q, X)$ and with no such truncation
-we are studying $P(T|X)$.
+truncation we are studying $P(T | T\ge Q, X)$ and with no such truncation
+we are studying $P(T | X)$.
 
 An example of left truncation would be a medical study where we are
 studying the incidence of stroke.  Suppose we use age as our time scale
