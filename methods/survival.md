@@ -172,14 +172,14 @@ not occured by time $t$.
 
 The empirical CDF (eCDF) is one of the fundamental objects in statistics.
 Based on an independent and identically distributed (IID) sample from
-some distribution, the eCDF is defined as $F(t) = \\#\\{T_i \le t\\} / n$.
+some distribution, the eCDF is defined as $\hat{F}(t) = \\#\\{T_i \le t\\} / n$.
 If there is no truncation and if the values of $T_i$ are all observed
 (i.e. there is no censoring) then we can estimate the survival function
 as $\hat{S}(t) = 1 - \hat{F}(t)$.
 
 As noted above, in survival analysis we usually have censoring and/or
 truncation.  We will consider here only the important subcase where there
-is right censoring and no truncation.  In this case there is a simple
+is right censoring and no truncation.  In this setting there is a simple
 estimator of the survival function $S(t)$ known as the *product limit*
 estimator or the *Kaplan-Meier* estimator.  It is worth understanding
 how this estimator is constructed.
@@ -198,7 +198,7 @@ This is the product limit estimator of the survival function.
 
 There are many methods for statistical inference relating to survival
 functions.  The *log rank test* is a formal hypothesis test of the
-null hypothesis that two survival functions are equal, e.g. the null
+null hypothesis that two survival functions are equal, i.e. the null
 hypothesis $S_0(t) \equiv S_1(t)$.  It is also possible to put confidence
 intervals around the estimated survival function $\hat{S}(t)$ to convey
 the precision with which it is estimated.
@@ -215,7 +215,7 @@ $$
 The hazard function can be interpreted as the "instantaneous event
 rate".  It takes some practice to understand how to interpret this
 limit. If the time unit is "days" and the hazard is 0.001 at day 100,
-then this means that approximately 0.1%% of the subjects at risk on
+then this means that approximately 0.1% of the subjects at risk on
 day 100 will experience the event on that day.  Note that this is an
 approximate statement since we are not actually taking a limit here.
 This approximate statement is closer to being true over time intervals
