@@ -68,11 +68,9 @@ Data in a survival analysis are often subject to "censoring", which
 means that we only have partial information about the value of $T$ for
 many subjects.  Continuing with the example where stroke is the event
 of interest, only a subset of the subjects will have a stroke during
-our study.  Suppose a person is recruited to the study at age 65 (their
+our study.  Suppose a person is recruited into the study at age 65 (their
 left truncation time), and presently they are 75 years old and have not
-yet had a stroke.
-
-In the conventional survival analysis this imaginary subject will have
+yet had a stroke. In the conventional survival analysis this imaginary subject will have
 a stroke at some age $T<\infty$, but since that event occurs in the
 future we only know that $T > 75$.  This is called *right censoring* --
 we know that the value of $T$ is greater than some known value, but we
@@ -82,13 +80,14 @@ Right censoring is the most commonly-encountered form of censoring,
 but in some settings we may have *left censoring*, meaning that we
 only know that $T$ is less than some observed value.  Also, there is
 *interval censoring* in which we know, for example, that someone had a
-stroke between the age of 75 and 77 but we do not know the exact age.
+stroke between the age of 75 and 77 but we do not know the exact age
+at which the stroke occurred.
 
 A common assumption in survival analysis is that of *independent
 censoring*.  We will define this here in the context of right censoring.
 Let $T$ be the event time and $R$ be the right censoring time.
-Note that only one of these two values is observed, but we can
-still imagine that the other value still exists as a "latent" value.
+Note that only one of $T, R$ is observed, but we can
+imagine that the other value exists as a "latent" value.
 Independent censoring simply means that $T$ and $R$ are independent
 random variables. Concretely, this means, for example, that people who
 are more prone to having an early event (e.g. unhealthy people) do not
@@ -99,20 +98,20 @@ Since we don't observe $T$ and $R$ together, independent censoring is
 usually an untestable assumption, but in some cases there may be reason
 to accept it and in other cases there may be good reason to doubt that
 independent censoring holds.  There are various methods for dealing with
-possibly dependent censored data, but that is an advanced topic that we
-will not consider further.
+dependent censored data, but that is an advanced topic that we
+will not consider further here.
 
 ## Competing risks
 
 In a survival analysis there may be other events that "compete" with
 the event of interest. For example, if we are studying the time $T$
-at which a person has a stroke, it is possible that a person dies of
-another cause before ever having a stroke.  Death unrelated to stroke
+at which a person has a stroke, it is possible that the person dies of
+another cause before having a stroke.  Death unrelated to stroke
 is a *competing risk* for the event of interest.
 
 ## The risk set
 
-The *risk set* at a specifici time $t$ is the subset of units
+The *risk set* at a specific time $t$ is the subset of units
 (e.g. people) who could possibly experience the event at time $t$.
 Anyone who has already had the event before time $t$, has been right
 censored before time $t$, or has experienced a competing risk before
@@ -146,8 +145,8 @@ A more general notation that is often encountered is that for each
 subject we have an interval $[L_i, R_i)$ such that the event is known to
 occur within this interval.  For right censored subjects, $R_i=\infty$.
 For non-censored subjects, $L_i = R_i$.  An *interval censored* subject
-has $0 < L_i < R_i < \infty$, and a left-censored subject has $0 = L_i <
-R_i< \infty$.
+has $0 < L_i < R_i < \infty$, and a left-censored subject has
+$0 = L_i < R_i< \infty$.
 
 ## Parametric and non-parametric methods
 
@@ -173,7 +172,7 @@ not occured by time $t$.
 
 The empirical CDF (eCDF) is one of the fundamental objects in statistics.
 Based on an independent and identically distributed (IID) sample from
-some distribution, the eCDF is defined as $F(t) = \#\{T_i \le t\} / n$.
+some distribution, the eCDF is defined as $F(t) = \\#\{T_i \le t\} / n$.
 If there is no truncation and if the values of $T_i$ are all observed
 (i.e. there is no censoring) then we can estimate the survival function
 as $\hat{S}(t) = 1 - \hat{F}(t)$.
