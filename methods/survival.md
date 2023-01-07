@@ -1,7 +1,7 @@
 # Survival analysis
 
 Survival analysis is a set of techniques for characterizing distributions
-and bulding models.  Traditionally, survival analysis methods are used
+and building models.  Traditionally, survival analysis methods are used
 with *time to event* data, such as assessing the distribution of *failure
 times* (e.g. the duration of time from when a person is diagnosed with
 a disease until they progress to a more advanced stage of the disease).
@@ -121,7 +121,7 @@ time $t$ is not in this risk set.
 
 In conventional survival analysis, each subject experiences the event
 one time (although we may not observe this occurrence in our study as
-there may be censoring).  However some events may be able to recurr.
+there may be censoring).  However some events may be able to recur.
 For example, suppose that we are studying arrests by police and the time
 $T$ is the duration until a person is arrested.  There can be subsequent
 arrests for the same subject and it may be of interest to study the
@@ -168,7 +168,7 @@ The *survival function* of a random variable $T$ is defined to be $S(t)
 \equiv P(T>t)$.  It is closely related to the cumulative distribution
 function (CDF) $F(t) = P(T\le t)$ since $S(t) = 1 - F(t)$.  In words,
 the survival function at time $t$ is the probability that the event has
-not occured by time $t$.
+not occurred by time $t$.
 
 The empirical CDF (eCDF) is one of the fundamental objects in statistics.
 Based on an independent and identically distributed (IID) sample from
@@ -237,20 +237,20 @@ $$
 f(t) = h(t)\exp(-H(t)).
 $$
 
-In many applications, the hazarad function has a very natural interpretation
+In many applications, the hazard function has a very natural interpretation
 and in fact is easier to interpret than the survival function.  A common
 consideration is whether the hazard function is increasing, decreasing,
 approximately constant, or has some other shape like a "U" ("bathtub")
 shape.
 
 In terms of parametric distributions, the exponential distribution has a constant
-hazard function, whereas thge Weibull distribution can have either an increasing
-or decreasing hazard function depending on the parameters.
+hazard function, whereas the Weibull distribution can have either an increasing
+or decreasing hazard function depending on its parameters.
 
 One common application of survival analysis is in the setting of failures of
-manufcatured products, e.g. how likely is it that your car will break down at
+manufactured products, e.g. how likely is it that your car will break down at
 a particular point in time?  If the hazard function is constant, then the car
-is equally likely to break down on every day.  If the hazard function is increasing,
+is equally likely to break down on every day that you own it.  If the hazard function is increasing,
 then as the car gets older it becomes more likely to break down.  This could
 be due to the parts of the car wearing out and failing with use (e.g. due to
 material fatigue).
@@ -258,12 +258,12 @@ material fatigue).
 If the hazard function is decreasing then as the car
 gets older it becomes less likely to break down.  This could occur if most
 failures are due to manufacturing flaws. A car consists of thousands of parts,
-and suppose that in any given car, a few parts may bes flawed at the point
+and suppose that in any given car, a few parts may be flawed at the point
 of manufacture, or are installed incorrectly.  These flaws may not be
 sufficient to cause the car to break down immediately, hence the car is sold
 in apparent working order.  However these flawed parts may tend to fail very
-early.  Many cars need to be serviced early in their lifes for this reason.
-However, once you have driven your car say 5000 miles, all of these errors
+early.  Many cars need to be serviced early in their lifespans for this reason.
+However, once you have driven your car say 5000 miles, all of these flaws
 (if any) have been resolved and the risk of a break-down becomes lower with time.
 
 With manufactured products, both of the above mechanisms are likely to exist,
@@ -272,7 +272,7 @@ hazard function is higher for small $t$ due to manufacturing errors, then
 the hazard function is lower once the car has been driven long enough to
 identify and resolve any such issues.  But as the car gets older and parts
 fatigue, a different type of failure becomes more likely and the hazard
-begins to increase again.
+function begins to increase again.
 
 A similar phenomenon exists with human lifespans, whereby the hazard of dying is greater
 for infants and very young children (up to around age 3-5) and then becomes very low
@@ -286,21 +286,21 @@ to a risk factor), with each group having a hazard function $h_k(t)$ for
 $k=0, 1$ corresponding to not exposed and exposed people, respectively.
 The hazard ratio at time $t$ is $h_1(t)/h_0(t)$.  This is a very useful
 and widely-utilized measure of the "risk" associated with an exposure.
-For example, if the hazard ratio is 2 then roughly speaking exposed people
+For example, if the hazard ratio is 2 then (roughly speaking) exposed people
 have twice the risk of experiencing the event as non-exposed people.
 
 Under an assumption of *proportional hazards* all hazard ratios are
 constant, meaning in the present example that $h_1 \propto h_0$. As
 we will see below, many popular methods for survival analysis
 assume proportional hazards, but it is important to note that this
-proportionality may not hold in a particular setting.
+assumed proportionality may not hold in a particular setting.
 
 ## Estimating marginal hazard functions
 
 The cumulative survival function is easier to estimate than the
 hazard function, but is more difficult to interpret.  The most basic
 non-parametric estimate of the cumulative hazard function under right
-censoring with no trunction is the *Nelson-Aalen* estimator:
+censoring with no truncation is the *Nelson-Aalen* estimator
 
 $$ \hat{H}(t) = \sum_{i: t_i \le t} d_i/n_i, $$
 
@@ -311,7 +311,7 @@ estimate $h$ by numerically differentiating an estimate of $H$.
 
 ## Hazard regression
 
-*Survival regresion* is any method that aims to model conditional
+*Survival regression* is any method that aims to model conditional
 distributions $P(T|X)$, where $T$ is an event time variable possibly
 subject to censoring and/or truncation, and $X$ is a vector of explanatory
 variables.
@@ -333,16 +333,16 @@ $$ h(t|X=x) = \exp(\beta^\prime x) h_0(t).  $$
 The *baseline hazard function* $h_0$ is unknown and arbitrary, i.e. it
 is not assumed to follow any parametric family.  This is therefore a
 *semi-parametric* model since is has a finite-dimensional parameter of
-interest $\beta$ and an infinite-dimensional nuiscance parameter $h_0$.
+interest $\beta$ and an infinite-dimensional nuisance parameter $h_0$.
 It turns out that it is possible to estimate $\beta$ using a type of
 maximum-likelihood technique without simultaneously estimating $h_0$.
-This makes the PH model feel in practice like a conventional parametric
+This makes the PH model feel in practice more like a conventional parametric
 model estimated using maximum likelihood.  The cumulative baseline hazard
 function can be estimated in a separate step if desired, using a modified
 version of the Nelson-Aalen estimator discussed above.
 
 When interpreting the results of a PH model, the fact that it is based on
-proportionalithy of the hazard function is key.  Thus, a given regression
+proportionality of the hazard function is key.  Thus, a given regression
 slope $\beta_j$ is the *log hazard ratio* when comparing the hazard
 functions for two individuals who differ by one unit on variable $X_j$,
 and have identical values for all other variables.  The estimated hazard
@@ -355,14 +355,14 @@ The PH model is essentially a single-index model fit with maximum
 likelihood techniques.  Thus, once the concept of the hazard function and
 proportionality of hazard functions is understood, familiar strategies
 for regression modeling can be employed.  For example, we can include
-interactions, splines, covariate transformations, conduct step-wise
+interactions, splines, covariate transformations, and conduct step-wise
 model searches.  There are also versions of information-based criteria
 such as AIC and BIC for model selection with PH models. The PH model
 can be extended to accommodate left truncation and competing risks.
 
 As indicated above, proportionality of the conditional hazard functions
 is a critical assumption in the PH model.  This is not always an easy
-assumption to check, but there are some residual-based methods that can
+assumption to check, but there are some methods based on residuals that can
 be employed.
 
 ## Time-varying covariates
@@ -370,8 +370,8 @@ be employed.
 In the survival regression model discussed above, all variables are
 defined at "baseline".  That is, every covariate $X_j$ is known at
 time zero and its value cannot change.  There are various approaches
-to survival regression thqat can accommodate *time-varying covariates*,
-e.g. if a subject experiences some other event that changes their risk
+to survival regression that can accommodate *time-varying covariates*,
+e.g. if a subject's status changes in a way that changes their risk
 for the event of interest.  The Cox PH regression model discussed above
 can be extended to accommodate time-varying covariates but we do not
 discuss that further here.
