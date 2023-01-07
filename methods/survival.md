@@ -203,7 +203,7 @@ hypothesis $S_0(t) \equiv S_1(t)$.  It is also possible to put confidence
 intervals around the estimated survival function $\hat{S}(t)$ to convey
 the precision with which it is estimated.
 
-## Hazards
+## Hazard functions
 
 The *hazard* function is a way of mathematically representing a
 probability distribution that is commonly used in survival analysis.
@@ -237,17 +237,48 @@ $$
 f(t) = h(t)\exp(-H(t)).
 $$
 
-The cumulative survival function is easier to estimate than the
-hazard function, but is more difficult to interpret.  The most basic
-non-parametric estimate of the cumulative hazard function under right
-censoring with no trunction is the *Nelson-Aalen* estimator:
+In many applications, the hazarad function has a very natural interpretation
+and in fact is easier to interpret than the survival function.  A common
+consideration is whether the hazard function is increasing, decreasing,
+approximately constant, or has some other shape like a "U" ("bathtub")
+shape.
 
-$$ \hat{H}(t) = \sum_{i: t_i \le t} d_i/n_i, $$
+In terms of parametric distributions, the exponential distribution has a constant
+hazard function, whereas thge Weibull distribution can have either an increasing
+or decreasing hazard function depending on the parameters.
 
-using the same notation as used above when presenting the product-limit
-estimator of the survival function.  Since the hazard function $h$ is
-the derivative of the cumulative hazard function $H$, it is possible to
-estimate $h$ by numerically differentiating an estimate of $H$.
+One common application of survival analysis is in the setting of failures of
+manufcatured products, e.g. how likely is it that your car will break down at
+a particular point in time?  If the hazard function is constant, then the car
+is equally likely to break down on every day.  If the hazard function is increasing,
+then as the car gets older it becomes more likely to break down.  This could
+be due to the parts of the car wearing out and failing with use (e.g. due to
+material fatigue).
+
+If the hazard function is decreasing then as the car
+gets older it becomes less likely to break down.  This could occur if most
+failures are due to manufacturing flaws. A car consists of thousands of parts,
+and suppose that in any given car, a few parts may bes flawed at the point
+of manufacture, or are installed incorrectly.  These flaws may not be
+sufficient to cause the car to break down immediately, hence the car is sold
+in apparent working order.  However these flawed parts may tend to fail very
+early.  Many cars need to be serviced early in their lifes for this reason.
+However, once you have driven your car say 5000 miles, all of these errors
+(if any) have been resolved and the risk of a break-down becomes lower with time.
+
+With manufactured products, both of the above mechanisms are likely to exist,
+so the hazard function may exhibit a "bathtub" shape.  This means that the
+hazard function is higher for small $t$ due to manufacturing errors, then
+the hazard function is lower once the car has been driven long enough to
+identify and resolve any such issues.  But as the car gets older and parts
+fatigue, a different type of failure becomes more likely and the hazard
+begins to increase again.
+
+A similar phenomenon exists with human lifespans, whereby the hazard of dying is greater
+for infants and very young children (up to around age 3-5) and then becomes very low
+for several decades before beginning to increase again around age 50.
+
+## Hazard ratios and hazard proportionality
 
 A *hazard ratio* is the ratio between two hazard values.  For example,
 we may have two groups of subjects (e.g. people exposed or not exposed
@@ -263,6 +294,20 @@ constant, meaning in the present example that $h_1 \propto h_0$. As
 we will see below, many popular methods for survival analysis
 assume proportional hazards, but it is important to note that this
 proportionality may not hold in a particular setting.
+
+## Estimating marginal hazard functions
+
+The cumulative survival function is easier to estimate than the
+hazard function, but is more difficult to interpret.  The most basic
+non-parametric estimate of the cumulative hazard function under right
+censoring with no trunction is the *Nelson-Aalen* estimator:
+
+$$ \hat{H}(t) = \sum_{i: t_i \le t} d_i/n_i, $$
+
+using the same notation as used above when presenting the product-limit
+estimator of the survival function.  Since the hazard function $h$ is
+the derivative of the cumulative hazard function $H$, it is possible to
+estimate $h$ by numerically differentiating an estimate of $H$.
 
 ## Hazard regression
 
