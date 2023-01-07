@@ -59,8 +59,8 @@ studying the incidence of stroke.  Suppose we use age as our time scale
 people into our study based on some eligibility criteria.  Usually we
 would not recruit people into our study if they have already had a stroke.
 Suppose we recruit someone into the study who is currently 65 years
-of age.  We are selecting this subject conditionally on the event $T
-\ge 65$, and $Q=65$ is the subject's left truncation time.
+of age.  We are selecting this subject conditionally on the event $T\ge 65$,
+and $Q=65$ is the subject's left truncation time.
 
 ## Censoring
 
