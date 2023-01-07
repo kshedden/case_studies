@@ -17,20 +17,21 @@ pa = "/home/kshedden/mynfs/data/Teaching/bhht"
 # Load the dataset.  Use the latin-1 encoding since there is some non-UTF
 # data in the file.  Add "nrows=100000" when developing to reduce the run
 # time (but use the complete data to get final results).
-df = pd.read_csv(os.path.join(pa, "cross-verified-database.csv.gz"), encoding="latin-1", nrows=10000)
+df = pd.read_csv(os.path.join(pa, "cross-verified-database.csv.gz"), encoding="latin-1", nrows=100000)
 
-# Create a lifespan variable (years of life).
-df.loc[:, "lifespan"] = df.loc[:, "death"] - df.loc[:, "birth"]
+# Create a lifespan variable (years of life).  It will be missing for people who are currently living.
+df["lifespan"] = df["death"] - df["birth"]
 
-# Exclude people born before 1500.
-dx = df.loc[df.birth >= 1500, ["birth", "lifespan", "gender", "un_region", "level1_main_occ"]]
+# Exclude people born before 1500, there is too little data to gain a meaningful
+# understanding of the trends in lifespan prior to this year.
+dx = df.loc[df["birth"] >= 1500, ["birth", "lifespan", "gender", "un_region", "level1_main_occ"]]
 
 # There are a small number of people with missing or "Other" gender but it
 # is too small of a sample to draw conclusions.
-dx = dx.loc[dx.gender.isin(["Female", "Male"]), :]
+dx = dx.loc[dx["gender"].isin(["Female", "Male"]), :]
 
 # Drop uninformative occupation codes.
-dx = dx.loc[~dx.level1_main_occ.isin(["Missing", "Other"]), :]
+dx = dx.loc[~dx["level1_main_occ"].isin(["Missing", "Other"]), :]
 
 # Censor at 2022
 censor_year = 2022
@@ -38,7 +39,24 @@ dx["clifespan"] = dx["lifespan"].fillna(censor_year - dx["birth"])
 dx["died"] = 1 - 1*dx["lifespan"].isnull()
 
 # Now we can drop all rows with missing data
+dx = dx.drop("lifespan", axis=1)
 dx = dx.dropna()
+
+# A categorical variable indicating the century in which a person was born.
+dx["era"] = np.floor((dx["birth"] - 1500) / 100)
+
+# Plot the survival functions for people born in each century
+fig = plotille.Figure()
+fig.set_x_limits(0, 100)
+fig.set_y_limits(0, 1)
+fig.x_label = "Age"
+fig.y_label = "Log hazard"
+fig.width = 60
+fig.height = 20
+for k,g in dx.groupby("era"):
+    sf = sm.SurvfuncRight(g.clifespan, g.died)
+    fig.plot(sf.surv_times, sf.surv_prob)
+print(fig.show(legend=True))
 
 # Fit a proportional hazards regression model
 dx["time"] = np.sqrt(dx["birth"] - 1500)
@@ -71,7 +89,7 @@ plt = plotille.plot(shaz[:, 0], shaz[:, 1], X_label="Age", Y_label="log hazard",
 print(plt)
 print("\n\n")
 
-# Fit a sex-stratified proportional hazards regressionmodel
+# Fit a sex-stratified proportional hazards regression model
 dx["time"] = np.sqrt(dx["birth"] - 1500)
 fml = "clifespan ~ bs(time, 4) + level1_main_occ + un_region"
 m1 = sm.PHReg.from_formula(fml, dx, status="died", strata="gender")
@@ -93,3 +111,4 @@ for k in 0,1:
     shaz = sm.nonparametric.lowess(np.log(haz), ti[0:-1])
     fig.plot(shaz[:,0], shaz[:,1], label=snames[k])
 print(fig.show(legend=True))
+
