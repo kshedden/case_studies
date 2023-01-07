@@ -172,7 +172,7 @@ not occured by time $t$.
 
 The empirical CDF (eCDF) is one of the fundamental objects in statistics.
 Based on an independent and identically distributed (IID) sample from
-some distribution, the eCDF is defined as $F(t) = \\#\{T_i \le t\} / n$.
+some distribution, the eCDF is defined as $F(t) = \\#\\{T_i \le t\\} / n$.
 If there is no truncation and if the values of $T_i$ are all observed
 (i.e. there is no censoring) then we can estimate the survival function
 as $\hat{S}(t) = 1 - \hat{F}(t)$.
