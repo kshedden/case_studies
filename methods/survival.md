@@ -210,11 +210,15 @@ The *hazard* function is a way of mathematically representing a
 probability distribution that is commonly used in survival analysis.
 The hazard function is defined to be
 
-$$ h(t) \equiv \lim_{\delta\downarrow 0}P(T\le t+\delta|T\ge t)/\delta.
+$$ h(t) \equiv \lim_{\delta\downarrow 0}P(T\le t+\delta|T\ge t)/\delta
+= \lim_{\delta\downarrow 0}(S(t+\delta) - S(t)) / (\delta S(t)).
 $$
 
 The hazard function can be interpreted as the "instantaneous event
-rate".  It takes some practice to understand how to interpret this
+rate".  It has units of 1/time so is not dimensionless (the time
+units matter).
+
+It takes some practice to understand how to interpret this
 limit. If the time unit is "days" and the hazard is 0.001 at day 100,
 then this means that approximately 0.1% of the subjects at risk on
 day 100 will experience the event on that day.  Note that this is an
