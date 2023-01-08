@@ -9,7 +9,7 @@ library(readr)
 library(splines)
 library(ggplot2)
 
-pdf("lifespan_survival.pdf")
+pdf("lifespan_survival_R.pdf")
 
 # Change this as needed to point to the directory holding the data file.
 pa = "/home/kshedden/mynfs/data/Teaching/bhht"
