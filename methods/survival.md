@@ -211,7 +211,7 @@ probability distribution that is commonly used in survival analysis.
 The hazard function is defined to be
 
 $$ h(t) \equiv \lim_{\delta\downarrow 0}P(T\le t+\delta|T\ge t)/\delta
-= \lim_{\delta\downarrow 0}(S(t+\delta) - S(t)) / (\delta S(t)).
+= \lim_{\delta\downarrow 0}(S(t) - S(t+\delta)) / (\delta S(t)).
 $$
 
 The hazard function can be interpreted as the "instantaneous event
