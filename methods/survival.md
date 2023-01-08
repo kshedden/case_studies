@@ -1,7 +1,7 @@
 # Survival analysis
 
 Survival analysis is a set of techniques for characterizing distributions
-and building models.  Traditionally, survival analysis methods are used
+and building models.  Most commonly, survival analysis methods are used
 with *time to event* data, such as assessing the distribution of *failure
 times* (e.g. the duration of time from when a person is diagnosed with
 a disease until they progress to a more advanced stage of the disease).
@@ -21,7 +21,7 @@ the event occurs, in which case the time origin is the date of birth.
 Alternatively, there may be an event that must occur before the event of
 interest, and the time of this event may make a more sensible time origin.
 For example, if $T$ corresponds to graduating from university, we may
-choose the date of matriculation as the time origin, so that e.g. $T=4$
+choose the date of university matriculation as the time origin, so that e.g. $T=4$
 means that the person graduated four years after beginning their studies.
 
 ## Event time distributions
@@ -29,9 +29,9 @@ means that the person graduated four years after beginning their studies.
 The theoretical basis of conventional survival analysis is that we are
 studying the distribution of a random variable $T$, corresponding to
 the time at which an event of interest occurs.  In conventional survival
-analysis, the event will eventually happen to everyone (i.e. $P(T<\infty)
-= 1$).  We note that in some situations this may not be completely
-realistic and there is a subdomain of survival analysis ("cure modeling")
+analysis, the event will eventually happen to everyone, so
+$P(T < \infty) = 1$.  We note that in some situations this may not be completely
+realistic and there is a subdomain of survival analysis called "cure modeling"
 in which this assumption is not made.  However this document deals
 exclusively with the conventional setting where $P(T<\infty) = 1$
 is assumed.
@@ -42,7 +42,7 @@ An important concept in survival analysis is the potential selection
 bias induced by *truncation*.  If units (e.g. people) are selected into
 the sample conditionally on their event time, then this must be taken
 into account.  The most common form of truncation is *left truncation*
-in which there is a value $Q$ (which may be specific to each person)
+in which there is a value $Q$ (which may be specific to each observation)
 such that if the event occurs before time $Q$ (i.e. if $T < Q$) then
 the person would not have been included in our sample.
 
@@ -70,7 +70,7 @@ many subjects.  Continuing with the example where stroke is the event
 of interest, only a subset of the subjects will have a stroke during
 our study.  Suppose a person is recruited into the study at age 65 (their
 left truncation time), and presently they are 75 years old and have not
-yet had a stroke. In the conventional survival analysis this imaginary subject will have
+yet had a stroke. This imaginary subject will have
 a stroke at some age $T<\infty$, but since that event occurs in the
 future we only know that $T > 75$.  This is called *right censoring* --
 we know that the value of $T$ is greater than some known value, but we
@@ -86,8 +86,8 @@ at which the stroke occurred.
 A common assumption in survival analysis is that of *independent
 censoring*.  We will define this here in the context of right censoring.
 Let $T$ be the event time and $R$ be the right censoring time.
-Note that only one of $T, R$ is observed, but we can
-imagine that the other value exists as a "latent" value.
+Note that only ${\rm min}(T, R)$ is observed, but we can
+imagine that both values exist, one being a "latent" value.
 Independent censoring simply means that $T$ and $R$ are independent
 random variables. Concretely, this means, for example, that people who
 are more prone to having an early event (e.g. unhealthy people) do not
@@ -98,7 +98,7 @@ Since we don't observe $T$ and $R$ together, independent censoring is
 usually an untestable assumption, but in some cases there may be reason
 to accept it and in other cases there may be good reason to doubt that
 independent censoring holds.  There are various methods for dealing with
-dependent censored data, but that is an advanced topic that we
+dependently censored data, but that is an advanced topic that we
 will not consider further here.
 
 ## Competing risks
@@ -133,8 +133,9 @@ next arrest.
 Subjects who are right-censored have a maximal *follow-up time* which
 is the greatest time at which they were observed and confirmed not to
 have yet experienced the event of interest. In survival analysis with
-right censoring, where $T_i$ is the (possibly unobserved) event time, we
-typically write $Y_i$ as the observed time which is either the follow-up
+right censoring, where $T_i$ is the (possibly unobserved) event time
+and $R_i$ is the time at which we would no longer be able to observe the subject, we
+typically write $Y_i = {\rm min}(T_i, R_i)$ as the "observed" time, which is either the follow-up
 time for censored subjects or the event time for non-censored subjects.
 Then, we define the *status indicator* $\delta_i$ such that $\delta_i=1$
 if the event is observed and $\delta_i=0$ if the event is not observed.
@@ -164,8 +165,8 @@ and Gamma and log-normal distributions are also encountered.
 
 ## Estimation of the survival function
 
-The *survival function* of a random variable $T$ is defined to be $S(t)
-\equiv P(T>t)$.  It is closely related to the cumulative distribution
+The *survival function* of a random variable $T$ is defined to be
+$S(t) \equiv P(T>t)$.  It is closely related to the cumulative distribution
 function (CDF) $F(t) = P(T\le t)$ since $S(t) = 1 - F(t)$.  In words,
 the survival function at time $t$ is the probability that the event has
 not occurred by time $t$.
@@ -237,6 +238,9 @@ $$
 f(t) = h(t)\exp(-H(t)).
 $$
 
+Note that this also implies that when densities exist, $h(t) = f(t)/S(t)$,
+giving another natural view of the hazard funtion.
+
 In many applications, the hazard function has a very natural interpretation
 and in fact is easier to interpret than the survival function.  A common
 consideration is whether the hazard function is increasing, decreasing,
@@ -249,7 +253,7 @@ or decreasing hazard function depending on its parameters.
 
 One common application of survival analysis is in the setting of failures of
 manufactured products, e.g. how likely is it that your car will break down at
-a particular point in time?  If the hazard function is constant, then the car
+a particular point in time, given that it is currently working?  If the hazard function is constant, then the car
 is equally likely to break down on every day that you own it.  If the hazard function is increasing,
 then as the car gets older it becomes more likely to break down.  This could
 be due to the parts of the car wearing out and failing with use (e.g. due to
