@@ -19,9 +19,9 @@ object.
 Many methods of factor analysis can be viewed as a means to obtain
 an *embedding*.  Embedding algorithms take input data vectors $X$ and transform them
 into output data vectors $Z$.  Many embedding algorithms take the form
-of a "dimension reduction", so that $q \equiv {\rm dim}(Z) < {\rm
-dim}(X) \equiv p$.  However some embeddings preserve or even increase
-the dimension.
+of a "dimension reduction", so that
+$q \equiv {\rm dim}(Z) < {\rm dim}(X) \equiv p$.
+However some embeddings preserve or even increase the dimension.
 
 Embeddings can be used for exploratory analysis, especially in
 visualizations, and can also be used to construct features for
@@ -49,7 +49,7 @@ are the observations or objects, and whose columns are the variables.
 
 Some factor-type methods work with the covariance matrix of the variables,
 which is a $p\times p$ positive semidefinite matrix.  Since covariances
-by definition are derived from mean centered variables, it is common to 
+by definition are derived from mean centered variables, it is common to
 mean center the variables (columns) of $X$ prior to running a factor analysis.
 
 Furthermore, in many cases we do not wish our results to depend on the
@@ -58,7 +58,7 @@ remove any influence of differing dispersions of the variables on our results.
 This motivates standardizing the columns of $X$ prior to performing
 a factor analysis, where *standardization* involves first mean
 centering each column and then dividing each column by its standard
-deviation.  
+deviation.
 
 While standardization is commonly performed, in some cases it is desirable for the variables
 with more dispersion to have more influence on the results of a factor
@@ -68,7 +68,7 @@ variables.
 In some datasets there is no clear distinction between
 an observation and a variable, and it may be desirable to standardize
 both the rows and the columns.  To achieve this, the following three
-steps can be performed: (i) center the overall matrix around its 
+steps can be performed: (i) center the overall matrix around its
 grand mean, (ii) center each row of the matrix with respect to the
 row mean, (iii) center each column of the matrix with respect to
 the column mean.  After these three steps, each row and each column
@@ -79,7 +79,7 @@ having been *double centered*.
 
 Many embedding methods make use of a matrix factorization known as the
 *Singular Value Decomposition* (SVD).  The SVD is defined for any
-$n\times p$ matrix $X$.  In most cases we want $n \ge p$, and if $n<p$
+$n\times p$ matrix $X$.  In most cases we want $n \ge p$, and if $n < p$
 we would take the SVD of $X^T$ instead of $X$.  When $n\ge p$, we
 decompose $X$ as $X = USV^T$, where $U$ is $n\times p$, $S$ is
 $p\times p$, and $V$ is $p\times p$.  The matrices $U$ and $V$ are
@@ -138,7 +138,7 @@ Suppose that $X$ is a $p$-dimensional random vector with mean $0$ and
 covariance matrix $\Sigma$ (our focus here is not the mean, so if $X$
 does not have mean zero we can replace it with $X-\mu$, where
 $\mu=EX$).  Principal Components Analysis (PCA) seeks a linear
-embedding of $X$ into a lower dimensional space of dimension $q<p$.
+embedding of $X$ into a lower dimensional space of dimension $q < p$.
 The standard PCA approach gives us an orthogonal matrix $B$ of
 *loadings*, which can be used to produce *scores* denoted $Q$.
 
@@ -180,10 +180,10 @@ scores $Q \equiv B^TX$ are uncorrelated, ${\rm cov}(Q) = I_q$.
 Next we consider how PCA can be carried out with a sample of data,
 rather than in a population.  Given a $n\times p$ matrix of data $Z$
 whose rows are iid copies of the random vector $X$, we can estimate
-the covariance matrix $\Sigma$ by column centering $Z$ to produce $Z_c
-\equiv X - 1_n\bar{X}^T$, where $\bar{X} \in {\cal R}^p$ is the vector
-of column-wise means of $X$, Then set $\hat{\Sigma} =
-Z_c^TZ_c/n$. Letting $B$ denote the eigenvectors of $\hat{\Sigma}$,
+the covariance matrix $\Sigma$ by column centering $Z$ to produce
+$Z_c \equiv X - 1_n\bar{X}^T$, where $\bar{X} \in {\cal R}^p$ is the vector
+of column-wise means of $X$, Then set
+$\hat{\Sigma} = Z_c^TZ_c/n$. Letting $B$ denote the eigenvectors of $\hat{\Sigma}$,
 the scores have the form $Q = Z_cB$.
 
 Since the eigenvalues $\Lambda_{ii}$ are non-increasing, the leading
@@ -422,7 +422,7 @@ rows of $P^r$ and $G$ provides an embedding of the columns of $P^c$.
 Specifically, if we select $1 \le q \le p$ then the Euclidean distance
 from $F_{i,1:q}$ to $F_{j,1:q}$ is approximately equal to the
 chi-square distance from $P_{i,:}$ to $P_{j,:}$.  Note that if $q=p$
-then the approximation becomes exact, but for $q<p$ the approximation
+then the approximation becomes exact, but for $q < p$ the approximation
 is inexact.
 
 ### Derivation of the algorithm
