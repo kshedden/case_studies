@@ -1,10 +1,10 @@
 # Factor analyses and embeddings
 
 A large class of powerful statistical methods considers data in which
-many "objects" ("observations") are measured with respect to multiple variables.  At a
-high level, these analyses usually aim to simultaneously understand
-the relationships among the objects and the relationships among the
-variables.
+many "objects" ("observations") are measured with respect to multiple variables.
+These analyses often focus on understanding the relationships
+among the variables, but sometimes also consider
+the relationships among the objects.
 
 For example, we may have a sample of people (the "objects") with each
 person measured in terms of their height, weight, age, and sex.  In
@@ -28,8 +28,12 @@ visualizations, and can also be used to construct features for
 prediction, as well as being used in formal statistical inference,
 e.g. in hypothesis testing.
 
-An embedding approach is linear if $Z = BX$ for a fixed but
-data-dependent $q\times p$ matrix $B$.  Linear embedding algorithms
+An embedding approach is linear if $Z = BX$ for a fixed
+$q\times p$ matrix $B$.  The matrix $B$ may be based on training
+data, in which case the embedding is *adaptive*  In other settings
+$B$ is completely independent of any data and the embedding is
+*non-adaptive*.
+Linear embedding algorithms
 are simpler to devise and characterize than nonlinear embeddings.
 Many modern embedding algorithms are nonlinear, exploiting the
 potential to better capture complex structure.
@@ -39,7 +43,9 @@ algorithms embed both the objects and the variables.  Embedding the
 objects provides a reduced feature representation for each object that
 can be passed on to additional analysis procedures, or interpreted
 directly.  Embedding the variables provides a means to interpret the
-relationships among the variables.
+relationships among the variables.  When utilizing an embedding algorithm
+that embeds both objects and variables we have the opportunity to
+interpret the results through a *biplot*.
 
 ## Centering and standardization
 
@@ -48,12 +54,12 @@ a factor analysis.  Suppose that $X$ is a $n\times p$ matrix whose rows
 are the observations or objects, and whose columns are the variables.
 
 Some factor-type methods work with the covariance matrix of the variables,
-which is a $p\times p$ positive semidefinite matrix.  Since covariances
+which is a $p\times p$ positive semidefinite (PSD) matrix.  Since covariances
 by definition are derived from mean centered variables, it is common to
 mean center the variables (columns) of $X$ prior to running a factor analysis.
 
-Furthermore, in many cases we do not wish our results to depend on the
-units in which each variable was measured, or we wish to explicitly
+We may wish for our results to be independent of the
+units in which each variable was measured, or we may wish to explicitly
 remove any influence of differing dispersions of the variables on our results.
 This motivates standardizing the columns of $X$ prior to performing
 a factor analysis, where *standardization* involves first mean
