@@ -50,12 +50,13 @@ fig = plotille.Figure()
 fig.set_x_limits(0, 100)
 fig.set_y_limits(0, 1)
 fig.x_label = "Age"
-fig.y_label = "Log hazard"
+fig.y_label = "Proportion alive"
 fig.width = 60
 fig.height = 20
 for k,g in dx.groupby("era"):
     sf = sm.SurvfuncRight(g.clifespan, g.died)
-    fig.plot(sf.surv_times, sf.surv_prob)
+    la = "%.0f" % (1500 + k*100)
+    fig.plot(sf.surv_times, sf.surv_prob, label=la)
 print(fig.show(legend=True))
 
 # Fit a proportional hazards regression model
