@@ -390,7 +390,7 @@ $\mu$ and $\Sigma$ as unrelated (i.e. knowing $\mu$ places no
 constraints on $\Sigma$, and vice-versa).  On the other hand, in many
 settings it is plausible that $\mu$ and $\Sigma$ are related via
 a *mean-variance relationship*.  A common form of mean-variance
-relatoinship is${\rm diag}(\Sigma) \propto \mu$.  In a Poisson
+relationship is ${\rm diag}(\Sigma) \propto \mu$.  In a Poisson
 distribution ${\rm diag}(\Sigma) = \mu$, so the constant of
 proportionality is $1$.  In a broader class of
 settings we may have *over-dispersion* or *under-dispersion*, meaning that
