@@ -376,16 +376,18 @@ identifies vectors $b$ such that $b^\prime E[X|y]$ has high variance relative to
 
 ## Correspondence Analysis
 
-If $X$ and $Y$ are random vectors with mean $\mu$ and
+Correspondence analysis is an embedding approach that aims to
+represent *chi-square distances* in the data space as Euclidean
+distances for visualization.  The Chi-square metric is defined
+as follows:
+if $X, Y \in {\cal R}^p$ are random vectors with mean
+$EX = EY = \mu$ and covariance
 ${\rm cov}(X) = {\rm cov}(Y) = {\rm diag}(\mu)$, then the (squared)
 chi-square distance from $X$ to the mean is
 $(X-\mu)^T{\rm diag}(\mu)^{-1}(X-\mu)$, and the squared chi-square
 distance between $X$ and $Y$ is $(X-Y)^T{\rm diag}(\mu)^{-1}(X-Y)$.
 
-Correspondence analysis is an embedding approach that aims to
-represent *chi-square distances* in the data space as Euclidean
-distances for visualization.
-The motivation for doing this is that in
+The motivation for embedding using the chi-square metric this is that in
 many settings chi-square distances may be the best approach for
 summarizing the information in the data, especially among the
 objects or observations (the rows of the data matrix), while Euclidean distances are
