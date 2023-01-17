@@ -609,7 +609,11 @@ $$
 [GG^T]_{ii} = q^{-1}n\cdot {\rm var}(P^c_{:,i}).
 $$
 
-Thus, a category point lies further from the origin if the column profiles are not
+It follows that the angle between two category scores, say in columns $i$ and
+$j$ of the Burt matrix, is proportional to the
+correlation coefficient between the column profiles $P^c_i$ and $P^c_j$.
+
+In addition, a category point lies further from the origin if the column profiles are not
 close to being constant vectors.  These are the column profiles that most strongly
 influence the MCA fit.
 
@@ -617,3 +621,7 @@ Combining these observations, two column profiles corresponding to categories of
 different variables that are both far from the origin, and that have a small angle
 correspond to substantially correlated indicator vectors.
 
+Note that the interpretation of the category points in MCA usually focuses
+on the relationships between pairs of categories for different variables.  Comparing
+two categories of the same variable is rarely interesting since these indicators
+are by definition mutually exclusive.
