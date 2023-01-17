@@ -540,14 +540,14 @@ entirely $0$ and $1$, such that $X_{ij}=1$ if and only if the value of
 the nominal variable for case $i$ is equal to level $j$.
 Correspondence analysis as defined above can be used to analyze this
 indicator matrix, revealing how the objects and categories are
-related.
+related.  Note that in this case $r = 1_n$ and $W_r = I_n$.
 
 An important extension of CA is *Multiple Correspondence Analysis*, in
 which we have several nominal variables.  In this case, we recode each
 nominal variable with its own indicator matrix, and then concatenate
 these matrices horizontally.  If there are $p_j$ levels for variable
 $j$, and we set $p = \sum_j p_j$, then the concatenated indicator
-matrix is $n\times p$.  We then apply CA to this concatenated
+matrix (the *Burt matrix*) is $n\times p$.  We then apply CA to this concatenated
 indicator matrix, yielding insights into the relationships among the
 objects, and relationships among levels of different variables.
 
@@ -580,11 +580,12 @@ $$
 GG^T = W_c^{-1/2}VSSV^TW_c^{-1/2} = W_c^{-1}(P - rc^T)^TW_r^{-1}(P - rc^T)W_c^{-1}.
 $$
 
-In most applications of MCA, $W_r = n^{-1}I_n$, so a single element of
+In most applications of MCA, $W_r = qI_n$, where $q$ is the number
+of variables.  Therefore, a single element of
 this matrix has the simpler form
 
 $$
-[GG^T]_{ij} = n(P^c_{:,i} - r)^T(P^c_{:,j} - r).
+[GG^T]_{ij} = q^{-1}(P^c_{:,i} - r)^T(P^c_{:,j} - r).
 $$
 
 Note that $\bar{P}^c_{:,i} = 1/n$ for each $i$, and $r \equiv 1/n$,
