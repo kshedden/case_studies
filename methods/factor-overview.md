@@ -524,7 +524,7 @@ $$
 
 Suppose for simplicity that $W_r \propto I_n$.
 Since $W_c/n = {\rm diag}(c/n)$, where $c/n$ is the mean
-of the rows of $P$, it follows that $\\|F_{i,:} - F_{j,:} \\|$ is
+of the rows of $P^r$, it follows that $\\|F_{i,:} - F_{j,:} \\|$ is
 $n^{-1}$ times the squared chi-square distance between $P^r_{i,:}$ and $P^r_{j,:}$.  Thus,
 the rows of $F$ embed the rows of $P^r$ as desired.  Applying the same
 argument to $X^T$ shows that the rows of $G$ embed the columns of
