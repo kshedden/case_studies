@@ -378,7 +378,7 @@ identifies vectors $b$ such that $b^\prime E[X|y]$ has high variance relative to
 
 Correspondence analysis is an embedding approach that aims to
 represent *chi-square distances* in the data space as Euclidean
-distances for visualization.  The Chi-square metric is defined
+distances for visualization.  The chi-square metric is defined
 as follows:
 if $X, Y \in {\cal R}^p$ are random vectors with mean
 $EX = EY = \mu$ and covariance
@@ -388,11 +388,14 @@ $(X-\mu)^T{\rm diag}(\mu)^{-1}(X-\mu)$, and the squared chi-square
 distance between $X$ and $Y$ is $(X-Y)^T{\rm diag}(\mu)^{-1}(X-Y)$.
 
 The motivation for embedding using the chi-square metric this is that in
-many settings chi-square distances may be the best approach for
-summarizing the information in the data, especially among the
-objects or observations (the rows of the data matrix), while Euclidean distances are
+many settings chi-square distances may best represent
+information in the data, while Euclidean distances are
 arguably the best approach for producing visualizations for human
-interpretation.
+interpretation.  As discussed further below, the chi-square metric
+is especially appropriate for understanding relationships among the
+objects or observations (the rows of the data matrix), which often can be
+viewed as an independent and identically distributed collection of
+draws from a multivariate distribution.
 
 ### Mean/variance relationships
 
@@ -430,11 +433,7 @@ represented in an $n\times p$ matrix $X$ whose rows are the cases
 (observations) and columns are the variables.  Correspondence analysis
 can be applied when each $X_{ij} \ge 0$, and where it makes sense to
 compare any two rows or any two columns of $X$ using chi-square
-distance.  Let $P \equiv X/N$, where $N = \sum_{ij} X_{ij}$.  The
-primary goal of MCA is to embed $P$ into *row scores* $F$ and *column scores* $G$,
-where $F$ is an $n\times p$ array and $G$ is a $p\times p$ array, and
-the embedding respects chi-square distances.
-
+distance.  Let $P \equiv X/N$, where $N = \sum_{ij} X_{ij}$.
 We introduce the following notation: let $P_{i,:}$, $F_{i,:}$, and
 $G_{i,:}$ denote row $i$ of the arrays $P$, $F$, and $G$ respectively,
 let $r \equiv P\cdot 1_p$ (the row sums of $P$) and $c = P^T\cdot 1_n$
@@ -445,6 +444,12 @@ Then let $P^r \equiv W_r^{-1}\cdot P$ denote the *row profiles* of
 $P$, which are simply the rows of $P$ (or of $X$) normalized by their
 sum.  Analogously, let $P^c \equiv P\cdot W_c^{-1}$ denote the *column
 profiles* of $P$ (or of $X$).
+
+The
+primary goal of MCA is to embed the row profiles $P^r$ into *row scores* $F$ and
+the column profiles $P^c$ into *column scores* $G$,
+where $F$ is an $n\times p$ array and $G$ is a $p\times p$ array, and
+both embeddings respect chi-square distances.
 
 In many cases, the row sums will be approximately equal, so $W_r \propto 1_n$
 and this matrix can effectively be ignored.  However it is very unlikely
