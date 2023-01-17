@@ -434,15 +434,15 @@ represented in an $n\times p$ matrix $X$ whose rows are the cases
 can be applied when each $X_{ij} \ge 0$, and where it makes sense to
 compare any two rows or any two columns of $X$ using chi-square
 distance.  Let $P \equiv X/N$, where $N = \sum_{ij} X_{ij}$.
-We introduce the following notation: let $P_{i,:}$, $F_{i,:}$, and
-$G_{i,:}$ denote row $i$ of the arrays $P$, $F$, and $G$ respectively,
-let $r \equiv P\cdot 1_p$ (the row sums of $P$) and $c = P^T\cdot 1_n$
-(the column sums of $P$), and let
+We introduce the following notation: let $P_{i,:}$
+denote row $i$ of $P$,
+let $r \equiv P\cdot 1_p$ denote the row sums of $P$, and let $c = P^T\cdot 1_n$
+denote the column sums of $P$.  Also, let
 $W_r = {\rm diag}(r)\in {\cal R}^{n\times n}$ and
 $W_c = {\rm diag}(c) \in {\cal R}^{p\times p}$.
-Then let $P^r \equiv W_r^{-1}\cdot P$ denote the *row profiles* of
+Then $P^r \equiv W_r^{-1}\cdot P$ are the *row profiles* of
 $P$, which are simply the rows of $P$ (or of $X$) normalized by their
-sum.  Analogously, let $P^c \equiv P\cdot W_c^{-1}$ denote the *column
+sum.  Analogously, $P^c \equiv P\cdot W_c^{-1}$ are the *column
 profiles* of $P$ (or of $X$).
 
 The
