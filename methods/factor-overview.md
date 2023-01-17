@@ -551,17 +551,29 @@ matrix (the *Burt matrix*) is $n\times p$.  We then apply CA to this concatenate
 indicator matrix, yielding insights into the relationships among the
 objects, and relationships among levels of different variables.
 
-Note that in MCA applied to a collection of nominal variables,
+Note that in the special case where MCA is applied to a collection of nominal variables,
 the Burt matrix $X$ has the property that every row
 sums to $q$ (where $q$ is the number of nominal variables).
 Thus every row of $P = X/(nq)$ sums to $1/n$ and the column means
-of $P^c$ are also $1/n$, since
+of $P^c$ are also all equal to $1/n$, since
 
 $$
 \bar{P}^c = n^{-1}1_n^\prime PQ_c^{-1} = n^{-1}1_p^T.
 $$
 
 ### Angles and magnitudes of category scores
+
+In many applications of CA and MCA, the rows are viewed as an IID
+sample from a distribution, and the variables of this distribution
+exhibit a Poisson mean/variance relationship.  This motivates
+embedding the row profiles $P^r$ derived from the data matrix
+$X$ using chi-square distances.  However the argument for embedding
+the columns (variables) using the chi-square metric is less clear
+(although it is true that MCA achieves this embedding).  A more
+interpretable embedding of the column profiles may be based on
+covariances and correlations rather than chi-square distances.
+Here we show that MCA also achieves a column embedding with this
+interpretation.
 
 Above we discussed how the Euclidean distances between the rows of $G$
 correspond to the chi-square distances between the columns of $P^c$.
