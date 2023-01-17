@@ -600,13 +600,20 @@ $\bar{P}^c_{:,i} = 1/n$ for each $i$, and $r = n^{-1}1_n$.
 Therefore, a single element of the Gram matrix has the form
 
 $$
-[GG^T]_{ij} = q^{-1}(P^c_{:,i} - r)^T(P^c_{:,j} - r) = q^{-1}n{\rm cov}(P^c_{:,i}, P^c_{:,j}).
+[GG^T]_{ij} = q^{-1}(P^c_{:,i} - r)^T(P^c_{:,j} - r) = q^{-1}n\cdot {\rm cov}(P^c_{:,i}, P^c_{:,j}).
 $$
 
-,
-therefore, $P^c_{:,i} - r$ has average value zero and can be
-interpreted as a vector of deviations (residuals) of each variable
-from its mean.  The dot product between two such vectors is the
-covariance among category profiles (up to a scale factor) that captures whether two indicators
-tend to co-occur within observations.
+The diagonal elements of the Gram matrix
+
+$$
+[GG^T]_{ii} = q^{-1}n\cdot {\rm var}(P^c_{:,i}).
+$$
+
+Thus, a category point lies further from the origin if the column profiles are not
+close to being constant vectors.  These are the column profiles that most strongly
+influence the MCA fit.
+
+Combining these observations, two column profiles corresponding to categories of
+different variables that are both far from the origin, and that have a small angle
+correspond to substantially correlated indicator vectors.
 
