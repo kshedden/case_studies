@@ -570,7 +570,7 @@ embedding the row profiles $P^r$ derived from the data matrix
 $X$ using chi-square distances.  However the argument for embedding
 the columns (variables) using the chi-square metric is less clear
 (although it is true that MCA achieves such an embedding).  A more
-interpretable embedding of the column profiles may be based on
+interpretable embedding of the column profiles is based on
 covariances and correlations rather than on chi-square distances.
 Here we show that MCA also achieves a column embedding that can be
 interpreted in terms of covariances and correlations.
@@ -603,14 +603,15 @@ $$
 [GG^T]_{ij} = q^{-1}(P^c_{:,i} - r)^T(P^c_{:,j} - r) = q^{-1}n\cdot {\rm cov}(P^c_{:,i}, P^c_{:,j}).
 $$
 
-The diagonal elements of the Gram matrix
+The diagonal elements of the Gram matrix are proportional to the variances of the column
+profiles:
 
 $$
 [GG^T]_{ii} = q^{-1}n\cdot {\rm var}(P^c_{:,i}).
 $$
 
-It follows that the angle between two category scores, say in columns $i$ and
-$j$ of the Burt matrix, is proportional to the
+It follows that the angle between two category profiles, say in columns $i$ and
+$j$, is proportional to the
 correlation coefficient between the column profiles $P^c_i$ and $P^c_j$.
 
 In addition, a category point lies further from the origin if the column profiles are not
@@ -618,7 +619,7 @@ close to being constant vectors.  These are the column profiles that most strong
 influence the MCA fit.
 
 Combining these observations, two column profiles corresponding to categories of
-different variables that are both far from the origin, and that have a small angle
+different variables that are both far from the origin, and that have a small angle,
 correspond to substantially correlated indicator vectors.
 
 Note that the interpretation of the category points in MCA usually focuses
