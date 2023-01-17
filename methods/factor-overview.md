@@ -376,7 +376,7 @@ identifies vectors $b$ such that $b^\prime E[X|y]$ has high variance relative to
 
 ## Correspondence Analysis
 
-Correspondence analysis is an embedding approach that aims to
+Correspondence analysis (CA) is an embedding approach that aims to
 represent *chi-square distances* in the data space as Euclidean
 distances for visualization.  The chi-square metric is defined
 as follows:
@@ -386,10 +386,14 @@ ${\rm cov}(X) = {\rm cov}(Y) = {\rm diag}(\mu)$, then the (squared)
 chi-square distance from $X$ to the mean is
 $(X-\mu)^T{\rm diag}(\mu)^{-1}(X-\mu)$, and the squared chi-square
 distance between $X$ and $Y$ is $(X-Y)^T{\rm diag}(\mu)^{-1}(X-Y)$.
+As discussed further below, correspondence analysis arises most
+naturally when working with nominal (categorical) variables, but
+there are some situations where it makes sense to apply CA when
+the data are not nominal.
 
 The motivation for embedding using the chi-square metric this is that in
 many settings chi-square distances may best represent
-information in the data, while Euclidean distances are
+information in the data, while Euclidean distances and angles are
 arguably the best approach for producing visualizations for human
 interpretation.  As discussed further below, the chi-square metric
 is especially appropriate for understanding relationships among the
@@ -451,7 +455,7 @@ the column profiles $P^c$ into *column scores* $G$,
 where $F$ is an $n\times p$ array and $G$ is a $p\times p$ array, and
 both embeddings respect chi-square distances.
 
-In many cases, the row sums will be approximately equal, so $W_r \propto 1_n$
+In many cases, the row sums will be approximately constant, so $W_r \propto 1_n$
 and this matrix can effectively be ignored.  However it is very unlikely
 that $W_c \propto 1_p$, and in fact the inhomogeneity in $c$ is the
 key feature in the data that motivates use of MCA.
