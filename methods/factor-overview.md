@@ -575,9 +575,10 @@ covariances and correlations rather than on chi-square distances.
 Here we show that MCA also achieves a column embedding with this
 interpretation.
 
-We focus here on the angles among the category scores (or specifically, the
-angles between the vectors from the origin to each embedded category
-point).  The angle $\theta$ between two vectors $v$, $w$ satisfies
+The angle between two embedded category points is an easily intepreted
+visual feature of the plot of category embeddings (in practice usually
+restricted to the dominant two components).
+The angle $\theta$ between two vectors $v$, $w$ satisfies
 
 $$
 \langle v, w\rangle = \\|v\\| \cdot \\|w\\| \cdot \cos(\theta).
@@ -585,7 +586,7 @@ $$
 
 Therefore, to understand the angles among the embedded categories, we
 should consider the Gram matrix $GG^T$ containing inner products of
-every category embedding with every other category embedding.
+every pair of embedded category points.
 
 The matrix $GG^T$ has the following relationship to the data in $P$:
 
@@ -604,6 +605,6 @@ $$
 Note that $\bar{P}^c_{:,i} = 1/n$ for each $i$, and $r = n^{-1}1_n$,
 therefore, $P^c_{:,i} - r$ has average value zero and can be
 interpreted as a vector of deviations (residuals) of each variable
-from its mean.  The dot product between two such vectors is a type of
-covariance (up to a scale factor) that captures whether two indicators
+from its mean.  The dot product between two such vectors is the
+covariance among category profiles (up to a scale factor) that captures whether two indicators
 tend to co-occur within observations.
