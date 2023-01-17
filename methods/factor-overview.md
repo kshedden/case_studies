@@ -144,7 +144,8 @@ $$
 S_{ij} \approx \sum_{k=1}^q S_{kk} U_{ik}V_{jk}.
 $$
 
-for $q < p$.  One important property that results from calculating
+for $q < p$ (this approximation holds better when the *tail singular values$
+$S_{q+1,q+1}, \ldots, S_{pp}$ are small.  One important property that results from calculating
 the SVD for a double-centered matrix is that $U_{\cdot k} = 0$ and $V_{\cdot k} = 0$.
 That is, the columns of $U$ and $V$ are centered.  This column centering means
 that the SVD captures "deviations from the mean" represented by the additive
@@ -160,8 +161,8 @@ embedding of $X$ into a lower dimensional space of dimension $q < p$.
 The standard PCA approach gives us an orthogonal matrix $B$ of
 *loadings*, which can be used to produce *scores* denoted $Q$.
 
-For a single vector $X$, the scores are obtained via the mapping $Q(X)
-= B^TX$.  For a data matrix $Z$ whose rows are independent and
+For a single vector $X$, the scores are obtained via the mapping
+$Q(X) = B^TX$.  For a data matrix $Z$ whose rows are independent and
 identically distributed (IID) copies of the random vector $X$, the
 scores can be obtained via the mapping $Q = ZB$, where each row of $Q$
 contains the scores for the corresponding row of $Z$.
@@ -184,9 +185,9 @@ This represents a two-step process of first reducing the dimension,
 then predicting the original data using the reduced data.  Among all
 possible loading matrices $B$, the PCA loading matrix loses the least
 information in that it minimizes the expected value of
-$\|X - \hat{X}\|$.
+$\\|X - \hat{X}\\|$.
 
-The loading matrix $B$ used in PCA is the eigenvector matrix of
+The loading matrix $B$ used in PCA is a truncated eigenvector matrix of
 $\Sigma$.  Specifically, we can write $\Sigma = B\Lambda B^T$, where
 $B$ is an orthogonal matrix and $\Lambda$ is a diagonal matrix with
 $\Lambda_{11} \ge \Lambda_{22} \ge \cdots \ge \Lambda_{pp} > 0$.  This
@@ -387,10 +388,12 @@ Let $X \in {\cal R}^p$ be a random vector with mean $\mu \ge 0$ and
 covariance matrix $\Sigma$.  In some cases, it is reasonable to view
 $\mu$ and $\Sigma$ as unrelated (i.e. knowing $\mu$ places no
 constraints on $\Sigma$, and vice-versa).  On the other hand, in many
-settings it is plausible that $\mu$ and $\Sigma$ are related in that
-${\rm diag}(\Sigma) \propto \mu$.  Specifically in a Poisson
-distribution ${\rm diag}(\Sigma) = \mu$, but in a broader class of
-settings we may have over-dispersion or under-dispersion, meaning that
+settings it is plausible that $\mu$ and $\Sigma$ are related via
+a *mean-variance relationship*.  A common form of mean-variance
+relatoinship is${\rm diag}(\Sigma) \propto \mu$.  In a Poisson
+distribution ${\rm diag}(\Sigma) = \mu$, so the constant of
+proportionality is $1$.  In a broader class of
+settings we may have *over-dispersion* or *under-dispersion*, meaning that
 $\Sigma_{ii} = c\cdot \mu_i$, where $c>1$ or $c<1$ for over and
 under-dispersion, respectively.
 
@@ -402,8 +405,9 @@ Specifically the (squared) chi-square distance from $X$ to the mean is
 $(X-\mu)^T{\rm diag}(\mu)^{-1}(X-\mu)$, and the squared chi-square
 distance between two random vectors $X$ and $Y$ having the same mean
 $\mu$ is $(X-Y)^T{\rm diag}(\mu)^{-1}(X-Y)$.  If $\Sigma$ is a
-diagonal matrix, the chi-square distance is also the *Mahalanobis
-distance*, which is arguably the proper way to measure distances among
+diagonal matrix, the chi-square distance is also the
+[Mahalanobis distance](https://en.wikipedia.org/wiki/Mahalanobis_distance),
+which is arguably the proper way to measure distances among
 vectors whose components have differing variances.
 
 Suppose we have $n$ observations on $p$ variables, and the data are
