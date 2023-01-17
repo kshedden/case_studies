@@ -513,12 +513,12 @@ $$
 $$
 
 $$
-(P^r_i - P^r_j)^TW_c^{-1}(P^r_i - P^r_j).
+(P^r_i - P^r_j)^TW_c^{-1}(P^r_i - P^r_j) = n^{-1}(P^r_i - P^r_j)^T(W_c/n)^{-1}(P^r_i - P^r_j).
 $$
 
-Since $W_c = {\rm diag}(c)$, where $c$ is proportional to the mean
-of the rows of $P$, it follows that $\\|F_{i,:} - F_{j,:} \\|$ is an estimate of
-the chi-square distance between $P^r_{i,:}$ and $P^r_{j,:}$.  Thus,
+Since $W_c/n = {\rm diag}(c/n)$, where $c/n$ is the mean
+of the rows of $P$, it follows that $\\|F_{i,:} - F_{j,:} \\|$ is
+$n^{-1}$ times the chi-square distance between $P^r_{i,:}$ and $P^r_{j,:}$.  Thus,
 the rows of $F$ embed the rows of $P^r$ as desired.  Applying the same
 argument to $X^T$ shows that the rows of $G$ embed the columns of
 $P^c$, also reflecting chi-square distances.
