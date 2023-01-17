@@ -477,7 +477,7 @@ above.
 First, note that since $V$ is orthogonal
 
 $$
-\\|F_{i,:} - F_{j,:}\| = \|(F_{i,:} - F_{j,:})V^T\\|.
+\\|F_{i,:} - F_{j,:}\\| = \\|(F_{i,:} - F_{j,:})V^T\\|.
 $$
 
 Therefore,
@@ -498,7 +498,7 @@ of $\mu$, it follows that $\\|F_{i,:} - F_{j,:} \\|$ is an estimate of
 the chi-square distance between $P^r_{i,:}$ and $P^r_{j,:}$.  Thus,
 the rows of $F$ embed the rows of $P^r$ as desired.  Applying the same
 argument to $X^T$ shows that the rows of $G$ embed the columns of
-$P^c$.
+$P^c$, also reflecting chi-square distances.
 
 ### Correspondence analysis and Multiple Correspondence analysis for nominal data
 
