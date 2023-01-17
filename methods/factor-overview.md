@@ -30,7 +30,7 @@ e.g. in hypothesis testing.
 
 An embedding approach is linear if $Z = BX$ for a fixed
 $q\times p$ matrix $B$.  The matrix $B$ may be based on training
-data, in which case the embedding is *adaptive*  In other settings
+data, in which case the embedding is *adaptive*.  In other settings
 $B$ is completely independent of any data and the embedding is
 *non-adaptive*.
 Linear embedding algorithms
@@ -86,13 +86,14 @@ having been *double centered*.
 Many embedding methods make use of a matrix factorization known as the
 *Singular Value Decomposition* (SVD).  The SVD is defined for any
 $n\times p$ matrix $X$.  In most cases we want $n \ge p$, and if $n < p$
-we would take the SVD of $X^T$ instead of $X$.  When $n\ge p$, we
+we can take the SVD of $X^T$.  When $n\ge p$, we
 decompose $X$ as $X = USV^T$, where $U$ is $n\times p$, $S$ is
 $p\times p$, and $V$ is $p\times p$.  The matrices $U$ and $V$ are
 orthogonal so that $U^TU = I_p$, $V^TV = I_p$, and $S$ is diagonal
 with $S_{11} \ge S_{22} \ge \cdots \ge S_{pp}$.  The values on the
 diagonal of $S$ are the *singular values* of $S$, and the SVD is
-unique except when there are ties among the singular values.
+unique except when there are ties among the singular values or if
+one or more of the singular values are zero.
 
 One use of the SVD is to obtain a low rank approximation to a matrix
 $X$.  Suppose we truncate the SVD using only the first $k$ components,
@@ -101,7 +102,10 @@ leading (left-most) $k$ columns of $U$, $\tilde{S}$ is the upper-left
 $k\times k$ block of $S$, and $V$ is the $p\times k$ matrix consisting
 of the leading $k$ columns of $V$.  In this case, the matrix
 $\tilde{X} \equiv \tilde{U}\tilde{S}\tilde{V}^T$ is a rank $k$ matrix
-(it has $k$ non-zero singular values).  Among all rank $k$ matrices,
+(it has $k$ non-zero singular values).
+According to the
+[Eckart-Young](https://en.wikipedia.org/wiki/Low-rank_approximation)
+theorem, among all rank $k$ matrices,
 $\tilde{X}$ is the closest matrix to $X$ in the *Frobenius norm*,
 which is defined as
 
