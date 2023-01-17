@@ -554,7 +554,12 @@ objects, and relationships among levels of different variables.
 Note that in MCA applied to a collection of nominal variables,
 the Burt matrix $X$ has the property that every row
 sums to $q$ (where $q$ is the number of nominal variables).
-Thus every row of $P = X/(nq)$ sums to $1/n$.
+Thus every row of $P = X/(nq)$ sums to $1/n$ and the column means
+of $P^c$ are also $1/n$, since
+
+$$
+\bar{P}^c = n^{-1}1_n^\prime PQ_c^{-1} = n^{-1}1_p^T.
+$$
 
 ### Angles and magnitudes of category scores
 
