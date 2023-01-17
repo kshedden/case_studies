@@ -401,11 +401,12 @@ under-dispersion, respectively.
 
 In any setting where the variance is proportional to the mean, it is
 reasonable to compare vectors using chi-square distances.
-Specifically the (squared) chi-square distance from $X$ to the mean is
+Specifically if $X$ and $Y$ are random vectors with mean $\mu$ and
+${\rm cov}(X) = {\rm cov}(Y) = {\rm diag}(\mu)$, then the (squared)
+chi-square distance from $X$ to the mean is
 $(X-\mu)^T{\rm diag}(\mu)^{-1}(X-\mu)$, and the squared chi-square
-distance between two random vectors $X$ and $Y$ having the same mean
-$\mu$ is $(X-Y)^T{\rm diag}(\mu)^{-1}(X-Y)$.  If $\Sigma$ is a
-diagonal matrix, the chi-square distance is also the
+distance between $X$ and $Y$ is $(X-Y)^T{\rm diag}(\mu)^{-1}(X-Y)$.
+If $\Sigma$ is a diagonal matrix, the chi-square distance is also the
 [Mahalanobis distance](https://en.wikipedia.org/wiki/Mahalanobis_distance),
 which is arguably the proper way to measure distances among
 vectors whose components have differing variances.
@@ -415,9 +416,10 @@ represented in an $n\times p$ matrix $X$ whose rows are the cases
 (observations) and columns are the variables.  Correspondence analysis
 can be applied when each $X_{ij} \ge 0$, and where it makes sense to
 compare any two rows or any two columns of $X$ using chi-square
-distance.  Let $P \equiv X/N$, where $N = \sum_{ij} X_{ij}$.  The goal
-is to transform $P$ into *row scores* $F$ and *column scores* $G$,
-where $F$ is an $n\times p$ array and $G$ is a $p\times p$ array.
+distance.  Let $P \equiv X/N$, where $N = \sum_{ij} X_{ij}$.  The
+primary goal of MCA is to embed $P$ into *row scores* $F$ and *column scores* $G$,
+where $F$ is an $n\times p$ array and $G$ is a $p\times p$ array, and
+the embedding respects chi-square distances.
 
 ### Goals of MCA
 
