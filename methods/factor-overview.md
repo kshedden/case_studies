@@ -420,6 +420,8 @@ $$
 The chi-square distance is a special case of the Mahalanobis distance
 in which $\Sigma = {\rm diag}(\mu)$.
 
+### Goals of MCA
+
 Suppose we have $n$ observations on $p$ variables, and the data are
 represented in an $n\times p$ matrix $X$ whose rows are the cases
 (observations) and columns are the variables.  Correspondence analysis
@@ -429,8 +431,6 @@ distance.  Let $P \equiv X/N$, where $N = \sum_{ij} X_{ij}$.  The
 primary goal of MCA is to embed $P$ into *row scores* $F$ and *column scores* $G$,
 where $F$ is an $n\times p$ array and $G$ is a $p\times p$ array, and
 the embedding respects chi-square distances.
-
-### Goals of MCA
 
 We introduce the following notation: let $P_{i,:}$, $F_{i,:}$, and
 $G_{i,:}$ denote row $i$ of the arrays $P$, $F$, and $G$ respectively,
