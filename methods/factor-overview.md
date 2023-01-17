@@ -387,7 +387,8 @@ represent *chi-square distances* in the data space as Euclidean
 distances for visualization.
 The motivation for doing this is that in
 many settings chi-square distances may be the best approach for
-summarizing the information in the data, while Euclidean distances are
+summarizing the information in the data, especially among the
+objects or observations (the rows of the data matrix), while Euclidean distances are
 arguably the best approach for producing visualizations for human
 interpretation.
 
@@ -451,10 +452,13 @@ $P^r_{j,:}$.  Also, for any $1 \le i,j \le p$ the Euclidean distance
 from $G_{i,:}$ to $G_{j,:}$ is equal to the chi-square distance from
 $P^c_{:,i}$ to $P^c_{:,j}$.  Thus, $F$ provides an embedding of the
 rows of $P^r$ and $G$ provides an embedding of the columns of $P^c$.
+These embeddings map chi-square distances in the data space to
+Euclidean distances in the embedded space.
 
 * The columns of $F$ and $G$ are ordered in terms of importance.
 Specifically, if we select $1 \le q \le p$ then the Euclidean distance
-from $F_{i,1:q}$ to $F_{j,1:q}$ is approximately equal to the
+from $F_{i,1:q}$ to $F_{j,1:q}$ is the best possible $q$-dimensional
+approximation to the
 chi-square distance from $P_{i,:}$ to $P_{j,:}$.  Note that if $q=p$
 then the approximation becomes exact, but for $q < p$ the approximation
 is inexact.
@@ -479,9 +483,15 @@ $$
 W_r^{-1/2}(P - rc^T)W_c^{-1/2} = USV^T.
 $$
 
-Now let $F = W_r^{-1/2}US$ and $G = W_c^{-1/2}VS$.  We now show that
+Now let $F = W_r^{-1/2}US$ and $G = W_c^{-1/2}VS$.  We show that
 this specification of $F$ and $G$ satisfies the conditions stated
-above.
+above.  Specifically, we will show that the rows of $F$ embed the
+objects (the rows of $X$), converting chi-square distances among
+the rows of $X$ to Euclidean distances among the rows of $F$.
+If we make a scatterplot of the points $(F_{i1}, F_{i2})$, then
+the Euclidean distances among these points approximate the
+chi-square distances among the rows of $X$, providing a meaningful
+Euclidean embeding of the rows of $X$.
 
 First, note that since $V$ is orthogonal
 
@@ -506,8 +516,8 @@ $$
 (P^r_i - P^r_j)^TW_c^{-1}(P^r_i - P^r_j).
 $$
 
-Since $W_c = {\rm diag}(\hat{\mu})$, where $\hat{\mu}$ is an estimate
-of $\mu$, it follows that $\\|F_{i,:} - F_{j,:} \\|$ is an estimate of
+Since $W_c = {\rm diag}(c)$, where $c$ is proportional to the mean
+of the rows of $P$, it follows that $\\|F_{i,:} - F_{j,:} \\|$ is an estimate of
 the chi-square distance between $P^r_{i,:}$ and $P^r_{j,:}$.  Thus,
 the rows of $F$ embed the rows of $P^r$ as desired.  Applying the same
 argument to $X^T$ shows that the rows of $G$ embed the columns of
@@ -532,8 +542,7 @@ these matrices horizontally.  If there are $p_j$ levels for variable
 $j$, and we set $p = \sum_j p_j$, then the concatenated indicator
 matrix is $n\times p$.  We then apply CA to this concatenated
 indicator matrix, yielding insights into the relationships among the
-objects, the relationships between different levels of a single
-variable, and relationships among levels of different variables.
+objects, and relationships among levels of different variables.
 
 Suppose we are mainly interested in the relationships among the
 variables, and we use the scatterplot of variable scores to address
