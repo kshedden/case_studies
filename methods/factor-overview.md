@@ -522,7 +522,7 @@ $$
 (P^r_i - P^r_j)^TW_c^{-1}(P^r_i - P^r_j) = n^{-1}(P^r_i - P^r_j)^T(W_c/n)^{-1}(P^r_i - P^r_j).
 $$
 
-Suppose for simplicity that $W_r \proption I_n$.
+Suppose for simplicity that $W_r \propto I_n$.
 Since $W_c/n = {\rm diag}(c/n)$, where $c/n$ is the mean
 of the rows of $P$, it follows that $\\|F_{i,:} - F_{j,:} \\|$ is
 $n^{-1}$ times the squared chi-square distance between $P^r_{i,:}$ and $P^r_{j,:}$.  Thus,
