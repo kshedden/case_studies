@@ -444,6 +444,11 @@ $P$, which are simply the rows of $P$ (or of $X$) normalized by their
 sum.  Analogously, let $P^c \equiv P\cdot W_c^{-1}$ denote the *column
 profiles* of $P$ (or of $X$).
 
+In many cases, the row sums will be approximately equal, so $W_r \propto 1_n$
+and this matrix can effectively be ignored.  However it is very unlikely
+that $W_c \propto 1_p$, and in fact the inhomogeneity in $c$ is the
+key feature in the data that motivates use of MCA.
+
 Our goals are as follows:
 
 * For any $1 \le i, j \le n$, the Euclidean distance from $F_{i,:}$ to
@@ -452,7 +457,8 @@ $P^r_{j,:}$.  Also, for any $1 \le i,j \le p$ the Euclidean distance
 from $G_{i,:}$ to $G_{j,:}$ is equal to the chi-square distance from
 $P^c_{:,i}$ to $P^c_{:,j}$.  Thus, $F$ provides an embedding of the
 rows of $P^r$ and $G$ provides an embedding of the columns of $P^c$.
-These embeddings map chi-square distances in the data space to
+These embeddings map chi-square distances in the data space (specifically,
+the space of row profiles or column profiles) to
 Euclidean distances in the embedded space.
 
 * The columns of $F$ and $G$ are ordered in terms of importance.
@@ -516,9 +522,10 @@ $$
 (P^r_i - P^r_j)^TW_c^{-1}(P^r_i - P^r_j) = n^{-1}(P^r_i - P^r_j)^T(W_c/n)^{-1}(P^r_i - P^r_j).
 $$
 
+Suppose for simplicity that $W_r \proption I_n$.
 Since $W_c/n = {\rm diag}(c/n)$, where $c/n$ is the mean
 of the rows of $P$, it follows that $\\|F_{i,:} - F_{j,:} \\|$ is
-$n^{-1}$ times the chi-square distance between $P^r_{i,:}$ and $P^r_{j,:}$.  Thus,
+$n^{-1}$ times the squared chi-square distance between $P^r_{i,:}$ and $P^r_{j,:}$.  Thus,
 the rows of $F$ embed the rows of $P^r$ as desired.  Applying the same
 argument to $X^T$ shows that the rows of $G$ embed the columns of
 $P^c$, also reflecting chi-square distances.
