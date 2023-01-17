@@ -116,7 +116,7 @@ $$
 Thus we have
 
 $$
-\tilde{X} = {\rm argmin}_{A: {\rm rank}(A) = k} \|A - X\|_F.
+\tilde{X} = {\rm argmin}_{A: {\rm rank}(A) = k} \\|A - X\\|_F.
 $$
 
 ### Analyzing a data matrix using the SVD
@@ -128,7 +128,9 @@ $$
 X_{ij} = m + r_i + c_j + S_{ij}.
 $$
 
-Here, $S_{ij} \equiv X_{ij} - m - r_i - c_j$ are residuals.  Next we can
+Here, $m$ is the grand mean of $X$, $r$ contains the row means of $X-m$,
+$c$ contains the column means of $X-m$, and
+$S_{ij} \equiv X_{ij} - m - r_i - c_j$ are residuals.  Next we can
 take the SVD of $S$, yielding $S = USV^T$, or equivalently
 
 $$
@@ -136,7 +138,13 @@ S_{ij} = \sum_{k=1}^p S_{kk} U_{ik}V_{jk}.
 $$
 
 Although there are $p$ terms in the SVD of $S$, the first few terms may capture
-most of the structure.  One important property that results from calculating
+most of the structure, so
+
+$$
+S_{ij} \approx \sum_{k=1}^q S_{kk} U_{ik}V_{jk}.
+$$
+
+for $q < p$.  One important property that results from calculating
 the SVD for a double-centered matrix is that $U_{\cdot k} = 0$ and $V_{\cdot k} = 0$.
 That is, the columns of $U$ and $V$ are centered.  This column centering means
 that the SVD captures "deviations from the mean" represented by the additive
