@@ -453,7 +453,7 @@ is inexact.
 ### Derivation of the algorithm
 
 The array $P - rc^T$ is a doubly-centered array of residuals,
-in that $1_n^T(P - rc^T) = 0_p$, and $(P - rc^T)1_p = 0_n$.
+since $1_n^T(P - rc^T) = 0_p$, and $(P - rc^T)1_p = 0_n$.
 We can further standardize these residuals by scaling the rows
 and columns by their respective standard deviations (taking the
 variance to be proportional to the mean).  This gives us the
@@ -477,19 +477,19 @@ above.
 First, note that since $V$ is orthogonal
 
 $$
-\|F_{i,:} - F_{j,:}\| = \|(F_{i,:} - F_{j,:})V^T\|.
+\\|F_{i,:} - F_{j,:}\| = \|(F_{i,:} - F_{j,:})V^T\\|.
 $$
 
 Therefore,
 
 $$
-\|F_{i,:} - F_{j,:}\|^2 =
-\|r_i^{-1/2}U_{i,:}S - r_j^{-1/2}U_{j,:}S\|^2 =
-\|r_i^{-1}(P_{i,:} - r_ic^T)W_c^{-1/2} - r_j^{-1}(P_{j,:} - r_jc^T)W_c^{-1/2}\|^2 =
+\\|F_{i,:} - F_{j,:}\\|^2 =
+\\|r_i^{-1/2}U_{i,:}S - r_j^{-1/2}U_{j,:}S\\|^2 =
+\\|r_i^{-1}(P_{i,:} - r_ic^T)W_c^{-1/2} - r_j^{-1}(P_{j,:} - r_jc^T)W_c^{-1/2}\\|^2 =
 $$
 
 $$
-\|r_i^{-1}P_{i,:}W_c^{-1/2} - r_j^{-1}P_{j,:}W_c^{-1/2}\|^2 =
+\\|r_i^{-1}P_{i,:}W_c^{-1/2} - r_j^{-1}P_{j,:}W_c^{-1/2}\\|^2 =
 (P_{i,:}/r_i - P_{j,:}/r_j)^TW_c^{-1}(P_{i,:}/r_i - P_{j,:}/r_j).
 $$
 
