@@ -551,15 +551,10 @@ matrix (the *Burt matrix*) is $n\times p$.  We then apply CA to this concatenate
 indicator matrix, yielding insights into the relationships among the
 objects, and relationships among levels of different variables.
 
-Suppose we are mainly interested in the relationships among the
-variables, and we use the scatterplot of variable scores to address
-this.  Every category of every variable will have a point in this
-scatterplot.  The main interest is in learning about how a category of
-one variable relates to a category of another (different) variable.
-As noted above, the distances between these points can be interpreted
-in terms of chi-square distances, but it is also informative to
-consider the magnitudes of, and angles among the vectors from the
-origin to each point defined by the category scores.
+Note that in MCA applied to a collection of nominal variables,
+the Burt matrix $X$ has the property that every row
+sums to $q$ (where $q$ is the number of nominal variables).
+Thus every row of $P = X/(nq)$ sums to $1/n$.
 
 ### Angles and magnitudes of category scores
 
@@ -588,7 +583,7 @@ $$
 [GG^T]_{ij} = q^{-1}(P^c_{:,i} - r)^T(P^c_{:,j} - r).
 $$
 
-Note that $\bar{P}^c_{:,i} = 1/n$ for each $i$, and $r \equiv 1/n$,
+Note that $\bar{P}^c_{:,i} = 1/n$ for each $i$, and $r = n^{-1}1_n$,
 therefore, $P^c_{:,i} - r$ has average value zero and can be
 interpreted as a vector of deviations (residuals) of each variable
 from its mean.  The dot product between two such vectors is a type of
