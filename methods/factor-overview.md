@@ -499,7 +499,11 @@ $$
 
 $$
 \\|r_i^{-1}P_{i,:}W_c^{-1/2} - r_j^{-1}P_{j,:}W_c^{-1/2}\\|^2 =
-(P_{i,:}/r_i - P_{j,:}/r_j)^TW_c^{-1}(P_{i,:}/r_i - P_{j,:}/r_j).
+(P_{i,:}/r_i - P_{j,:}/r_j)^TW_c^{-1}(P_{i,:}/r_i - P_{j,:}/r_j) =
+$$
+
+$$
+(P^r_i - P^r_j)^TW_c^{-1}(P^r_i - P^r_j).
 $$
 
 Since $W_c = {\rm diag}(\hat{\mu})$, where $\hat{\mu}$ is an estimate
