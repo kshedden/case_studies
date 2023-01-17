@@ -572,8 +572,8 @@ the columns (variables) using the chi-square metric is less clear
 (although it is true that MCA achieves such an embedding).  A more
 interpretable embedding of the column profiles may be based on
 covariances and correlations rather than on chi-square distances.
-Here we show that MCA also achieves a column embedding with this
-interpretation.
+Here we show that MCA also achieves a column embedding that can be
+interpreted in terms of covariances and correlations.
 
 The angle between two embedded category points is an easily intepreted
 visual feature of the plot of category embeddings (in practice usually
@@ -595,16 +595,18 @@ GG^T = W_c^{-1/2}VSSV^TW_c^{-1/2} = W_c^{-1}(P - rc^T)^TW_r^{-1}(P - rc^T)W_c^{-
 $$
 
 In most applications of MCA, $W_r = qI_n$, where $q$ is the number
-of variables.  Therefore, a single element of
-this matrix has the simpler form
+of variables.  Further, as noted above
+$\bar{P}^c_{:,i} = 1/n$ for each $i$, and $r = n^{-1}1_n$.
+Therefore, a single element of the Gram matrix has the form
 
 $$
-[GG^T]_{ij} = q^{-1}(P^c_{:,i} - r)^T(P^c_{:,j} - r).
+[GG^T]_{ij} = q^{-1}(P^c_{:,i} - r)^T(P^c_{:,j} - r) = q^{-1}n{\rm cov}(P^c_{:,i}, P^c_{:,j}).
 $$
 
-Note that $\bar{P}^c_{:,i} = 1/n$ for each $i$, and $r = n^{-1}1_n$,
+,
 therefore, $P^c_{:,i} - r$ has average value zero and can be
 interpreted as a vector of deviations (residuals) of each variable
 from its mean.  The dot product between two such vectors is the
 covariance among category profiles (up to a scale factor) that captures whether two indicators
 tend to co-occur within observations.
+
