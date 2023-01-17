@@ -376,40 +376,47 @@ identifies vectors $b$ such that $b^\prime E[X|y]$ has high variance relative to
 
 ## Correspondence Analysis
 
+If $X$ and $Y$ are random vectors with mean $\mu$ and
+${\rm cov}(X) = {\rm cov}(Y) = {\rm diag}(\mu)$, then the (squared)
+chi-square distance from $X$ to the mean is
+$(X-\mu)^T{\rm diag}(\mu)^{-1}(X-\mu)$, and the squared chi-square
+distance between $X$ and $Y$ is $(X-Y)^T{\rm diag}(\mu)^{-1}(X-Y)$.
+
 Correspondence analysis is an embedding approach that aims to
 represent *chi-square distances* in the data space as Euclidean
-distances for visualization.  The motivation for doing this is that in
+distances for visualization.
+The motivation for doing this is that in
 many settings chi-square distances may be the best approach for
 summarizing the information in the data, while Euclidean distances are
 arguably the best approach for producing visualizations for human
 interpretation.
 
+### Mean/variance relationships
+
 Let $X \in {\cal R}^p$ be a random vector with mean $\mu \ge 0$ and
-covariance matrix $\Sigma$.  In some cases, it is reasonable to view
-$\mu$ and $\Sigma$ as unrelated (i.e. knowing $\mu$ places no
+covariance matrix $\Sigma$.  In some cases,
+$\mu$ and $\Sigma$ are unrelated (i.e. knowing $\mu$ places no
 constraints on $\Sigma$, and vice-versa).  On the other hand, in many
 settings it is plausible that $\mu$ and $\Sigma$ are related via
 a *mean-variance relationship*.  A common form of mean-variance
-relationship is ${\rm diag}(\Sigma) \propto \mu$.  In a Poisson
-distribution ${\rm diag}(\Sigma) = \mu$, so the constant of
+relationship is ${\rm diag}(\Sigma) \propto \mu$.  A particular
+example is the Poisson
+distribution where ${\rm diag}(\Sigma) = \mu$, so the constant of
 proportionality is $1$.  In a broader class of
 settings we may have *over-dispersion* or *under-dispersion*, meaning that
 $\Sigma_{ii} = c\cdot \mu_i$, where $c>1$ or $c<1$ for over and
 under-dispersion, respectively.
 
-### Mean/variance relationships
+When comparing two random vectors $X$, $Y$ sharing covariance matrix
+$\Sigma$, it is reasonable to use the
+[Mahalanobis distance](https://en.wikipedia.org/wiki/Mahalanobis_distance)
 
-In any setting where the variance is proportional to the mean, it is
-reasonable to compare vectors using chi-square distances.
-Specifically if $X$ and $Y$ are random vectors with mean $\mu$ and
-${\rm cov}(X) = {\rm cov}(Y) = {\rm diag}(\mu)$, then the (squared)
-chi-square distance from $X$ to the mean is
-$(X-\mu)^T{\rm diag}(\mu)^{-1}(X-\mu)$, and the squared chi-square
-distance between $X$ and $Y$ is $(X-Y)^T{\rm diag}(\mu)^{-1}(X-Y)$.
-If $\Sigma$ is a diagonal matrix, the chi-square distance is also the
-[Mahalanobis distance](https://en.wikipedia.org/wiki/Mahalanobis_distance),
-which is arguably the proper way to measure distances among
-vectors whose components have differing variances.
+$$
+d(X, Y)^2 = (X-Y)^T\Sigma^{-1}(X-Y).
+$$
+
+The chi-square distance is a special case of the Mahalanobis distance
+in which $\Sigma = {\rm diag}(\mu)$.
 
 Suppose we have $n$ observations on $p$ variables, and the data are
 represented in an $n\times p$ matrix $X$ whose rows are the cases
