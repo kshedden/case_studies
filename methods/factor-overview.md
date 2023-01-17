@@ -393,7 +393,9 @@ interpretation.
 
 ### Mean/variance relationships
 
-Let $X \in {\cal R}^p$ be a random vector with mean $\mu \ge 0$ and
+To better understand the motivation for using chi-square distances
+to measure distances in the data space, let $X \in {\cal R}^p$ be
+a random vector with mean $\mu \ge 0$ and
 covariance matrix $\Sigma$.  In some cases,
 $\mu$ and $\Sigma$ are unrelated (i.e. knowing $\mu$ places no
 constraints on $\Sigma$, and vice-versa).  On the other hand, in many
