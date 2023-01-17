@@ -569,22 +569,23 @@ exhibit a Poisson mean/variance relationship.  This motivates
 embedding the row profiles $P^r$ derived from the data matrix
 $X$ using chi-square distances.  However the argument for embedding
 the columns (variables) using the chi-square metric is less clear
-(although it is true that MCA achieves this embedding).  A more
+(although it is true that MCA achieves such an embedding).  A more
 interpretable embedding of the column profiles may be based on
-covariances and correlations rather than chi-square distances.
+covariances and correlations rather than on chi-square distances.
 Here we show that MCA also achieves a column embedding with this
 interpretation.
 
-Above we discussed how the Euclidean distances between the rows of $G$
-correspond to the chi-square distances between the columns of $P^c$.
-Another insight into the geometry of MCA can be obtained my
-considering the angles among the category scores (or specifically, the
+We focus here on the angles among the category scores (or specifically, the
 angles between the vectors from the origin to each embedded category
-point).  The angle between two vectors is the dot product between the
-vectors, divided by the product of the norms of the vectors.
+point).  The angle $\theta$ between two vectors $v$, $w$ satisfies
+
+$$
+\langle v, w\rangle = \\|v\\| \cdot \\|w\\| \cdot \cos(\theta).
+$$
+
 Therefore, to understand the angles among the embedded categories, we
 should consider the Gram matrix $GG^T$ containing inner products of
-every category score with every other category score.
+every category embedding with every other category embedding.
 
 The matrix $GG^T$ has the following relationship to the data in $P$:
 
