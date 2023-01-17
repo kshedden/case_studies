@@ -171,8 +171,8 @@ $$ Q \rightarrow B_{:,1:q}Q \equiv \hat{X}.  $$
 This represents a two-step process of first reducing the dimension,
 then predicting the original data using the reduced data.  Among all
 possible loading matrices $B$, the PCA loading matrix loses the least
-information in that it minimizes the expected value of $\|X -
-\hat{X}\|$.
+information in that it minimizes the expected value of
+$\|X - \hat{X}\|$.
 
 The loading matrix $B$ used in PCA is the eigenvector matrix of
 $\Sigma$.  Specifically, we can write $\Sigma = B\Lambda B^T$, where
@@ -206,8 +206,8 @@ $$
 $$
 
 Thus, $\hat{\Sigma}V = VS^2/n$, so $V$ contains the eigenvectors of
-$\hat{\Sigma}$ and the corresponding eigenvalues are in ${\rm
-diag}(S^2)/n$.
+$\hat{\Sigma}$ and the corresponding eigenvalues are in
+${\rm diag}(S^2)/n$.
 
 ### Principal Components Regression
 
@@ -408,8 +408,9 @@ where $F$ is an $n\times p$ array and $G$ is a $p\times p$ array.
 We introduce the following notation: let $P_{i,:}$, $F_{i,:}$, and
 $G_{i,:}$ denote row $i$ of the arrays $P$, $F$, and $G$ respectively,
 let $r \equiv P\cdot 1_p$ (the row sums of $P$) and $c = P^T\cdot 1_n$
-(the column sums of $P$), and let $W_r = {\rm diag}(r)\in {\cal
-R}^{n\times n}$ and $W_c = {\rm diag}(c) \in {\cal R}^{p\times p}$.
+(the column sums of $P$), and let
+$W_r = {\rm diag}(r)\in {\cal R}^{n\times n}$ and
+$W_c = {\rm diag}(c) \in {\cal R}^{p\times p}$.
 Then let $P^r \equiv W_r^{-1}\cdot P$ denote the *row profiles* of
 $P$, which are simply the rows of $P$ (or of $X$) normalized by their
 sum.  Analogously, let $P^c \equiv P\cdot W_c^{-1}$ denote the *column
