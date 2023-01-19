@@ -87,7 +87,7 @@ for _ in 1:10
 end
 
 # Demonstrate that people with different object scores tend to have
-# similar values on the analysis variables.
+# dissimilar values on the analysis variables.
 for _ in 1:10
     jj = sample(1:1000)
     jj = [jj, length(ii) - jj]
@@ -129,5 +129,6 @@ for k in 1:size(dx, 2)
     PyPlot.clf()
     PyPlot.title(vn)
     PyPlot.boxplot(z, labels=u)
+    PyPlot.gca().set_ylabel("Component 1 object score")
     PyPlot.savefig("obj_scores_$(vn).pdf")
 end
