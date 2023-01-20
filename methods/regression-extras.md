@@ -1,6 +1,6 @@
 # Additional regression topics
 
-This document covers several topics that are relevant for most kinds
+This document covers several topics that are relevant for many kinds
 of regression analysis.
 
 ## Basis functions
@@ -36,8 +36,7 @@ estimation, while allowing the model for the conditional mean function
 to be non-linear in the covariates.
 
 Including powers of covariates (like $x^2$) as regressors is a method
-known as *polynomial regression*, and is now seen
-as a somewhat problematic approach.  But it may be the earliest example
+known as *polynomial regression* may be the earliest example
 of a general technique utilizing *basis functions* to incorporate nonlinearity
 into regression analyses.  A family of basis
 functions is a collection of functions $g_1, g_2, \ldots$, each from
@@ -51,9 +50,8 @@ allow non-linear mean structures to be fit to data using linear
 estimation techniques.
 
 While the basis function approach is very powerful, some families of
-basis functions have undesirable properties.  As noted above,
-polynomial basis functions ($x^2$, etc.) are no longer widely used.
-One reason for this is that polynomial functions can be badly scaled
+basis functions have less desirable properties.
+For example, polynomial basis functions ($x^2$, etc.) can be badly scaled
 (e.g. this happens when raising a large number to a high power).
 Also, polynomial basis functions can be highly colinear with each
 other, depending on the range of the data.  Finally, polynomial basis
@@ -63,7 +61,7 @@ $(x_i, y_i)$ where $x_i$ is far from $x$.
 
 _Local basis functions_ are families of functions such that each
 element in the family has limited support (that is, the functions are
-exactly zero outside of an interval).  One of the most popular forms
+exactly zero outside of a fairly small interval).  One of the most popular forms
 of local basis functions is _splines_, specifically, _polynomial
 splines_.  Roughly speaking, a polynomial spline is a continuous and
 somewhat smooth function that has bounded support, and is a piecewise
@@ -73,7 +71,7 @@ that they have a finite number of continuous derivatives (often the
 function, and its first and second derivative are continuous, but the
 third and higher-order derivative are not continuous).
 
-Other popular families of basis functions used in various settings are
+Other popular families of basis functions are
 wavelets, Fourier series, radial basis functions, and
 higher-dimensional basis functions formed via tensor products of
 univariate basis functions such as splines.
