@@ -308,8 +308,9 @@ $$
 \sum_i h_c(r_i/\hat{\phi})^2 = k\cdot (n-p),
 $$
 
-where $h_c(x) = x\cdot I_{|x| \le c} + c\cdot \textrm{sign}(x)\cdot
-I_{|x| > c}$.  The value of $c$ is a tuning parameter, often set to
+where
+$h_c(x) = x\cdot I_{|x| \le c} + c\cdot \textrm{sign}(x)\cdot I_{|x| > c}$.
+The value of $c$ is a tuning parameter, often set to
 $c=1.345$.  The value of $k$ is set to a value so that if the $r_i$
 are Gaussian, the estimate of $\hat{\phi}$ coincides with the
 population variance.
