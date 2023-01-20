@@ -40,9 +40,9 @@ known as *polynomial regression*, and is now seen
 as a somewhat problematic approach.  But it may be the earliest example
 of a general technique utilizing *basis functions* to incorporate nonlinearity
 into regression analyses.  A family of basis
-functions is a collection of functions $g_1, g_2, \ldots$, each from ${\cal
-R}\rightarrow {\cal R}$, such that we can include $g_1(x), g_2(x),
-\ldots$ as covariates in a model in place of $x$.  This allows the
+functions is a collection of functions $g_1, g_2, \ldots$, each from
+${\cal R}\rightarrow {\cal R}$, such that we can include
+$g_1(x), g_2(x), \ldots$ as covariates in a model in place of $x$.  This allows the
 fitted mean function to take on any form that can be represented as a
 linear combination $\beta_1 g_1(x) + \beta_2 g_2(x) + \cdots$.  Using
 a large collection of basis functions allows a wide range of
@@ -337,8 +337,8 @@ in interactions).
 
 If the covariates are centered, and we work with the mean structure
 $E[y] = \beta_1x_1 + \beta_2x_2 + \beta_3x_1x_2$, then $\beta_1$ is
-the rate at which $E[y]$ changes as $x_1$ changes, as long as $x_2
-\approx 0$.  Similarly, $\beta_2$ is the rate at which $E[y]$ changes
+the rate at which $E[y]$ changes as $x_1$ changes, as long as
+$x_2 \approx 0$.  Similarly, $\beta_2$ is the rate at which $E[y]$ changes
 as $x_2$ changes, as long as $x_1 \approx 0$.  Roughly speaking, when
 $x_1$ and $x_2$ are close to their means (which are both zero due to
 centering), then $\beta_1$ and $\beta_2$ can be interpreted like main
