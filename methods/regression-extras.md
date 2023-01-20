@@ -24,14 +24,15 @@ algorithms to compute the estimates.
 
 Linearity in $x$ for fixed $\beta$ is sometimes cited as a weakness of
 this type of model.  People incorrectly argue that models with this
-property are only suitable for systems that behave linearly, and since
+property are only suitable for describgin systems that behave linearly, and since
 most natural and social processes are not linear, such models are
 sometimes claimed to have limited utility.
 
 However the (apparent) linearity of the mean structure model in the
 covariate vector $x$ is easily overcome.  Given a covariate $x$, say a
 person's age, it is possible to include both $x$ and $x^2$ as
-covariates in a "linear" model.  This retains the benefits of linear
+covariates in a "linear" model, using a linear predictor of the form
+$\beta_1 x + \beta_2 x^2$.  This retains the benefits of linear
 estimation, while allowing the model for the conditional mean function
 to be non-linear in the covariates.
 
@@ -51,7 +52,7 @@ estimation techniques.
 
 While the basis function approach is very powerful, some families of
 basis functions have less desirable properties.
-For example, polynomial basis functions ($x^2$, etc.) can be badly scaled
+For example, polynomial basis functions can be badly scaled
 (e.g. this happens when raising a large number to a high power).
 Also, polynomial basis functions can be highly colinear with each
 other, depending on the range of the data.  Finally, polynomial basis
@@ -86,7 +87,7 @@ coefficiencts for ${\rm age}$ and for ${\rm age}^2$).  There are many
 ways to resolve this using plots.  For example, if we have a model
 relating BMI to age and sex, and we use basis functions to capture a
 non-linear role for age, we can make a plot showing the fitted values
-of $E[{\rm BMI} \, | \, {\rm age}, {\rm sex}]$ plotted against age,
+of $E[{\rm BMI} | {\rm age}, {\rm sex}]$ plotted against age,
 for each sex.
 
 Using splines or other families of basis functions is a very powerful
@@ -110,9 +111,7 @@ analysis.
 A *transformation* in statistics refers to any setting in which a
 function $f$ is applied to a variable being analyzed.  It is easy to
 apply transformations, and there are many principled reasons for
-transforming data.  But it is difficult to come up with a generally
-applicable justification to use when applying transformations in a
-broad range of settings.
+transforming data.
 
 In regression analysis, transformations can be applied to the
 dependent variable $y$, to one or more of the independent variables
@@ -138,7 +137,7 @@ It is sometimes mistakenly believed that the dependent variable $y$ in
 a linear model should marginally follow a symmetric or (even stronger)
 a Gaussian distribution.  In general however, the marginal
 distribution of $y$ is irrelevant in regression analysis.  In a linear
-model, we might like the "errors" $y - E[y|x]$ to be approximately
+model, we might like the unexplained variation ("errors") $y - E[y|x]$ to be approximately
 symmetrically-distributed.  This can be assessed with a histogram of
 the residuals, or with a plot of residuals on fitted values.  But the
 marginal distribution of $y$, e.g. as assessed with a histogram of
@@ -150,7 +149,7 @@ GLM's are often a useful alternative to transforming variables.  A GLM
 models the mean function $E[y|x]$ using a link function g, so that
 $g(E[y|x]) = \beta^\prime x$.  This is not a transformation, as the
 data themselves are not transformed.  A GLM has distinct mean and
-variance functions, providing much more flexibility in specifying the
+variance functions, providing great flexibility in specifying the
 model.  The conditional mean and conditional variance can be specified
 independently to best fit a particular population.
 
@@ -187,26 +186,7 @@ $$
 By linearization,
 $\log(y_1) - \log(y) = \log(1 + (y_1-y)/y) \approx (y_1 - y)/y$,
 and $\log(1+q) \approx q$.  Therefore we have
-$(y_1 - y)/y \approx q\beta_1$.  If the relationship is non-stochastic, as in
-a regression model, then the we would start with
-
-$$
-E[\log(y) | x] = \beta_0 +\beta_1\log(x),
-$$
-
-and using the first order approximation
-
-$$
-E[\log(y) |x] \approx \log E[y|x],
-$$
-
-the analogous result
-
-$$
-(E[\log(y) |x_1] - E[\log(y)|x])/E[\log(y)|x] \approx q\beta
-$$
-
-is obtained.
+$(y_1 - y)/y \approx q\beta_1$.
 
 ## Categorical variables
 
@@ -216,14 +196,14 @@ ordinal variables have an ordering, but there is no precise
 quantitative meaning to the levels of the variable beyond the
 ordering.  For example, country of birth (US, China, Canada) is a
 nominal variable, whereas if someone is asked to state their views
-regarding a policy as "negative", "neutral", or "positive", this can
-be seen as being ordinal.
+regarding a policy as being "negative", "neutral", or "positive", then
+this can be seen as being ordinal.
 
 In a regression analysis, quantitative, semi-quantitative, and ordinal
 variables can be modeled directly, e.g.  by including an additive term
 $\beta x$ in a regression.  Alternatively, we can use basis functions
 or transformed versions of $x$ to construct a more flexible model.  A
-purely nominal variable cannot be included directly in a regression,
+nominal variable cannot be included directly in a regression,
 as it must be "coded".  The usual way of doing this is to select one
 level of the variable as the _reference level_, and then create
 "dummy" or "indicator" variables for each of the other levels.  For
@@ -240,12 +220,11 @@ There are other ways to code nominal variables in a regression, but
 the "reference category" approach described above is by far the most
 common, and is the default in most packages.  In fact, all standard
 coding schemes are equivalent via linear change of variables, so we
-are essentially fitting the same model regardless of which coding
+are fitting the same model regardless of which coding
 scheme is chosen.
 
-It can be a challenge in practice to interpret the coefficients
-corresponding to dummy variables.  They must be interpreted in light
-of the coding scheme.  If the standard reference scheme is used, then
+Regression coefficients for dummy variables must be interpreted in light
+of the coding scheme.  If the standard reference category scheme is used, then
 the coefficients are interpreted as contrasts between one
 non-reference category and the reference category.  For example, in
 the example given above, the regression coefficient for $z_1$ captures
@@ -269,7 +248,7 @@ $$
 E[y] = g_1(x_1) + \cdots + g_p(x_p),
 $$
 
-where the $g_j$ are functions.  Models of the form given above can be
+where the $g_j$ are functions.  Models of the second form given above can be
 estimated using a framework called "GAM" (Generalized Additive
 Models).
 
@@ -279,7 +258,7 @@ values of the other covariates.  For example, in the GAM, if we
 observe $x_1$ to change from $a$ to $b$, then the expected value of
 $y$ changes by $g_1(b) - g_1(a)$.  This change is universal in the
 sense that its value does not depend on the values of the other
-covariates ($x_2, \ldots x_p$).
+covariates $x_2, \ldots x_p$.
 
 An *interaction* arises when the difference of means resulting from a
 change in one covariate is not invariant to the values of the other
@@ -368,8 +347,7 @@ large standard errors for the main effects, or to settings where
 models converge slowly or not at all.  Often these convergence
 problems can be easily resolved by centering variables.
 
-If the covariates are not centered, it is common that people
-misinterpret the estimates of main effects.  In general, main effects
+It is important to note that main effects
 have no meaningful interpretation if interactions are present and the
 covariates are not centered.  For example, suppose that $y$ is blood
 pressure, $x_1$ is body mass index (BMI), and $x_2$ equals 1 for
