@@ -362,10 +362,12 @@ One useful example of a GLM fit using quasi-likelihood is
 "quasi-Poisson" regression, which results from using Poisson
 regression, but allowing the scale parameter $\phi$ to take on values
 other than 1. In a quasi-Poisson regression, the variance is equal to
-$\phi$ times the mean, i.e.  ${\rm Var}(Y|X=x) = \phi\cdot E(Y|X=x) =
-\phi\exp(\beta^\prime x)$.  Conducting Poisson regression in a setting
-where we suspect that the variance structure ${\rm Var}(Y|X=x) =
-\phi\cdot E(Y|X=x)$ holds for $\phi \ne 1$ is an appropriate way to
+$\phi$ times the mean, i.e.
+${\rm Var}(Y|X=x) = \phi\cdot E(Y|X=x) = \phi\exp(\beta^\prime x)$.
+Conducting Poisson regression in a setting
+where we suspect that the variance structure
+${\rm Var}(Y|X=x) = \phi\cdot E(Y|X=x)$
+holds for $\phi \ne 1$ is an appropriate way to
 estimate the mean structure parameters $\beta$, but it is not maximum
 likelihood.  This procedure is justified under the quasi-likelihood
 theory for GLMs.
