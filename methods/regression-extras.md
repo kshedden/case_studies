@@ -120,8 +120,8 @@ $x_j$, or to both the independent and dependent variables
 simultaneously.  One reason for transforming the data is to induce it
 to fit into a pre-existing regression framework.  For example,
 ordinary least squares (OLS) is most efficient when the conditional
-mean $E[y|x]$ is linear in $x$, and the conditional variance ${\rm
-Var}[y|x]$ is constant.  Sometimes, applying a transformation such as
+mean $E[y|x]$ is linear in $x$, and the conditional variance
+${\rm Var}[y|x]$ is constant.  Sometimes, applying a transformation such as
 replacing $y$ with $\log(y)$ will induce linearity of the mean
 structure and homoscedasticity of the variance structure.  However
 achieving linearity of $E[y|x]$ and achieving homoscedasticity
