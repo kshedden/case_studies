@@ -480,8 +480,9 @@ $$
 \int_0^\mu (y - u)/V(u) du
 $$
 
-is the antiderivative of $\partial \mu/\partial \beta \cdot (y - \mu)
-/ V(\mu)$.  Therefore, this expression can be seen as providing a
+is the antiderivative of
+$\partial \mu/\partial \beta \cdot (y - \mu) / V(\mu)$.  Therefore,
+this expression can be seen as providing a
 concrete quasi-likelihood that exhibits the mean and variance
 structures we have chosen to fit to our data.  This has been used to
 produce quasi-likelihood counterparts to important concepts from
