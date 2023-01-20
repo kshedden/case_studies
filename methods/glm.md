@@ -555,22 +555,23 @@ obtained in a GLM fit, but the standard errors will be different.
 any two observations in the same cluster are correlated at level
 $\rho$, which is a parameter to be estimated from the data.  The
 correlation model is
-$R_i(\alpha) = alpha\cdot 1_{n_i\times n_i} + (1-\alpha)\cdot I_{n_i\times n_i}$.
+$R_i(\alpha) = \alpha\cdot 1_{n_i\times n_i} + (1-\alpha)\cdot I_{n_i\times n_i}$.
 
 * _Autoregressive_: In an autoregressive working correlation
 structure, the observations within a cluster are ordered, and the
-correlation between observations $i$ and $j$ is $\rho^{|i-j|}$, where
-$\rho$ is a parameter to be estimated from the data.
+correlation between observations $j$ and $k$ within cluster $i$
+is $R_i(j,k) = \alpha^{|j-k|}$, where
+$\alpha$ is a parameter to be estimated from the data.
 
 * _Stationary_: In a stationary working correlation structure, the
 observations within a cluster are ordered, and the correlation between
 cases $i$ and $j$ is $\rho_{|i-j|}$ if $|i-j|\le m$, and the two cases
-are uncorrelated otherwise. The values of $\rho_1, \ldots, \rho_m$ are
+are uncorrelated otherwise. The values of $\alpha=(\rho_1, \ldots, \rho_m)$ are
 estimated from the data, and $m$ is a tuning parameter.
 
 The algorithm for fitting a GEE alternates between updating the
 estimate of $\beta$, and updating the estimates of any correlation
-parameters such as $\rho$.  It is a quasi-likelihood approach, so has
+parameters $\alpha$.  It is a quasi-likelihood approach, so has
 many robustness properties such as being robust to mis-specification
 of the variance structure, and of the correlation structure.  Note
 that it remains a requirement for observations in different groups to
