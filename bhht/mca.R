@@ -2,7 +2,10 @@ library(dplyr)
 library(FactoMineR)
 library(readr)
 
-da = read_csv("cross-verified-database.csv.gz")
+# Change this as needed to point to the directory holding the data file.
+pa = "/home/kshedden/mynfs/data/Teaching/bhht"
+
+da = read_csv(file.path(pa, "cross-verified-database.csv.gz"))
 da = rename(da, "occ"="level1_main_occ")
 da = rename(da, "reg"="un_region")
 da = rename(da, "sex"="gender")

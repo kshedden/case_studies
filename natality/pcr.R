@@ -11,8 +11,8 @@ pdf("pcr_r.pdf")
 
 # Calculate the mean and variance within each county to
 # assess the mean/variance relationship.
-mv = group_by(births, FIPS) %>% summarize(births_mean=mean(Births), births_var=var(Births))
-mv = mutate(mv, log_births_mean=log(births_mean), log_births_var=log(births_var))
+mv = births %>% group_by(FIPS) %>% summarize(births_mean=mean(Births), births_var=var(Births))
+mv = mv %>% mutate(log_births_mean=log(births_mean), log_births_var=log(births_var))
 
 # Plot the variance against the mean on the log/log scale to assess the mean/variance
 # relationship.
@@ -25,7 +25,7 @@ mmv = lm(log_births_var ~ log_births_mean, data=mv)
 # Merge the birth data with population and RUCC data
 da = merge(births, pop, on="FIPS", how="left")
 da = merge(da, rucc, on="FIPS", how="left")
-da = mutate(da, logPop = log(da$Population))
+da = da %>% mutate(logPop = log(da$Population))
 
 # Basic GLM looking at births in terms of population and urbanicity.
 # This model does not account for correlations between repeated
@@ -47,14 +47,14 @@ r3 = geeglm(Births ~ RUCC_2013, data=da, id=FIPS, family=Gamma(link="log"), offs
 # each county.
 
 # First replace missing demographic values with 0.
-demog = mutate(demog, across(where(anyNA), ~ replace_na(., 0)))
+demog = demog %>% mutate(across(where(anyNA), ~ replace_na(., 0)))
 
 # Use a square root transformation to variance-stabilize the counts.
 demog[,2:dim(demog)[2]] = sqrt(demog[,2:dim(demog)[2]])
 
 # Get factors from the demographic data
 va = colnames(demog)[2:dim(demog)[2]]
-demog = mutate_at(demog, va, scale, scale=FALSE)
+demog = demog %>% mutate_at(va, scale, scale=FALSE)
 sv = svd(demog[,2:dim(demog)[2]])
 
 # The proportion of variance explained by each factor.
