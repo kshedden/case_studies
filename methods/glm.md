@@ -245,8 +245,9 @@ The value of $V(\cdot)$ must be either explicitly or implicitly
 specified when fitting a GLM.  However it turns out that $V(\cdot)$
 only needs to be the correct variance function up to an unknown
 constant multiplier.  That is, as long as the true conditional
-variance can be represented in the form $\textrm{Var}(Y|X=x) =
-\phi\cdot V(\mu)$, where $\phi \ge 0$ is a constant, then we can still
+variance can be represented in the form
+$\textrm{Var}(Y|X=x) = \phi\cdot V(\mu)$, where $\phi \ge 0$
+is a constant, then we can still
 estimate $\beta$ with good theoretical guarantees.
 
 When working with binary data, the variance is completely determined
