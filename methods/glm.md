@@ -528,6 +528,9 @@ are structured.  Formally, $R_i(\alpha)$ is the $n_i\times n_i$ working
 correlation matrix for cluster $i$.  The vector $\alpha$ contains parameters
 that determine the correlation structure.
 
+The mean structure parameters $\beta$ are estimated by solving the
+following estimating equations
+
 $$
 \sum_i \partial \mu_i/\partial \beta \cdot V(\mu_i)^{-1/2}R_i(\alpha)^{-1}V(\mu_i)^{-1/2}(y_i - \mu_i) = 0.
 $$
