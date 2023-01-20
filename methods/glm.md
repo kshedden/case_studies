@@ -59,13 +59,13 @@ $$
 If instead of a linear link we have a log link function, then the case
 with the greater value of $x_1$ will be expected to have a response
 that is $\exp(\beta_1)$ times greater than the case with the lower
-value of $x_1$, equivalently
+value of $x_1$:
 
 $$
 E[Y|X_1=x_1+1, X_2=x_2] / E[Y|X_1=x_1, X_2=x_2] = \exp(\beta_1).
 $$
 
-__Variance functions:__ GLM's specify a variance function $V(\cdot)$
+__Variance functions:__ GLM's specify a condfitional variance function $V(\cdot)$
 as well as a mean function.  For a basic GLM, the variance function
 has the form
 
@@ -91,11 +91,12 @@ models are:
 
 * _Gaussian linear model_: In the standard (canonical) Gaussian GLM,
 $E[Y|X=x]$ is the linear predictor, which means that $g$ is the
-identity function, and the variance function is constant, $V(\mu) =
-1$.  The scale parameter $\phi$ is identical to the usual "error
+identity function, and the variance function is constant,
+$V(\mu) = 1$.  The scale parameter $\phi$ is identical to the usual "error
 variance" $\sigma^2$ in a linear model.  This is equivalent to using
-maximum likelihood estimation to fit the model in which $P(Y|X=x) =
-N(\beta_0 +\beta_1x_1 +\cdots \beta_px_p, \sigma^2)$, where $N(\mu, \sigma^2)$
+maximum likelihood estimation to fit the model in which
+$P(Y|X=x) = N(\beta_0 +\beta_1x_1 +\cdots \beta_px_p, \sigma^2)$,
+where $N(\mu, \sigma^2)$
 is the normal distribution with mean $\mu$ and variance $\sigma^2$.
 
 * _Poisson log-linear model_: In the canonical Poisson GLM,
@@ -103,13 +104,14 @@ $\log(E[Y|X=x])$ is equal to the linear predictor, which means that
 $g$ is the logarithm function.  The variance function is the identity
 function $V(\mu) = \mu$.  The scale parameter is fixed at $\phi=1$.  This is
 equivalent to using maximum likelihood estimation to fit the model in
-which $P(Y|X=x)$ is parameterized as a Poisson PMF with mean $\exp(\beta_0 + \beta_1x_1
-+\cdots+ \beta_px_p)$.
+which $P(Y|X=x)$ is parameterized as a Poisson PMF with mean
+$\exp(\beta_0 + \beta_1x_1+\cdots+ \beta_px_p)$.
 
 When viewed in terms of parameterized probability distributions, a GLM
 can be seen as indexing an infinite family of distributions through
 the covariate vector $x$.  That is, in a Poisson GLM, $P(Y|X=x)$ is
-Poisson for every $x$, but with a different mean value in each case.
+Poisson for every $x$, but with a different mean value (and variance)
+in each case.
 
 Note that a GLM describes a collection of conditional distributions,
 $P(Y|X=x)$, for different values of $x$.  A GLM (like any regression
@@ -135,9 +137,10 @@ non-negative response variables.  The main GLM family that is used
 with data that can take on both positive and negative values is the
 Gaussian family.
 
-Other than the Gaussian/linear model, all of the GLM's discussed here most commonly use the logarithm as the
-link function, so the mean structure model is $E[Y|X=x] =
-\exp(\beta^\prime x)$, although alternative link functions are
+Other than the Gaussian/linear model, all of the GLM's discussed
+here most commonly use the logarithm as the
+link function, so the mean structure model is
+$E[Y|X=x] = \exp(\beta^\prime x)$, although alternative link functions are
 possible, giving rise to different mean structures.
 
 The _negative binomial_ GLM can be seen as an extension of the Poisson
