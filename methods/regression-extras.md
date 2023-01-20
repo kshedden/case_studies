@@ -186,9 +186,10 @@ $$
 \log(y_1) - \log(y) = \beta_1\log(1+q).
 $$
 
-By linearization, $\log(y_1) - \log(y) = \log(1 + (y_1-y)/y) \approx
-(y_1 - y)/y$, and $\log(1+q) \approx q$.  Therefore we have $(y_1 -
-y)/y \approx q\beta_1$.  If the relationship is non-stochastic, as in
+By linearization,
+$\log(y_1) - \log(y) = \log(1 + (y_1-y)/y) \approx (y_1 - y)/y$,
+and $\log(1+q) \approx q$.  Therefore we have
+$(y_1 - y)/y \approx q\beta_1$.  If the relationship is non-stochastic, as in
 a regression model, then the we would start with
 
 $$
@@ -314,19 +315,19 @@ present, things can get complicated:
 
 * If $x_1$ is categorical and $x_2$ is continuous, then $x_1$ will be
 represented in the model through dummy variables $z_1, \ldots, z_q$.
-The interaction of $x_1$ and $x_2$ is the set of products $x_2z_1,
-x_2z_2, \ldots, x_2z_q$.
+The interaction of $x_1$ and $x_2$ is the set of products
+$x_2z_1, x_2z_2, \ldots, x_2z_q$.
 
 * If $x_1$ and $x_2$ are both categorical, and we represent $x_1$ with
 dummy variables $w_1, \ldots, w_q$, and we represent $x_2$ with dummy
 variables $z_1, \ldots, z_{q^\prime}$, then the interaction is the set
-of all $q \cdot q^\prime$ products $ w_1\cdot z_1, w_1\cdot z_2,
-\ldots, w_2\cdot z_1, w_2\cdot z_2, \ldots, w_q\cdot z_{q^\prime}.$
+of all $q \cdot q^\prime$ products
+$w_1\cdot z_1, w_1\cdot z_2, \ldots, w_2\cdot z_1, w_2\cdot z_2, \ldots, w_q\cdot z_{q^\prime}.$
 
 * If $x_1$ is represented using three basis functions $f_1$, $f_2$,
 and $f_3$, then the interaction of $x_1$ with another continuous
-variable $x_2$ is represented by the terms $ f_1(x_1)\cdot x_2,
-f_2(x_1)\cdot x_2, f_3(x_1)\cdot x_2.$
+variable $x_2$ is represented by the terms
+$f_1(x_1)\cdot x_2, f_2(x_1)\cdot x_2, f_3(x_1)\cdot x_2.$
 
 One challenge that arises when working with interactions is that
 people struggle to interpret the regression parameters (slopes) of the
@@ -350,9 +351,9 @@ $\beta_2 + \beta_3x_1$.
 There is a connection between interactions and derivatives.  The
 "regression effect" of $x_j$ can be defined in very general terms as
 the derivative $d E[y]/dx_j$.  In an additive model, $d E[y]/dx_j$ is
-a constant, i.e. it does not depend on the value of $x_k$ for $k \ne
-j$.  If an interaction between $x_j$ and $x_k$ is present, then $d
-E[y]/dx_j$ will depend on $x_k$.
+a constant, i.e. it does not depend on the value of $x_k$ for
+$k \ne j$.  If an interaction between $x_j$ and $x_k$ is present, then
+$d E[y]/dx_j$ will depend on $x_k$.
 
 There are two main reasons why it is often a good idea to center
 covariates that are to be included in interactions:
