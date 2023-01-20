@@ -319,29 +319,13 @@ population variance.
 ### Variance diagnostics
 
 If we have enough data, it is possible to assess the goodness of fit
-of the working variance model more directly.  Taking the Poisson case
+of the working variance model directly.  Taking the Poisson case
 as an example, we can fit a preliminary Poisson regression, then
 stratify the data into bins based on the fitted values $\hat{y}$ from
-this model.  We then calculate the scale parameter as above, but
-restricting the estimates to the values within individual bins.  These
+this model.  We then estimate the scale parameter within individual
+bins.  If the variance model is correct, these
 estimated scale parameters should be approximately constant with
 respect to the estimated means.
-
-In practice, we build models empirically by adding and removing
-covariates, applying transformations, incorporating interactions, and
-so on.  The estimated scale parameter will vary as we explore
-different models.  It is not necessarily a goal to achieve a model
-with $\phi=1$, meaning that the model's variance structure matches the
-variance of the underlying family (e.g. a Poisson family).  It is
-sometimes better to allow for over or under-dispersion, as long as we
-correctly estimate the variance function and report it as such.
-However it is usually desirable to explain as much of the variation in
-the response variable of a regression as possible, rather than leave
-it as "unexplained variation".  It is often the case that including
-additional covariates in such a model will lead to smaller values of
-the dispersion parameter, and with sufficiently many informative
-covariates, a relationship with $\phi \approx 1$ can be sometimes be
-achieved.
 
 ## GLMs via quasi-likelihood
 
@@ -354,7 +338,7 @@ requirement for attaining good performance with a GLM is that the mean
 structure is (approximately) correct.  An important secondary
 requirement is to have a reasonably accurate model for the conditional
 variance.  Other properties of the distribution (other than the
-conditional mean and variance) are much less important. For example,
+conditional mean and variance) are less important. For example,
 domain constraints can generally be ignored, so a Poisson GLM can be
 fit to data that includes non-integer values, as long as the mean and
 variance models hold.
@@ -412,7 +396,7 @@ matches the Poisson distribution, where $\mu = E[Y|X=x]$.  However it
 is entirely legitimate to specify a non-standard variance function if
 that provides a better fit to the data.  For example, we can fit a
 Poisson regression model with variance function $V(\mu) = \mu^p$, for
-a given value of $p$ suggested by the data.  This is also a quasi-GLM,
+a given value of $p$ suggested by the data.  This is a quasi-GLM,
 since the fitting process is not equivalent to maximum likelihood
 estimation for a model with the specified mean and variance
 structures.
@@ -486,7 +470,7 @@ $\partial \mu/\partial \beta \cdot (y - \mu) / V(\mu)$.  Therefore,
 this expression can be seen as providing a
 concrete quasi-likelihood that exhibits the mean and variance
 structures we have chosen to fit to our data.  This has been used to
-produce quasi-likelihood counterparts to important concepts from
+produce quasi-likelihood counterparts to important quantities from
 likelihood analysis, including AIC, score testing, and log-likelihood
 ratio testing.  Note that the AIC derived from Wedderburn's
 quasi-likelihood is called QIC, and is generally different from the
@@ -513,9 +497,8 @@ from having repeated measures taken over time.
 * Suppose that we consider the number of COVID-19 deaths per day in
 each US county, over the span of several months.  These counts could
 be statistically dependent over time (serial dependence), and could
-also be dependent within states.  That is, there may be short periods
-of time when most states move up or down together, and there may also
-be states that are consistently higher or lower than other states.
+also be dependent within states.  That is,
+all counties within a state may move up or down together.
 
 Note that the data being dependent is mostly a property of the way in
 which the data were collected, rather than being intrinsic to one type
@@ -524,9 +507,9 @@ collected in a cross-sectional study, but is dependent when collected
 in a longitudinal study.
 
 Basic regression analysis focuses on the conditional mean relationship
-$E[Y|X=x]$.  This is essentially a form of "curve fitting".  Modeling
+$E[Y|X=x]$.  Modeling
 multidimensional probability distributions is a much harder task.  The
-goal of GEE is to continue to focus on the conditional mean
+goal of GEE, like GLM, is to focus on the conditional mean
 relationship, while accommodating the presence of statistical
 dependence.
 
@@ -541,9 +524,15 @@ software arranges the data into _clusters_, or _groups_.  Two
 observations in different groups are always independent.  Two
 observations in the same group may be dependent.  The working
 correlation structure is an attempt to specify how these dependencies
-are structured.
+are structured.  Formally, $R_i(\alpha)$ is the $n_i\times n_i$ working
+correlation matrix for cluster $i$.  The vector $\alpha$ contains parameters
+that determine the correlation structure.
 
-As with working variance functions, the working correlation structure
+$$
+\sum_i \partial \mu_i/\partial \beta \cdot V(\mu_i)^{-1/2}R_i(\alpha)^{-1}V(\mu_i)^{-1/2}(y_i - \mu_i) = 0.
+$$
+
+The working correlation structure $R_i(\alpha)$
 does not need to be correct in order to obtain meaningful results.
 The mean structure parameters $\beta$ can be estimated, and standard
 errors can be obtained, even if the working correlation structure is
@@ -555,12 +544,15 @@ some of the most common:
 
 * _Independence_: In the independence working correlation structure,
 all observations are taken to be independent, both within and between
-clusters.  The parameter estimates $\beta$ will be the same as
+clusters, so $R_i(\alpha) = I_{n_i\times n_i}$.  The parameter
+estimates $\beta$ will be the same as
 obtained in a GLM fit, but the standard errors will be different.
 
 * _Exchangeable_: In an exchangeable working correlation structure,
 any two observations in the same cluster are correlated at level
-$\rho$, which is a parameter to be estimated from the data.
+$\rho$, which is a parameter to be estimated from the data.  The
+correlation model is
+$R_i(\alpha) = alpha\cdot 1_{n_i\times n_i} + (1-\alpha)\cdot I_{n_i\times n_i}$.
 
 * _Autoregressive_: In an autoregressive working correlation
 structure, the observations within a cluster are ordered, and the
