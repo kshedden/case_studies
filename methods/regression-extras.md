@@ -419,7 +419,7 @@ $x_1$ and $x_2$, $\beta_3$ is always the coefficient of $x_1x_2$.
 
 $$
 E[y] = \beta_1(x_1-c_1) + \beta_2(x_2-c_2) +
-\beta_3(x_1-c_1)(x_2-c_2)\\ = \beta_3c_1c_2 -\beta_1c_1 - \beta_2c_2
+\beta_3(x_1-c_1)(x_2-c_2) = \beta_3c_1c_2 -\beta_1c_1 - \beta_2c_2
 + (\beta_1 - c_2\beta_3)x_1 + (\beta_2-c_1\beta_3)x_2 + \beta_3x_1x_2.
 $$
 
