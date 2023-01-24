@@ -9,6 +9,7 @@ da = leftjoin(births, pop, on = :FIPS)
 da = leftjoin(da, rucc, on = :FIPS)
 da[:, :logPop] = log.(da[:, :Population])
 da = da[completecases(da), :]
+da = disallowmissing(da)
 
 # Calculate the mean and variance within each county to
 # assess the mean/variance relationship.
@@ -25,7 +26,6 @@ m1 = glm(fml, da, Poisson(), offset=da[:, :logPop])
 
 # Use GEE to account for repeated measures on counties
 m2 = gee(fml, da, da[:, :FIPS], Poisson(), offset=da[:, :logPop])
-error("")
 
 # Process the demographic data, -- replace missing values with 0
 # and transform with square root to stabilize the variance.
@@ -53,10 +53,11 @@ end
 da = leftjoin(da, demog_f, on = :FIPS)
 
 # GLM, not appropriate since we have repeated measures on counties
+npc = 5
 fml =
     term(:Births) ~
         term(:logPop) + term(:RUCC_2013) + sum([term(@sprintf("pc%02d", j)) for j = 1:npc])
-m0 = glm(fml, da, Poisson())
+m3 = glm(fml, da, Poisson())
 
 # Include this number of factors in subsequent models
 npc = 20
@@ -71,7 +72,7 @@ end
 function restructure(c)
     cc = copy(na)
     cc[:, :coef] = c
-    cc = unstack(c, [:Race, :Origin, :Sex], :Age, :coef)
+    cc = unstack(cc, [:Race, :Origin, :Sex], :Age, :coef)
     return cc
 end
 
@@ -107,6 +108,6 @@ end
 for i in 2:length(models)
     smaller = models[i-1][1]
     bigger = models[i][2]
-    st = scoretest(smaler, bigger)
+    st = scoretest(bigger.model, smaller.model)
     println(st)
 end
