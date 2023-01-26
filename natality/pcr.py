@@ -21,6 +21,7 @@ pdf = PdfPages("pcr_py.pdf")
 mv = births.groupby("FIPS")["Births"].agg([np.mean, np.var])
 lmv = np.log(mv)
 
+# Regress log variance on log mean
 mr = sm.OLS.from_formula("var ~ mean", lmv).fit()
 print(mr.summary())
 
@@ -37,21 +38,64 @@ pdf.savefig()
 # GLM, not appropriate since we have repeated measures on counties
 fml = "Births ~ logPop + RUCC_2013"
 m0 = sm.GLM.from_formula(fml, family=sm.families.Poisson(), data=da)
-r0 = m0.fit(scale="X2")
+r0 = m0.fit() # Poisson
+r0x = m0.fit(scale="X2") # Quasi-Poisson
 
 # GEE accounts for the correlated data
 m1 = sm.GEE.from_formula(fml, groups="FIPS", family=sm.families.Poisson(), data=da)
-r1 = m1.fit(scale="X2")
+r1 = m1.fit() # Poisson and quasi-Poisson are the same for GEE
+r1x = m1.fit(scale="X2")
 
 # Use log population as an offset instead of a covariate
 m2 = sm.GEE.from_formula("Births ~ RUCC_2013", groups="FIPS", offset="logPop",
                          family=sm.families.Poisson(), data=da)
 r2 = m2.fit(scale="X2")
 
+# A diagnostic plot for the variance structure that does not require
+# there to be replicates.
+plt.clf()
+plt.grid(True)
+lfv = np.log(r2.fittedvalues).values
+apr = np.abs(r2.resid_pearson)
+ii = np.argsort(lfv)
+lfv = lfv[ii]
+apr = apr[ii]
+ff = sm.nonparametric.lowess(apr, lfv)
+plt.plot(lfv, apr, "o", alpha=0.2, rasterized=True)
+plt.plot(ff[:, 0], ff[:, 1], "-", color="orange")
+plt.title("Poisson mean/variance model")
+plt.xlabel("Log predicted mean", size=16)
+plt.ylabel("Absolute Pearson residual", size=16)
+pdf.savefig()
+
 # Use Gamma family to better match the mean/variance relationship.
 m3 = sm.GEE.from_formula("Births ~ RUCC_2013", groups="FIPS", offset="logPop",
                          family=sm.families.Gamma(link=sm.families.links.log()), data=da)
 r3 = m3.fit(scale="X2")
+
+# Diagnostic plot for mean/variance relationship with gamma model.
+plt.clf()
+plt.grid(True)
+lfv = np.log(r3.fittedvalues).values
+apr = np.abs(r3.resid_pearson)
+ii = np.argsort(lfv)
+lfv = lfv[ii]
+apr = apr[ii]
+ff = sm.nonparametric.lowess(apr, lfv)
+plt.plot(lfv, apr, "o", alpha=0.2, rasterized=True)
+plt.plot(ff[:, 0], ff[:, 1], "-", color="orange")
+plt.title("Gamma mean/variance model")
+plt.xlabel("Log predicted mean", size=16)
+plt.ylabel("Absolute Pearson residual", size=16)
+pdf.savefig()
+
+# Use exchangeable correlation structure.  Since RUCC is constant within
+# groups the parameter estimates and standard errors are the same
+# as with the independence model.
+m4 = sm.GEE.from_formula("Births ~ RUCC_2013", groups="FIPS", offset="logPop",
+                         cov_struct=sm.cov_struct.Exchangeable(),
+                         family=sm.families.Gamma(link=sm.families.links.log()), data=da)
+r4 = m4.fit(scale="X2")
 
 # Demographic data, replace missing values with 0 and transform
 # with square root to stabilize the variance.
@@ -82,19 +126,19 @@ da = pd.merge(da, demog_f, on="FIPS", how="left")
 # Include this number of factors in all subsequent models
 npc = 10
 
-# GLM, not appropriate since we have repeated measures on counties
+# A GLM, not appropriate since we have repeated measures on counties
 fml = "Births ~ logPop + RUCC_2013 + " + " + ".join(["pc%02d" % j for j in range(npc)])
-m4 = sm.GLM.from_formula(fml, family=sm.families.Poisson(), data=da)
-r4 = m4.fit(scale="X2")
-
-# GEE accounts for the correlated data
-m5 = sm.GEE.from_formula(fml, groups="FIPS", family=sm.families.Poisson(), data=da)
+m5 = sm.GLM.from_formula(fml, family=sm.families.Poisson(), data=da)
 r5 = m5.fit(scale="X2")
 
-# Use log population as an offset instead of a covarate
-fml = "Births ~ " + " + ".join(["pc%02d" % j for j in range(npc)])
-m6 = sm.GEE.from_formula(fml, groups="FIPS", offset="logPop", family=sm.families.Poisson(), data=da)
+# GEE accounts for the correlated data
+m6 = sm.GEE.from_formula(fml, groups="FIPS", family=sm.families.Poisson(), data=da)
 r6 = m6.fit(scale="X2")
+
+# Use log population as an offset instead of a covariate
+fml = "Births ~ " + " + ".join(["pc%02d" % j for j in range(npc)])
+m7 = sm.GEE.from_formula(fml, groups="FIPS", offset="logPop", family=sm.families.Poisson(), data=da)
+r7 = m7.fit(scale="X2")
 
 # Restructure the coefficients so that the age bands are
 # in the columns.

@@ -1,7 +1,7 @@
 using DataFrames, CSV, Printf, CodecZlib
 
 # Path to the data files
-pa = "/home/kshedden/data/Teaching/natality"
+pa = "/home/kshedden/mynfs/data/Teaching/natality"
 
 # Create a long form version of the births
 dl = []

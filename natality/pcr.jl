@@ -8,6 +8,7 @@ include("prep.jl")
 da = leftjoin(births, pop, on = :FIPS)
 da = leftjoin(da, rucc, on = :FIPS)
 da[:, :logPop] = log.(da[:, :Population])
+
 da = da[completecases(da), :]
 da = disallowmissing(da)
 
@@ -26,7 +27,7 @@ m1 = glm(fml, da, Poisson(), offset=da[:, :logPop])
 
 # Use GEE to account for repeated measures on counties
 m2 = gee(fml, da, da[:, :FIPS], Poisson(), offset=da[:, :logPop])
-
+error("")
 # Process the demographic data, -- replace missing values with 0
 # and transform with square root to stabilize the variance.
 for c in names(demog)
@@ -44,20 +45,20 @@ u, s, v = svd(Matrix{Float64}(demog[:, 2:end]))
 pve = s .^ 2
 pve ./= sum(pve)
 
-# Put the demographic factors into a dataframe
-# and merge into the dataframe for modeling.
+# Put the PC's into a dataframe and merge into the dataframe for modeling.
 demog_f = DataFrame(:FIPS => demog[:, :FIPS])
 for k = 1:100
     demog_f[:, @sprintf("pc%02d", k)] = u[:, k]
 end
 da = leftjoin(da, demog_f, on = :FIPS)
-
+error("")
 # GLM, not appropriate since we have repeated measures on counties
 npc = 5
 fml =
     term(:Births) ~
         term(:logPop) + term(:RUCC_2013) + sum([term(@sprintf("pc%02d", j)) for j = 1:npc])
 m3 = glm(fml, da, Poisson())
+m4 = gee(fml, da, da[:, :FIPS], Poisson(), offset=da[:, :logPop])
 
 # Include this number of factors in subsequent models
 npc = 20
@@ -81,10 +82,10 @@ end
 function fitmodel(npc)
     # A GEE using log population as an offset
     fml = term(:Births) ~ sum([term(@sprintf("pc%02d", j)) for j = 1:npc])
-    m = gee(fml, da, da[:, :FIPS], Poisson(), offset = Float64.(da[:, :logPop]))
+    m = gee(fml, da, da[:, :FIPS], Poisson(), offset = da[:, :logPop])
 
     # We need this for score-testing
-    m0 = gee(fml, da, da[:, :FIPS], Poisson(), offset = Float64.(da[:, :logPop]); dofit=false)
+    m0 = gee(fml, da, da[:, :FIPS], Poisson(), offset = da[:, :logPop]; dofit=false)
 
     # Convert the coefficients back to the original coordinates
     c = convert_coef(coef(m)[2:end], npc)

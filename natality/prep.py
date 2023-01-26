@@ -13,12 +13,12 @@ for y in range(2016, 2021):
     da = pd.read_csv(os.path.join(pa, "%4d.txt.gz" % y), delimiter="\t",
                      dtype={"County Code": object})
     da = da[["County", "County Code", "Births"]]
-    da = da.dropna()
     da["year"] = y
     dl.append(da)
 births = pd.concat(dl)
 births = births.rename({"County Code": "FIPS"}, axis=1)
 births["Births"] = pd.to_numeric(births.Births, errors="coerce")
+births = births.dropna()
 
 # Subset the demographics file to 2016
 if False:
