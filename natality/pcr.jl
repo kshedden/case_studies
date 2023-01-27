@@ -11,6 +11,7 @@ da[:, :logPop] = log.(da[:, :Population])
 
 da = da[completecases(da), :]
 da = disallowmissing(da)
+da = sort(da, [:FIPS, :year])
 
 # Calculate the mean and variance within each county to
 # assess the mean/variance relationship.
@@ -21,13 +22,17 @@ scatterplot(log.(mv[:, :Births_var]), log.(mv[:, :Births_mean]))
 fml = @formula(Births ~ logPop + RUCC_2013)
 m0 = glm(fml, da, Poisson())
 
-# GLM with log population as offset instead of covariate
-fml = @formula(Births ~ RUCC_2013)
-m1 = glm(fml, da, Poisson(), offset=da[:, :logPop])
+# GEE accounts for correlated data.
+m1 = gee(fml, da, da[:, :FIPS], Poisson())
 
-# Use GEE to account for repeated measures on counties
-m2 = gee(fml, da, da[:, :FIPS], Poisson(), offset=da[:, :logPop])
-error("")
+# GEE with log population as offset instead of covariate
+fml = @formula(Births ~ RUCC_2013)
+m2 = gee(fml, da, da[:, :FIPS], Poisson(); offset=da[:, :logPop])
+
+# Use gamma family with non-canonical log link function to better match
+# the mean/variance relationship
+m3 = gee(fml, da, da[:, :FIPS], Gamma(), IndependenceCor(), LogLink(); offset=da[:, :logPop])
+
 # Process the demographic data, -- replace missing values with 0
 # and transform with square root to stabilize the variance.
 for c in names(demog)
@@ -51,14 +56,14 @@ for k = 1:100
     demog_f[:, @sprintf("pc%02d", k)] = u[:, k]
 end
 da = leftjoin(da, demog_f, on = :FIPS)
-error("")
+
 # GLM, not appropriate since we have repeated measures on counties
 npc = 5
 fml =
     term(:Births) ~
         term(:logPop) + term(:RUCC_2013) + sum([term(@sprintf("pc%02d", j)) for j = 1:npc])
-m3 = glm(fml, da, Poisson())
-m4 = gee(fml, da, da[:, :FIPS], Poisson(), offset=da[:, :logPop])
+m4 = glm(fml, da, Poisson())
+m5 = gee(fml, da, da[:, :FIPS], Poisson(), offset=da[:, :logPop])
 
 # Include this number of factors in subsequent models
 npc = 20

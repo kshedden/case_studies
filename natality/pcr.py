@@ -12,7 +12,10 @@ from matplotlib.backends.backend_pdf import PdfPages
 # population and RUCC data.
 da = pd.merge(births, pop, on="FIPS", how="left")
 da = pd.merge(da, rucc, on="FIPS", how="left")
+
 da["logPop"] = np.log(da["Population"])
+da = da.dropna()
+da = da.sort_values(["FIPS", "year"])
 
 pdf = PdfPages("pcr_py.pdf")
 

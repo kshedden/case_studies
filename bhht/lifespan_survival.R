@@ -73,7 +73,7 @@ print(plt)
 haz = diff(bh$hazard) / diff(bh$time)
 haz = data.frame(hazard=haz, time=bh$time[1:(length(bh$time)-1)])
 plt = ggplot(haz, aes(x=time, y=hazard)) + geom_line() + xlim(0, 100) +
-             xlab("Age") + ylab("Log hazard")
+             xlab("Age") + ylab("Hazard")
 print(plt)
 
 # Fit a sex-stratified proportional hazards regression model
@@ -81,7 +81,8 @@ dx = dx %>% mutate(time = sqrt(birth - 1500))
 fml = "Surv(clifespan, died) ~ bs(time, 4) + level1_main_occ + un_region + strata(gender)"
 m1 = coxph(as.formula(fml), dx)
 
-# Plot the baseline hazard function for each sex
+# Plot the baseline hazard function for each sex.  Note that the basehaz function in R
+# returns the cumulative hazard but the column is labeled 'hazard'.
 bh = basehaz(m1)
 plt = ggplot(bh, aes(x=time, y=log(hazard), color=strata)) + geom_line() + xlim(0, 100) +
              xlab("Age") + ylab("Log cumulative hazard")
