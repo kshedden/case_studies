@@ -6,3 +6,6 @@ course lecture, focusing either on the lifespans or representation of people bas
 on their reported characteristics.  For this first assignment, you can
 borrow generously from the findings and code discussed in class, but
 aim to report at least one novel finding.
+
+2. (February 10th) Write a memo based on your analysis of the natality
+data.
