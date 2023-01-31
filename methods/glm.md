@@ -455,6 +455,35 @@ for the true mean structure parameters $\beta$.
 
 In some cases, this estimating equation corresponds to a _score
 function_, meaning that it is the gradient of a proper log-likelihood.
+In particular, this score equation can be defined by considering
+an exponential family of distributions, and constructing the
+score function as the derivative of the log-likelihood.  This corresponds
+to a maximum-likelihood approach to estimation.
+
+An alternative way of deriving the score equations is based on the
+method of moments.  Suppose we wish to estimate the mean parameters
+$\beta$ in a model with a given mean function $\mu_i(\beta) = g^{-1}(x_i^\prime \beta)$
+and a given variance function $V(\mu_i)$.  The inverse variance weighted
+sum of squared residuals is
+
+$$
+\sum_i (y_i - \mu_i)^2/V(\mu_i).
+$$
+
+If we ignore the fact that $V(\cdot)$ depends on $\beta$ (imagine
+that when computing $V(\mu_i)$ we plug-in an estimate of $\beta$),
+then the derivative of the inverse variance weighted sum of squared
+residuals is (up to a multiplicative constant) the score equation
+given above.  In this way, we can derive the score equation without
+ever specifying a log-likelihood.  In doing so, we are choosing to measure
+goodness of fit with the squared residuals, which corresponds to
+maximum likelihood in the Gaussian setting but not for other distributions.
+Nevertheless, using squared residuals to measure fit can be shown
+to produce good estimators for a wide variety of distributions.  In addition,
+this score equation accounts for heteroscedasticity by inverse variance
+weighting with respect to $V(\cdot)$, and also considers the curvature
+of the mean function through the Jacobian $\partial\mu/\partial\beta$.
+
 However in some other cases, there is no log-likelihood for which this
 expression is the gradient.  This is the reason that quasi-likelihood
 analysis is not the same as maximum likelihood analysis, in general.
