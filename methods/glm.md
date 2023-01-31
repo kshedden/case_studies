@@ -438,8 +438,8 @@ model without reference to what it will be compared to.
 ### Estimation process
 
 GLMs are fit by solving the following system of _estimating
-equations_, where $\mu_i = \mu_i(\beta)$ is the mean of observation
-$i$ implied by a given value of $\beta$:
+equations_, where $\mu_i = \mu_i(\beta) = g^{-1}(x_i^\prime \beta)$
+is the mean of observation $i$ implied by a given value of $\beta$:
 
 $$
 \sum_i \partial \mu_i/\partial \beta \cdot (y_i - \mu_i) / V(\mu_i) = 0.
@@ -471,7 +471,8 @@ $$
 $$
 
 If we ignore the fact that $V(\cdot)$ depends on $\beta$ (imagine
-that when computing $V(\mu_i)$ we plug-in an estimate of $\beta$),
+that when computing $V(\mu_i)$ we plug-in an estimate of $\beta$
+instead of including it in the optimization),
 then the derivative of the inverse variance weighted sum of squared
 residuals is (up to a multiplicative constant) the score equation
 given above.  In this way, we can derive the score equation without
