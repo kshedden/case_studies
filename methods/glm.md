@@ -558,7 +558,8 @@ observations in different groups are always independent.  Two
 observations in the same group may be dependent.  The working
 correlation structure is an attempt to specify how these dependencies
 are structured.  Formally, $R_i(\alpha)$ is the $n_i\times n_i$ working
-correlation matrix for cluster $i$.  The vector $\alpha$ contains parameters
+correlation matrix for cluster $i$, where $n_i$ is the number of observations
+in cluster $i$.  The vector $\alpha$ contains parameters
 that determine the correlation structure.
 
 The mean structure parameters $\beta$ are estimated by solving the
