@@ -568,8 +568,14 @@ $$
 \sum_i \partial \mu_i/\partial \beta \cdot V(\mu_i)^{-1/2}R_i(\alpha)^{-1}V(\mu_i)^{-1/2}(y_i - \mu_i) = 0.
 $$
 
-The working correlation structure $R_i(\alpha)$
+The Jacobian $\partial \mu_i/\partial \beta$ is a $p\times n_i$
+matrix of partial derivatives and $y_i - \mu_i$ is a $n_i$-dimensional
+vector of residuals. The working correlation structure $R_i(\alpha)$
+is a $n_i\times n_i$ correlation matrix that
 does not need to be correct in order to obtain meaningful results.
+The variance term $V(\mu_i)$ here is interpreted as a diagonal
+$n_i\times n_i$ matrix whose diagonal values are derived from
+the variance function.
 The mean structure parameters $\beta$ can be estimated, and standard
 errors can be obtained, even if the working correlation structure is
 wrong.  However the estimate of $\beta$ will be more efficient if the
