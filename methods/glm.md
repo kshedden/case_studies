@@ -470,24 +470,27 @@ $$
 \sum_i (y_i - \mu_i)^2/V(\mu_i).
 $$
 
+We can use this as a loss function for estimating $\beta$.
 If we ignore the fact that $V(\cdot)$ depends on $\beta$ (imagine
 that when computing $V(\mu_i)$ we plug-in an estimate of $\beta$
 instead of including it in the optimization),
 then the derivative of the inverse variance weighted sum of squared
 residuals is (up to a multiplicative constant) the score equation
-given above.  In this way, we can derive the score equation without
+given above.  In this way, we can derive the score equations without
 ever specifying a log-likelihood.  In doing so, we are choosing to measure
-goodness of fit with the squared residuals, which corresponds to
+goodness of fit with the (weighted) sum of squared residuals, which corresponds to
 maximum likelihood in the Gaussian setting but not for other distributions.
-Nevertheless, using squared residuals to measure fit can be shown
+Nevertheless, using squared residuals to measure goodness of fit can be shown
 to produce good estimators for a wide variety of distributions.  In addition,
 this score equation accounts for heteroscedasticity by inverse variance
 weighting with respect to $V(\cdot)$, and also considers the curvature
 of the mean function through the Jacobian $\partial\mu/\partial\beta$.
 
-However in some other cases, there is no log-likelihood for which this
-expression is the gradient.  This is the reason that quasi-likelihood
-analysis is not the same as maximum likelihood analysis, in general.
+Depending on how $\mu(\cdot)$ and $V(\cdot)$ are specified, there may or
+may not be a log-likelihood for which the score equations derived above
+are gradient.  For this reason, we may refer to these as *quasi-score equations*.
+This is the reason that quasi-likelihood analysis is not in general the same as maximum
+likelihood analysis.
 
 An important contribution of RWM Wedderburn is that the function
 
@@ -498,8 +501,8 @@ $$
 is the antiderivative of
 $\partial \mu/\partial \beta \cdot (y - \mu) / V(\mu)$.  Therefore,
 this expression can be seen as providing a
-concrete quasi-likelihood that exhibits the mean and variance
-structures we have chosen to fit to our data.  This has been used to
+quasi-likelihood function corresponding to the quasi-score function.
+This quasi-likelihood may not be an actual likelihood, but it can be used to
 produce quasi-likelihood counterparts to important quantities from
 likelihood analysis, including AIC, score testing, and log-likelihood
 ratio testing.  Note that the AIC derived from Wedderburn's
