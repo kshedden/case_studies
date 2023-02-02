@@ -126,7 +126,7 @@ for k in range(100):
 # Merge demographic information into the births data
 da = pd.merge(da, demog_f, on="FIPS", how="left")
 
-# Include this number of factors in all subsequent models
+# Include this number of factors in subsequent models
 npc = 10
 
 # A GLM, not appropriate since we have repeated measures on counties
@@ -135,12 +135,14 @@ m5 = sm.GLM.from_formula(fml, family=sm.families.Poisson(), data=da)
 r5 = m5.fit(scale="X2")
 
 # GEE accounts for the correlated data
-m6 = sm.GEE.from_formula(fml, groups="FIPS", family=sm.families.Poisson(), data=da)
+m6 = sm.GEE.from_formula(fml, groups="FIPS",
+         family=sm.families.Gamma(link=sm.families.links.log()), data=da)
 r6 = m6.fit(scale="X2")
 
 # Use log population as an offset instead of a covariate
 fml = "Births ~ " + " + ".join(["pc%02d" % j for j in range(npc)])
-m7 = sm.GEE.from_formula(fml, groups="FIPS", offset="logPop", family=sm.families.Poisson(), data=da)
+m7 = sm.GEE.from_formula(fml, groups="FIPS", offset="logPop",
+         family=sm.families.Gamma(link=sm.families.links.log()), data=da)
 r7 = m7.fit(scale="X2")
 
 # Restructure the coefficients so that the age bands are
@@ -156,7 +158,7 @@ def restructure(c):
 def fitmodel(npc):
     # A GEE using log population as an offset
     fml = "Births ~ " + " + ".join(["pc%02d" % j for j in range(npc)])
-    m = sm.GEE.from_formula(fml, groups="FIPS", family=sm.families.Poisson(), offset=da["logPop"], data=da)
+    m = sm.GEE.from_formula(fml, groups="FIPS", family=sm.families.Gamma(link=sm.families.links.log()), offset=da["logPop"], data=da)
     r = m.fit(scale="X2")
 
     # Convert the coefficients back to the original coordinates

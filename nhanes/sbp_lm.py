@@ -11,6 +11,7 @@ pdf = PdfPages("sbp_py.pdf")
 
 dp = df.iloc[0:50, :]
 dp["RIDAGEYR"] = np.linspace(18, 80, 50)
+dp["RIDRETH1"] = "MA"
 
 # Plot predicted SBP by sex
 def plot1(rr, ii, dbands=False):
