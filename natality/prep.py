@@ -7,7 +7,9 @@ import os, gzip
 # Path to the data files
 pa = "/home/kshedden/data/Teaching/natality"
 
-# Create a long form version of the births
+# Create a long form version of the births.  If you did not zip the
+# birth files you will need to change the name of the file below to
+# omit the ".gz" suffix.
 dl = []
 for y in range(2016, 2021):
     da = pd.read_csv(os.path.join(pa, "%4d.txt.gz" % y), delimiter="\t",

@@ -157,7 +157,7 @@ def restructure(c):
 # as explanatory variables.
 def fitmodel(npc):
     # A GEE using log population as an offset
-    fml = "Births ~ " + " + ".join(["pc%02d" % j for j in range(npc)])
+    fml = "Births ~ 1" if npc == 0 else "Births ~ " + " + ".join(["pc%02d" % j for j in range(npc)])
     m = sm.GEE.from_formula(fml, groups="FIPS", family=sm.families.Gamma(link=sm.families.links.log()), offset=da["logPop"], data=da)
     r = m.fit(scale="X2")
 
@@ -177,7 +177,7 @@ sym = {"H": "s", "N": "o"}
 ages = range(0, 19)
 
 # Fit models with these numbers of PCs.
-pcs = [5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+pcs = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
 models = []
 for npc in pcs:

@@ -28,7 +28,9 @@ if (FALSE) {
     close(otc)
 }
 
-# Create a long form version of the births
+# Create a long form version of the births.  If you did not zip the
+# birth files you will need to change the name of the file below to
+# omit the ".gz" suffix.
 dl = list()
 for (y in 2016:2020) {
     fn = file.path(pa, sprintf("%4d.txt.gz", y))
