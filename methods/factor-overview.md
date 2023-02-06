@@ -215,7 +215,7 @@ PCA can also be carried out using the SVD of the column-centered data
 matrix $Z_c$.  Write $Z_c = USV^T$ as discussed above and note that
 
 $$
-\hat{\Sigma} = Z_c^T/Z_c/n = VS^2V^T/n.
+\hat{\Sigma} = Z_c^T Z_c/n = VS^2V^T/n.
 $$
 
 Thus, $\hat{\Sigma}V = VS^2/n$, so $V$ contains the eigenvectors of
