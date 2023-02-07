@@ -51,6 +51,7 @@ def plotstrat(j, k):
     ha, lb = plt.gca().get_legend_handles_labels()
     leg = plt.figlegend(ha, lb, "center right")
     leg.draw_frame(False)
+    leg.set_title("Score %d" % (j + 1))
 
     plt.xlabel("Score %d" % (k + 1), size=15)
     plt.ylabel("SBP (centered)", size=15)
@@ -59,9 +60,13 @@ def plotstrat(j, k):
 plotstrat(1, 0)
 plotstrat(0, 1)
 
+cols = {"F": "orange", "M": "purple"}
+
 # Plot the DV (SBP) against each score, or plot each score against every covariate.
 for j in range(2):
     for x in dx.columns:
+        if x == "RIAGENDR":
+            continue
         plt.figure(figsize=(7, 5))
         plt.clf()
         plt.grid(True)
@@ -72,7 +77,10 @@ for j in range(2):
             for sex in "F", "M":
                 ii = dp.sex == sex
                 dz = dp.loc[ii, :]
-                plt.plot(dz["x"], dz["y"], "o", mfc="none", alpha=0.4, label=sex, rasterized=True)
+                lw = lowess(dz["y"], dz["x"])
+                plt.plot(dz["x"], dz["y"], "o", mfc="none", alpha=0.2, color=cols[sex],
+                         label=sex, rasterized=True)
+                plt.plot(lw[:, 0], lw[:, 1], "-", color=cols[sex])
         else:
             plt.ylabel(x, size=15)
             plt.xlabel("Score %d" % (j + 1), size=15)
@@ -80,7 +88,10 @@ for j in range(2):
             for sex in "F", "M":
                 ii = dp.sex == sex
                 dz = dp.loc[ii, :]
-                plt.plot(dz["x"], dz["y"], "o", mfc="none", alpha=0.4, label=sex, rasterized=True)
+                lw = lowess(dz["y"], dz["x"])
+                plt.plot(dz["x"], dz["y"], "o", mfc="none", color=cols[sex],
+                         alpha=0.2, label=sex, rasterized=True)
+                plt.plot(lw[:, 0], lw[:, 1], "-", color=cols[sex])
         ha, lb = plt.gca().get_legend_handles_labels()
         leg = plt.figlegend(ha, lb, "center right")
         leg.draw_frame(False)
