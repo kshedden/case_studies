@@ -9,19 +9,20 @@ from read import *
 
 pdf = PdfPages("sbp_dr_py.pdf")
 
-vx = ["RIAGENDR", "RIDAGEYR", "BMXWT", "BMXHT", "BMXBMI", "BMXLEG", "BMXARML", "BMXARMC", "BMXWAIST", "BMXHIP"]
-vn = np.concatenate((["BPXSY1"], vx))
+vx = ["RIAGENDR", "RIDAGEYR", "BMXWT", "BMXHT", "BMXBMI", "BMXLEG",
+      "BMXARML", "BMXARMC", "BMXWAIST", "BMXHIP"]
+vn = ["BPXSY1"] + vx
 
-dx = df.loc[:, vn]
-dx = dx.dropna()
+dx = df.loc[:, vn].dropna()
 
 dx["RIAGENDRx"] = dx.RIAGENDR.replace({"F": 1, "M": -1})
 
+# Mean center all variables
 for m in dx.columns:
     if dx[m].dtype == np.float64:
         dx[m] -= dx[m].mean()
 
-y = np.asarray(dx.BPXSY1)
+y = np.asarray(dx["BPXSY1"])
 vz = [x.replace("RIAGENDR", "RIAGENDRx") for x in vx]
 x = np.asarray(dx[vz])
 m = SIR(y, x)
@@ -37,12 +38,20 @@ def plotstrat(j, k):
     dp["strat"] = pd.qcut(scores[:, j], 5)
 
     plt.clf()
+    plt.figure(figsize=(7, 4))
+    plt.axes([0.12, 0.12, 0.65, 0.8])
     plt.grid(True)
     for ky, dv in dp.groupby("strat"):
         xx = np.linspace(dv.x.min(), dv.x.max(), 100)
         m = lowess(dv.y, dv.x)
         f = interp1d(m[:, 0], m[:, 1])
-        plt.plot(xx, f(xx), "-")
+        la = "%.2f-%.2f" % (ky.left, ky.right)
+        plt.plot(xx, f(xx), "-", label=la)
+
+    ha, lb = plt.gca().get_legend_handles_labels()
+    leg = plt.figlegend(ha, lb, "center right")
+    leg.draw_frame(False)
+
     plt.xlabel("Score %d" % (k + 1), size=15)
     plt.ylabel("SBP (centered)", size=15)
     pdf.savefig()
@@ -53,6 +62,7 @@ plotstrat(0, 1)
 # Plot the DV (SBP) against each score, or plot each score against every covariate.
 for j in range(2):
     for x in dx.columns:
+        plt.figure(figsize=(7, 5))
         plt.clf()
         plt.grid(True)
         if x != "BPXSY1":
