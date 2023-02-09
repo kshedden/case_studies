@@ -311,9 +311,10 @@ from the reduced PCA can then be re-expressed in the original coordinates for in
 
 Dimension reduction regression (DR) is a flexible approach to regression analysis that
 can be seen as extending PCA to the setting of regression.  In a DR analysis, we have
-a matrix $X \in {\cal R}^{n\times p}$ containing data on the explanatory variables,
-and we also have a vector $Y \in {\cal R}^n$
-containing values of a response variable.  Like PCA, the goal is to find *factors* or *components*
+a matrix $X \in {\cal R}^{n\times p}$ containing data on the explanatory (independent)
+variables, and we also have a vector $Y \in {\cal R}^n$
+containing values of a response (dependent) variable.
+Like PCA, the goal is to find *factors*, *components*, or *variates*
 among the $X$ variables, but in the case of DR the goal is for these factors to predict $Y$,
 not to predict $X$ itself.  One way to view DR is as a means to "steer" PCA toward variates
 that explain the variation in $Y$, rather than seeking variates that explain the variation
@@ -321,7 +322,7 @@ in $X$.
 
 In some cases, the variates in $X$ that explain $X$ and the variates in $X$ that
 explain $Y$ can be quite similar, but in other cases they dramatically differ.  This is
-one of the main critiques of principal component regression (PCR), which uses the PCs as
+a critique of principal component regression (PCR), which uses the PCs as
 explanatory variables and therefore can only find regression relationships that happen
 to coincide with the PCs.
 

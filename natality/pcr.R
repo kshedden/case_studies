@@ -127,20 +127,29 @@ fitmodel = function(npc) {
         cf[i, "Sex"] = x[3]
         cf[i, "Age"] = x[4]
     }
-    return(cf)
+    return(list(coef=cf, model=r))
 }
 
 # Fit models with these numbers of PCs.
 pcs = c(5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
 
+models = list()
 for (npc in pcs) {
 
-    cf = fitmodel(npc)
+    r = fitmodel(npc)
+    models[[length(models)+1]] = r$model
+    cf = r$coef
 
     plt = ggplot(cf, aes(x=Age, y=coef, group=interaction(Race, Origin, Sex), color=Race, lty=Sex, shape=Origin))
     plt = plt + geom_line() + geom_point() + ggtitle(sprintf("%d factors", npc))
     plt = plt + ggtitle(sprintf("%d PCs, cumulative PVE=%.4f", npc, sum(pve[1:npc])))
     print(plt) # prints to the pdf
+}
+
+for (j in 2:(length(models)-1)) {
+    st = anova(models[[j-1]], models[[j]], type="score")
+    p = st[[3]]
+    cat(sprintf("%d vs. %d: p=%f\n", pcs[j+1], pcs[j], p))
 }
 
 dev.off()
