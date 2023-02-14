@@ -3,6 +3,7 @@
 
 library(geepack)
 library(ggplot2)
+library(glmtoolbox)
 
 source("prep.R")
 
@@ -146,8 +147,9 @@ for (npc in pcs) {
     print(plt) # prints to the pdf
 }
 
+# These score tests should use glmtoolbox but
 for (j in 2:(length(models)-1)) {
-    st = anova(models[[j-1]], models[[j]], type="score")
+    st = anova(models[[j-1]], models[[j]], test="score")
     p = st[[3]]
     cat(sprintf("%d vs. %d: p=%f\n", pcs[j+1], pcs[j], p))
 }
