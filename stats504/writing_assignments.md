@@ -9,3 +9,5 @@ aim to report at least one novel finding.
 
 2. (February 10th) Write a memo based on your analysis of the natality
 data.
+
+3. (February 23rd) Write a memo based on your analysis of the NHANES data.
