@@ -4,9 +4,15 @@ import statsmodels.api as sm
 from scipy.stats.distributions import norm
 
 """
-A researcher studying factors relating to substance use plans to
-recruit m subjects per quarter for 2 years (8 quarters), in a study
-with a total duration of 3 years (12 quarters).  The subjects will be
+A researcher is interested in whether a specific behavioral factor (z)
+associates with substance use (y).  She plans a longitudinal study
+in which behavior and substance use are measured repeatedly over time
+within subjects.  The focus is on the association between behavior
+and substance use at the same time point, accounting for confounders.
+
+The study will have a rolling recruitment in which m subjects are
+recruited per quarter for 2 years (8 quarters).  The study will have a
+total duration of 3 years (12 quarters).  The subjects will be
 followed longitudinally until the end of the study (so subjects
 recruited in quarter 1 will be followed for 12 quarters but subjects
 in quarter 8 will only be followed for 5 quarters).
@@ -41,6 +47,15 @@ def gen_exch(n, m, icc):
     x = np.sqrt(icc)*z[:, None] + np.sqrt(1 - icc)*x
     return x
 
+# Generate data for assessing the power.
+#
+# es: effect size in SD units
+# q: probability of dropping out in each quarter
+# rx: the correlation between the measured confounder and behavior
+# behav_icc: the exchangeable ICC of the behavior measurements
+# subuse_icc: the exchangeable ICC of the substance use measurements
+# confound_icc: the exchangeable ICC of the measured confounder
+# m: the number of subject recruited per wave
 def gendat(es, q, rx, behav_icc, subuse_icc, confound_icc, m):
 
     idx = 0
@@ -98,6 +113,7 @@ def gendat(es, q, rx, behav_icc, subuse_icc, confound_icc, m):
 
 nrep = 100
 
+# Estimate the power in a number of scenarios.
 def run_power(subuse_icc, behav_icc, rx, m, es):
 
     rslt = []
@@ -114,11 +130,12 @@ def run_power(subuse_icc, behav_icc, rx, m, es):
                             zs[k, :] = r0.params / np.sqrt(np.diag(r0.cov_params()))
 
                         z = zs[:, 1]
-                        pw = 1 - norm(z.mean(), z.std()).cdf(2)
-                        row = [m1, es1, rx1, behav_icc1, subuse_icc1, pw]
+                        zm = z.mean()
+                        pw = 1 - norm(zm, z.std()).cdf(2)
+                        row = [m1, es1, rx1, behav_icc1, subuse_icc1, pw, zm]
                         rslt.append(row)
     rslt = pd.DataFrame(rslt)
-    rslt.columns = ["m", "es", "rx", "behav_icc", "subuse_icc", "power"]
+    rslt.columns = ["m", "es", "rx", "behav_icc", "subuse_icc", "power", "zbar"]
     return rslt
 
 # Compare different levels of confounding and different effect sizes
