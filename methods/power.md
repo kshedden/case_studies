@@ -9,7 +9,8 @@ Designing an empirical research study involves many factors
 including ethical constraints, costs, and logistical matters.
 A key consideration in any research study
 is *statistical power*.  Statistical power is often
-considered in the setting of a falsifiable null hypothesis.
+considered when research is conducted in the setting
+of a falsifiable null hypothesis.
 Nearly always, the null hypothesis is a "straw man" that we want
 to refute.  In reality, we do not know whether the null
 hypothesis is false or true.  We wish to conduct our study
