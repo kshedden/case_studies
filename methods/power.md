@@ -55,7 +55,8 @@ generality on alternatives in which $\mu_x > \mu_y$. This
 test approximately controls the type-I error rate at 5\%.
 
 To consider the power, suppose that $E[d/\tau] = \theta$,
-i.e. the effect size is $\theta$. The power is:
+i.e. the effect size is $\theta$. The power (treating
+$\tau$ as known) is:
 
 $$
 P(T>2) = P((\bar{d} - \theta)/\tau > 2 - \theta/\tau).
@@ -72,5 +73,8 @@ to the true sampling distribution, so it would be better to replace 2.84 with 3
 to obtain a good rule of thumb for 80\% power.  In words, the
 effect must be three times the standard error to have good power.
 
-
+To conduct a thorough power analyis in this setting, we would want
+to consider plausible values for $n$, $\mu_x - \mu_y$, $\sigma_x$,
+$\sigma_y$, and $\rho$.  Then we could assess which combinations
+of these values would yield power deemed adequate.
 
