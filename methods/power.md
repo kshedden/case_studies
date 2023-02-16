@@ -13,7 +13,7 @@ considered when research is conducted in the setting
 of a falsifiable null hypothesis.
 Nearly always, the null hypothesis is a "straw man" that we want
 to refute.  In reality, we do not know whether the null
-hypothesis is false or true.  We wish to conduct our study
+hypothesis is false or true.  Therefore, we wish to conduct our study
 according to the following two principles: (i) if the
 null hypothesis is true we wish to control the probability
 of incorrectly asserting it to be false; (i) if the null
@@ -25,12 +25,14 @@ wish to consider statistical power, but the research is
 not following the "null hypothesis significance testing"
 paradigm.
 
+## Paired t-test
+
 The basic ideas can be considered in the setting of the
 paired t-test.  Suppose we observe paired data $(x_i, y_i)$
 on each of $n$ subjects, and the observations are made
 independently from the same distribution (i.e. we have IID
 data).  Let $\mu_x, \mu_y$ denote the population means of
-$x$ and $y$, and let $\sigma_x$, $\sigma_y$ denote their
+$x$ and $y$, and let $\sigma_x$, $\sigma_y$ denote the corresponding
 standard deviations.  Further, let $\rho$ denote the correlation
 between $x$ and $y$.
 
@@ -43,7 +45,7 @@ We can form a test statistic using the Z-score $T \equiv \sqrt{n}\bar{c}/\hat{\t
 where $\hat{\tau}$ is the sample standard deviation of the
 $d_i$.
 
-Under the null hypothesis, $T$ is approximately standard
+Under the null hypothesis, $T$ approximately follows a standard
 normal, although if the sample size is small, the Student-t
 distribution with $n-1$ degrees of freedom might provide a
 better approximation.  For now we use the normal reference
@@ -62,11 +64,11 @@ $$
 Under the alternative hypothesis, $(\bar{d} - \theta)/\tau$ follows a
 standard normal distribution.
 Conventionally (but somewhat arbitrarily) we seek 80% power.
-Since the 0.8 quantile of a standard normal distribution is 0.84, we
+Since the 0.2 quantile of a standard normal distribution is -0.84, we
 achieve 80\% power when $\theta/\tau = 2.84$. That is, the effect
-size must be 2.84 to achieve 80\% power.  If sample sizes are small
-and the standard normal distribution is underdispersed relative
-to the true sampling distribution, one can replace 2.84 with 3
+size must be 2.84 to achieve 80\% power.  If sample sizes are small,
+then the standard normal distribution is underdispersed relative
+to the true sampling distribution, so it would be better to replace 2.84 with 3
 to obtain a good rule of thumb for 80\% power.  In words, the
 effect must be three times the standard error to have good power.
 
