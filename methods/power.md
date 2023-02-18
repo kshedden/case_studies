@@ -58,8 +58,8 @@ the null hypothesis when $T > 2$, focusing without loss of
 generality on alternatives in which $\mu_x > \mu_y$. This
 test approximately controls the type-I error rate at 5\%.
 
-To consider the power, suppose that $E[d/\tau] = \theta$,
-i.e. the effect size is $\theta$. The power (treating
+To consider the power, suppose that $E[d] = \theta$,
+i.e. the effect size is $\theta / \tau$. The power (treating
 $\tau$ as known) is:
 
 $$
@@ -71,14 +71,19 @@ standard normal distribution.
 Conventionally (but somewhat arbitrarily) we seek 80% power.
 Since the 0.2 quantile of a standard normal distribution is -0.84, we
 achieve 80\% power when $\theta/\tau = 2.84$. That is, the effect
-size must be 2.84 to achieve 80\% power.  If sample sizes are small,
+size must be at least 2.84 to achieve 80\% power.  If sample sizes are small,
 then the standard normal distribution is underdispersed relative
 to the true sampling distribution, so it would be better to replace 2.84 with 3
 to obtain a good rule of thumb for 80\% power.  In words, the
 effect must be three times the standard error to have good power.
 
-To conduct a thorough power analyis in this setting, we would want
-to consider plausible values for $n$, $\mu_x - \mu_y$, $\sigma_x$,
-$\sigma_y$, and $\rho$.  Then we could assess which combinations
-of these values would yield power deemed adequate.
+This analysis reveals which factors influence the power.  For example,
+the power is greater when $\theta/\tau$ is greater.  This in turn
+happens when $\rho$ is greater.  Thus, in this setting we benefit
+from strong correlations between $x$ and $y$.
+
+To conduct a thorough power analyis in this setting, we would
+consider plausible values for $n$, $\mu_x - \mu_y$, $\sigma_x$,
+$\sigma_y$, and $\rho$.  Then we can assess which combinations
+of these values yield power that is deemed adequate.
 
