@@ -82,11 +82,12 @@ def gendat(es, q, rx, behav_icc, subuse_icc, confound_icc, m):
         quarter.append(quarter1)
 
         # The behavioral data
-        behav1 = gen_exch(m, nmeas, behav_icc)
-        for j in range(1, behav1.shape[1], 2):
+        behav1 = gen_exch(m, nmeas, behav_icc) # Actual behavioral data
+        behav2 = behav1.copy() # LOCF behavioral data
+        for j in range(1, behav2.shape[1], 2):
             # Last observation carried forward.
-            behav1[:, j] = behav1[:, j-1]
-        behav.append(behav1.flatten())
+            behav2[:, j] = behav2[:, j-1]
+        behav.append(behav2.flatten())
 
         # The confounder variable
         u = gen_exch(m, nmeas, confound_icc)
@@ -138,8 +139,18 @@ def run_power(subuse_icc, behav_icc, rx, m, es):
     rslt.columns = ["m", "es", "rx", "behav_icc", "subuse_icc", "power", "zbar"]
     return rslt
 
-# Compare different levels of confounding and different effect sizes
-rslt = run_power([0.1], [0.1], [0, 0.5], [10], [0.1, 0.2])
+# Compare different effect sizes
+rslt = run_power([0.1], [0.1], [0.5], [10], [0.1, 0.2, 0.3, 0.4])
+print(rslt)
+print("\n")
+
+# Compare different sample sizes
+rslt = run_power([0.1], [0.1], [0.5], [10, 20, 30, 40], [0.1])
+print(rslt)
+print("\n")
+
+# Compare different levels of confounding
+rslt = run_power([0.1], [0.1], [0, 0.25, 0.5, 0.75], [10], [0.2])
 print(rslt)
 print("\n")
 
@@ -149,7 +160,7 @@ print(rslt)
 print("\n")
 
 # Compare different ICC's in the substance use data
-rslt = run_power([0, 0.25, 0.5, 0.75], [0], [0.2], [10], [0.15])
+rslt = run_power([0, 0.25, 0.5, 0.75], [0.25], [0.2], [10], [0.15])
 print(rslt)
 print("\n")
 
