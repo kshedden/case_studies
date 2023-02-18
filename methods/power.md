@@ -29,10 +29,26 @@ estimate a parameter of interest, and we want the precision
 of the estimate to be such that a confidence interval has
 a certain width.
 
+## Correlation coefficients
+
+Let's begin by considering the product-moment (Pearson) correlation
+coefficient $\hat{r}$, which estimates the population parameter
+$r$.  Miraculously, the standard error of $\hat{r}$ is approximately
+$1/\sqrt{n}$ if $x$ and $y$ are Gaussian and $|r|$ is not too large.
+We will focus on this restricted setting here.  Suppose that our
+interest is not to test the null hypothesis that $r = 0$, but rather
+to estimate $r$ with accuracy $0.05$ as assessed using the standard
+error (strictly speaking, this means that the expected squared
+error has probability 0.68 of being less than 0.05).
+
+Since the standard error does not involve $r$, we can only consider
+the sample size $n$.  Setting $1/\sqrt{n} = 0.05$ yields $n=400$.
+This is a quick and easy way to set sample sizes for simple correlation
+analyses.
+
 ## Paired t-test
 
-Most of the basic ideas can be considered in the setting of the
-paired t-test.  Suppose we observe paired data $(x_i, y_i)$
+Suppose we observe paired data $(x_i, y_i)$
 for each of $n$ subjects, and the observations are made
 independently and follow the same distribution (i.e. we have IID
 data).  Let $\mu_x, \mu_y$ denote the population means of
@@ -79,11 +95,31 @@ effect must be three times the standard error to have good power.
 
 This analysis reveals which factors influence the power.  For example,
 the power is greater when $\theta/\tau$ is greater.  This in turn
-happens when $\rho$ is greater.  Thus, in this setting we benefit
-from strong correlations between $x$ and $y$.
+happens when $\rho$ is greater.  Thus, in the setting of a paired
+t-test we benefit
+from strong correlation between $x$ and $y$.
 
 To conduct a thorough power analyis in this setting, we would
 consider plausible values for $n$, $\mu_x - \mu_y$, $\sigma_x$,
 $\sigma_y$, and $\rho$.  Then we can assess which combinations
 of these values yield power that is deemed adequate.
+
+## Analytic power and simulation studies
+
+Essentially every commonly-used statistical procedure has been studied from the
+perspective of power.  Analytic approaches such as tail probability bounds and
+concentration inequalities can yield deep insights into power, but may require
+advanced mathematical knowledge to fully utilize.  Many statistical procedures do not yield simple analytic
+expressions for their power.  In addition, we may want to consider the power in a
+non-standard setting such as one with biased sampling or informative missing data.
+In these situations it is common to utilize simulation studies to estimate the
+power empirically.
+
+Simulation studies are an effective and broadly applicable strategy, but
+also have some drawbacks.  Simulation studies for power do not yield insight
+into which characteristics of the population most influence power and which
+are mostly irrelevant.  Also, simulations can be slow and since they are
+stochastic yield non-reproducible results.  Finally, simulation studies can be
+tedious to implement and there are virtually unlimited population charactistics
+that can be manipulated to fully explore the power.
 
