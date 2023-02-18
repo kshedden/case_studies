@@ -32,7 +32,7 @@ a certain width.
 ## Correlation coefficients
 
 Let's begin by considering the product-moment (Pearson) correlation
-coefficient $\hat{r}$, which estimates the population parameter
+coefficient $\hat{r}$, which estimates the population correlation parameter
 $r$.  Miraculously, the standard error of $\hat{r}$ is approximately
 $1/\sqrt{n}$ if $x$ and $y$ are Gaussian and $|r|$ is not too large.
 We will focus on this restricted setting here.  Suppose that our
@@ -43,8 +43,8 @@ error has probability 0.68 of being less than 0.05).
 
 Since the standard error does not involve $r$, we can only consider
 the sample size $n$.  Setting $1/\sqrt{n} = 0.05$ yields $n=400$.
-This is a quick and easy way to set sample sizes for simple correlation
-analyses.
+This is a quick and easy way to set sample sizes for studies involving
+simple correlation analyses.
 
 ## Paired t-test
 
@@ -57,7 +57,7 @@ standard deviations.  Further, let $\rho$ denote the correlation
 between $x$ and $y$.
 
 A paired t-test considers the differences $d_i = x_i - y_i$
-and conducts a one-sample test of the null hypothesis
+and is based on a one-sample test of the null hypothesis
 $E[d] = 0$.  Under the null hypothesis, the $d_i$ have
 expected value 0 and variance equal to
 $\tau^2  = \sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y$.
@@ -89,7 +89,7 @@ Since the 0.2 quantile of a standard normal distribution is -0.84, we
 achieve 80\% power when $\theta/\tau = 2.84$. That is, the effect
 size must be at least 2.84 to achieve 80\% power.  If sample sizes are small,
 then the standard normal distribution is underdispersed relative
-to the true sampling distribution, so it would be better to replace 2.84 with 3
+to the true sampling distribution, so we may replace 2.84 with 3
 to obtain a good rule of thumb for 80\% power.  In words, the
 effect must be three times the standard error to have good power.
 

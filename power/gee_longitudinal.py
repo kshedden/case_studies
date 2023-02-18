@@ -1,8 +1,3 @@
-import numpy as np
-import pandas as pd
-import statsmodels.api as sm
-from scipy.stats.distributions import norm
-
 """
 A researcher is interested in whether a specific behavioral factor (z)
 associates with substance use (y).  She plans a longitudinal study
@@ -37,6 +32,11 @@ Our goal is to consider the power for detecting an association between
 the behavioral variable and the substance use variable, controlling
 for the confounder, and accounting for within-subject correlations.
 """
+
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+from scipy.stats.distributions import norm
 
 # Generate a n x m matrix in which each row is an independent sample
 # from a m-dimensional normal distribution with exchangeable
