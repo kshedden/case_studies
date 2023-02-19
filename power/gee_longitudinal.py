@@ -132,7 +132,8 @@ def run_power(subuse_icc, behav_icc, rx, m, es):
 
                         z = zs[:, 1]
                         zm = z.mean()
-                        pw = 1 - norm(zm, z.std()).cdf(2)
+                        zs = z.std()
+                        pw = norm(zm, zs).cdf(-2) + 1 - norm(zm, zs).cdf(2)
                         row = [m1, es1, rx1, behav_icc1, subuse_icc1, pw, zm]
                         rslt.append(row)
     rslt = pd.DataFrame(rslt)

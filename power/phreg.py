@@ -75,8 +75,9 @@ def runsim(n, r, shape, lhr):
         m = sm.PHReg.from_formula("time ~ x + z", status="status", strata="group", data=da)
         rr = m.fit()
         zs[i, :] = rr.tvalues
-    zs = zs.mean(0)
-    pw = 1 - norm(zs[0], 1).cdf(2)
+    mn = zs.mean(0)
+    sd = zs.std(0)
+    pw = norm(mn[0], sd[0]).cdf(-2) + 1 - norm(mn[0], sd[0]).cdf(2)
     return pw
 
 # Estimate power for one or more values of n, r, shapes, lhr.
