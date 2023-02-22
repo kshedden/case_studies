@@ -79,14 +79,14 @@ i.e. the effect size is $\theta / \tau$. The power (treating
 $\tau$ as known) is:
 
 $$
-P(T > 2) = P((\bar{d} - \theta)/\tau > 2 - \theta/\tau).
+P(T > 2) = P(n^{1/2}(\bar{d} - \theta)/\tau > 2 - n^{1/2}\theta/\tau).
 $$
 
-Under the alternative hypothesis, $(\bar{d} - \theta)/\tau$ follows a
+Under the alternative hypothesis, $n^{1/2}(\bar{d} - \theta)/\tau$ follows a
 standard normal distribution.
 Conventionally (but somewhat arbitrarily) we seek 80% power.
 Since the 0.2 quantile of a standard normal distribution is -0.84, we
-achieve 80\% power when $\theta/\tau = 2.84$. That is, the effect
+achieve 80\% power when $n^{1/2}\theta/\tau = 2.84$. That is, the effect
 size must be at least 2.84 to achieve 80\% power.  If sample sizes are small,
 then the standard normal distribution is underdispersed relative
 to the true sampling distribution, so we may replace 2.84 with 3
