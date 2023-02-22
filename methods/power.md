@@ -87,7 +87,7 @@ standard normal distribution.
 Conventionally (but somewhat arbitrarily) we seek 80% power.
 Since the 0.2 quantile of a standard normal distribution is -0.84, we
 achieve 80\% power when $\sqrt{n}\theta/\tau = 2.84$. That is, the effect
-size must be at least 2.84 to achieve 80\% power.  If sample sizes are small,
+size must be at least $2.84/\sqrt{n}$ to achieve 80\% power.  If sample sizes are small,
 then the standard normal distribution is underdispersed relative
 to the true sampling distribution, so we may replace 2.84 with 3
 to obtain a good rule of thumb for 80\% power.  In words, the
