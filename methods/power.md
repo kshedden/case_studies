@@ -74,7 +74,7 @@ the null hypothesis when $T > 2$, focusing without loss of
 generality on alternatives in which $\mu_x > \mu_y$. This
 test approximately controls the type-I error rate at 5\%.
 
-To consider the power, suppose that $E[d] = \theta$,
+To consider the power, suppose that $E[d] = \mu_x - \mu_y = \theta$,
 i.e. the effect size is $\theta / \tau$. The power (treating
 $\tau$ as known) is:
 
@@ -91,7 +91,7 @@ size must be at least $2.84/\sqrt{n}$ to achieve 80\% power.  If sample sizes ar
 then the standard normal distribution is underdispersed relative
 to the true sampling distribution, so we may replace 2.84 with 3
 to obtain a good rule of thumb for 80\% power.  In words, the
-mean difference ($\theta$) must be at least three times the standard error $\tau/\sqrt{n}$
+mean difference $\theta$ must be at least three times the standard error $\tau/\sqrt{n}$
 to have good power.
 
 This analysis reveals which factors influence the power.  For example,
