@@ -91,7 +91,8 @@ size must be at least $2.84/\sqrt{n}$ to achieve 80\% power.  If sample sizes ar
 then the standard normal distribution is underdispersed relative
 to the true sampling distribution, so we may replace 2.84 with 3
 to obtain a good rule of thumb for 80\% power.  In words, the
-effect must be three times the standard error to have good power.
+mean difference ($\theta$) must be at least three times the standard error $\tau/\sqrt{n}$
+to have good power.
 
 This analysis reveals which factors influence the power.  For example,
 the power is greater when $\theta/\tau$ is greater.  This in turn
