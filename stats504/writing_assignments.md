@@ -16,7 +16,7 @@ data.
 situation.  A researcher wishes to evaluate the factors that will predict whether students
 in an on-line course complete more quizzes.  The course involves 10 quizzes, and a student
 has probability
-$p(x, z, j) = 1 / (1 + exp(-\beta_0 - \beta_1x - beta_2z - \beta_3j - \beta_4xj))$
+$p(x, z, j) = 1 / (1 + \exp(-\beta_0 - \beta_1x - \beta_2z - \beta_3j - \beta_4xj))$
 of completing the $j^{\rm th}$ quiz, for $j=1, \ldots, 10$,
 where $x$ and $z$ are covariates.  The covariates can be taken to be marginally
 standardized, and the correlation between them is $r_{xz}$.  It is anticipated
