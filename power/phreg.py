@@ -42,7 +42,7 @@ def gendat(n, r, shape, lhr):
     evttime = mn * np.random.weibull(shape, size=n)
 
     # Observation time
-    obstime = np.random.weibull(mn.mean())
+    obstime = mn.mean() * np.random.weibull(2, size=n)
 
     status = 1*(evttime <= obstime)
     time = status*evttime + (1 - status)*obstime
