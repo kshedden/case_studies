@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats.distributions import norm, gamma, poisson
 
-# Generate a randomGaussian n-vector with mean zero and exchangeable correlation icc.
+# Generate a Gaussian n-vector with mean zero and exchangeable correlation icc.
 def gen_exch(n, icc):
     return np.sqrt(icc)*np.random.normal() + np.sqrt(1 - icc)*np.random.normal(size=n)
 
@@ -33,13 +33,12 @@ def gen_exch(n, icc):
 # b: coefficients for x and z
 # scale: the glm scale parameter
 # fam: the family used to generate the data
-def gendat(ngrp, m, r, y_icc, x_icc, z_icc, b, scale, fam):
+def gendat(ngrp, m, r, y_icc, x_icc, z_icc, b, scale, gfam):
 
     x, z, g, e = [], [], [], []
 
     for i in range(ngrp):
-
-        mm = 1 + np.random.poisson(m)
+        mm = 1 + np.random.poisson(m) # group size
         x1 = gen_exch(mm, x_icc)
         x.append(x1)
         z1 = gen_exch(mm, z_icc)
@@ -58,7 +57,8 @@ def gendat(ngrp, m, r, y_icc, x_icc, z_icc, b, scale, fam):
 
     u = norm.cdf(e)
 
-    if fam == "gamma":
+    if gfam == "gamma":
+        # Mean is a*b, variance is a*b^2
         b = scale*mn
         a = 1 / scale
         y = gamma(a, scale=b).ppf(u)
@@ -69,12 +69,12 @@ def gendat(ngrp, m, r, y_icc, x_icc, z_icc, b, scale, fam):
     return da
 
 # Estimate the power in one settting using simulation.
-def run_power(ngrp, m, r, y_icc, x_icc, z_icc, b, scale, fam, gfam):
+def run_power(ngrp, m, r, y_icc, x_icc, z_icc, b, scale, mfam, gfam):
 
     zs = np.zeros((nrep, 3))
     for i in range(nrep):
         da = gendat(ngrp, m, r, y_icc, x_icc, z_icc, b, scale, gfam)
-        r0 = sm.GEE.from_formula("y ~ x + z", "g", family=fam, data=da)
+        r0 = sm.GEE.from_formula("y ~ x + z", "g", family=mfam, data=da)
         m0 = r0.fit()
         zs[i, :] = m0.tvalues
 
@@ -93,14 +93,14 @@ for s in 0, 1:
 
     print(["Null hypothesis is true:", "\nAlternative hypothesis is true:"][int(s)])
 
-    gfam = sm.families.Gamma(link=sm.families.links.log())
-    pw = run_power(200, 5, 0.3, 0.2, 0.2, 0.2, b1, 4, gfam, "gamma")
+    mfam = sm.families.Gamma(link=sm.families.links.log())
+    pw = run_power(200, 5, 0.3, 0.2, 0.2, 0.2, b1, 4, mfam, "gamma")
     print("%6.3f gamma data gamma model" % pw)
-    pw = run_power(200, 5, 0.3, 0.2, 0.2, 0.2, b1, 4, gfam, "poisson")
+    pw = run_power(200, 5, 0.3, 0.2, 0.2, 0.2, b1, 4, mfam, "poisson")
     print("%6.3f Poisson data gamma model" % pw)
 
-    pfam = sm.families.Poisson()
-    pw = run_power(200, 5, 0.3, 0.2, 0.2, 0.2, b1, 4, pfam, "gamma")
+    mfam = sm.families.Poisson()
+    pw = run_power(200, 5, 0.3, 0.2, 0.2, 0.2, b1, 4, mfam, "gamma")
     print("%6.3f gamma data Poisson model" % pw)
-    pw = run_power(200, 5, 0.3, 0.2, 0.2, 0.2, b1, 4, pfam, "poisson")
+    pw = run_power(200, 5, 0.3, 0.2, 0.2, 0.2, b1, 4, mfam, "poisson")
     print("%6.3f Poisson data Poisson model" % pw)
