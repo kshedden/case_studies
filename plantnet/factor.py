@@ -7,7 +7,7 @@ import matplotlib.dates as mdates
 import os
 
 # Adjust the path below to find the data files.
-pa = "/home/kshedden/myscratch/plantnet"
+pa = "/home/kshedden/mynfs/data/Teaching/plantnet"
 df = pd.read_csv(os.path.join(pa, "plants_occurrences.csv.gz"))
 dz = pd.read_csv(os.path.join(pa, "plants_locations.csv.gz"))
 
@@ -56,7 +56,7 @@ pdf.savefig()
 assert((dx.columns == dz.scientificName).all())
 
 # Factor the matrix once, then sort so that the
-# species scores are increasing for the first 
+# species scores are increasing for the first
 # factor.
 u, s, vt = np.linalg.svd(dx, 0)
 v = vt.T

@@ -3,11 +3,11 @@ import numpy as np
 import pandas as pd
 
 # The raw file from plantnet should be located here.
-pa = "/home/kshedden/myscratch/plantnet"
+pa = "/home/kshedden/mynfs/data/Teaching/plantnet"
 
-# This is the raw data file.  If your file name does not
-# match it this needs to be changed.
-fn = "0140072-220831081235567.csv.gz"
+# This is the name of the raw data file.  If your file
+# name does not match it this needs to be changed.
+fn = "0039641-230224095556074.csv.gz"
 
 df = pd.read_csv(os.path.join(pa, fn), delimiter="\t")
 
@@ -29,7 +29,7 @@ def circmean(x):
     return 180 * np.arctan2(s, c) / np.pi
 
 # Mean latitude, longitude, and elevation for each species.
-dz = df.groupby("scientificName").agg({"decimalLatitude": np.mean, "elevation": np.mean, 
+dz = df.groupby("scientificName").agg({"decimalLatitude": np.mean, "elevation": np.mean,
                                        "decimalLongitude": circmean})
 
 # Create a long-form dataframe with a row for every day and for

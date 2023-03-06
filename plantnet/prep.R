@@ -3,11 +3,11 @@ library(readr)
 library(lubridate)
 
 # The raw file from plantnet should be located here.
-pa = "/home/kshedden/myscratch/plantnet"
+pa = "/home/kshedden/mynfs/data/Teaching/plantnet"
 
 # This is the raw data file.  If your file name does not
 # match it this needs to be changed.
-fn = "0140072-220831081235567.csv.gz"
+fn = "0039641-230224095556074.csv.gz"
 
 fn = file.path(pa, fn)
 df = read_delim(fn, delim="\t")

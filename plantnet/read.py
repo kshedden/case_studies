@@ -3,16 +3,15 @@ import pandas as pd
 import os
 
 # The raw data file constructed by prep.jl should be available at this path.
-pa = "/home/kshedden/myscratch/plantnet"
+pa = "/home/kshedden/mynfs/data/Teaching/plantnet"
 
 # Load the raw data
-df = pd.read_csv(os.path.join(pa, "short.csv.gz"))
-df["Date"] = pd.to_datetime(df["Date"])
+df = pd.read_csv(os.path.join(pa, "short.csv.gz"), parse_dates=["Date"])
 
 # The data are heavily skewed toward the more recent years, optionally
 # restrict the analysis to these years.
-firstyear = 2010
-df = df.loc[df.Date >= pd.to_datetime("%4d-1-1" % firstyear), :]
+firstyear = 2018
+df = df.loc[df["Date"].dt.date >= pd.to_datetime("%4d-1-1" % firstyear).date(), :]
 
 # Generate some time variables
 df["year"] = [x.year for x in df.Date]

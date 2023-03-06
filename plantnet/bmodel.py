@@ -5,27 +5,7 @@ import statsmodels.api as sm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import os
-
-# The raw data file constructed by prep.jl should be available at this path.
-pa = "/home/kshedden/myscratch/plantnet"
-
-# Load the raw data
-df = pd.read_csv(os.path.join(pa, "short.csv.gz"))
-df["Date"] = pd.to_datetime(df.Date)
-
-# The data are heavily skewed toward the more recent years, optionally
-# restrict the analysis to these years.
-firstyear = 2010
-df = df.loc[df.Date >= pd.to_datetime("%4d-1-1" % firstyear), :]
-
-# Generate some time variables
-df["Date"] = pd.to_datetime(df["Date"])
-df["year"] = [x.year for x in df.Date]
-df["dayOfYear"] = [x.dayofyear for x in df.Date]
-
-# There are very few records from southern hemisphere
-# so remove them.
-df = df.loc[df.decimalLatitude >= 0, :]
+from read import df, meanyear
 
 # Generate basis functions for latitude, longitude, elevation,
 # and day within year (seasonality).  Seasonality and longitude
@@ -56,7 +36,7 @@ def setbasis(df):
     for k in range(1, 4):
         df["elv%d" % k] = x**k
 
-	# Basis functions for year.
+    # Basis functions for year.
     x = (df["year"] - 2010) / 100
     for k in range(1, 4):
         df["year%d" % k] = x**k
@@ -75,12 +55,12 @@ pdf = PdfPages("bmodel_py.pdf")
 
 # Adjust for everything except the response
 def get_covariate_terms(response):
-	terms = []
-	v = ["day", "decimalLongitude", "decimalLatitude", "elevation"]
-	for (j,te) in enumerate([dayterms, lonterms, latterms, elvterms]):
-		if response != v[j]:
-			terms.append(te)
-	return " + ".join(terms)
+    terms = []
+    v = ["day", "decimalLongitude", "decimalLatitude", "elevation"]
+    for (j,te) in enumerate([dayterms, lonterms, latterms, elvterms]):
+        if response != v[j]:
+            terms.append(te)
+    return " + ".join(terms)
 
 # Fit a linear model for the response variable (should be one of
 # latitude, longitude, or elevation) predicted by other control
