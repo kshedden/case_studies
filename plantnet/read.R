@@ -17,8 +17,8 @@ df = df %>% filter(decimalLatitude >= 0)
 
 # The data are heavily skewed toward the more recent years, optionally
 # restrict the analysis to these years.
-firstyear = 2016
+firstyear = 2018
 df = df %>% filter(year >= firstyear)
 
 meanyear = mean(df$year)
-df = df %>% mutate(decade = (year - meanyear) / 10)
+df = df %>% mutate(year_cen = year - meanyear)

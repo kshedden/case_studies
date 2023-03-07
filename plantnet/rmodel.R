@@ -26,7 +26,7 @@ fitmodel = function(v, df) {
     tx = sprintf("bs(%s, 5)", te)
 
     s = paste(tx, collapse=" + ")
-    fml = sprintf("%s ~ year + %s + (1 + decade | scientificName)", v, s)
+    fml = sprintf("%s ~ year + %s + (1 + year_cen | scientificName)", v, s)
     fml = as.formula(fml)
 
     # Fit the mixed model and print the model summary.
@@ -53,10 +53,10 @@ make_plots = function(mm, rr, va) {
     ys = fixef(mm)[2]
 
     # Plot these years
-    yr = seq(2010, 2020, length.out=10)
+    yr = seq(2018, 2022, length.out=10)
 
-    # The plotted years as decades
-    yx = (yr - meanyear) / 10
+    # The plotted years
+    yx = yr - meanyear
 
     nspecies = dim(rr)[1]
     dp = array(0, c(10*nspecies, 3))

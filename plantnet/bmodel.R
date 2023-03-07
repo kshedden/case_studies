@@ -19,7 +19,7 @@ source("read.R")
 # are circular variables.
 setbasis = function(df) {
 
-    # Basis functions for season.
+    # Sinusoidal basis functions for season.
     per = 365
     for (k in 1:4) {
         s = sprintf("sin_day_%d", k)
@@ -29,7 +29,7 @@ setbasis = function(df) {
         per = per / 2
     }
 
-    # Basis functions for longitude.
+    # Sinusoidal basis functions for longitude.
     per = 180
     for (k in 1:4) {
         s = sprintf("sin_lon_%d", k)
@@ -39,14 +39,14 @@ setbasis = function(df) {
         per = per / 2
     }
 
-    # Basis functions for latitude.
+    # Polynomial basis functions for latitude.
     x = (df$decimalLatitude - 45) / 100
     for (k in 1:3) {
         s = sprintf("lat%d", k)
-        df = df %>% mutate(!!s := x^k)
+        df = df %>% mutate(!!s := poly(decimalLatitude, k))
     }
 
-    # Basis functions for elevation.
+    # Polynomial basis functions for elevation.
     x = (df$elevation - 100) / 1000
     for (k in 1:3) {
         s = sprintf("elv%d", k)
@@ -57,7 +57,7 @@ setbasis = function(df) {
     x = (df$year - 2010) / 100
     for (k in 1:3) {
         s = sprintf("year%d", k)
-        df = df %>% mutate(!!s := x^k)
+        df = df %>% mutate(!!s := poly(year, k))
     }
 
     return(df)
@@ -86,8 +86,8 @@ get_covariate_terms = function(response) {
     return(paste(terms, collapse=" + "))
 }
 
-# Fit models with year as a linear term, and additive main effects
-# for all non-response variables.
+# Compare models with and without year as a linear term, including
+# additive main effects for all predictor variables.
 fit_linear = function(response) {
 
     terms = get_covariate_terms(response)
