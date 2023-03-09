@@ -1,8 +1,8 @@
 # Multilevel regression
 
 Regression analysis aims to understand the conditional distribution of
-a scalar response $y$ in relation to explanatory variables $x \in
-{\cal R}^p$.  In many familiar forms of regression, we focus on the
+a scalar response $y$ in relation to explanatory variables
+$x \in {\cal R}^p$.  In many familiar forms of regression, we focus on the
 marginal distribution $y|x$.  However it may be that we collect data
 in such a way that different observed values of $y$ are correlated
 with each other.  Multilevel regression is a means to understand the
@@ -140,7 +140,7 @@ $x_2$.  Observation $y_i$ belongs to block $b_i$ and has covariates
 $x_{1i}$, $x_{2i}$, etc.
 
 The "random intercepts" model discussed above can be expressed using
-the formula *y ~ x1 + x2 + (1 | b)*, where the special syntax 
+the formula *y ~ x1 + x2 + (1 | b)*, where the special syntax
 *(1 | b)* indicates that the model has a random intercept, with distinct
 values of $b$ defining groups that each have their own random
 intercept.
@@ -164,7 +164,7 @@ variance $\tau_1^2$, and as above $\theta_i$ is random with mean zero
 and variance $\tau^2$.  Further, we take $\gamma_i$ and $\theta_i$ to
 be independent of each other.
 
-The formula for a model with random slopes can be expressed as 
+The formula for a model with random slopes can be expressed as
 *y ~ x1 + x2 + (1 + x1 | b)*.
 
 ## Predicting random effects
