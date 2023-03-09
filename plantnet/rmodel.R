@@ -19,22 +19,30 @@ df = df[complete.cases(df),]
 # Fit a multilevel regression with variable 'v' as the outcome using
 # the data in dataframe 'df'.  The variables in 'va' that are not in
 # 'v' are used as coviates (modeled with splines).
-fitmodel = function(v, df) {
+fitmodel = function(v, df, fv) {
 
     # Control for the variables except for the outcome
     te = va[va != v]
     tx = sprintf("bs(%s, 5)", te)
 
     s = paste(tx, collapse=" + ")
-    fml = sprintf("%s ~ year + %s + (1 + year_cen | scientificName)", v, s)
+    if (fv == 1) {
+        fml = sprintf("%s ~ %s + (1 | scientificName)", v, s)
+    } else if (fv == 2) {
+        fml = sprintf("%s ~ year + %s + (1 | scientificName)", v, s)
+    } else if (fv == 3) {
+        fml = sprintf("%s ~ %s + (1 + year_cen | scientificName)", v, s)
+    } else {
+        fml = sprintf("%s ~ year + %s + (1 + year_cen | scientificName)", v, s)
+    }
     fml = as.formula(fml)
 
     # Fit the mixed model and print the model summary.
     m0 = lmer(fml, data=df)
-    cat(sprintf("n=%d observations", dim(model.matrix(m0))[1]))
+    cat(sprintf("n=%d observations\n", dim(model.matrix(m0))[1]))
     rr = ranef(m0)$scientificName
-    cat(sprintf("n=%d species", length(rr)))
-    print(summary(m0))
+    cat(sprintf("n=%d species", dim(rr)[1]))
+    #print(summary(m0))
     cat("\n\n")
 
     return(list(mm=m0, rr=rr))
@@ -76,9 +84,15 @@ make_plots = function(mm, rr, va) {
 }
 
 for (v in va) {
-    fm = fitmodel(v, df)
-    mm = fm$mm
-    rr = fm$rr
+    fm = list()
+    print(va)
+    for (k in 1:4) {
+        fm[[k]] = fitmodel(v, df, k)
+        cat(sprintf("AIC=%f\n", AIC(fm[[k]]$mm)))
+    }
+
+    mm = fm[[4]]$mm
+    rr = fm[[4]]$rr
     make_plots(mm, rr, v)
 }
 

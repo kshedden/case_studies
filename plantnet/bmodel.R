@@ -20,6 +20,7 @@ source("read.R")
 setbasis = function(df) {
 
     # Sinusoidal basis functions for season.
+    # See http://wrean.ca/cazelais/math252/lc-trig.pdf
     per = 365
     for (k in 1:4) {
         s = sprintf("sin_day_%d", k)
@@ -30,6 +31,7 @@ setbasis = function(df) {
     }
 
     # Sinusoidal basis functions for longitude.
+    # Longitude is a circular variable.
     per = 180
     for (k in 1:4) {
         s = sprintf("sin_lon_%d", k)

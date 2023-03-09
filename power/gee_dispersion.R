@@ -28,12 +28,12 @@ gendat = function(ngrp, m, r, y_icc, x_icc, z_icc, b, scale, fam) {
 
     for (i in 1:ngrp) {
         mm = 1 + rpois(1, m) # group size
-        x1 = gen_exch(mm, x_icc)
+        x1 = gen_exch(mm, x_icc) # primary covariate
         x[[i]] = x1
         u = gen_exch(mm, z_icc)
-        z[[i]] = r*x[[i]] + sqrt(1 - r^2)*u
-        e[[i]] = gen_exch(mm, y_icc)
-        g[[i]] = i*array(1, mm)
+        z[[i]] = r*x[[i]] + sqrt(1 - r^2)*u # confounder
+        e[[i]] = gen_exch(mm, y_icc) # this will go into the copula
+        g[[i]] = i*array(1, mm) # group id
     }
 
     x = unlist(x)
@@ -44,8 +44,8 @@ gendat = function(ngrp, m, r, y_icc, x_icc, z_icc, b, scale, fam) {
     # The marginal mean
     mn = exp(b[1]*x + b[2]*z)
 
+    # Use a copula to generate the dependent variable.
     u = pnorm(e)
-
     if (fam[[1]] == "gamma") {
         # Mean is a*b, variance is a*b^2
         b = scale*mn
