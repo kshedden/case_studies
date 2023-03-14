@@ -125,13 +125,13 @@ Suppose we have a data matrix $X$ and wish to understand its structure.  We
 can begin my double centering the matrix $X$ as discussed above:
 
 $$
-X_{ij} = m + r_i + c_j + S_{ij}.
+X_{ij} = m + r_i + c_j + R_{ij}.
 $$
 
 Here, $m$ is the grand mean of $X$, $r$ contains the row means of $X-m$,
 $c$ contains the column means of $X-m$, and
 $R_{ij} \equiv X_{ij} - m - r_i - c_j$ are residuals.  Next we can
-take the SVD of $S$, yielding $S = U{\rm diag}(S)V^T$, or equivalently
+take the SVD of $R$, yielding $R = U{\rm diag}(S)V^T$, or equivalently
 
 $$
 R_{ij} = \sum_{k=1}^p S_k U_{ik}V_{jk}.
