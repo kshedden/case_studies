@@ -130,22 +130,22 @@ $$
 
 Here, $m$ is the grand mean of $X$, $r$ contains the row means of $X-m$,
 $c$ contains the column means of $X-m$, and
-$S_{ij} \equiv X_{ij} - m - r_i - c_j$ are residuals.  Next we can
-take the SVD of $S$, yielding $S = USV^T$, or equivalently
+$R_{ij} \equiv X_{ij} - m - r_i - c_j$ are residuals.  Next we can
+take the SVD of $S$, yielding $S = U{\rm diag}(S)V^T$, or equivalently
 
 $$
-S_{ij} = \sum_{k=1}^p S_{kk} U_{ik}V_{jk}.
+R_{ij} = \sum_{k=1}^p S_k U_{ik}V_{jk}.
 $$
 
 Although there are $p$ terms in the SVD of $S$, the first few terms may capture
 most of the structure, so
 
 $$
-S_{ij} \approx \sum_{k=1}^q S_{kk} U_{ik}V_{jk}.
+R_{ij} \approx \sum_{k=1}^q S_{kk} U_{ik}V_{jk}.
 $$
 
 for $q < p$ (this approximation holds better when the *tail singular values*
-$S_{q+1,q+1}, \ldots, S_{pp}$ are small.  One important property that results from calculating
+$S_{q+1}, \ldots, S_p$ are small.  One important property that results from calculating
 the SVD for a double-centered matrix is that $U_{\cdot k} = 0$ and $V_{\cdot k} = 0$.
 That is, the columns of $U$ and $V$ are centered.  This column centering means
 that the SVD captures "deviations from the mean" represented by the additive
