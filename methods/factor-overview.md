@@ -144,7 +144,7 @@ $$
 S_{ij} \approx \sum_{k=1}^q S_{kk} U_{ik}V_{jk}.
 $$
 
-for $q < p$ (this approximation holds better when the *tail singular values$
+for $q < p$ (this approximation holds better when the *tail singular values*
 $S_{q+1,q+1}, \ldots, S_{pp}$ are small.  One important property that results from calculating
 the SVD for a double-centered matrix is that $U_{\cdot k} = 0$ and $V_{\cdot k} = 0$.
 That is, the columns of $U$ and $V$ are centered.  This column centering means
