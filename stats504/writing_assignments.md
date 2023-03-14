@@ -30,3 +30,5 @@ each student drops out of the course after taking quiz $j$ with probability $q_j
 (after dropping out of the course, the student will not take any more quizzes).  It
 is expected that $q_j$ is increasing in $j$ and the probability of not dropping out
 at all is $0.5$.
+
+5. (March 23rd) Write a memo based on your analysis of the Plantnet data.
