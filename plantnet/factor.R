@@ -3,7 +3,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-pa = "/home/kshedden/myscratch/plantnet"
+pa = "/home/kshedden/mynfs/data/Teaching/plantnet"
 df = read_csv(file.path(pa, "plants_occurrences.csv.gz"))
 dz = read_csv(file.path(pa, "plants_locations.csv.gz"))
 
@@ -12,6 +12,7 @@ pdf("factor_r_plots.pdf")
 # Pivot the data so that the species are in the columns
 # and the dates are in the rows.
 dx = df %>% select(Date, scientificName, nobs) %>% pivot_wider(Date, names_from=scientificName, values_from=nobs)
+dx = dx %>% filter(Date >= "2018-01-01")
 dates = dx$Date
 dx = dx %>% select(-Date)
 species = names(dx)
@@ -68,7 +69,7 @@ print(plt)
 for (j in 1:10) {
 	# Plot the date factor scores
 	n = length(dates)
-	dp = data.frame(x=dates[(n-2500):n], y=usv$u[(n-2500):n,j])
+	dp = data.frame(x=dates, y=usv$u[,j])
 	plt = ggplot(aes(x=x, y=y), data=dp) + geom_line()
 	plt = plt + labs(x="Date", y=sprintf("Date factor %d score", j))
 	plt = plt + ggtitle(sprintf("Factor %d", j))

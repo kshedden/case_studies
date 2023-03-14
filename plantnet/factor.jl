@@ -8,7 +8,7 @@ ifig = 0
 rm("plots", recursive=true, force=true)
 mkdir("plots")
 
-pa = "/home/kshedden/myscratch/plantnet"
+pa = "/home/kshedden/mynfs/data/Teaching/plantnet"
 
 df = open(joinpath(pa, "plants_occurrences.csv.gz")) do io
     CSV.read(io, DataFrame)
@@ -21,6 +21,7 @@ end
 # Pivot the data so that the species are in the columns
 # and the dates are in the rows.
 dx = df[:, [:Date, :scientificName, :nobs]]
+dx = filter(r->r.Date >= "2018-01-01", dx)
 dx = unstack(dx, :Date, :scientificName, :nobs)
 dates = dx[:, :Date]
 dx = select(dx, Not(:Date))
@@ -126,7 +127,7 @@ function make_plots(ifig)
         PyPlot.clf()
         PyPlot.axes([0.13, 0.2, 0.8, 0.7])
             PyPlot.grid(true)
-        PyPlot.plot(dates[end-2500:end], u[end-2500:end, j], "-")
+        PyPlot.plot(dates, u[:, j], "-")
         PyPlot.gca().xaxis.set_major_locator(mdates.MonthLocator(bymonth=(1, 7)))
         for x in PyPlot.gca().xaxis.get_ticklabels()
             x.set_rotation(-90)

@@ -17,7 +17,9 @@ pdf = PdfPages("factor_py_plots.pdf")
 # and the dates are in the rows.
 dx = df[["Date", "scientificName", "nobs"]]
 dx = dx.set_index(["Date", "scientificName"]).unstack()
+dx = dx.set_index(pd.to_datetime(dx.index))
 dx.columns = [x[1] for x in dx.columns]
+dx = dx.loc[dx.index >= "2018-01-01", :]
 
 # Variance stabilizing transformation
 dx = np.sqrt(dx)
@@ -35,7 +37,7 @@ plt.clf()
 plt.axes([0.1, 0.2, 0.8, 0.7])
 plt.grid(True)
 plt.plot(dx.index, datemeans, "-")
-plt.gca().xaxis.set_major_locator(mdates.YearLocator(5))
+plt.gca().xaxis.set_major_locator(mdates.YearLocator(1))
 for x in plt.gca().xaxis.get_ticklabels():
     x.set_rotation(-90)
 plt.xlabel("Date", size=15)
