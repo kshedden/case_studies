@@ -98,10 +98,10 @@ one or more of the singular values are zero.
 One use of the SVD is to obtain a low rank approximation to a matrix
 $X$.  Suppose we truncate the SVD using only the first $k$ components,
 so that $\tilde{U}$ is the $n\times k$ matrix consisting of the
-leading (left-most) $k$ columns of $U$, $\tilde{S}$ is the upper-left
-$k\times k$ block of $S$, and $V$ is the $p\times k$ matrix consisting
+leading (left-most) $k$ columns of $U$, $\tilde{S} = (S_1, \ldots, S_k)$,
+and $V$ is the $p\times k$ matrix consisting
 of the leading $k$ columns of $V$.  In this case, the matrix
-$\tilde{X} \equiv \tilde{U}\tilde{S}\tilde{V}^T$ is a rank $k$ matrix
+$\tilde{X} \equiv \tilde{U}{\rm diag}(\tilde{S})\tilde{V}^T$ is a rank $k$ matrix
 (it has $k$ non-zero singular values).
 According to the
 [Eckart-Young](https://en.wikipedia.org/wiki/Low-rank_approximation)
