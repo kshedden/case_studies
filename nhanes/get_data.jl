@@ -6,7 +6,7 @@ urls = [
     "https://wwwn.cdc.gov/Nchs/Nhanes/2017-2018/BPX_J.XPT",
     ]
 
-pa = "/home/kshedden/data/Teaching/nhanes"
+pa = "/home/kshedden/mynfs/data/Teaching/nhanes"
 mkpath(pa)
 
 for url in urls
@@ -17,11 +17,13 @@ end
 
 for (root, dirs, files) in walkdir(pa)
     for file in files
-        if !endswith(file, ".XPT")
+        fx = splitext(file)
+        ext = last(fx)
+        if lowercase(ext) != ".xpt"
             continue
         end
         tb = readstat(joinpath(root, file))
         da = DataFrame(tb)
-        CSV.write(joinpath(pa, replace(file, ".XPT"=>".csv.gz")), da)
+        CSV.write(joinpath(pa, replace(file, ext=>".csv.gz")), da)
     end
 end
