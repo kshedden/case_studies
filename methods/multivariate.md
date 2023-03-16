@@ -23,15 +23,16 @@ methods have been developed to take advantage of this property.
 
 ## Data Depth
 
-There are various ways to measure the *depth* of a point $z \in {\cal
-R}^d$ relative to a distribution or collection of points $\{x_i\in
-{\cal R}^d; i=1,\ldots,n}$.  Formally, a *depth measure* on ${\cal R}^d$
+There are various ways to measure the *depth* of a point
+$z \in {\cal R}^d$ relative to a distribution or collection of points
+$\{x_i\in {\cal R}^d; i=1,\ldots,n}$.  Formally, a *depth measure* on ${\cal R}^d$
 is a function from ${\cal R}^d\rightarrow{\cal R}^+$ that quantifies the
 depth of each point as a non-negative real number.
 
 "Deep" points are surrounded in all
 directions by many other points, while "shallow" points lie near the
-surface or exterior of the point set.  Deep points are often referred to as having high "centrality" while
+surface or exterior of the point set.  Deep points are often referred to as
+having high "centrality" while
 shallow points have low centrality or high "outlyingness".
 Data depth can be viewed as a multivariate generalization of the
 notion of a quantile, with the deepest point in a set being a
@@ -44,9 +45,9 @@ Below are several examples of depths.
 The original definition of depth was the *halfspace depth* introduced
 by John Tukey in 1975.  The definition of the halfspace depth is
 simple to describe graphically and a bit more difficult to define
-formally.  To calculate the halfspace depth of a single point $z\in
-{\cal R}^d$ with respect to a collection of points $\{x_i; i=1,
-\ldots, n\}$, with each $x_i \in {\cal R}^d$, let $U$ denote the set
+formally.  To calculate the halfspace depth of a single point
+$z\in {\cal R}^d$ with respect to a collection of points
+$\{x_i; i=1, \ldots, n\}$, with each $x_i \in {\cal R}^d$, let $U$ denote the set
 of all unit vectors in ${\cal R}^d$ and define the halfspace depth as
 
 $$
@@ -213,7 +214,7 @@ and can be ignored when constructing $G$.  Thus, our goal is to construct
 $G$ that minimizes
 
 $$
-2E\|X-Y\| - E\|X-X^\prime\|.
+2E\\|X-Y\\| - E\|X-X^\prime\|.
 $$
 
 It is worth considering an alternative approach in which we simply minimize
