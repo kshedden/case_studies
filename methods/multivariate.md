@@ -105,7 +105,7 @@ triples of points in the reference set.  A more formal definition is as
 follows:
 
 $$
-D_B(z; \\{x_i\\}) = {\rm Avg}_{j_1 < j_2 < j_3} {\rm Avg}_k {\cal I}[{\rm min}(x_{j_1}(k), x_{j_2}(k), x_{j_3}(k)) < v(k) < {\rm max}(x_{j_1}(k), x_{j_2}(k), x_{j_3}(k))].
+D_B(z; \\{x_i\\}) = {\rm Avg}_{j_1 < j_2 < j_3} {\rm Avg}_k {\cal I}[{\rm min}(x_{j_1}(k), x_{j_2}(k), x_{j_3}(k)) < z(k) < {\rm max}(x_{j_1}(k), x_{j_2}(k), x_{j_3}(k))].
 $$
 
 ### Properties of a good depth function
@@ -114,7 +114,7 @@ Analysis based on depths does not directly rely on probability models,
 making it quite distinct from many other methods of statistical data
 analysis.  For statistical methods based on probability there are
 standard properties such as unbiasedness, consistency, accuracy, and
-efficiency that are used to quantify the performance of the approach.
+efficiency that are used to evaluate the performance of the approach.
 Although it is possible to place depth into a probabilistic framework so
 that these notions can be applied, several researchers have attempted
 to define the geometric properties that a depth function should
@@ -132,8 +132,8 @@ the vector $0_d$ achieves the maximum depth.
 
 * *Monotonicity relative to the deepest point* -- Let $\tilde{x}$ be
 the deepest point and we consider any unit vector $u$, and we then
-evaluate the depth at $\tilde{x} + \lambda u$ for $\lambda \in {\cal
-R}^+$, then the depth is a decreasing function of $\lambda$.
+evaluate the depth at $\tilde{x} + \lambda u$ for
+$\lambda \in {\cal R}^+$, then the depth is a decreasing function of $\lambda$.
 
 * *Vanishing at infinity* -- for any sequence $z_i$ with $\\|z_i\\|$
 tending to infinity, the depths of the $z_i$ tend to zero.
@@ -192,7 +192,7 @@ very effective and relatively easy to work with is called the *energy distance* 
 names as well), and is defined as
 
 $$
-2E\|X-Y\| - E\|X-X^\prime\| - E\|Y-Y^\prime\|.
+2E\\|X-Y\\| - E\\|X-X^\prime\\| - E\\|Y-Y^\prime\\|.
 $$
 
 Here, $X$, $X^\prime$ are independent draws from $F$, and $Y$, $Y^\prime$
