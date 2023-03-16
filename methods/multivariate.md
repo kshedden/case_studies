@@ -73,7 +73,7 @@ The spatial depth has a simple definition that is relatively easy to
 compute in high dimensions:
 
 $$
-D_S(z; \{x_i\}) = 1 - \|{\rm Avg}_i\{(x_i-z)/\|x_i-z\|\}\|
+D_S(z; \{x_i\}) = 1 - \\|{\rm Avg}_i\{(x_i-z)/ \\|x_i-z\|\}\\|
 $$
 
 Note that $(x_i-z)/\\|x_i-z\\|$ is a unit vector pointing in the
@@ -89,7 +89,7 @@ small magnitude.
 The $L_2$ depth also has a simple definition and is easy to compute:
 
 $$
-D_{L_2}(z; \{x_i\}) = 1 / (1 + {\rm Avg}_i\{\|x_i-z\|\}).
+D_{L_2}(z; \{x_i\}) = 1 / (1 + {\rm Avg}_i\{\\|x_i-z\\|\}).
 $$
 
 ### Band depth
