@@ -214,7 +214,7 @@ and can be ignored when constructing $G$.  Thus, our goal is to construct
 $G$ that minimizes
 
 $$
-2E\\|X-Y\\| - E\|X-X^\prime\|.
+2E\\|X - Y\\| - E\\|X - X^\prime\\|.
 $$
 
 It is worth considering an alternative approach in which we simply minimize
@@ -230,7 +230,7 @@ is supported on a finite set of points $x_1, \ldots, x_n$.  This leads
 us to the empirical analogue of the distance function above:
 
 $$
-\frac{2}{nN}\sum_{i=1}^n\sum_{j=1}^N\|y_j - x_i\| - \frac{1}{n^2}\sum_{i=1}^N\sum_{j=1}^n\|x_i-x_j\|.
+\frac{2}{nN}\sum_{i=1}^n\sum_{j=1}^N\\|y_j - x_i\\| - \frac{1}{n^2}\sum_{i=1}^N\sum_{j=1}^n\\|x_i-x_j\\|.
 $$
 
 Our goal here was to discuss the motivation behind the support point algorithm.
