@@ -7,9 +7,9 @@ multivariate methods such as PCA, CCA, etc.
 ## Functional data
 
 A particular type of multivariate data is known as *functional data*,
-in which we observe vectors $v$ that arise from evaluating
+in which we observe vectors $v \in {\cal R}^d$ that arise from evaluating
 a function on a grid of points, i.e. $v_i = f_i(t_i)$ for
-a grid $t_1 < t_2 < \cdots$.  If the functions $f_i$ are smooth
+a grid $t_1 < t_2 < \cdots < t_d$.  If the functions $f_i$ are smooth
 then the elements of each $v_i$ will reflect this smoothness.
 *Functional Data Analysis* (FDA) encompasses many methods for
 analyzing functions as data.  In practice we never
@@ -25,7 +25,7 @@ methods have been developed to take advantage of this property.
 
 There are various ways to measure the *depth* of a point
 $z \in {\cal R}^d$ relative to a distribution or collection of points
-$\{x_i\in {\cal R}^d; i=1,\ldots,n}$.  Formally, a *depth measure* on ${\cal R}^d$
+$\\{x_i\in {\cal R}^d; i=1,\ldots,n\\}$.  Formally, a *depth measure* on ${\cal R}^d$
 is a function from ${\cal R}^d\rightarrow{\cal R}^+$ that quantifies the
 depth of each point as a non-negative real number.
 
