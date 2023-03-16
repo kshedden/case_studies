@@ -97,7 +97,7 @@ $$
 Another way to measure depth that is especially useful for vectors that are
 sampled functions is the *band depth*.   In the most common version of the
 band depth, we consider all triples of three distinct values in the reference
-set $\\{x_i\\}$, say $x_{j_1}$, $x_{j_2}$, $x_{j_3}$ where $j_1<j_2<j_3$.  For
+set $\\{x_i\\}$, say $x_{j_1}$, $x_{j_2}$, $x_{j_3}$ where $j_1 < j_2 < j_3$.  For
 each such triple we calculate the proportion of indices $k$ such that $z(k)$
 lies between the maximum and minimum of
 $x_{j_1}(k)$, $x_{j_2}(k)$, $x_{j_3}(k)$.  These values are then averaged over all
