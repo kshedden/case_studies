@@ -4,25 +4,25 @@ A *time series* is a sequence of observed values viewed as a single
 sample from a joint probability distribution. The central premise of a
 time series is that the order in which the values are observed
 matters.  The underlying probability distribution assigns different
-probabilities to the same set of values if they are observed in 
+probabilities to the same set of values if they are observed in
 different orders.
 
 Let $y_1, y_2, \ldots,y_n$ denote a time series.  This is a sample of
-size $n=1$ from a probability distribution on the sample space ${\cal
-R}^n$.  For the most part we focus here on *gridded* time series,
+size $n=1$ from a probability distribution on the sample space
+${\cal R}^n$.  For the most part we focus here on *gridded* time series,
 meaning that the amount of time elapsing from $y_t$ to $y_{t+1}$
 is the same for all values of $t$.  Some time series are irregularly
 spaced or non-gridded, so we must consider the underlying sequence of time
 values $t_i$ at which the data are observed.
 
 The *mean trend* is the sequence of means of the values in the time
-series, i.e. the sequence $E[y_t]$ for $t=1, 2, \ldots$.  
+series, i.e. the sequence $E[y_t]$ for $t=1, 2, \ldots$.
 Note that this is a deterministic sequence, not a sequence of random
 variables.
 Some time series exhibit strong patterns that
 are best viewed as *mean trends*.  For example, if
-$y_t$ is the global human population in year $t$, say where $t=1000,
-1001, \ldots$, then $y_t$ is increasing.  We don't know for sure
+$y_t$ is the global human population in year $t$, say where
+$t=1000, 1001, \ldots$, then $y_t$ is increasing.  We don't know for sure
 if this is a trend in the mean, i.e. that $E[y_t]$ is increasing,
 since we can only observe the history
 of humanity on Earth one time.  But based on the nature of biological
@@ -36,8 +36,8 @@ has been removed.
 If a time series has no mean trend, then $E[y_t]= c$ for all $t$, for
 some constant $c\in {\cal R}$.  In many cases we will have $c=0$.
 Such a series may still have variance and/or covariance trends,
-e.g. perhaps ${\rm var}(y_t)$ is increasing in $t$, or ${\rm cov}(y_t,
-y_{t+1})$ is increasing (or decreasing) in $t$.
+e.g. perhaps ${\rm var}(y_t)$ is increasing in $t$, or
+${\rm cov}(y_t, y_{t+1})$ is increasing (or decreasing) in $t$.
 
 A time series is *stationary* if for any $m>0$, the joint probability
 distribution of $y_t, y_{t+1}, \ldots, y_{t+m}$ does not depend on
@@ -83,18 +83,18 @@ function* of the time series.  This autocorrelation at lag $d$ can be estimated
 by taking the sample Pearson correlation between the sequences $(y_1, \ldots, y_{n-d})$ and
 $(y_{1+d}, \ldots, y_n)$.
 
-For IID data, the autocorrelation function is $(\sigma^2, 0, 0,
-\ldots)$, or $\gamma_j = \sigma^2{\cal I}_{j=1}$.  Other
+For IID data, the autocorrelation function is
+$(\sigma^2, 0, 0, \ldots)$, or $\gamma_j = \sigma^2{\cal I}_{j=1}$.  Other
 commonly-encountered forms for the autocorrelation function are an
 exponential form $\gamma_j \propto \exp(-j/\lambda)$, or a power-law
 form $\gamma_j = c/(1+j)^b$.
 
 If we consider all autocorrelations at all possible lags, we can
-ask whether the autocorrelations are summable, i.e. does $\sum_{j=-\infty}^\infty
-|\gamma_j|$ exist as a finite value?  If the autocorrelations decay
+ask whether the autocorrelations are summable, i.e. does
+$\sum_{j=-\infty}^\infty |\gamma_j|$ exist as a finite value?  If the autocorrelations decay
 exponentially, then the autocorrelations are summable.  In the
-power-law case, the autocorrelations are summable if and only if $b >
-1$.
+power-law case, the autocorrelations are summable if and only if
+$b > 1$.
 
 A time series with summable autocorrelations exhibits *short range
 dependence* while otherwise the series exhibits *long range
@@ -122,7 +122,7 @@ and it population values is equal to zero when evaluating the tau-correlation
 between two independent random variables $X$ and $Y$.  As with Pearson correlation,
 the converse of this statement is not true -- the tau-correlation can be zero even if $X$
 and $Y$ are dependent.  Positive values of the tau-correlation correspond
-to a type of positive association -- but this is different from the positive 
+to a type of positive association -- but this is different from the positive
 association in Pearson correlation.  The main reason to use tau-correlation
 arises when the data come from heavy-tailed distributions and the extreme values
 make it very difficult to accurately estimate the Pearson correlation.
@@ -169,8 +169,8 @@ Autoregression analysis can use any method for fitting regression
 models, for example linear modeling via ordinary least squares (OLS).
 Suppose we choose to fit an autoregressive model of "order m", meaning
 that we choose to model the conditional distribution of $y_t$ given
-$y_{t-1}, y_{t-2}, \ldots$ using only the truncated history $y_{t-1},
-\ldots, y_{t-m}$.  If a time series is stationary and $m$-dependent,
+$y_{t-1}, y_{t-2}, \ldots$ using only the truncated history
+$y_{t-1}, \ldots, y_{t-m}$.  If a time series is stationary and $m$-dependent,
 it makes sense to analyze it using an order $m$ autoregression.  Note
 that in practice we do not know if our time series is $m$-dependent,
 and if it is what is the value of $m$.  The value of $m$ is assessed
@@ -210,21 +210,21 @@ A useful way to summarize the dependence structure of a time series is
 through the *Hurst parameter*.  There are various ways to introduce
 the Hurst parameter and we will only consider one approach here.
 Recall that if we have IID data $x_1, \ldots, x_m$, the variance of
-the sample mean 
+the sample mean
 
 $$
 \bar{x}_m = (x_1 + \cdots + x_m)/m
-$$ 
+$$
 
 is $\sigma^2/m$. Thus, if we double the sample size to $2m$, the variance of the sample
-mean 
+mean
 
 $$
 \bar{x}_{2m} = (x_1 + \cdots + x_{2m})/(2m)
-$$ 
+$$
 
 is $\sigma^2/(2m)$ -- the variance of the sample mean is
-reduced by a factor of two when we double the sample size.  
+reduced by a factor of two when we double the sample size.
 If we consider the log variance of the sample mean in relation
 to to the log sample size, we get
 
@@ -242,17 +242,17 @@ defined above.  However if the dependence is long range, the variance
 will scale in a qualitatively different way.
 
 If we have a sufficient amount of data, for a given block-size $m$ we can calculate the sample means
-for consecutive blocks of $m$ observations, $\bar{x}^m_1 = {\rm Avg}(x_1,
-\ldots, x_m)$, $\bar{x}^m_2={\rm Avg}(x_{m+1}, \ldots, x_{2m})$ etc., and
-then calculate the sample variance of these sample means:
+for consecutive blocks of $m$ observations,
+$\bar{x}^m_1 = {\rm Avg}(x_1, \ldots, x_m)$, $\bar{x}^m_2={\rm Avg}(x_{m+1}, \ldots, x_{2m})$
+etc., and then calculate the sample variance of these sample means:
 
 $$
 v_m = {\rm var}(\bar{x}^m_1, \bar{x}^m_2, \ldots).
 $$
 
 Finally, we can consider the log-space relationship between $\log(m)$
-and $\log(v_m)$.  If $v_m = a\cdot m^b$ then $\log(v_m) = \log(a) +
-b\log(m)$, so $b$ is the slope of $\log(v_m)$ on $\log(m)$.  For IID
+and $\log(v_m)$.  If $v_m = a\cdot m^b$ then
+$\log(v_m) = \log(a) + b\log(m)$, so $b$ is the slope of $\log(v_m)$ on $\log(m)$.  For IID
 and short-range dependent data, then $b=-1$ will hold.  If $b>-1$ then
 the variances decrease slower than in the IID case, which is a
 logical consequence of long-range dependence.  Long-range dependence
@@ -268,10 +268,10 @@ When $b>-1$, it follows that $h > 1/2$.
 
 Many time series exhibit periodic behavior, meaning that for some period $p$,
 $y_{t+p} \approx y_t$ for all $t$.  *Mean periodicity* refers to the setting
-where $E[y_{t+p}] = E[y_t]$ for all $t$.  
+where $E[y_{t+p}] = E[y_t]$ for all $t$.
 
 Instead of discussing periodicity in terms
-of the period $p$, we can express it in terms of the frequency $f=1/p$.  
+of the period $p$, we can express it in terms of the frequency $f=1/p$.
 The period is the amount of time needed to complete one cycle.  The
 frequency is the number of cycles completed in each unit of time.
 
@@ -291,7 +291,7 @@ $$
 A\cos(2\pi ft + \phi) = a\cdot \cos(2\pi ft) + b\cdot \sin(2\pi ft)
 $$
 
-where $a, b$ are real scalars (specifically $a=A\cos(\phi)$ and $b=-A\sin(\phi)$).  
+where $a, b$ are real scalars (specifically $a=A\cos(\phi)$ and $b=-A\sin(\phi)$).
 
 It
 turns out that sinusoidal curves of integer-valued frequency are mutually
@@ -301,15 +301,15 @@ to assess the periodicity of an observed time series.
 Specifically, let $s_k(i) = \sin(2\pi ki)$ and $c_k(i) = \cos(2\pi ki)$
 for $i=1, \ldots, n$.
 These vectors are mutually orthogonal: if $j \ne k$, $s_j^\prime s_k = 0$, $c_j^\prime c_k = 0$,
-and $s_j^\prime c_k = 0$ for all $j, k$.  We can use a collection of these 
+and $s_j^\prime c_k = 0$ for all $j, k$.  We can use a collection of these
 vectors as basis vectors for least squares regression.  The fitted time series
 corresponding to a given basis set is
 
 $$
-\hat{y} = \sum_j (s_j^\prime y) \cdot s_j / (s_j^\prime s_j) + (c_j^\prime y) \cdot c_j / (c_j^\prime c_j). 
+\hat{y} = \sum_j (s_j^\prime y) \cdot s_j / (s_j^\prime s_j) + (c_j^\prime y) \cdot c_j / (c_j^\prime c_j).
 $$
 
-The *energy* (or *power*) in the observed time series $y$ at frequency $j$ is 
+The *energy* (or *power*) in the observed time series $y$ at frequency $j$ is
 
 $$
 (s_j^\prime y)^2 / (s_j^\prime s_j)^2 + (c_j^\prime y)^2 / (c_j^\prime c_j)^2
@@ -327,11 +327,11 @@ If the time series is not observed at equally-spaced time points a generalizatio
 this framework can be used.  Let $t_1, \ldots, t_n$ denote the time points at which
 a time series $y_1, \ldots, y_n$ was observed, and define sinusoidal basis functions
 as $s_k(i) = \sin(2\pi kt_i)$ and $c_k(i) = \cos(2\pi kt_i)$.
-We can use least square regression to fit $y$ to a set of such basis functions and 
+We can use least square regression to fit $y$ to a set of such basis functions and
 produce the periodogram.  In this case, the basis functions are not orthogonal
 and the calculation is much more expensive.  There are various ways to accomplish
-this with the most well-known being the 
-[Lomb-Scargle periodogram](https://en.wikipedia.org/wiki/Least-squares_spectral_analysis). 
+this with the most well-known being the
+[Lomb-Scargle periodogram](https://en.wikipedia.org/wiki/Least-squares_spectral_analysis).
 
 ## Differencing
 
