@@ -108,9 +108,9 @@ based on Pearson correlation is not very robust.  A common
 technique that can be used in this situation is the *tau-autocorrelation*.
 To define this correlation measure, first consider paired data
 $(x_i, y_i)$ (not time series data).  Two pairs of these pairs, say $(x_i, y_i)$ and $(x_j, y_j)$
-(where $i \ne j$) are *concordant* if $x_i>x_j$ and $y_i>y_j$ or if
-$x_i<x_j$ and $y_i<y_j$.  On the other hand, the two pairs are discordant if $x_i>x_j$ and
-$y_i<y_j$ or $x_i<x_j$ and $y_i>y_j$ (there are various ways of handling
+(where $i \ne j$) are *concordant* if $x_i > x_j$ and $y_i > y_j$ or if
+$x_i < x_j$ and $y_i < y_j$.  On the other hand, the two pairs are discordant if $x_i > x_j$ and
+$y_i < y_j$ or $x_i < x_j$ and $y_i>y_j$ (there are various ways of handling
 ties but we won't consider that here).  The sample *tau-correlation* is defined
 to be $(a-b)/c$, where $a$ is the number of concordant pairs, $b$
 is the number of discordant pairs, and $c$ is the total number of pairs.
