@@ -1,7 +1,7 @@
 import os, requests
 
 # Store the raw files in this location.  These files
-# can be deleted after the "prep.jl" script is run.
+# can be deleted after the "prep.py" script is run.
 tpath = "/scratch/stats_dept_root/stats_dept1/kshedden/argo/python"
 
 # The file name template.
