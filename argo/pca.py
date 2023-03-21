@@ -11,7 +11,8 @@ from read import *
 
 pdf = PdfPages("pca_py.pdf")
 
-# Convert the date to the number of days since the first date.
+# Convert the date to the number of days since the first date
+# in the dataset.
 date = pd.to_datetime(date)
 ddate = date - date.min()
 day = [x.days for x in ddate]
@@ -83,7 +84,8 @@ def pcplot(j, mean, pcv, scores, label):
     plt.gca().set_ylabel("Mean %s +/- PC %d loading" % (label, j + 1), size=15)
     pdf.savefig()
 
-    # Plot the conditional mean PC score against an observed variable
+    # Plot the conditional mean PC score against an observed variable,
+    # showing the conditional mean plus/minus one absolute deviation.
     for k in range(3):
         xx = np.linspace(Y[:, k].min(), Y[:, k].max(), 100)
         m = lowess(scores[:, j], Y[:, k], delta=0.01*np.ptp(Y[:, k]))
