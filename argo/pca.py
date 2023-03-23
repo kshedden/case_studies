@@ -165,7 +165,7 @@ for q in [1, 2, 5, 10, 20, 50]:
     plt.clf()
     plt.axes([0.15, 0.1, 0.8, 0.8])
     plt.grid(True)
-    plt.title("%d principal components, r=%.2f" % (q, r[0]))
+    plt.title("CCA/PCA using %d principal components, r=%.2f" % (q, r[0]))
     plt.plot(pressure, xc1[:, 0])
     if xc1[:, 0].min() > 0:
         plt.ylim(ymin=0)
@@ -208,7 +208,7 @@ for j in range(3):
     plt.grid(True)
     plt.plot(lat, scores[:, j], "o", color="grey", alpha=0.3, rasterized=True)
     plt.xlabel("Latitude", size=15)
-    plt.ylabel("Component %d score" % (j + 1), size=15)
+    plt.ylabel("Component %d SIR score" % (j + 1), size=15)
     pdf.savefig()
 
 pdf.close()

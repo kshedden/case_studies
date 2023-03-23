@@ -22,3 +22,11 @@ https://argo.ucsd.edu/science/argo-and-climate-change
 To obtain the data run one of the "get_data" scripts, then run
 one of the "prep" scripts.  You will need to adjust the paths
 in these scripts.
+
+*About the measurement units:* Pressure is measured in decibars
+(dbar), and 1 dbar very closely corresponds to 1 meter of depth.
+Temperature is measured in centigrade units and salinity is
+measured in "practical salinity units" (psu), which is the
+grams of disolved ions per kilogram of water.  Typical seawater
+has a psu of around 35.
+
