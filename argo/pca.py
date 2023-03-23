@@ -174,7 +174,7 @@ for q in [1, 2, 5, 10, 20, 50]:
     pdf.savefig()
     plt.clf()
     plt.axes([0.15, 0.1, 0.8, 0.8])
-    plt.title("%d principal components, r=%.2f" % (q, r[0]))
+    plt.title("CCA/PCA using %d principal components, r=%.2f" % (q, r[0]))
     plt.grid(True)
     plt.plot(pressure, yc1[:, 0])
     if yc1[:, 0].min() >= 0:
