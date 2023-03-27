@@ -10,6 +10,17 @@ is appropriate to do so.
 
 ## Content/overall approach
 
+* Write in complete sentences, with the content organized logically into
+  paragraphs.  Do not submit an outline or bulleted list of points.  You
+  do not need to include section headers but may do so if you wish.
+
+* At a high level, most memos will include a brief introductory paragraph
+  containing an explicit statement of the research question along with
+  essential background information, one or two paragraphs discussing the
+  methods used in your analysis, one or two paragraphs of results, and
+  one or two paragraphs of discussion.  There is no need to discuss
+  future work or things that you could have done but did not do.
+
 * Make specific claims and assertions, then back them up with specific
   evidence and arguments.
 

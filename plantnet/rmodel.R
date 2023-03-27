@@ -61,19 +61,20 @@ make_plots = function(mm, rr, va) {
     ys = fixef(mm)[2]
 
     # Plot these years
-    yr = seq(2018, 2022, length.out=10)
+    m = 20
+    yr = seq(2018, 2022, length.out=m)
 
     # The plotted years
     yx = yr - meanyear
 
     nspecies = dim(rr)[1]
-    dp = array(0, c(10*nspecies, 3))
+    dp = array(0, c(m*nspecies, 3))
     ii = 0
     for (i in 1:nspecies) {
-        dp[(ii+1):(ii+10), 1] = i
-        dp[(ii+1):(ii+10), 2] = yr
-        dp[(ii+1):(ii+10), 3] = icept + rr[i, 1] + ys*yr + rr[i, 2]*yx
-        ii = ii + 10
+        dp[(ii+1):(ii+m), 1] = i
+        dp[(ii+1):(ii+m), 2] = yr
+        dp[(ii+1):(ii+m), 3] = icept + rr[i, 1] + ys*yr + rr[i, 2]*yx
+        ii = ii + m
     }
     dp = data.frame(dp)
     colnames(dp) = c("g", "x", "y")
@@ -94,6 +95,7 @@ for (v in va) {
     mm = fm[[4]]$mm
     rr = fm[[4]]$rr
     make_plots(mm, rr, v)
+    stop(0)
 }
 
 dev.off()

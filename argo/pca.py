@@ -136,9 +136,9 @@ def my_cca(X, Y):
 
 # Standard CCA, due to the high dimensionality the results
 # make little sense.
-X = temp.T
+X = temp.T.copy()
 X -= X.mean(0)
-Y = psal.T
+Y = psal.T.copy()
 Y -= Y.mean(0)
 xc, yc, r = my_cca(X, Y)
 
