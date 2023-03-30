@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 from statsmodels.nonparametric.smoothers_lowess import lowess
 import pandas as pd
+from mpl_toolkits.basemap import Basemap
 from read import *
 
 pdf = PdfPages("depth_py.pdf")
@@ -74,6 +75,7 @@ def depth_cut(dp, x, q, pressure, ylab):
         jj = np.random.choice(ii, 10)
 
         plt.clf()
+        plt.figure(figsize=(6.4,4.8))
         plt.grid(True)
         plt.title("Depth quantile %d %s" % (i + 1, str(iv)))
         for j in jj:
@@ -132,5 +134,32 @@ depth_correlates(dp_psal[ii], latx[ii], lonx[ii], dayx[ii], "Northern hemisphere
 ii = np.flatnonzero(latx < 0)
 depth_correlates(dp_temp[ii], latx[ii], lonx[ii], dayx[ii], "Southern hemisphere temperature")
 depth_correlates(dp_psal[ii], latx[ii], lonx[ii], dayx[ii], "Southern hemisphere salinity")
+
+def plot_depth_map(dp, title):
+    plt.clf()
+    plt.figure(figsize=(7, 8))
+    plt.axes([0.1, 0.1, 0.8, 0.8])
+    m = Basemap(llcrnrlon=-100.,llcrnrlat=-65.,urcrnrlon=30.,urcrnrlat=80.,
+                resolution='l',projection='merc', lat_0=0.,lon_0=0.)
+
+    qq = np.argsort(np.argsort(dp)) / len(dp)
+    ii = np.flatnonzero(qq < 0.1)
+    x, y = m(lonx[ii], latx[ii])
+    plt.scatter(x, y, s=8, color="red", label="shallow")
+    ii = np.flatnonzero(qq > 0.9)
+    x, y = m(lonx[ii], latx[ii])
+    plt.scatter(x, y, s=8, color="blue", label="deep")
+
+    ha,lb = plt.gca().get_legend_handles_labels()
+    leg = plt.figlegend(ha, lb, "center right")
+    leg.draw_frame(False)
+
+    m.drawcoastlines()
+    m.drawmapboundary()
+    plt.title(title)
+    pdf.savefig()
+
+plot_depth_map(dp_temp, "Temperature")
+plot_depth_map(dp_psal, "Salinity")
 
 pdf.close()
