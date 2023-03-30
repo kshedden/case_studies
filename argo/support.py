@@ -53,10 +53,14 @@ def plot_support_map(ii, title):
     m = Basemap(llcrnrlon=-100.,llcrnrlat=-65.,urcrnrlon=30.,urcrnrlat=80.,
                 resolution='l',projection='merc', lat_0=0.,lon_0=0.)
 
-    for j in range(ii.max()):
+    for j in range(ii.max() + 1):
         jj = np.flatnonzero(ii == j)
         x, y = m(lon[jj], lat[jj])
-        plt.scatter(x, y, s=8)
+        plt.scatter(x, y, s=8, label=str(1+j))
+
+    ha,lb = plt.gca().get_legend_handles_labels()
+    leg = plt.figlegend(ha, lb, "center right")
+    leg.draw_frame(False)
 
     m.drawcoastlines()
     m.drawmapboundary()
