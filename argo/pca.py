@@ -74,6 +74,7 @@ def pcplot(j, mean, pcv, scores, label):
         plt.gca().set_ylim(ymin=0)
     pdf.savefig()
 
+    # Plot the mean +/- 1 SD of the loading pattern
     plt.clf()
     plt.title(label.title())
     plt.grid(True)
@@ -134,8 +135,8 @@ def my_cca(X, Y):
     return u, v, s
 
 
-# Standard CCA, due to the high dimensionality the results
-# make little sense.
+# Standard CCA, due to the high dimensionality and consequent
+# overfitting, the results make little sense.
 X = temp.T.copy()
 X -= X.mean(0)
 Y = psal.T.copy()
@@ -150,6 +151,7 @@ def flip(xc, yc):
             yc[:, j] *= -1
     return xc, yc
 
+# The columns of ux and uy are the PC's of the temperature and salinity data.
 ux,sx,vtx = np.linalg.svd(X, 0)
 uy,sy,vty = np.linalg.svd(Y, 0)
 
@@ -158,10 +160,16 @@ uy,sy,vty = np.linalg.svd(Y, 0)
 # coordinates (this is very similar to PCR but applied to CCA not to
 # linear regression).
 for q in [1, 2, 5, 10, 20, 50]:
+
+    # Do CCA after projecting the profiles to the top q PC's.
     xc, yc, r = my_cca(ux[:, 0:q], uy[:, 0:q])
+
+    # Map the loadings back to the original coordinates
     xc1 = np.dot(vtx.T[:, 0:q], np.linalg.solve(np.diag(sx[0:q]), xc))
     yc1 = np.dot(vty.T[:, 0:q], np.linalg.solve(np.diag(sy[0:q]), yc))
     xc1, yc1 = flip(xc1, yc1)
+
+    # Plot the temperature loadings
     plt.clf()
     plt.axes([0.15, 0.1, 0.8, 0.8])
     plt.grid(True)
@@ -172,6 +180,8 @@ for q in [1, 2, 5, 10, 20, 50]:
     plt.xlabel("Pressure", size=15)
     plt.ylabel("Temperature", size=15)
     pdf.savefig()
+
+    # Plot the salinity loadings
     plt.clf()
     plt.axes([0.15, 0.1, 0.8, 0.8])
     plt.title("CCA/PCA using %d principal components, r=%.2f" % (q, r[0]))
@@ -184,12 +194,14 @@ for q in [1, 2, 5, 10, 20, 50]:
     pdf.savefig()
     print(np.corrcoef(np.dot(X, xc1[:, 0]), np.dot(Y, yc1[:, 0]))[0,1])
 
+# Use Sliced Inverse Regression to predict latitude from the first
+# q principal components of the temperature data.
 q = 5
 m = SIR(lat, ux[:, 0:q])
 r = m.fit()
 cf = np.dot(vtx.T[:, 0:q], np.linalg.solve(np.diag(sx[0:q]), r.params))
 
-# Plot the loadings.
+# Plot the SIR loadings.
 plt.clf()
 plt.grid(True)
 for j in range(3):
@@ -201,7 +213,7 @@ plt.xlabel("Pressure", size=15)
 plt.ylabel("SIR loading", size=15)
 pdf.savefig()
 
-# Plot the scores against latitude.
+# Plot the SIR scores against latitude.
 scores = np.dot(X, cf)
 for j in range(3):
     plt.clf()
