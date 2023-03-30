@@ -32,3 +32,6 @@ is expected that $q_j$ is increasing in $j$ and the probability of not dropping 
 at all is $0.5$.
 
 5. (March 23rd) Write a memo based on your analysis of the Plantnet data.
+
+6. (April 7th) Write a memo based on your analysis of the Argo data.
+
