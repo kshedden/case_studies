@@ -33,5 +33,7 @@ at all is $0.5$.
 
 5. (March 23rd) Write a memo based on your analysis of the Plantnet data.
 
-6. (April 7th) Write a memo based on your analysis of the Argo data.
+6. (April 10th) Write a memo based on your analysis of the Argo data.
+
+7. (April 18th) Write a memo based on your analysis of the Goes data.
 
