@@ -3,6 +3,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 import matplotlib
 from statsmodels.nonparametric.smoothers_lowess import lowess
+from mpl_toolkits.basemap import Basemap
 from read import *
 
 # See this reference for information about the support points
@@ -45,6 +46,33 @@ def support(Y, N, maxiter=1000):
 
 pdf = PdfPages("support_py.pdf")
 
+def plot_support_map(ii, title):
+    plt.clf()
+    plt.figure(figsize=(7, 8))
+    plt.axes([0.1, 0.1, 0.8, 0.8])
+    m = Basemap(llcrnrlon=-100.,llcrnrlat=-65.,urcrnrlon=30.,urcrnrlat=80.,
+                resolution='l',projection='merc', lat_0=0.,lon_0=0.)
+
+    for j in range(ii.max()):
+        jj = np.flatnonzero(ii == j)
+        x, y = m(lon[jj], lat[jj])
+        plt.scatter(x, y, s=8)
+
+    m.drawcoastlines()
+    m.drawmapboundary()
+    plt.title(title)
+    pdf.savefig()
+
+# Find the position of the closest support point
+# in the rows of S to the vectors in the rows
+# of X.
+def support_neighbor(X, S):
+    ii = np.zeros(X.shape[1]).astype(int)
+    for i in range(X.shape[1]):
+        d = ((X[:, i] - S)**2).sum(1)
+        ii[i] = np.argmin(d)
+    return ii
+
 # Plot support points for temperature and salinity separately.
 for (j,x) in enumerate([temp, psal]):
 
@@ -53,6 +81,7 @@ for (j,x) in enumerate([temp, psal]):
         print("npt=", npt)
         X = support(x.T, npt, maxiter=200)
         plt.clf()
+        plt.figure(figsize=(6.4,4.8))
         plt.grid(True)
         plt.title("%d support points" % npt)
         for i in range(npt):
@@ -73,6 +102,7 @@ for npt in 5,:
     print("npt=", npt)
     X = support(pt.T, npt, maxiter=200)
     plt.clf()
+    plt.figure(figsize=(6.4,4.8))
     plt.axes([0.1, 0.1, 0.78, 0.8])
     plt.grid(True)
     plt.title("%d support points" % npt)
@@ -86,5 +116,13 @@ for npt in 5,:
     ax2.set_ylabel("Salinity (broken lines)", size=15)
     ax1.set_xlabel("Pressure", size=15)
     pdf.savefig()
+
+# Make maps showing the distribution of points falling closest
+# to each support point.
+npt = 10
+for j,x in enumerate([temp, psal]):
+    S = support(x.T, npt, maxiter=200)
+    ii = support_neighbor(x, S)
+    plot_support_map(ii, ["Temperature", "Salinity"][j])
 
 pdf.close()
