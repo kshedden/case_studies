@@ -205,13 +205,12 @@ if (i) a random draw from $F$ tends to be close to a random draw from $G$,
 (ii) two independent random draws from $F$ are far from each other, and
 (iii) two independent random draws from $G$ are far from each other.
 
-Our goal is to approximate a given distribution $F$ with a distribution $G$
-that we construct.  Further, we will construct $G$ to be simple in some
-way (here "simple" will mean that $G$ will have finite support, i.e. a finite
-sample space).  Since $F$ is given, the term $E\\|Y-Y^\prime\\|$ in the
+Our goal is to approximate a given distribution $G$ with a simpler distribution $F$
+that we construct.  Here "simple" means that $F$ has finite support, i.e. a finite
+sample space.  Since $G$ is given, the term $E\\|Y-Y^\prime\\|$ in the
 energy distance is fixed
-and can be ignored when constructing $G$.  Thus, our goal is to construct
-$G$ that minimizes
+and can be ignored when constructing $F$.  Thus, our goal is to construct
+$F$ that minimizes
 
 $$
 2E\\|X - Y\\| - E\\|X - X^\prime\\|.
@@ -219,18 +218,18 @@ $$
 
 It is worth considering an alternative approach in which we simply minimize
 the first term above, $E\\|X-Y\\|$.  However doing this always yields a degenerate
-solution in which $G$ places all of its probability mass on the
+solution in which $F$ places all of its probability mass on the
 *spatial median*, which is the vector
 $V$ that minimizes $E\\|Y - V\\|$.  This is the reason that the "repulsive"
 term $E\\|X-X^\prime\\|$ in the distance measure is essential.
 
-In practice, we do not observe the distribution $F$ but instead observe a sample
-$y_1, \ldots, y_N$.  Also, the approximating distribution $G$ that we are constructing
+In practice, we do not observe the distribution $G$ but instead observe a sample
+$y_1, \ldots, y_N$.  As stated above, the approximating distribution $F$ that we are constructing
 is supported on a finite set of points $x_1, \ldots, x_n$.  This leads
 us to the empirical analogue of the distance function above:
 
 $$
-\frac{2}{nN}\sum_{i=1}^n\sum_{j=1}^N\\|y_j - x_i\\| - \frac{1}{n^2}\sum_{i=1}^N\sum_{j=1}^n\\|x_i-x_j\\|.
+\frac{2}{nN}\sum_{i=1}^n\sum_{j=1}^N\\|y_j - x_i\\| - \frac{1}{n^2}\sum_{i=1}^n\sum_{j=1}^n\\|x_i-x_j\\|.
 $$
 
 Our goal here was to discuss the motivation behind the support point algorithm.
