@@ -159,9 +159,9 @@ A quantization algoithm aims to represent a multivariate distribution
 through a small number of representative points.
 This can be a useful exploratory technique if the distribution being
 studied has a complex form that is not approximately Gaussian or elliptical,
-and is not well captured through additive factors
+and is not well captured through independent additive factors
 (as in PCA).  The goal of almost any quantization algorithm is to
-find a collection of representative points $\{x_i\}$ that are optimal
+find a collection of representative points $\\{x_i\\}$ that are optimal
 in some sense - for example we may wish to optimize the $x_i$ so as
 to minimize the distance from any observation to its closest representative
 point.  Inspecting the representative points may provide a quick
@@ -170,18 +170,18 @@ means to understand the structure of the distribution.
 A recently developed algorithm constructs
 [support points](https://arxiv.org/abs/1609.01811) that are a very
 effective form of quantization.  To understand the support point
-algorithm, suppose that we are given a distribution function $F$ that
+algorithm, suppose that we are given a distribution function $G$ that
 we wish to approximate with a finite set of points.  The sample
 space is ${\cal R}^d$, and let $Y$ denote a random draw
-from $F$.  Now consider an approximating distribution $G$ with
+from $G$.  Now consider an approximating distribution $F$ with
 random draw $X$.
 
-We are given $F$ and wish to construct $G$
-to approximate $F$, so we begin by defining a distance function
+We are given $G$ and wish to construct $F$
+to approximate $G$, so we begin by defining a distance function
 that measures how far apart $F$ and $G$ (or $X$ and $Y$) are from
 each other.  Note that this distance compares two
-probability distributions (conventionally when we calculate distances
-we have distances between vectors).  Distances among probability distributions
+probability distributions (it is not the familiar notion of a distance
+between vectors).  Distances among probability distributions
 play an important role in modern statistics.  When $d=1$ many natural
 distance measures on probability distributions can be constructed, but it is harder
 to construct good distances on probability distributions when the dimension
