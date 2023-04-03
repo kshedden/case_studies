@@ -178,7 +178,7 @@ random draw $X$.
 
 We are given $G$ and wish to construct $F$
 to approximate $G$, so we begin by defining a distance function
-that measures how far apart $F$ and $G$ (or $X$ and $Y$) are from
+that measures how far apart $F$ and $G$ are from
 each other.  Note that this distance compares two
 probability distributions (it is not the familiar notion of a distance
 between vectors).  Distances among probability distributions
@@ -219,7 +219,7 @@ $$
 It is worth considering an alternative approach in which we simply minimize
 the first term above, $E\\|X-Y\\|$.  However doing this always yields a degenerate
 solution in which $F$ places all of its probability mass on the
-*spatial median*, which is the vector
+*spatial median*, which is the fixed vector
 $V$ that minimizes $E\\|Y - V\\|$.  This is the reason that the "repulsive"
 term $E\\|X-X^\prime\\|$ in the distance measure is essential.
 
