@@ -114,8 +114,9 @@ conditions for this to be literally true, it is based on the
 invertibility of the moment generating function).  But this fact is
 not very useful in practice because it is nearly impossible to
 estimate high order moments $E[(X-EX)^k]$ for large values of $k$.
-The sample estimator of this moment is $n^{-1}\sum_{i=1}^n (X_i -
-\bar{X})^k$, and this estimator is consistent and asymptotically
+The sample estimator of this moment is
+$n^{-1}\sum_{i=1}^n (X_i - \bar{X})^k$,
+and this estimator is consistent and asymptotically
 unbiased, but it has huge mean squared error for practically realistic
 sample sizes.
 
