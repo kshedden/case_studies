@@ -33,6 +33,7 @@ for j in range(4):
             if dolog and 3 in [j, k]:
                 continue
 
+            plt.figure(figsize=(6.5, 4.5))
             plt.clf()
             plt.grid(True)
             if dolog:

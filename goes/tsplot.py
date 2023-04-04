@@ -28,11 +28,12 @@ for year in years:
                 df["Flux"] = df[vn]
             dx = df.groupby("DayofYear").agg({"Flux": [np.min, np.max]})
 
+            plt.figure(figsize=(9, 5))
             plt.clf()
-            plt.axes([0.15, 0.12, 0.72, 0.8])
+            plt.axes([0.13, 0.12, 0.68, 0.8])
             plt.grid(True)
-            plt.plot(dx.index, dx[("Flux", "amin")], "-", color="blue", alpha=0.5)
-            plt.plot(dx.index, dx[("Flux", "amax")], "-", color="red", alpha=0.5)
+            plt.plot(dx.index, dx[("Flux", "amin")], "-", color="blue", label="Daily min", alpha=0.5)
+            plt.plot(dx.index, dx[("Flux", "amax")], "-", color="red", label="Daily max", alpha=0.5)
             if dolog:
                 plt.axhline(-6, label="C", color="green")
                 plt.axhline(-5, label="M", color="orange")

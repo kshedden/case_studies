@@ -129,7 +129,7 @@ make it very difficult to accurately estimate the Pearson correlation.
 
 Returning to the time series setting, we can define the tau-autocorrelation
 as follows.  For a given lag parameter $d$, consider pairs of the form
-$(x_t, x_{t+d})$.  Then consider the concordance of pairs of these pairs
+$(x_s, x_t)$.  Then consider the concordance of pairs of these pairs
 as discussed above.  If the tau-autocorrelation is large (close to 1), then
 knowing that $x_t > x_s$ tells us that it is very likely that $x_{t+d} > x_{s+d}$.
 

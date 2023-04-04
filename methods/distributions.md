@@ -33,7 +33,7 @@ deviation](https://en.wikipedia.org/wiki/Standard_deviation),
 while quantile-based measures of dispersion include the [inter-quartile
 range](https://en.wikipedia.org/wiki/Interquartile_range) (IQR) and the
 [MAD](https://en.wikipedia.org/wiki/Median_absolute_deviation) (median
-absolute deviation).  
+absolute deviation).
 
 "Higher order" characteristics of a distribution such as [skew](https://en.wikipedia.org/wiki/Skewness)
 and [kurtosis](https://en.wikipedia.org/wiki/Kurtosis) are less commonly
@@ -69,9 +69,9 @@ If a distribution is not heavy-tailed, then it may have a [power
 law](https://en.wikipedia.org/wiki/Power_law) tail, meaning that
 $P(X>x) \sim x^{-\alpha}$.  The value of $\alpha$ is called the *tail
 index*.  To estimate the tail index based on a sample of data
-$\\{X_i\\}$, consider the [order
-statistics](https://en.wikipedia.org/wiki/Order_statistic) $X_{(1)}\le
-X_{(2)} \le \cdots \le X_{(n)}$.  The "Hill slope estimate" of
+$\\{X_i\\}$, consider the
+[order statistics](https://en.wikipedia.org/wiki/Order_statistic)
+$X_{(1)}\le X_{(2)} \le \cdots \le X_{(n)}$.  The "Hill slope estimate" of
 $\alpha$ is
 
 $$
@@ -91,9 +91,9 @@ to do this proceeds as follows.  Given a sample $X_1, \ldots, X_n$,
 form the order statistics $X_{(1)} \le X_{(2)} \le \cdots$.  Recall
 that the $j^{\rm th}$ order statistic $X_{(j)}$ is an estimate of
 the $j/n$ quantile of the distribution.  The probability of
-observing a value greater than the $p^{\rm th}$ quantile of a 
+observing a value greater than the $p^{\rm th}$ quantile of a
 distribution is $1-p$, so the probability of observing a value
-greater than $X_{(j)}$ is $1 - j/n$.  
+greater than $X_{(j)}$ is $1 - j/n$.
 
 A *Pareto tail plot* plots $\log(1 - j/n)$ against $\log(X_{(j)})$.  If
 the tail is exactly $P(X>x) = c/x^\alpha$ then $\log P(X>x) = \log(c) - \alpha\log(x)$.
