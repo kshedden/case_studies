@@ -80,8 +80,8 @@ $$
 
 where $k$ is a chosen tuning parameter.  We won't be able to justify
 this entirely, but note that this is the average in log space of the
-differences between the upper $k$ order statistics, and the $n-k^{\rm
-th}$ order statistic.
+differences between the upper $k$ order statistics, and the
+$n-k^{\rm th}$ order statistic.
 
 ### Pareto tail plots
 
