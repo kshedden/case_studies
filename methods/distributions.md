@@ -169,3 +169,9 @@ adding a constant to all data values.  Scale and translation invariance
 (also known as *affine invariance*) are
 important becuase they imply that the result does not depend on the
 units or origin of the measurement scale.
+
+L-moments are useful descriptive statistics that capture the shape
+of distributions.  They are more robust (less sensitive to contamination)
+than the classical moments, and one can estimate much higher order
+L-moments than is practical with classical moments.
+
