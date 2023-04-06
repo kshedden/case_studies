@@ -17,7 +17,7 @@ cdf](https://en.wikipedia.org/wiki/Empirical_distribution_function),
 the [histogram](https://en.wikipedia.org/wiki/Histogram) (an estimator
 of the pdf), and the sample mean.
 
-The two most common characteristics used to summarize univariate
+At a high level, the two most common characteristics used to summarize univariate
 distributions of a quantitative value (i.e. probability distributions
 on the real line) are
 [moments](https://en.wikipedia.org/wiki/Moment_(mathematics)) and
@@ -40,7 +40,7 @@ and [kurtosis](https://en.wikipedia.org/wiki/Kurtosis) are less commonly
 encountered but remain of interest in some settings.
 
 Below we summarize some less familiar characteristics of probability
-distributions, and ways to estimate these characteristics from data.
+distributions, and how to estimate these characteristics from data.
 
 ## Heavy-tailed distributions and tail parameter estimation
 
@@ -53,16 +53,15 @@ $$
 \lim_{x\rightarrow \infty} \exp(tx) \cdot P(X>x) = \infty
 $$
 
-for all $t > 0$.  To understand this definition, suppose that it does
-not hold, so there is a value $t>0$ and a constant $c$ such that
+for all $t > 0$.  To understand this definition, suppose that
+there is a value $t>0$ and a constant $c \ne 0$ such that
 
 $$
-\lim_{x\rightarrow \infty} \exp(tx) \cdot P(X>x) = c
+\lim_{x\rightarrow \infty} \exp(tx) \cdot P(X>x) = c.
 $$
 
 Roughly speaking this means that $P(X>x)$ behaves like $\exp(-tx)$ for
-large $x$, or if $c = 0$ it means that $P(X>x)$ is dominated by
-$\exp(-tx)$ for large $x$.
+large $x$.
 
 If a distribution is not heavy-tailed, then it may have a [power
 law](https://en.wikipedia.org/wiki/Power_law) tail, meaning that
@@ -87,7 +86,7 @@ $n-k^{\rm th}$ order statistic.
 Rather than estimating the tail index, we can make a plot that captures
 the tail behavior of a distribution.  One of the most common ways
 to do this proceeds as follows.  Given a sample $X_1, \ldots, X_n$,
-form the order statistics $X_{(1)} \le X_{(2)} \le \cdots$.  Recall
+form the order statistics $X_{(1)} \le X_{(2)} \le \cdots \le X_{(n)}$.  Recall
 that the $j^{\rm th}$ order statistic $X_{(j)}$ is an estimate of
 the $j/n$ quantile of the distribution.  The probability of
 observing a value greater than the $p^{\rm th}$ quantile of a
@@ -109,14 +108,14 @@ the centered second moment, which is better known as the variance.
 
 In principle, if you know all the moments of a distribution, then you
 know everything about the distribution (there are some technical
-conditions for this to be literally true, it is based on the
+conditions for this to be literally true, as it is based on the
 invertibility of the moment generating function).  But this fact is
 not very useful in practice because it is nearly impossible to
 estimate high order moments $E[(X-EX)^k]$ for large values of $k$.
 The sample estimator of this moment is
-$n^{-1}\sum_{i=1}^n (X_i - \bar{X})^k$,
+$n^{-1}\sum (X_i - \bar{X})^k$,
 and this estimator is consistent and asymptotically
-unbiased, but it has huge mean squared error for practically realistic
+unbiased, but if $k > 2$ it has huge mean squared error for practically realistic
 sample sizes.
 
 As noted earlier, many descriptive statistics are either moments or
@@ -151,11 +150,13 @@ $$
 $$
 
 Often we work with the standardized third and fourth L-moments,
-$\lambda_3^s = \lambda_3/\lambda_2$ and $\lambda_4^s =
-\lambda_4/\lambda_2$.  Note that these standardized L-moments are
+$\lambda_3^s = \lambda_3/\lambda_2$ and
+$\lambda_4^s = \lambda_4/\lambda_2$.
+Note that these standardized L-moments are
 *scale invariant* meaning that their value is not changed by scaling
 the data.  All L-moments except for the first L-moment are
 *translation invariant*, meaning that their values are not changed by
-adding a constant to all values.  Scale and translation invariance are
+adding a constant to all data values.  Scale and translation invariance
+(also known as *affine invariance*) are
 important becuase they imply that the result does not depend on the
 units or origin of the measurement scale.
