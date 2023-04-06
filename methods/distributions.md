@@ -65,10 +65,11 @@ large $x$.
 
 An important family of distributions that exhibit heavy tails
 is the *Pareto family*.  If $Y$ follows a standard exponential
-distribution, then $Z = exp(Y/\alpha)$ follows a Pareto distribution
+distribution, then $Z = \exp(Y / \alpha)$ follows a Pareto distribution
 with parameter $\alpha$.  This distribution has a tail index of
 $\alpha$ as defined above.  In a Pareto distribution, the $k^{\rm th}$
-moment only exists if $k < \alpha$.
+moment only exists if $k < \alpha$ (the greater the value of $\alpha$,
+the more moments exist).
 
 ### The Hill estimate of the tail parameter
 
