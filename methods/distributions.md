@@ -46,8 +46,7 @@ distributions, and ways to estimate these characteristics from data.
 
 The tail parameter of a random variable $X$ describes how rapidly the
 tail probability $P(X>x)$ (the complementary CDF) converges to zero as
-$x$ grows.  In a [heavy tailed
-distribution](https://en.wikipedia.org/wiki/Heavy-tailed_distribution),
+$x$ grows.  In a [heavy tailed distribution](https://en.wikipedia.org/wiki/Heavy-tailed_distribution),
 these probabilities do not shrink exponentially fast, which means that
 
 $$
@@ -72,7 +71,7 @@ index*.  To estimate the tail index based on a sample of data
 $\\{X_i\\}$, consider the
 [order statistics](https://en.wikipedia.org/wiki/Order_statistic)
 $X_{(1)}\le X_{(2)} \le \cdots \le X_{(n)}$.  The "Hill slope estimate" of
-$\alpha$ is
+$\alpha$ is the reciprocal of
 
 $$
 k^{-1}\sum_{i=0}^{k-1} \log(X_{(n-i)}) - \log(X_{(n-k)}),
