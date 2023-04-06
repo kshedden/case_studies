@@ -44,15 +44,17 @@ def pareto_plot(x, title, p=0.01):
 pdf = PdfPages("tail_py.pdf")
 
 # Check the Hill estimator using Pareto data
-n = int(1e6)
-print("Hill slopes for Pareto data (n=%d):" % n)
-for b in [1, 2, 3, 4]:
-    pareto_plot([stats.pareto.rvs(b, size=n) for _ in range(10)], "Pareto data with b=%.1f" % b)
+for n in [int(1e4), int(1e5), int(1e6)]:
+    print("Hill slopes for Pareto data (n=%d):" % n)
+    for b in [1, 2, 3, 4]:
+        pareto_plot([stats.pareto.rvs(b, size=n) for _ in range(10)], "Pareto data with b=%.1f" % b)
 
-    f1 = stats.pareto.rvs(b, size=n)
-    for p in [1e-5, 1e-4, 1e-3, 1e-2]:
-        alpha = hill(f1, p)
-        print("%5d    %8.6f %8d %12.2f" % (b, p, int(p*len(f1)), alpha))
+        # Equivalent: f1 = np.exp(-np.log(np.random.uniform(size=n)) / b)
+        f1 = stats.pareto.rvs(b, size=n)
+        for p in [1e-5, 1e-4, 1e-3, 1e-2]:
+            if p*n > 10:
+                alpha = hill(f1, p)
+                print("%5d    %8.6f %8d %12.2f" % (b, p, int(p*len(f1)), alpha))
 
 # Check the Hill estimator using non-Pareto data with a Pareto tail
 n = int(1e6)

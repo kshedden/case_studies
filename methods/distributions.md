@@ -63,6 +63,15 @@ $$
 Roughly speaking this means that $P(X>x)$ behaves like $\exp(-tx)$ for
 large $x$.
 
+An important family of distributions that exhibit heavy tails
+is the *Pareto family*.  If $Y$ follows a standard exponential
+distribution, then $Z = exp(Y/\alpha)$ follows a Pareto distribution
+with parameter $\alpha$.  This distribution has a tail index of
+$\alpha$ as defined above.  In a Pareto distribution, the $k^{\rm th}$
+moment only exists if $k < \alpha$.
+
+### The Hill estimate of the tail parameter
+
 If a distribution is not heavy-tailed, then it may have a [power
 law](https://en.wikipedia.org/wiki/Power_law) tail, meaning that
 $P(X>x) \sim x^{-\alpha}$.  The value of $\alpha$ is called the *tail
