@@ -291,8 +291,7 @@ $$
 A\cos(2\pi ft + \phi) = a\cdot \cos(2\pi ft) + b\cdot \sin(2\pi ft)
 $$
 
-where $a, b$ are real scalars
-(specifically $a = A\cos(\phi)$ and $b = -A\sin(\phi)$).
+where $a, b$ are real scalars, with $a = A\cos(\phi)$ and $b = -A\sin(\phi)$.
 
 It turns out that sinusoidal curves of integer-valued frequency are mutually
 orthogonal.  This makes it convenient to use least squares regression
