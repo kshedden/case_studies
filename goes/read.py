@@ -23,11 +23,14 @@ def make_blocks(df, m, d):
     ti = df["Timex"].values
     fl = df["Flux1"].values
 
+    # g is the number of complete blocks
     q = len(ti) // m
     n = q * m
     ti = ti[0:n]
     fl = fl[0:n]
     g = n // m
+
+    # Rows are blocks, columns are times within blocks
     tix = np.reshape(ti, [g, m])
     flx = np.reshape(fl, [g, m])
 

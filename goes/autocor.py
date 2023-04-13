@@ -37,7 +37,6 @@ pr = [0.25, 0.5, 0.75]
 
 qa = []
 for d in dlags:
-
     # Get the autocorrelation for each block
     r = np.zeros(n)
     for i in range(flx.shape[0]):
