@@ -1,4 +1,5 @@
 using DataFrames
+using CSV
 
 pa = "/home/kshedden/data/Teaching/nhanes"
 
@@ -14,3 +15,5 @@ end
 df = dl[1]
 df = leftjoin(df, dl[2], on=:SEQN)
 df = leftjoin(df, dl[3], on=:SEQN)
+
+df = filter(r->r.RIDAGEYR>=18, df)

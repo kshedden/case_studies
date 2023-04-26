@@ -232,7 +232,7 @@ for use in a regression analysis.  This method is called "Principal
 Components Regression" (PCR).  The motivation behind PCR is that if we
 have a large number of covariates and do not wish to explicitly
 include all of them in a regression model, we can use PCA to
-reduce the variables to a smaller set of scores that capture most
+reduce the variables to a smaller vector of scores that capture most
 of the variation in the original variables, and then use the
 reduced variables (scores) as covariates in our regression.
 
@@ -281,18 +281,19 @@ in $Y$.  This is often, but not always the case.
 
 ## Canonical Correlation Analysis
 
-Suppose we have two sets of variables and a collection of objects that
-are assessed with respect to all variables in both sets. CCA aims to understand
-the relationships between the two sets of variables.  This goal differs from
+Suppose we have two vectors of variables and a collection of objects that
+are assessed with respect to all variables in both vectors.
+Canonical Correlatoin Analysis (CCA) aims to understand
+the relationships between the two variable vectors.  This goal differs from
 the goal of PCA, which could be used to understand the
-relationships within each set of variables separately.
-Specifically, we can search for linear combinations of each set of variables
+relationships within each vector of variables separately.
+Specifically, in CCA we can search for linear combinations of each vector
 that are maximally correlated with each other.
 
 Let $X \in {\cal R}^{n\times p}$ and $Y \in {\cal R}^{n\times q}$ denote
-the data for the two sets of variables.  In these data, we have measurements
-on $n$ objects (the rows of $X$ and $Y$), a set of $p$ variables in the columns of $X$,
-and a set of $q$ variables in the columns of $Y$.  Row $i$ of $X$ and row $i$ of $Y$
+the data for the two vectors of variables.  In these data, we have measurements
+on $n$ objects (the rows of $X$ and $Y$), a vector of $p$ variables in the columns of $X$,
+and a vector of $q$ variables in the columns of $Y$.  Row $i$ of $X$ and row $i$ of $Y$
 correspond to the same object.
 
 Given coefficient vectors $a\in {\cal R}^p$ and $b\in {\cal R}^q$, we can
