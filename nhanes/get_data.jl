@@ -1,29 +1,48 @@
-using ReadStatTables, DataFrames, CSV
+using Printf
+using Downloads
+using ReadStatTables
+using DataFrames
+using CSV
+using CodecZlib
 
-urls = [
-    "https://wwwn.cdc.gov/Nchs/Nhanes/2017-2018/DEMO_J.XPT",
-    "https://wwwn.cdc.gov/Nchs/Nhanes/2017-2018/BMX_J.XPT",
-    "https://wwwn.cdc.gov/Nchs/Nhanes/2017-2018/BPX_J.XPT",
-    ]
-
-pa = "/home/kshedden/mynfs/data/Teaching/nhanes"
+pa = "/home/kshedden/data/Teaching/nhanes"
 mkpath(pa)
 
-for url in urls
-    _, tail = splitdir(url[9:end])
-    target = joinpath(pa, tail)
-    download(url, target)
+files = ["DEMO", "BMX", "BPX"]
+years = collect(1999:2:2017)
+
+function do_download(years)
+    # Download the files.
+    for y in years
+        di = @sprintf("%4d-%4d", y, y+1)
+        mkpath(joinpath(pa, di))
+        letter = "ABCDEFGHIJ"[1 + div(y - 1999, 2)]
+        for f in files
+            g = "$(f)_$(letter).XPT"
+
+            # The first wave doesn't follow the naming pattern
+            g = replace(g, "_A"=>"")
+            h = joinpath(di, g)
+            s = "https://wwwn.cdc.gov/Nchs/Nhanes/$(h)"
+            println(s)
+            Downloads.download(s, joinpath(pa, h))
+        end
+    end
 end
 
+do_download(years)
+
+# Convert the files from SAS transport (XPT) to csv.
 for (root, dirs, files) in walkdir(pa)
     for file in files
-        fx = splitext(file)
-        ext = last(fx)
-        if lowercase(ext) != ".xpt"
+        f = joinpath(root, file)
+        if !endswith(lowercase(f), ".xpt")
             continue
         end
-        tb = readstat(joinpath(root, file))
-        da = DataFrame(tb)
-        CSV.write(joinpath(pa, replace(file, ext=>".csv.gz")), da)
+        println(f)
+        da = readstat(f) |> DataFrame
+        open(GzipCompressorStream, replace(f, ".XPT"=>".csv.gz"), "w") do io
+            CSV.write(io, da)
+        end
     end
 end
