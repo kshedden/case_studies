@@ -44,20 +44,21 @@ distributions, and discuss how to estimate these characteristics from data.
 
 ## Extremes, heavy-tailed distributions, and tail parameter estimation
 
-Many important questions involve the frequency of "extreme" events, for
+Many important research questions involve the frequency of "extreme" events, for
 example major earthquakes, large movements in financial markets, people with
 extremely long lifespans, or extreme rainfall events.  The study of
 extremes naturally leads us to focus on the right tail of a probability
 distribution.  In some cases the extremes of interest may involve the left
-tail, but in that case we can flip the distribution.  Therefore by convention,
+tail, but in that case we can flip the distribution -- therefore by convention,
 methods for studying extremes focus on the right tail.
 
 The tail parameter of a random variable $X$ describes how rapidly the
 tail probability $P(X > t)$ (the complementary CDF, CCDF, or *survival function*)
 converges to zero as $t$ grows.  In many familiar distributions, the tails
-are *exponential*  meaning that $P(X > t) = L(t)\exp(-t/\mu)$, where
-$L(t)$ is a *slowly varying function*.  For our purposes, we can treat
-$L(t)$ as a constant, so exponential tails implies that $P(L > t) \propto \exp(-t/\mu)$,
+are *exponential*  meaning that $P(X > t) = L(t)\cdot \exp(-t/\mu)$, where
+$L(t)$ is a [slowly varying function](https://en.wikipedia.org/wiki/Slowly_varying_function).
+For our purposes, we can treat $L(t)$ as a constant, so having exponential tails
+implies that $P(L > t) \propto \exp(-t/\mu)$,
 for some *scale parameter* $\mu > 0$.
 In a [heavy tailed distribution](https://en.wikipedia.org/wiki/Heavy-tailed_distribution),
 the tail probabilities do not shrink exponentially fast, which means that
@@ -90,7 +91,7 @@ and in general will not fit many datasets well.  When focusing on extreme
 values we usually don't want to become distracted by the structure of the
 center of the distribution.  One way to focus on the tail is to convert
 the data to *exceedances*.  This means that we find a parameter $T$ and replace
-the dataset $\{X_i\}$ with the dataset $\{X_i-T | X_i \ge T\}$.  For example,
+the dataset $\{X_i\}$ with the dataset $\\{X_i-T | X_i \ge T\\}$.  For example,
 if $T$ is appropriately selected then the exceedances may follow a
 Pareto distribution, even though the full dataset is a poor fit to the
 Pareto model.
@@ -114,7 +115,7 @@ $$
 Therefore in log-space we have
 
 $$
-log(1 - j/(n+1)) = log(x) - \alpha\log(X_{(j)}).
+\log(1 - j/(n+1)) = \log(x) - \alpha\log(X_{(j)}).
 $$
 
 This implies that if we plot the probability points $1 - j/(n+1)$
@@ -141,26 +142,37 @@ In a *semi-log* plot (log transforming the probability points
 but not the order statistics), we obtain a linear relationship
 with slope $-1/\mu$.
 
+Using such probability tail plots, we can estimate distributional
+parameters ($\alpha$ or $\mu$) by fitting a least squares regression
+line to the points in the plot.  The number of points used in the
+least squares fit is a tuning parameter that must be selected, typically
+in the range $20-200$.  These estimators are convenient, intuitive,
+and *distributionally robust* (since the depend on the assumed form of
+the tail but do not require a complete specification of a probability
+model).  However these estimators may not be very efficient.
+Alternative estimators will be discussed
+below.
+
 ### The Hill estimate of the tail parameter
 
 If a distribution has a power-law tail, we can solve for the
 upper quantiles, yielding the quantile function
 
 $$
-Q(p) = (c/(1-p))^(1/\alpha).
+Q(p) = (c/(1-p))^{1/\alpha}.
 $$
 
 Since the order statistics estimate quantiles, we have
 
 $$
-X_{(j)} \approx (c / (1 - j/(n+1)))^{1/\alpha}
+X_{(j)} \approx (c / (1 - j/(n+1)))^{1/\alpha}.
 $$
 
 An estimator known as the *Hill estimator* begins by considering
 the ratios of upper order statistics
 
 $$
-X_{(n-j)} / X_{(n-k)} \approx ((k+1)/(j+1))^{1/\alpha}.
+X_{(n-j)} / X_{(n-k)} \approx ((j+1)/(k+1))^{1/\alpha}.
 $$
 
 Thus
@@ -181,13 +193,13 @@ intetrest $\alpha$.  The constant of proportionality turns out to be nearly
 equal to $1$:
 
 $$
-\sum_{j=1}^{k-1}\log((k+1)/(j+1)) \approx \int_0^k \log((k+1)/(x+1))dx \rightarrow 1.
+\sum_{j=1}^{k-1}\log((k+1)/(j+1)) \approx \int_0^k \log((k+1)/(x+1))dx \rightarrow -1.
 $$
 
 Therefore, the *Hill estimate* of the tail parameter is
 
 $$
-\hat{\alpha}_{\rm Hill} = -1/\hat{A}.
+\hat{\alpha}_{\rm Hill} = 1/\hat{A}.
 $$
 
 In the Hill estimate, the value of $k$ is a tuning parameter.  To select
@@ -214,7 +226,7 @@ $$
 \frac{\sigma^{-1}(1 + t/(\sigma\alpha))^{-\alpha}}{1/t^{\alpha}} \rightarrow (\sigma\alpha)^\alpha \ne 0,
 $$
 
-the generalized Pareto and Pareto distributions both have the same tail parameter with the
+the generalized Pareto and Pareto distributions both have power law tails with the
 same tail parameter $\alpha$.
 
 When using the generalized Pareto distribution, we may be able to model the population
