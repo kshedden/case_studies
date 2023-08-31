@@ -37,7 +37,7 @@ absolute deviation).
 
 "Higher order" characteristics of a distribution such as [skew](https://en.wikipedia.org/wiki/Skewness)
 and [kurtosis](https://en.wikipedia.org/wiki/Kurtosis) are less commonly
-encountered but are of great interest in some settings.
+encountered but are of great interest in certain settings.
 
 Below we summarize some less familiar characteristics of probability
 distributions, and discuss how to estimate these characteristics from data.
@@ -49,17 +49,17 @@ example major earthquakes, large movements in financial markets, people with
 extremely long lifespans, or extreme rainfall events.  The study of
 extremes naturally leads us to focus on the right tail of a probability
 distribution.  In some cases the extremes of interest may involve the left
-tail, but in that case we can flip the distribution -- therefore by convention,
+tail, but in that case we can flip the distribution, so by convention,
 methods for studying extremes focus on the right tail.
 
 The tail parameter of a random variable $X$ describes how rapidly the
 tail probability $P(X > t)$ (the complementary CDF, CCDF, or *survival function*)
 converges to zero as $t$ grows.  In many familiar distributions, the tails
 are *exponential*  meaning that $P(X > t) = L(t)\cdot \exp(-t/\mu)$, where
-$L(t)$ is a [slowly varying function](https://en.wikipedia.org/wiki/Slowly_varying_function).
+$L(t)$ is a [slowly varying function](https://en.wikipedia.org/wiki/Slowly_varying_function)
+and $\mu$ is a scale parameter.
 For our purposes, we can treat $L(t)$ as a constant, so having exponential tails
-implies that $P(L > t) \propto \exp(-t/\mu)$,
-for some *scale parameter* $\mu > 0$.
+implies that $P(L > t) \propto \exp(-t/\mu)$.
 In a [heavy tailed distribution](https://en.wikipedia.org/wiki/Heavy-tailed_distribution),
 the tail probabilities do not shrink exponentially fast, which means that
 for all $k > 0$,
@@ -70,7 +70,8 @@ $$
 
 Many heavy-tailed distributions have [power law](https://en.wikipedia.org/wiki/Power_law) tail, meaning
 that $P(X > t) = L(t) / t^\alpha$, where $\alpha$ is the *tail index*
-or *shape parameter*. In such distributions, the $k^{\rm th}$
+or *shape parameter* (note that in some settings, the shape parameter is defined
+to be $1/\alpha$). In such distributions, the $k^{\rm th}$
 moment only exists and is finite if $k < \alpha$ (the greater the value of $\alpha$,
 the more moments exist).
 
@@ -80,13 +81,13 @@ The sample space of the Pareto distribution is $[1, \infty)$, and the
 CCDF is $P(X > t) = 1/t^\alpha$. This distribution has a tail index of
 $\alpha$ as defined above.
 
-If $U$ follows a uniform distribution, then $1/U^{1/\alpha}$ is Pareto.
+If $U$ follows a uniform distribution, then $U^{-1/\alpha}$ is Pareto.
 Alternativey, if $Y$ follows a standard exponential
 distribution, then $Z = \exp(Y / \alpha)$ follows a Pareto distribution.
 
 ### Exceedances
 
-The Pareto and exponential distributions are simple one-parameter families
+The Pareto and exponential distributions are one-parameter families
 and in general will not fit many datasets well.  When focusing on extreme
 values we usually don't want to become distracted by the structure of the
 center of the distribution.  One way to focus on the tail is to convert
@@ -96,8 +97,8 @@ the Pareto distrubution has sample space $[1, \infty)$, the exceedances
 may instead be defined as $\\{X_i-T+1 | X_i \ge T\\}$.
 
 If $T$ is appropriately selected then the exceedances may follow a
-Pareto or exponential distribution, even though the full dataset is a poor
-fit to these models.
+Pareto or exponential distribution, even though these models are a
+poor fit to the full dataset.
 
 ### Tail plots
 
@@ -118,7 +119,7 @@ $$
 Therefore in log-space we have
 
 $$
-\log(1 - j/(n+1)) = \log(x) - \alpha\log(X_{(j)}).
+\log(1 - j/(n+1)) = \log(c) - \alpha\log(X_{(j)}).
 $$
 
 This implies that if we plot the probability points $1 - j/(n+1)$
@@ -142,7 +143,8 @@ $$
 $$
 
 In a *semi-log* plot (log transforming the probability points
-but not the order statistics), we obtain a linear relationship
+but not the order statistics), when the distribution has exponential
+tails we obtain a linear relationship
 with slope $-1/\mu$.
 
 Using such probability tail plots, we can estimate distributional
@@ -153,8 +155,7 @@ in the range $20-200$.  These estimators are convenient, intuitive,
 and *distributionally robust* (since the depend on the assumed form of
 the tail but do not require a complete specification of a probability
 model).  However these estimators may not be very efficient.
-Alternative estimators will be discussed
-below.
+Alternative estimators will be discussed below.
 
 ### The Hill estimate of the tail parameter
 
@@ -211,6 +212,9 @@ $k$, we usually calculate $\hat{\alpha}_{\rm Hill}$ for various values
 of $k$ (typically $k \approx 20-200$) and choose a value that corresponds
 to a stable range of values of the estimate.
 
+If the data are exactly Pareto, the maximum likelihood estimate (MLE) of
+$\alpha$ is the Hill estimate using $k=n$.
+
 ### The generalized Pareto distribution
 
 As noted above, the one-parameter Pareto distribution may not fit many data
@@ -233,8 +237,11 @@ $$
 so the generalized Pareto and Pareto distributions both have power law tails with the
 same tail parameter $\alpha$.
 
+As $\alpha\rightarrow\infty$ (or equivalently $\xi=1/\alpha\rightarrow 0$, the generalized
+Pareto distribution becomes the exponential distribution.
+
 A famous [theorem](https://en.wikipedia.org/wiki/Pickands%E2%80%93Balkema%E2%80%93De_Haan_theorem) demonstrates
-that with appropriate choice of threshold $T$, the exceedances for many distributions approixmately
+that with appropriate choice of threshold $T$, the exceedances for many distributions approximately
 follow a generalized Pareto distribution.
 
 ### Maximum likelihood estimation
@@ -248,15 +255,11 @@ $$
 \hat{\alpha}_{\rm MLE} = 1/({\rm Avg}(\log(X_i))).
 $$
 
-$$
-\hat{\alpha}_{\rm MLE} = 1/({\rm Avg}(\log(X_i))).
-$$
-
 and the MLE of the $\mu$ in the exponential distribution is simply $\hat{\mu} = \bar{X_i}$.
 
 For two-parameter families the MLE is computed numerically.  For the generalized Pareto
-distribution (the GPD), the MLE is challenging to compute numerically and can instead
-be calculated with an empirical Bayes estimator as discussed
+distribution (the GPD), the MLE is challenging to compute numerically.  Many alternative
+likelihood-based estimators have been developed including the empirical Bayes estimator discussed
 [here](https://www.jstor.org/stable/40586625).
 
 ### Return levels
@@ -269,7 +272,7 @@ is the $1 - 1/m$ quantile of $X$.
 
 If we are working with exceedances, we need to take account of the observations
 that were excluded since they fell below the threshold $T$.  Let $q$ denote
-the proportion of the full dataset that exceeds $T$.  Then the m-obseration
+the proportion of the full dataset that exceeds $T$.  Then the m-observation
 return level is the $1 - 1/(q\cdot m)$ quantile calculated using the distribution
 of exceedances.
 

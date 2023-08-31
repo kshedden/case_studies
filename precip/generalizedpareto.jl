@@ -11,7 +11,6 @@ using Random
 using LinearAlgebra
 using LogExpFunctions
 using StatsBase
-#using Distributions
 using Distributions: IncompleteDistribution, ContinuousUnivariateDistribution, SufficientStats, @check_args
 using Statistics
 

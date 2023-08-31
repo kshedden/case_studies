@@ -6,9 +6,10 @@ using CairoMakie
 using Printf
 using Dates
 
-include("generalizedpareto.jl")
-
+# A paper using extreme value techniques to study rainfall in Brazil:
 # https://link.springer.com/article/10.1007/s42452-020-03199-8
+
+include("generalizedpareto.jl")
 
 rm("plots", recursive = true, force = true)
 mkdir("plots")
@@ -26,7 +27,7 @@ df = df[:, [:DATE, :PRCP]]
 df = df[completecases(df), :]
 df = disallowmissing(df)
 
-# Convert precipitation to millimiters
+# Convert precipitation to millimeters
 df[:, :PRCP] ./= 10
 
 # Use this threshold for calculating exceedances
@@ -36,19 +37,17 @@ thresh = 5.0
 df[:, :year] = [year(x) for x in df[:, :DATE]]
 annmax = median(combine(groupby(df, :year), :PRCP=>maximum)[:, 2])
 
-# Return values x, p such that the slope of p on x
+# Returns values x, p such that the slope of p on x
 # estimates the shape parameter (tail index) of
-# a Pareto distribution, or the rate parameter
-# of an Exponential distribution.  The elements of
-# 'z' should follow a distribution whose upper tail is
-# either Pareto distribution or Exponential.
+# a distribution with power-law tails, or the rate parameter
+# of a distribution with exponential tails.
 # The upper p0 fraction of the data in z are used
 # to produce x, p.  The values in x are the order
 # statistics of z in the Exponential case, and the log
 # order statistics of z in the Pareto case. The values in
 # p are derived from probability points.
-function tail_shape(z; p0=0.1, family=:pareto)
-    if !(family in [:exponential, :pareto])
+function tail_shape(z; p0=0.1, family=:powerlaw)
+    if !(family in [:exponential, :powerlaw])
         error("Unknown family $(family)")
     end
     p = 1 - p0
@@ -56,32 +55,16 @@ function tail_shape(z; p0=0.1, family=:pareto)
     n = length(z)
     m = Int(round(p*n))
     x = z[m:end]
-    if family == :pareto
+    if family == :powerlaw
         x = log.(x)
     end
     p = log.(1 .- (m:n) ./ (n+1))
     return x, p
 end
 
-function check_pareto(alpha; n=10000, p0=0.1)
-    u = rand(Uniform(), n)
-    z = u.^(-1/alpha) # Pareto values
-    x, p = tail_shape(z; p0=p0, family=:pareto)
-    alpha_hat = -cov(p, x) / var(x)
-    println(alpha, " ", alpha_hat)
-end
-
-function check_exponential(mu; n=10000, p0=0.1)
-    z = -mu*log.(rand(n)) # Exponential values
-    x, p = tail_shape(z; p0=p0, family=:exponential)
-    rate_hat = -cov(p, x) / var(x)
-    mu_hat = 1 / rate_hat
-    println(mu, " ", mu_hat)
-end
-
 # Use least squares regression in the tail of a quantile plot
 # to estimate the shape parameter.
-function fit_tail_reg(x, fig, ax; p0=0.99, family=:pareto)
+function fit_tail_reg(x, fig, ax; p0=0.99, family=:powerlaw)
 
     x, p = tail_shape(x; p0=p0, family=family)
     lines!(ax, x, p; color=:orange)
@@ -105,14 +88,14 @@ function plot_tails(z, p0, thresh, family, ifig)
 
     n = length(z)
 
-    # Select only extreme values and translate back to the origin
+    # Exceedances
     z = z[z .>= thresh]
     z .-= thresh
 
     # The number of selected observations
     m = Int(round(p0*n))
 
-    xlabel = family == :pareto ? "log Q(p)" : "Q(p)"
+    xlabel = family == :powerlaw ? "log Q(p)" : "Q(p)"
 
     fig = Figure()
     ax = Axis(fig[1,1], ylabel="log(1-p)", xlabel=xlabel,
@@ -148,20 +131,25 @@ function mobs_return(z, mr; thresh=thresh, family=:exponential, gp=nothing)
     return m0
 end
 
-function hill(z; k=100)
+# Use the upper k order statistics to estimate
+# the tail index of a heavy-tailed distribution
+# using the Hill estimator.
+function hill(z; k=300)
 
     z = sort(z)
     z = log.(z)
 
     h = 0.0
     for j in 1:k-1
-        h += z[end + 1 - j] - z[end - k + 1]
+        h += z[end + 1 - j] - z[end + 1 - k]
     end
     h /= k - 1
 
     return 1 / h
 end
 
+# Plot the Hill estimate of the tail index for a range
+# of values of the tuning parameter k.
 function plot_hill(z, ifig)
 
     kv = 20:5:500
@@ -178,11 +166,13 @@ end
 
 function fit_gpar(z, alpha, ifig)
 
-    # Select only extreme values and translate back to the origin
+    # Exceedances
     z = z[z .>= thresh]
     z .-= thresh
     n = length(z)
 
+    # Use quantile matching at the median to estimate
+    # the scale parameter.
     xi = 1 / alpha
     sigma = median(z) * xi / (2^xi - 1)
 
@@ -212,7 +202,11 @@ function fit_gpar(z, alpha, ifig)
 end
 
 function mle_analysis(z, ifig)
+
+    # Exceedances
     z = z[z .> thresh] .- thresh
+
+    # Modified MLE of Zhang and Stephens.
     mle = fit(GeneralizedPareto, z, μ=0.; improved=false)
 
     n = length(z)
@@ -234,7 +228,7 @@ end
 function main(ifig)
 
     # Quantile plots
-    for family = [:pareto, :exponential]
+    for family = [:powerlaw, :exponential]
         for p0 in [0.5, 0.1, 0.05, 0.01]
             ifig = plot_tails(df[:, :PRCP], p0, thresh, family, ifig)
         end
