@@ -8,12 +8,12 @@ function](https://en.wikipedia.org/wiki/Probability_density_function)
 function](https://en.wikipedia.org/wiki/Cumulative_distribution_function)
 (cdf), and the [moment generating
 function](https://en.wikipedia.org/wiki/Moment-generating_function)
-(mgf).  There are many useful ways to summarize probability
-distributions using numerical characteristics such as the mean and variance.
+(mgf).  Since the space of probability distributions is infinite-dimensional,
+many useful ways to summarize probability distributions in finite dimensions
+have been developed, using numerical characteristics such as the mean and variance.
 The field of statistics (as opposed to the field of probability)
-focuses on estimating these quantities from data, using estimators such as the
-[empirical
-cdf](https://en.wikipedia.org/wiki/Empirical_distribution_function),
+focuses on estimating these summary quantities from data, using estimators such as the
+[empirical cdf](https://en.wikipedia.org/wiki/Empirical_distribution_function),
 the [histogram](https://en.wikipedia.org/wiki/Histogram) (an estimator
 of the pdf), and the sample mean.
 
@@ -91,10 +91,13 @@ and in general will not fit many datasets well.  When focusing on extreme
 values we usually don't want to become distracted by the structure of the
 center of the distribution.  One way to focus on the tail is to convert
 the data to *exceedances*.  This means that we find a parameter $T$ and replace
-the dataset $\{X_i\}$ with the dataset $\\{X_i-T | X_i \ge T\\}$.  For example,
-if $T$ is appropriately selected then the exceedances may follow a
-Pareto distribution, even though the full dataset is a poor fit to the
-Pareto model.
+the dataset $\{X_i\}$ with the dataset $\\{X_i-T | X_i \ge T\\}$.  Since
+the Pareto distrubution has sample space $[1, \infty)$, the exceedances
+may instead be defined as $\\{X_i-T+1 | X_i \ge T\\}$.
+
+If $T$ is appropriately selected then the exceedances may follow a
+Pareto or exponential distribution, even though the full dataset is a poor
+fit to these models.
 
 ### Tail plots
 
@@ -168,8 +171,9 @@ $$
 X_{(j)} \approx (c / (1 - j/(n+1)))^{1/\alpha}.
 $$
 
-An estimator known as the *Hill estimator* begins by considering
-the ratios of upper order statistics
+An estimator known as the
+[Hill estimator](https://en.wikipedia.org/wiki/Heavy-tailed_distribution#Hill's_tail-index_estimator)
+begins by considering the ratios of upper order statistics
 
 $$
 X_{(n-j)} / X_{(n-k)} \approx ((j+1)/(k+1))^{1/\alpha}.
@@ -178,14 +182,14 @@ $$
 Thus
 
 $$
-\log X_{(n-j)} / X_{(n-k)} \approx -\alpha^{-1} \log((k+1)/(j+1)).
+\log X_{(n-j)} / X_{(n-k)} \approx -\alpha^{-1} \log((j+1)/(k+1)).
 $$
 
 If we hold $k$ fixed and average these ratios for $1 \le j < k$,
 we get
 
 $$
-\hat{A} \equiv (k-1)^{-1}\sum_{j=1}^{k-1} \log X_{(n-j)} / X_{(n-k)} \approx -\alpha^{-1} \sum_{j=1}^{k-1}\log((k+1)/(j+1)).
+\hat{A} \equiv (k-1)^{-1}\sum_{j=1}^{k-1} \log X_{(n-j)} / X_{(n-k)} \approx -\alpha^{-1} \sum_{j=1}^{k-1}\log((j+1)/(k+1)).
 $$
 
 This establishes a relationship between the statistic $\hat{A}$ and the quantity of
@@ -193,7 +197,7 @@ intetrest $\alpha$.  The constant of proportionality turns out to be nearly
 equal to $1$:
 
 $$
-\sum_{j=1}^{k-1}\log((k+1)/(j+1)) \approx \int_0^k \log((k+1)/(x+1))dx \rightarrow -1.
+\sum_{j=1}^{k-1}\log((j+1)/(k+1)) \approx \int_0^k \log((x+1)/(k+1))dx \rightarrow -1.
 $$
 
 Therefore, the *Hill estimate* of the tail parameter is
@@ -210,7 +214,7 @@ to a stable range of values of the estimate.
 ### The generalized Pareto distribution
 
 As noted above, the one-parameter Pareto distribution may not fit many data
-sets well, and further has an awkward sample space of $[1, infty)$.  To
+sets well, and further has an awkward sample space of $[1, \infty)$.  To
 address these issues, the
 [generalized Pareto distribution](https://en.wikipedia.org/wiki/Generalized_Pareto_distribution)
 was developed, which has sample space $[0, \infty)$ and complementary CDF
@@ -223,16 +227,37 @@ Note that the ratio of the CCDF's for the Pareto and generalized Pareto
 satisfies
 
 $$
-\frac{\sigma^{-1}(1 + t/(\sigma\alpha))^{-\alpha}}{1/t^{\alpha}} \rightarrow (\sigma\alpha)^\alpha \ne 0,
+\frac{\sigma^{-1}(1 + t/(\sigma\alpha))^{-\alpha}}{t^{-\alpha}} \rightarrow \sigma^{-1}(\sigma\alpha)^{\alpha} \ne 0,
 $$
 
-the generalized Pareto and Pareto distributions both have power law tails with the
+so the generalized Pareto and Pareto distributions both have power law tails with the
 same tail parameter $\alpha$.
 
-When using the generalized Pareto distribution, we may be able to model the population
-of interest directly rather than converting the data to exceedances.
+A famous [theorem](https://en.wikipedia.org/wiki/Pickands%E2%80%93Balkema%E2%80%93De_Haan_theorem) demonstrates
+that with appropriate choice of threshold $T$, the exceedances for many distributions approixmately
+follow a generalized Pareto distribution.
 
 ### Maximum likelihood estimation
+
+Maximum likelihood estimates are generally more efficient than quantile-matching
+estimates such as considered above.  However the MLE can be non-unique and difficult
+to compute.  For the standard one-parameter Pareto distribution, the MLE of the tail index
+is simply
+
+$$
+\hat{\alpha}_{\rm MLE} = 1/({\rm Avg}(\log(X_i))).
+$$
+
+$$
+\hat{\alpha}_{\rm MLE} = 1/({\rm Avg}(\log(X_i))).
+$$
+
+and the MLE of the $\mu$ in the exponential distribution is simply $\hat{\mu} = \bar{X_i}$.
+
+For two-parameter families the MLE is computed numerically.  For the generalized Pareto
+distribution (the GPD), the MLE is challenging to compute numerically and can instead
+be calculated with an empirical Bayes estimator as discussed
+[here](https://www.jstor.org/stable/40586625).
 
 ### Return levels
 
@@ -242,17 +267,11 @@ distribution function (CDF) of a random variable $X$, then the m-observation ret
 the solution to $F(x) = 1 - 1/m$.  In other words, the m-observation return level
 is the $1 - 1/m$ quantile of $X$.
 
-Suppose that $X$ is a random variable that may have heavy
-tails.  We are interested in m-observation return levels of $X$ but do not
-wish to model the distribution of $X$, instead focusing only on the right tail.
-Therefore, we consider $P(X-T | X>T)$. The m-observation return level of $X | X>T$
-is $T+X^*$, where $F(X^*) = 1 - 1/m$, with $F$ being the CDF of $X-T | X>T$.
-Note that $X^*$ is the $1 - 1/m$ quantile of $X-T | X>T$.
-
-If we want the m-observation return level of the marginal distribution of $X$,
-let $q = P(X>T)$, and
-let $F(\tilde{X}) = 1 - 1/(q\cdot m)$.  Then $T+\tilde{X}$ is the desired
-m-observation return level.
+If we are working with exceedances, we need to take account of the observations
+that were excluded since they fell below the threshold $T$.  Let $q$ denote
+the proportion of the full dataset that exceeds $T$.  Then the m-obseration
+return level is the $1 - 1/(q\cdot m)$ quantile calculated using the distribution
+of exceedances.
 
 ## L-moments
 
@@ -321,4 +340,3 @@ L-moments are useful descriptive statistics that capture the shape
 of distributions.  They are more robust (less sensitive to contamination)
 than the classical moments, and one can estimate much higher order
 L-moments than is practical with classical moments.
-

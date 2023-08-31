@@ -4,11 +4,11 @@
 
 Kerby Shedden (kshedden@umich.edu, 277 West Hall)
 
-Office hours: Monday 12:30-1:30, Thursday 4-5:30
+Office hours: Tuesday, Thursda 4-5
 
 ## GSI
 
-* Yash Patel (yppatel@umich.edu)
+* Songkai Xue (sxue@umich.edu)
 
 ## Overview
 
@@ -77,7 +77,7 @@ and use default fonts and margins.  To facilitate grading, you must
 title each document in the form “uniqname stats 504 assignment
 X”, where “uniqname” is your UM login id and X=1, 2, ... is the
 assignment number.  Share all your assignments with the instructor and
-both GSIs (but please do not send us an email notification when you share
+GSI (but please do not send us an email notification when you share
 the document).  You should not edit any assignment after the due date,
 note that all edits are tracked in Google Docs. Instructors will provide
 feedback directly on your Google Doc.  Do not remove or unshare these
@@ -96,7 +96,7 @@ report.  Extensions will be given only in extreme situations.
 ## Computing
 
 Students should be competent in data manipulation and data analysis
-based on skills learned in previous courses. In some cases model code
+based on skills learned in previous courses. Model code
 will be provided, but students are expected to be resourceful in terms
 of data manipulation, writing and debugging code, and implementing
 algorithms. Code is not submitted or graded and you are free to use any
@@ -134,7 +134,7 @@ stated and motivated?
 * Methods/approach (25 points): Is the analytic approach appropriate?
 Are analytic decisions justified?  Are strengths and limitations of
 the chosen approaches adequately discussed?  Are all analysis methods
-adequately documented so that the analyis can be reproduced?
+adequately documented so that the analysis can be reproduced?
 
 * Writing/organization (25 points): Is the writing well-organized,
 straightforward to read, and accessible to the intended audience?  Is
@@ -170,7 +170,7 @@ Are findings appropriately qualified?
   large and complex data sets
 
 * Building knowledge about several applied research areas where
-  data-driven investigation plays a major role
+  data collection and analysis plays a major role
 
 ## Expectations for student writing
 
@@ -182,11 +182,13 @@ and identify weaknesses in your claims.
 The memos written in this course reflect the type of routine writing
 done by data analysts in many business and academic settings.  These are
 short writing assignments and are intended to document a data analysis --
-they are not essays written for general audiences.  Nearly all of your
-writing should focus on your analysis and findings.  You generally should
-provide one short paragraph motivating the research question, and this
-motivating paragraph may be somewhat less technical.  Apart from this
-brief introduction your writing should exclusively focus on analysis
+they are not essays written for general audiences.  Your
+writing should focus on a specific question, presenting your analysis and
+findings that address that question.  You generally should
+provide one paragraph motivating the research question, and this
+motivating paragraph may be somewhat less technical than the remainder of the memo.
+Apart from this
+brief introduction, your writing should exclusively focus on analysis
 and findings.
 
 For the writing assignments in this course, you should imagine that
@@ -203,10 +205,10 @@ of the most important things to keep in mind.  We will expand on this
 a lot during the semester.
 
 * Write in an appropriate academic or business tone.  Do not write
-  informally or casually, but also avoid excessively formal language.
+  casually, but also avoid excessively formal language.
 
 * Organize your content so that your writing has a focused message,
-  with each paragraph contributing distinctly to communicating this
+  with each paragraph contributing a distinctly to this
   message.
 
 * Each report should focus on one primary question.
