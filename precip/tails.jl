@@ -3,13 +3,12 @@ using DataFrames
 using Statistics
 using Distributions
 using CairoMakie
+using LinearAlgebra
 using Printf
 using Dates
 
 # A paper using extreme value techniques to study rainfall in Brazil:
 # https://link.springer.com/article/10.1007/s42452-020-03199-8
-
-include("generalizedpareto.jl")
 
 rm("plots", recursive = true, force = true)
 mkdir("plots")
@@ -18,6 +17,34 @@ target_dir = "/home/kshedden/data/Teaching/precip"
 
 fname = "USW00094847.csv" # Detroit
 #fname = "USW00012839.csv" # Miami
+
+# Estimate the parameters of a generalized Pareto distribution
+# using the empirical Bayes method of Zhang and Stephens.
+# https://www.jstor.org/stable/pdf/40586625.pdf
+function gp_estimate(z)
+
+    n = length(z)
+    xstar = quantile(z, 0.25)
+    m = ceil(20 + sqrt(n))
+    xmax = maximum(z)
+
+    tgrid = 1/xmax .+ (1 .- sqrt.(m ./ ((1:m) .- 0.5))) / (3 * xstar)
+
+    function profile(theta)
+        k = -mean(log, 1 .- theta*z)
+        return n*(log(theta/k) + k - 1)
+    end
+
+    ltg = [profile(t) for t in tgrid]
+    ltg .-= maximum(ltg)
+    Ltg = exp.(ltg)
+    Ltg ./= sum(Ltg)
+    theta_hat = dot(Ltg, tgrid)
+    k_hat = -mean(log, 1 .- theta_hat*z)
+    sigma_hat = k_hat / theta_hat
+
+    return GeneralizedPareto(sigma_hat, -k_hat)
+end
 
 df = open(joinpath(target_dir, fname*".gz")) do io
     CSV.read(io, DataFrame)
@@ -201,28 +228,28 @@ function fit_gpar(z, alpha, ifig)
     return gp, ifig
 end
 
-function mle_analysis(z, ifig)
+function eb_analysis(z, ifig)
 
     # Exceedances
     z = z[z .> thresh] .- thresh
 
-    # Modified MLE of Zhang and Stephens.
-    mle = fit(GeneralizedPareto, z, μ=0.; improved=false)
+    # Empirical Bayes estimate of Zhang and Stephens.
+    eb = gp_estimate(z)
 
     n = length(z)
     pp = (1:n) ./ (n+1)
-    qq = [quantile(mle, p) for p in pp]
+    qq = [quantile(eb, p) for p in pp]
     z = sort(z)
 
     fig = Figure()
-    ax = Axis(fig[1,1], ylabel="Order statistics", xlabel="GP quantiles (MLE)",
+    ax = Axis(fig[1,1], ylabel="Order statistics", xlabel="GP quantiles (EB)",
               xlabelsize=18, ylabelsize=18)
-    ax.title = @sprintf("MLE: %s", mle)
+    ax.title = @sprintf("EB: %s", eb)
     lines!(ax, qq, z)
     save(@sprintf("plots/%03d.pdf", ifig), fig)
     ifig += 1
 
-    return mle, ifig
+    return eb, ifig
 end
 
 function main(ifig)
@@ -234,7 +261,7 @@ function main(ifig)
         end
     end
 
-    mle, ifig = mle_analysis(df[:, :PRCP], ifig)
+    eb, ifig = eb_analysis(df[:, :PRCP], ifig)
 
     ifig = plot_hill(df[:, :PRCP], ifig)
 
@@ -246,7 +273,7 @@ function main(ifig)
 
     yr = [1, 10, 100, 500, 1000]
 
-    cfg = vcat((:exponential,nothing), [(:generalizedpareto,g) for g in gp], (:generalizedpareto, mle))
+    cfg = vcat((:exponential,nothing), [(:generalizedpareto,g) for g in gp], (:generalizedpareto, eb))
 
     for (f,g) in cfg
         println("$(f) $(g)")
@@ -262,6 +289,6 @@ ifig = 0
 ifig = main(ifig)
 
 f = [@sprintf("plots/%03d.pdf", j) for j = 0:ifig-1]
-c = `gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER -r300 -sOutputFile=tails.pdf $f`
+c = `gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER -r300 -sOutputFile=tails_julia.pdf $f`
 run(c)
 
