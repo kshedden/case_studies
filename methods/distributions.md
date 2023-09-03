@@ -244,6 +244,22 @@ A famous [theorem](https://en.wikipedia.org/wiki/Pickands%E2%80%93Balkema%E2%80%
 that with appropriate choice of threshold $T$, the exceedances for many distributions approximately
 follow a generalized Pareto distribution.
 
+## Block maxima and the generalized extreme value distribution
+
+Another way to approach extremes is to define a meaningful block size,
+such as one year for daily-data, and calculate the maximum observed
+value within each block.  The distribution of these values should be
+well approximated by a
+[generalized extreme value distribution](https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution).
+
+One advantage of working with block-wise maxima is that they are less
+sensitive to positive serial dependence that causes clusters of extreme
+values to occur in close proximity to each other.  These clusters
+will generally occur within one block and only the largest among them
+will influence the analysis.  On the other hand, fitting a generalized
+Pareto distribution to the exceedances may produce biased estimates due
+to such dependence.
+
 ### Maximum likelihood estimation
 
 Maximum likelihood estimates are generally more efficient than quantile-matching
@@ -261,6 +277,12 @@ For two-parameter families the MLE is computed numerically.  For the generalized
 distribution (the GPD), the MLE is challenging to compute numerically.  Many alternative
 likelihood-based estimators have been developed including the empirical Bayes estimator discussed
 [here](https://www.jstor.org/stable/40586625).
+
+Maximum likelihood estimates for the generalized extreme value (GEV) distribution
+can be calculated numerically, but good starting values are needed to obtain
+robust convergence.  One way to get good starting values is using the
+*probability weighted moments* approach discussed
+[here](https://www.stat.cmu.edu/technometrics/80-89/VOL-27-03/v2703251.pdf).
 
 ### Return levels
 

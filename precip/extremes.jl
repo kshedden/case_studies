@@ -2,6 +2,8 @@ using CSV
 using DataFrames
 using Statistics
 using Distributions
+using SpecialFunctions
+using Optim
 using CairoMakie
 using LinearAlgebra
 using Printf
@@ -17,6 +19,72 @@ target_dir = "/home/kshedden/data/Teaching/precip"
 
 fname = "USW00094847.csv" # Detroit
 #fname = "USW00012839.csv" # Miami
+
+# Fit a generalized extreme value distribution using maximum likelihood
+# estimation.  Probability weighted moments are used to obtain starting
+# values:
+# https://www.stat.cmu.edu/technometrics/80-89/VOL-27-03/v2703251.pdf
+function fit_gev(x)
+
+    x = sort(x)
+    n = length(x)
+
+    # The first three probability weighted moments
+    b = zeros(3)
+    jj = (1:n) ./ (n + 1)
+    for r in 1:3
+        b[r] = dot(jj.^(r-1), x) / n
+    end
+
+    # The PWM estimator of Hoskins et al.
+    c = (2*b[2] - b[1]) / (3*b[3] - b[1])  - log(2) / log(3)
+    shape = 7.8590*c + 2.9554*c^2
+    scale = (2*b[2] - b[1]) * shape / (gamma(1 + shape) * (1 - 1/2^shape))
+    loc = b[1] + scale*(gamma(1 + shape) - 1) / shape
+
+    # Get the MLE
+    x0 = [loc, scale, -shape]
+    f = par -> -sum([logpdf(GeneralizedExtremeValue(par...), z) for z in x])
+    rr = optimize(f, x0, LBFGS(), autodiff=:forward)
+
+    return GeneralizedExtremeValue(Optim.minimizer(rr)...)
+end
+
+# Calculate the maximum precipitation value for each complete year,
+# and fit a generalized extreme value (GEV) distribution to the
+# data.  Then use the fitted model to calculate returns for a sequence
+# of time horizons, and create a QQ plot to assess goodness-of-fit.
+function block_max(dx, ifig)
+
+    # Get the annual maximum for all complete years
+    dx = filter(row->1958<row.year<2023, df)
+    yrmx = combine(groupby(dx, :year), :PRCP=>maximum)[:, 2]
+
+    # Fit a generalized extreme value distribution to the block maxima.
+    gev = fit_gev(yrmx)
+
+    # m-observation returns
+    mr = DataFrame(Years=[10, 100, 500, 1000])
+    mr[:, :Return] = [quantile(gev, 1 - 1/y) for y in mr.Years]
+    println("Returns based on GEV:")
+    println(mr)
+
+    # Make a QQ plot to assess goodness of fit
+    z = sort(yrmx)
+    n = length(z)
+    pp = (1:n) ./ (n+1)
+    qq = [quantile(gev, p) for p in pp]
+
+    fig = Figure()
+    ax = Axis(fig[1,1], ylabel="Order statistics", xlabel="GEV quantiles",
+              xlabelsize=18, ylabelsize=18)
+    ax.title = "GEV fit to annual maxima"
+    lines!(ax, qq, z)
+    save(@sprintf("plots/%03d.pdf", ifig), fig)
+    ifig += 1
+
+    return gev, ifig
+end
 
 # Estimate the parameters of a generalized Pareto distribution
 # using the empirical Bayes method of Zhang and Stephens.
@@ -134,6 +202,8 @@ function plot_tails(z, p0, thresh, family, ifig)
     return ifig + 1
 end
 
+# Calculate the m-observation returns for the data in z, using either
+# an exponential or generalized Pareto model.
 function mobs_return(z, mr; thresh=thresh, family=:exponential, gp=nothing)
 
     n = length(z)
@@ -254,27 +324,38 @@ end
 
 function main(ifig)
 
-    # Quantile plots
+    # Calculate the annual maxima and fit a generalized extreme value
+    # distribution to them.
+    gev, ifig = block_max(df, ifig)
+
+    # Quantile plots of the tail of the distribution of 24 hour rainfall totals
     for family = [:powerlaw, :exponential]
         for p0 in [0.5, 0.1, 0.05, 0.01]
             ifig = plot_tails(df[:, :PRCP], p0, thresh, family, ifig)
         end
     end
 
+    # Fit a generalized Pareto model to the tails using empirical Bayes.
     eb, ifig = eb_analysis(df[:, :PRCP], ifig)
 
+    # Use the Hill estimator to estimate the tail index of 24 hour
+    # rainfall totals
     ifig = plot_hill(df[:, :PRCP], ifig)
 
+    # Fix the tail index at a sequence of values, estimate the
+    # scale parameter by median-matching, and consider
+    # goodness of fit.
     gp = []
     for alpha in [3, 4, 5, 6]
         gp1, ifig = fit_gpar(df[:, :PRCP], alpha, ifig)
         push!(gp, gp1)
     end
 
+    # Calculate m-observation returns based on various models fit
+    # to the 24 hour rainfall totals.
     yr = [1, 10, 100, 500, 1000]
-
-    cfg = vcat((:exponential,nothing), [(:generalizedpareto,g) for g in gp], (:generalizedpareto, eb))
-
+    cfg = vcat((:exponential,nothing),
+               [(:generalizedpareto,g) for g in gp], (:generalizedpareto, eb))
     for (f,g) in cfg
         println("$(f) $(g)")
         mr = mobs_return(df[:, :PRCP], 365 .* yr; family=f, thresh=thresh, gp=g)
@@ -289,6 +370,5 @@ ifig = 0
 ifig = main(ifig)
 
 f = [@sprintf("plots/%03d.pdf", j) for j = 0:ifig-1]
-c = `gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER -r300 -sOutputFile=tails_julia.pdf $f`
+c = `gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER -r300 -sOutputFile=extremes_julia.pdf $f`
 run(c)
-
