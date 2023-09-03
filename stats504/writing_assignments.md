@@ -1,1 +1,9 @@
-Coming soon...
+1. (September 19th) Write a memo discussing a research question that can
+be addressed using methods for analysis of extremes as discussed in class, using
+rainfall data from the [NCDC](https://www.ncei.noaa.gov/access/search/data-search/daily-summaries).
+You can use the Ann Arbor data discussed in class or the data for any other locations
+or locations.  Your question and approach should align with the material presented in
+class.  For this first assignment, you can borrow generously from the findings and code discussed in class, but
+aim to report at least one novel finding.
+
+
