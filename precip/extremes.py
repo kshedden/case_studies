@@ -11,7 +11,7 @@ import os
 # https://link.springer.com/article/10.1007/s42452-020-03199-8
 
 # Fit a generalized extreme value distribution (GEV) using maximum likelihood
-# estimation.  Probability weighted moments are used to obtain starting
+# estimation. Probability weighted moments are used to obtain starting
 # values:
 # https://www.stat.cmu.edu/technometrics/80-89/VOL-27-03/v2703251.pdf
 def fit_gev(x):
@@ -228,12 +228,12 @@ def hill(z, k=200):
     n = len(z)
     return 1 / (z[-k+1:] - z[-k]).mean()
 
-def check_gp_estimate(shape, scale, thresh):
-    z = genpareto.rvs(shape, scale=scale, size=100000)
+def check_gp_estimate(shape, scale, thresh, n=100000):
+    z = genpareto.rvs(shape, scale=scale, size=n)
     z = z[z > thresh] - thresh
-    shape_hill = hill(z)
-    shape_eb, scale_eb = gp_estimate(z)
-    return shape_eb, scale_eb, shape_hill
+    #shape_hill = hill(z)
+    eb = gp_estimate(z)
+    return eb#, shape_hill
 
 # Calculate the m-observation returns for the data in z, using either
 # an exponential or generalized Pareto model.

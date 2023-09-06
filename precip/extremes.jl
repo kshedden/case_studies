@@ -115,7 +115,7 @@ function gp_estimate(z)
 end
 
 df = open(joinpath(target_dir, fname*".gz")) do io
-    CSV.read(io, DataFrame)
+    CSV.read(io, DataFrame; types=Dict(:PRCP=>Float64))
 end
 
 df = df[:, [:DATE, :PRCP]]
@@ -322,6 +322,70 @@ function eb_analysis(z, ifig)
     return eb, ifig
 end
 
+# Use parameteric bootstrap with a Gaussian copula
+# to assess the sampling performance of the empirical
+# Bayes estimates of the GPD parameters.
+function gp_simstudy_copula(n, r, eb0; nrep=500)
+
+    scales, shapes = [], []
+    for k in 1:nrep
+        zz = randn(n)
+        zz[2:end] = r*zz[1:end-1] + sqrt(1-r^2)*zz[2:end]
+        uu = cdf(Normal(), zz)
+        zz = quantile(eb0, uu)
+        eb = gp_estimate(zz)
+        push!(scales, scale(eb))
+        push!(shapes, shape(eb))
+    end
+
+    return scales, shapes
+end
+
+# Assess the empirical Bayes estimate of the GPD parameters.
+# Use copula to induce serial dependence.
+function gp_simstudy(z, ifig; nrep=500)
+
+    # Exceedances
+    z = z[z .> thresh] .- thresh
+    n = length(z)
+
+    # Empirical Bayes estimate of Zhang and Stephens.
+    eb0 = gp_estimate(z)
+
+    println("\nSimulation study for empirical Bayes estimates of GPD parameters:")
+    rl = [0.0, 0.5]
+    par = []
+    for r in rl
+        println(@sprintf("r=%.3f", r))
+        scales, shapes = gp_simstudy_copula(n, r, eb0; nrep=nrep)
+        println(@sprintf("Bias(scale) = %.3f", mean(scales) - scale(eb0)))
+        println(@sprintf("SD(scale) = %.3f", std(scales)))
+        println(@sprintf("Bias(shape) = %.3f", mean(shapes) - shape(eb0)))
+        println(@sprintf("SD(shape) = %.3f", std(shapes)))
+        push!(par, (scales, shapes))
+    end
+
+    # Plot histograms for the iid case
+    scales, shapes = par[1]
+    fig = Figure()
+    ax = Axis(fig[1,1], ylabel="Frequency", xlabel="Scale parameter",
+              xlabelsize=18, ylabelsize=18)
+    ax.title = "Sampling distribution of scale parameter"
+    hist!(ax, scales)
+    save(@sprintf("plots/%03d.pdf", ifig), fig)
+    ifig += 1
+
+    fig = Figure()
+    ax = Axis(fig[1,1], ylabel="Frequency", xlabel="Shape parameter",
+              xlabelsize=18, ylabelsize=18)
+    ax.title = "Sampling distribution of shape parameter"
+    hist!(ax, shapes)
+    save(@sprintf("plots/%03d.pdf", ifig), fig)
+    ifig += 1
+
+    return ifig
+end
+
 function main(ifig)
 
     # Calculate the annual maxima and fit a generalized extreme value
@@ -337,6 +401,10 @@ function main(ifig)
 
     # Fit a generalized Pareto model to the tails using empirical Bayes.
     eb, ifig = eb_analysis(df[:, :PRCP], ifig)
+
+    # Use simulation (parametric bootstrap) to assess the sampling distribution
+    # of the GP parameter estimates.
+    ifig = gp_simstudy(df[:, :PRCP], ifig)
 
     # Use the Hill estimator to estimate the tail index of 24 hour
     # rainfall totals
@@ -357,7 +425,7 @@ function main(ifig)
     cfg = vcat((:exponential,nothing),
                [(:generalizedpareto,g) for g in gp], (:generalizedpareto, eb))
     for (f,g) in cfg
-        println("$(f) $(g)")
+        println("\nm-observation returns for $(f) $(g)")
         mr = mobs_return(df[:, :PRCP], 365 .* yr; family=f, thresh=thresh, gp=g)
         rr = DataFrame(Years=yr, MR=mr)
         println(rr)
