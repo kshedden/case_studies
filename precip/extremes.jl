@@ -325,12 +325,20 @@ end
 # Use parameteric bootstrap with a Gaussian copula
 # to assess the sampling performance of the empirical
 # Bayes estimates of the GPD parameters.
-function gp_simstudy_copula(n, r, eb0; nrep=500)
+function gp_simstudy_copula(n, r, eb0; model=:ar1, nrep=500)
 
     scales, shapes = [], []
     for k in 1:nrep
         zz = randn(n)
-        zz[2:end] = r*zz[1:end-1] + sqrt(1-r^2)*zz[2:end]
+        zz = if model == :ar1
+            # Short range dependence
+            zz[2:end] = r*zz[1:end-1] + sqrt(1-r^2)*zz[2:end]
+            zz
+        else
+            # Long range dependence
+            cmat = [1/(1 + abs(i-j)) for i in 1:n, j in 1:n]
+            cholesky(cmat).L * zz
+        end
         uu = cdf(Normal(), zz)
         zz = quantile(eb0, uu)
         eb = gp_estimate(zz)
@@ -352,16 +360,28 @@ function gp_simstudy(z, ifig; nrep=500)
     # Empirical Bayes estimate of Zhang and Stephens.
     eb0 = gp_estimate(z)
 
-    println("\nSimulation study for empirical Bayes estimates of GPD parameters:")
+    for model in [:ar1, :lr]
+        println("\nSimulation study for empirical Bayes estimates of GPD parameters")
+        m = model == :ar1 ? "short" : "long"
+        println("n=1000, $(m) range dependent data:")
+        scales, shapes = gp_simstudy_copula(1000, 0, eb0; model=model)
+        println(@sprintf("Bias(scale)=%f", mean(scales) - scale(eb0)))
+        println(@sprintf("SE(scale)=%f", std(scales)))
+        println(@sprintf("Bias(shape)=%f", mean(shapes) - shape(eb0)))
+        println(@sprintf("SE(shape)=%f", std(shapes)))
+    end
+
+    println("\nSimulation study for empirical Bayes estimates of GPD parameters")
+    println("n=$(n), AR1 data:")
     rl = [0.0, 0.5]
     par = []
     for r in rl
         println(@sprintf("r=%.3f", r))
         scales, shapes = gp_simstudy_copula(n, r, eb0; nrep=nrep)
         println(@sprintf("Bias(scale) = %.3f", mean(scales) - scale(eb0)))
-        println(@sprintf("SD(scale) = %.3f", std(scales)))
+        println(@sprintf("SE(scale) = %.3f", std(scales)))
         println(@sprintf("Bias(shape) = %.3f", mean(shapes) - shape(eb0)))
-        println(@sprintf("SD(shape) = %.3f", std(shapes)))
+        println(@sprintf("SE(shape) = %.3f", std(shapes)))
         push!(par, (scales, shapes))
     end
 

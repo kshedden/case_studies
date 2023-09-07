@@ -1,8 +1,8 @@
 # Power analysis and study design
 
 Empirical research is the process of using data to address
-questions about the natural world.  Empirical research always
-starts with a well-formulated question.  After sepcifying
+questions about the natural world.  Such efforts always
+start with a well-formulated question.  After sepcifying
 a question, one can consider
 what data and analytic methods may be used to address the question.
 
@@ -11,7 +11,9 @@ including ethical constraints, costs, and logistical matters.
 A key consideration in any research study
 is *statistical power*.  Statistical power is often
 considered when research is conducted in the setting
-of a falsifiable null hypothesis.
+of a falsifiable null hypothesis, but power is also an issue
+in situations where the focus is on parameter estimation.
+
 Nearly always, the null hypothesis is a "straw man" that we want
 to refute (reject).  We do not know whether the null
 hypothesis is false or true, therefore, we wish to conduct our study
@@ -21,7 +23,7 @@ of incorrectly asserting it to be false; (i) if the null
 hypothesis is false, we want to have a high probability
 of rejecting it.
 
-Before proceeding, note that there are settings where we
+As noted above, there are settings where we
 wish to consider statistical power, but the research does
 follow the "null hypothesis significance testing"
 paradigm.  For example, we may wish to design a study to
@@ -38,29 +40,29 @@ $1/\sqrt{n}$ if $x$ and $y$ are Gaussian and $|r|$ is not too large.
 We will focus on this restricted setting here.  Suppose that our
 interest is not to test the null hypothesis that $r = 0$, but rather
 to estimate $r$ with accuracy $0.05$ as assessed using the standard
-error (strictly speaking, this means that the expected squared
+error (this means that the expected squared
 error has probability 0.68 of being less than 0.05).
 
-Since the standard error does not involve $r$, we can only consider
-the sample size $n$.  Setting $1/\sqrt{n} = 0.05$ yields $n=400$.
+Since the (approximated) standard error does not involve $r$, we need only consider
+the sample size $n$.  Setting $1 / \sqrt{n} = 0.05$ yields $n=400$.
 This is a quick and easy way to set sample sizes for studies involving
-simple correlation analyses.
+simple correlation analyses with a focus on estimation precision.
 
 ## Paired t-test
 
 Suppose we observe paired data $(x_i, y_i)$
 for each of $n$ subjects, and the observations are made
-independently and follow the same distribution (i.e. we have IID
+independently and follow the same distribution (we have IID
 data).  Let $\mu_x, \mu_y$ denote the population means of
 $x$ and $y$, and let $\sigma_x$, $\sigma_y$ denote the corresponding
-standard deviations.  Further, let $\rho$ denote the correlation
+standard deviations.  Further, let $r$ denote the correlation
 between $x$ and $y$.
 
 A paired t-test considers the differences $d_i = x_i - y_i$
 and is based on a one-sample test of the null hypothesis
 $E[d] = 0$.  Under the null hypothesis, the $d_i$ have
 expected value 0 and variance equal to
-$\tau^2  = \sigma_x^2 + \sigma_y^2 - 2\rho\sigma_x\sigma_y$.
+$\tau^2  = \sigma_x^2 + \sigma_y^2 - 2r\sigma_x\sigma_y$.
 We can form a test statistic using the Z-score $T \equiv \sqrt{n}\bar{d}/\hat{\tau}$,
 where $\hat{\tau}$ is the sample standard deviation of the
 $d_i$.
@@ -96,13 +98,13 @@ to have good power.
 
 This analysis reveals which factors influence the power.  For example,
 the power is greater when $\theta/\tau$ is greater.  This in turn
-happens when $\rho$ is greater.  Thus, in the setting of a paired
+happens when $r$ is greater.  Thus, in the setting of a paired
 t-test we benefit
 from strong correlation between $x$ and $y$.
 
 To conduct a thorough power analyis in this setting, we would
 consider plausible values for $n$, $\mu_x - \mu_y$, $\sigma_x$,
-$\sigma_y$, and $\rho$.  Then we can assess which combinations
+$\sigma_y$, and $r$.  Then we can assess which combinations
 of these values yield power that is deemed adequate.
 
 ## Analytic power and simulation studies
@@ -123,4 +125,51 @@ are mostly irrelevant.  Also, simulations can be slow and since they are
 stochastic yield non-reproducible results.  Finally, simulation studies can be
 tedious to implement and there are virtually unlimited population charactistics
 that can be manipulated to fully explore the power.
+
+## Serial dependence and statistical power
+
+Many observational studies have a temporal dimension that is not of primary
+interest.  In such cases we may analyze the data in a way that downplays
+the role of time.  For example, we may have data $x_i$ with the
+focus being on the expected value $\mu \equiv E[x_i]$.  As long as the
+$x_i$ are identically distributed (stationary), $\mu$ is a
+well-defined parameter, even if the $x_i$ are serially dependent.
+The sample mean $\bar{x}$ remains a consistent estimator of $\mu$ as long
+as the serial dependence is not very strong.
+
+Let $\Sigma$ denote the covariance matrix of the $n-$vector
+$x = (x_1, \ldots, x_n)^\prime$, and note that $\bar{x} = x^\prime 1_n / n$.
+The variance of $\bar{x}$ is therefore $1_n^\prime \Sigma 1_n / n^2$.
+Note that positive off-diagonal elements in $\Sigma$ will increase the variance
+of $\bar{x}$.
+
+If our estimator is not the sample mean (or some other linear function of the
+data), we cannot directly apply the argument above.  It may be useful
+to use a bootstrapping procedure to assess the standard error in such cases.
+For IID data, the nonparametric bootstrap can be used.  This involves sampling
+from replacement from the observed data, repeatedly re-estimating the statistic
+of interest, and then calculating the standard deviation of these estimates
+(which estimates the standard error).
+
+For dependent data, the parametric bootstrap may be a better option than the
+nonparametric bootstrap.  Here
+we discuss how parametric bootstrapping combined with copulas may be used
+to generate serially dependent data with a given marginal distribution.
+As discussed above, it is relatively straightforward to generate serially
+dependent Gaussian data.  Let $z_1, z_2, \ldots$ denote a serially dependent
+Gaussian sequence, with standard normal marginal distributions (i.e. each
+$z_i$ is standard normal).  Let $F$ denote the standard Gaussian cumulative
+distribution function (CDF).  The transformed values $u_i = F(z_i)$ will
+have uniform distribiutions on the unit interval $[0,1]$, and will be
+serially dependent.  Finally let $Q$ denote the quantile function for
+a distribution of interest, and let $y_i = Q(u_i)$.  The $y_i$ are
+serially dependent, and follow a distribution whose CDF is $Q^{-1}$.
+This is a very convenient way to generate serially dependent data with
+specified marginal distributions.
+
+To use the parametric bootstrap, we repeatedly generate samples from a distribution
+that may match the distribution of our data, for example using the
+copula approach discussed above.  For each sample, generate the statistic of interest.
+The standard deviations of these estimates is an estimate of the standard error
+for our statistic.
 
