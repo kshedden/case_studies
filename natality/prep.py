@@ -7,9 +7,7 @@ import os, gzip
 # Path to the data files
 pa = "/home/kshedden/data/Teaching/natality"
 
-# Create a long form version of the births.  If you did not zip the
-# birth files you will need to change the name of the file below to
-# omit the ".gz" suffix.
+# Create a long form version of the birth data.
 dl = []
 for y in range(2011, 2021):
     da = pd.read_csv(os.path.join(pa, "%4d.txt.gz" % y), delimiter="\t",
@@ -23,7 +21,9 @@ births["Births"] = pd.to_numeric(births.Births, errors="coerce")
 births = births.dropna()
 births = births[~births["County"].str.contains("Unidentified")]
 
-# Subset the demographics file to 2016
+# Subset the demographics file to 2016.  This is a large file
+# and takes time, so only run this once and save the result
+# for future runs.
 if False:
     f = os.path.join(pa, "us.1990_2020.19ages.txt.gz")
     g = os.path.join(pa, "2016ages.txt.gz")
@@ -32,14 +32,6 @@ if False:
             for line in inp:
                 if line.startswith(b"2016"):
                     out.write(line)
-
-# Original
-x = [1, 5, 7, 9, 12, 14, 15, 16, 17, 19, 27]
-cs = [(x[i]-1, x[i+1]-1) for i in range(len(x)-1)]
-with gzip.open(os.path.join(pa, "2016ages.txt.gz")) as io:
-    demog = pd.read_fwf(io, colspecs=cs, header=None)
-demog.columns = ["Year", "State", "StateFIPS", "CountyFIPS", "Registry",
-                 "Race", "Origin", "Sex", "Age", "Population"]
 
 # Read the demographics for 2016.  It is a fixed-width format
 # file.
@@ -73,6 +65,11 @@ age_groups = ["0", "1-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "3
 
 na = demog.columns.tolist()
 demog.columns = ["%s_%s_%s_%d" % tuple(x) for x in na]
+
+# Replace missing demographic values with 0 and transform
+# with square root to stabilize the variance.
+demog = demog.fillna(0)
+demog = np.sqrt(demog)
 
 # Get the Rural/Urban Continuity Codes (RUCC)
 rucc = pd.read_excel(os.path.join(pa, "ruralurbancodes2013.xls"), sheet_name=None)

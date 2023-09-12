@@ -17,6 +17,10 @@ da["logPop"] = np.log(da["Population"])
 da = da.dropna()
 da = da.sort_values(["FIPS", "year"])
 
+da["yearc"] = da["year"] - da["year"].mean()
+da["logPopc"] = da["logPop"] - da["logPop"].mean()
+da["RUCC_2013c"] = da["RUCC_2013"] - da["RUCC_2013"].mean()
+
 pdf = PdfPages("pcr_py.pdf")
 
 # Calculate the mean and variance within each county to
@@ -103,10 +107,19 @@ m4 = sm.GEE.from_formula("Births ~ RUCC_2013", groups="FIPS", offset="logPop",
                          family=sm.families.Gamma(link=sm.families.links.log()), data=da)
 r4 = m4.fit(scale="X2")
 
-# Demographic data, replace missing values with 0 and transform
-# with square root to stabilize the variance.
-demog = demog.fillna(0)
-demog = np.sqrt(demog)
+m5 = sm.GEE.from_formula("Births ~ RUCC_2013 + year", groups="FIPS", offset="logPop",
+                         cov_struct=sm.cov_struct.Exchangeable(),
+                         family=sm.families.Gamma(link=sm.families.links.log()), data=da)
+r5 = m5.fit(scale="X2")
+
+m6 = sm.GEE.from_formula("Births ~ RUCC_2013c * yearc", groups="FIPS", offset="logPop",
+                         cov_struct=sm.cov_struct.Exchangeable(),
+                         family=sm.families.Gamma(link=sm.families.links.log()), data=da)
+r6 = m6.fit(scale="X2")
+
+print("Score tests:")
+print(r5.model.compare_score_test(r4))
+print(r6.model.compare_score_test(r5))
 
 # Get factors (principal components) from the demographic data
 demog -= demog.mean(0)
@@ -133,20 +146,20 @@ da = pd.merge(da, demog_f, on="FIPS", how="left")
 npc = 10
 
 # A GLM, not appropriate since we have repeated measures on counties
-fml = "Births ~ logPop + RUCC_2013 + " + " + ".join(["pc%02d" % j for j in range(npc)])
-m5 = sm.GLM.from_formula(fml, family=sm.families.Poisson(), data=da)
-r5 = m5.fit(scale="X2")
+fml = "Births ~ (logPopc + RUCC_2013c) * yearc + " + " + ".join(["pc%02d" % j for j in range(npc)])
+m7 = sm.GLM.from_formula(fml, family=sm.families.Poisson(), data=da)
+r7 = m7.fit(scale="X2")
 
 # GEE accounts for the correlated data
-m6 = sm.GEE.from_formula(fml, groups="FIPS",
+m8 = sm.GEE.from_formula(fml, groups="FIPS",
          family=sm.families.Gamma(link=sm.families.links.log()), data=da)
-r6 = m6.fit(scale="X2")
+r8 = m8.fit(scale="X2")
 
 # Use log population as an offset instead of a covariate
 fml = "Births ~ " + " + ".join(["pc%02d" % j for j in range(npc)])
-m7 = sm.GEE.from_formula(fml, groups="FIPS", offset="logPop",
+m9 = sm.GEE.from_formula(fml, groups="FIPS", offset="logPop",
          family=sm.families.Gamma(link=sm.families.links.log()), data=da)
-r7 = m7.fit(scale="X2")
+r9 = m9.fit(scale="X2")
 
 # Restructure the coefficients so that the age bands are
 # in the columns.
@@ -160,12 +173,13 @@ def restructure(c):
 # as explanatory variables.
 def fitmodel(npc):
     # A GEE using log population as an offset
-    fml = "Births ~ 1" if npc == 0 else "Births ~ " + " + ".join(["pc%02d" % j for j in range(npc)])
-    m = sm.GEE.from_formula(fml, groups="FIPS", family=sm.families.Gamma(link=sm.families.links.log()), offset=da["logPop"], data=da)
+    fml = "Births ~ 1" if npc == 0 else "Births ~ RUCC_2013*year + " + " + ".join(["pc%02d" % j for j in range(npc)])
+    m = sm.GEE.from_formula(fml, groups="FIPS", family=sm.families.Gamma(link=sm.families.links.log()),
+                            offset=da["logPop"], data=da)
     r = m.fit(scale="X2")
 
     # Convert the coefficients back to the original coordinates
-    c = convert_coef(r.params[1:], npc)
+    c = convert_coef(r.params[4:], npc)
 
     # Restructure the coefficients so that the age bands are
     # in the columns.
