@@ -11,7 +11,7 @@ pa = "/home/kshedden/data/Teaching/natality"
 # birth files you will need to change the name of the file below to
 # omit the ".gz" suffix.
 dl = []
-for y in range(2016, 2021):
+for y in range(2011, 2021):
     da = pd.read_csv(os.path.join(pa, "%4d.txt.gz" % y), delimiter="\t",
                      dtype={"County Code": object})
     da = da[["County", "County Code", "Births"]]
@@ -21,6 +21,7 @@ births = pd.concat(dl)
 births = births.rename({"County Code": "FIPS"}, axis=1)
 births["Births"] = pd.to_numeric(births.Births, errors="coerce")
 births = births.dropna()
+births = births[~births["County"].str.contains("Unidentified")]
 
 # Subset the demographics file to 2016
 if False:
@@ -54,9 +55,10 @@ demog["FIPS"] = ["%02d%03d" % (x, y) for (x, y) in zip(demog.StateFIPS, demog.Co
 demog = demog[["FIPS", "Race", "Origin", "Sex", "Age", "Population"]]
 
 # Recode some variables to more interpretable text labels
-demog["Sex"] = demog["Sex"].replace([2, 1], ["F", "M"])
-demog["Origin"] = demog["Origin"].replace([0, 1], ["N", "H"])
-demog["Race"] = demog["Race"].replace([1, 2, 3, 4], ["W", "B", "N", "A"])
+# See http://seer.cancer.gov/popdata/popdic.html for code information
+demog["Sex"] = demog["Sex"].replace([2, 1], ["F", "M"]) # Female/Male
+demog["Origin"] = demog["Origin"].replace([0, 1], ["N", "H"]) # Non-Hispanic/Hispanic
+demog["Race"] = demog["Race"].replace([1, 2, 3, 4], ["W", "B", "N", "A"]) # White/Black/Native/Asian
 
 # The overall population per county
 pop = demog.groupby("FIPS")["Population"].sum().reset_index()

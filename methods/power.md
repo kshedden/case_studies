@@ -128,17 +128,19 @@ that can be manipulated to fully explore the power.
 
 ## Serial dependence and statistical power
 
-Many observational studies have a temporal dimension that is not of primary
+Many observational studies involve data collected over time, although
+the temporal structure of the population is not of primary
 interest.  In such cases we may analyze the data in a way that downplays
 the role of time.  For example, we may have data $x_i$ with the
 focus being on the expected value $\mu \equiv E[x_i]$.  As long as the
 $x_i$ are identically distributed (stationary), $\mu$ is a
 well-defined parameter, even if the $x_i$ are serially dependent.
 The sample mean $\bar{x}$ remains a consistent estimator of $\mu$ as long
-as the serial dependence is not very strong.
+as the serial dependence is not too strong.
 
-Let $\Sigma$ denote the covariance matrix of the $n-$vector
-$x = (x_1, \ldots, x_n)^\prime$, and note that $\bar{x} = x^\prime 1_n / n$.
+Let $\Sigma$ denote the covariance matrix of the n-vector
+$x = (x_1, \ldots, x_n)^\prime$, and note that $\bar{x} = x^\prime 1_n / n$,
+where $1_n$ is a vector of n $1$'s.
 The variance of $\bar{x}$ is therefore $1_n^\prime \Sigma 1_n / n^2$.
 Note that positive off-diagonal elements in $\Sigma$ will increase the variance
 of $\bar{x}$.
@@ -153,7 +155,8 @@ of interest, and then calculating the standard deviation of these estimates
 
 For dependent data, the parametric bootstrap may be a better option than the
 nonparametric bootstrap.  Here
-we discuss how parametric bootstrapping combined with copulas may be used
+we discuss how parametric bootstrapping combined with
+[Gaussian copulas](https://en.wikipedia.org/wiki/Copula_(probability_theory)) may be used
 to generate serially dependent data with a given marginal distribution.
 As discussed above, it is relatively straightforward to generate serially
 dependent Gaussian data.  Let $z_1, z_2, \ldots$ denote a serially dependent
@@ -172,4 +175,3 @@ that may match the distribution of our data, for example using the
 copula approach discussed above.  For each sample, generate the statistic of interest.
 The standard deviations of these estimates is an estimate of the standard error
 for our statistic.
-

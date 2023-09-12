@@ -4,6 +4,7 @@ library(readr)
 library(dplyr)
 library(tidyr)
 library(readxl)
+library(stringr)
 
 # Path to the data files
 pa = "/home/kshedden/data/Teaching/natality"
@@ -28,22 +29,21 @@ if (FALSE) {
     close(otc)
 }
 
-# Create a long form version of the births.  If you did not zip the
-# birth files you will need to change the name of the file below to
-# omit the ".gz" suffix.
+# Create a long form version of the births.
 dl = list()
-for (y in 2016:2020) {
+for (y in 2011:2020) {
     fn = file.path(pa, sprintf("%4d.txt.gz", y))
     ct = cols(Births=col_double())
     # This produces warnings
     da = read_tsv(fn, col_types=ct, show_col_types=F)
-    da = da %>% select("County Code", Births)
+    da = da %>% select("County Code", "County", Births)
     da = da[complete.cases(da),]
     da$year = y
     dl[[length(dl)+1]] = da
 }
 births = rbind(dl[[1]], dl[[2]], dl[[3]], dl[[4]], dl[[5]])
 births = rename(births, "FIPS"="County Code")
+births = births %>% filter(!str_detect(County, "Unidentified"))
 
 # Read the demographics for 2016.  It is a fixed-width format
 # file.

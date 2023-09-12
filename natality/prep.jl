@@ -4,20 +4,30 @@ using DataFrames, CSV, Printf, CodecZlib
 pa = "/home/kshedden/mynfs/data/Teaching/natality"
 
 # Create a long form version of the births
-dl = []
-for y = 2016:2020
-    fn = joinpath(pa, @sprintf("%4d.txt.gz", y))
-    tm = Dict("County Code" => String, "Births" => Float64)
-    da = open(fn) do io
-        CSV.read(io, DataFrame, delim = "\t", types = tm, silencewarnings = true)
+function get_births_long()
+    dl = []
+    for y = 2011:2020
+        fn = joinpath(pa, @sprintf("%4d.txt.gz", y))
+        tm = Dict("County Code" => String, "Births" => Float64)
+        da = open(fn) do io
+            CSV.read(io, DataFrame, delim = "\t", types = tm, silencewarnings = true)
+        end
+        da = da[:, ["County", "County Code", "Births"]]
+        da = da[completecases(da), :]
+        da[:, :year] .= y
+        push!(dl, da)
     end
-    da = da[:, ["County", "County Code", "Births"]]
-    da = da[completecases(da), :]
-    da[:, :year] .= y
-    push!(dl, da)
+    births = vcat(dl...)
+    births = rename(births, "County Code" => "FIPS")
+
+    # All small counties are lumped together into a single "unidentified"
+    # county, we exclude these records.
+    births = filter(row->!occursin("Unidentified", row.County), births)
+
+    return births
 end
-births = vcat(dl...)
-births = rename(births, "County Code" => "FIPS")
+
+births = get_births_long()
 
 # Subset the demographics file to 2016
 if false
@@ -39,43 +49,40 @@ end
 # file.  Unfortunately Julia does not currently have a good
 # fixed width file reader so we have to do a lot of tedious
 # processing here.
-x = [1, 5, 7, 9, 12, 14, 15, 16, 17, 19, 27]
-cs = [(x[i], x[i+1] - 1) for i = 1:length(x)-1]
-demog = (
-    Year = Int[],
-    State = String[],
-    StateFIPS = String[],
-    CountyFIPS = String[],
-    Registry = String[],
-    Race = String[],
-    Origin = String[],
-    Sex = String[],
-    Age = String[],
-    Population = Float64[],
-)
-open(GzipDecompressorStream, joinpath(pa, "2016ages.txt.gz")) do io
-    for line in eachline(io)
-        for j = 1:length(demog)
-            v = line[cs[j][1]:cs[j][2]]
-            T = eltype(demog[j])
-            if T <: AbstractString
-                push!(demog[j], v)
-            elseif T <: Number
-                push!(demog[j], parse(T, v))
+function get_2016_demog()
+    x = [1, 5, 7, 9, 12, 14, 15, 16, 17, 19, 27]
+    cs = [(x[i], x[i+1] - 1) for i = 1:length(x)-1]
+    demog = (Year = Int[], State = String[], StateFIPS = String[], CountyFIPS = String[],
+             Registry = String[], Race = String[], Origin = String[], Sex = String[],
+             Age = String[], Population = Float64[])
+    open(GzipDecompressorStream, joinpath(pa, "2016ages.txt.gz")) do io
+        for line in eachline(io)
+            for j = 1:length(demog)
+                v = line[cs[j][1]:cs[j][2]]
+                T = eltype(demog[j])
+                if T <: AbstractString
+                    push!(demog[j], v)
+                elseif T <: Number
+                    push!(demog[j], parse(T, v))
+                end
             end
         end
     end
+    demog = DataFrame(demog)
+
+    # Create a FIPS code that matches the FIPS code in the birth data
+    demog[:, :FIPS] = ["$x$y" for (x, y) in zip(demog.StateFIPS, demog.CountyFIPS)]
+    demog = demog[:, [:FIPS, :Race, :Origin, :Sex, :Age, :Population]]
+
+    # Recode some variables to more interpretable text labels
+    demog[:, :Sex] = replace(demog[:, :Sex], "1" => "M", "2" => "F")
+    demog[:, :Origin] = replace(demog[:, :Origin], "0" => "N", "1" => "H")
+    demog[:, :Race] = replace(demog[:, :Race], "1" => "W", "2" => "B", "3" => "N", "4" => "A")
+
+    return demog
 end
-demog = DataFrame(demog)
 
-# Create a FIPS code that matches the FIPS code in the birth data
-demog[:, :FIPS] = ["$x$y" for (x, y) in zip(demog.StateFIPS, demog.CountyFIPS)]
-demog = demog[:, [:FIPS, :Race, :Origin, :Sex, :Age, :Population]]
-
-# Recode some variables to more interpretable text labels
-demog[:, :Sex] = replace(demog[:, :Sex], "1" => "M", "2" => "F")
-demog[:, :Origin] = replace(demog[:, :Origin], "0" => "N", "1" => "H")
-demog[:, :Race] = replace(demog[:, :Race], "1" => "W", "2" => "B", "3" => "N", "4" => "A")
+demog = get_2016_demog()
 
 # The overall population per county
 pop = combine(groupby(demog, :FIPS), :Population => sum)
@@ -99,6 +106,6 @@ na = DataFrame(
 )
 
 # Get the Rural/Urban Continuity Codes (RUCC)
-rucc = open("rucc2013.csv.gz") do io
+rucc = open(joinpath(pa, "rucc2013.csv.gz")) do io
     CSV.read(io, DataFrame, types = Dict(:FIPS => String))
 end

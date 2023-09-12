@@ -1,14 +1,23 @@
 # Examine factors associated with birth count variation among US
 # counties using Principal Components Regression and Poisson GLM/GEE.
 
-using GLM, GEE, Statistics, UnicodePlots, LinearAlgebra, Printf
+using GLM
+using EstimatingEquationsRegression
+using Statistics
+using LinearAlgebra
+using Printf
+using UnicodePlots
 
 include("prep.jl")
 
+# Combine birth count, population size, and RUCC data.
 da = leftjoin(births, pop, on = :FIPS)
 da = leftjoin(da, rucc, on = :FIPS)
 da[:, :logPop] = log.(da[:, :Population])
 
+# There should not be any missing data.
+println(@sprintf("Dropping %d rows with missing values",
+        sum(1 .- completecases(da))))
 da = da[completecases(da), :]
 da = disallowmissing(da)
 da = sort(da, [:FIPS, :year])
@@ -16,7 +25,8 @@ da = sort(da, [:FIPS, :year])
 # Calculate the mean and variance within each county to
 # assess the mean/variance relationship.
 mv = combine(groupby(births, :FIPS), :Births => mean, :Births => var)
-scatterplot(log.(mv[:, :Births_var]), log.(mv[:, :Births_mean]))
+p = scatterplot(log.(mv[:, :Births_var]), log.(mv[:, :Births_mean]))
+println(p)
 
 # GLM, not appropriate since we have repeated measures on counties
 fml = @formula(Births ~ logPop + RUCC_2013)

@@ -34,6 +34,9 @@ print(mr.summary())
 plt.clf()
 plt.grid(True)
 plt.plot(lmv["mean"], lmv["var"], "o", alpha=0.2, rasterized=True)
+plt.axline((8, 8), slope=1, color="grey")
+plt.axline((lmv["mean"].mean(0), lmv["var"].mean(0)), slope=1, color="purple")
+plt.axline((8, mr.params[0]+8*mr.params[1]), slope=mr.params[1], color="orange")
 plt.xlabel("Log mean", size=16)
 plt.ylabel("Log variance", size=16)
 pdf.savefig()
@@ -119,9 +122,9 @@ pve = s**2
 pve /= sum(pve)
 
 # Put the demographic factors into a dataframe
-demog_f = pd.DataFrame({"FIPS": demog.index})
-for k in range(100):
-    demog_f["pc%02d" % k] = u[:, k]
+m = {("pc%02d" % k) : u[:, k] for k in range(100)}
+m["FIPS"] = demog.index
+demog_f = pd.DataFrame(m)
 
 # Merge demographic information into the births data
 da = pd.merge(da, demog_f, on="FIPS", how="left")
@@ -202,7 +205,7 @@ for npc in pcs:
         x.set_rotation(-90)
 
     ha, lb = plt.gca().get_legend_handles_labels()
-    leg = plt.figlegend(ha, lb, "center right")
+    leg = plt.figlegend(ha, lb, loc="center right")
     leg.draw_frame(False)
 
     plt.xlabel("Age group", size=17)
@@ -214,6 +217,7 @@ pdf.close()
 
 # Use score tests to get a sense of the number of PC factors
 # to include; also consider the PVEs calculated above.
+print("Score tests for PC's:")
 for k in range(10):
     st = models[k+1][0].compare_score_test(models[k][1])
     print("%d versus %d: p=%f" % (pcs[k+1], pcs[k], st["p-value"]))

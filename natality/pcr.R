@@ -3,7 +3,6 @@
 
 library(geepack)
 library(ggplot2)
-library(glmtoolbox)
 
 source("prep.R")
 

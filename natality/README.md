@@ -7,11 +7,12 @@ the terms of usage.  This will take you to the page where you can
 download the data.
 
 On the data download page, in section 1, change the option for "Group
-Results By" to "County", then in section 4, select year 2016.  Then
-click "Send" to download, and rename the downloaded file to
-"2016.txt".
+Results By" to "County", then in section 4, select year 2011.  Then
+click "Send" to get the data, and on the next page click "Export" to
+download, and rename the downloaded file to "2011.txt".
 
-Repeat the above steps for 2017, 2018, ..., 2020.
+Repeat the above steps for 2012, 2013, ..., 2020, to get 10 years of
+data.
 
 Next visit
 [https://seer.cancer.gov/popdata/download.html](https://seer.cancer.gov/popdata/download.html)
