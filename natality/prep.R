@@ -41,7 +41,7 @@ for (y in 2011:2020) {
     da$year = y
     dl[[length(dl)+1]] = da
 }
-births = rbind(dl[[1]], dl[[2]], dl[[3]], dl[[4]], dl[[5]])
+births = bind_rows(dl)
 births = rename(births, "FIPS"="County Code")
 births = births %>% filter(!str_detect(County, "Unidentified"))
 

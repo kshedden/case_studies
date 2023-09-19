@@ -26,6 +26,8 @@ mmv = lm(log_births_var ~ log_births_mean, data=mv)
 da = merge(births, pop, on="FIPS", how="left")
 da = merge(da, rucc, on="FIPS", how="left")
 da = da %>% mutate(logPop = log(da$Population))
+da = da %>% mutate(yearc = year - mean(year))
+da = da %>% mutate(RUCC_2013c = RUCC_2013 - mean(RUCC_2013))
 
 # Basic GLM looking at births in terms of population and urbanicity.
 # This model does not account for correlations between repeated
@@ -41,6 +43,18 @@ r2 = geeglm(Births ~ RUCC_2013, data=da, id=FIPS, family=poisson(), offset=logPo
 
 # GEE with log population as an offset instead of being a covariate.
 r3 = geeglm(Births ~ RUCC_2013, data=da, id=FIPS, family=Gamma(link="log"), offset=logPop)
+
+# GEE with log population as an offset instead of being a covariate.
+r4 = geeglm(Births ~ RUCC_2013, data=da, id=FIPS, family=Gamma(link="log"),
+            corstr="exchangeable", offset=logPop)
+
+# Add year as a main effect
+r5 = geeglm(Births ~ RUCC_2013 + year, data=da, id=FIPS, family=Gamma(link="log"),
+            corstr="exchangeable", offset=logPop)
+
+# Add an interaction between year and RUCC
+r6 = geeglm(Births ~ RUCC_2013c * yearc, data=da, id=FIPS, family=Gamma(link="log"),
+            corstr="exchangeable", offset=logPop)
 
 # Next we prepare to fit a Poisson model using principal components regression (PCR).
 # The principal components (PC's) will be based on demographic characteristics of
@@ -71,21 +85,17 @@ for (k in 1:100) {
 da = merge(da, demog_f, on="FIPS", how="left")
 
 # Include this number of factors in the next few models
-npc = 20
+npc = 10
 
 # GLM, not appropriate since we have repeated measures on counties
 fml = paste("pc", seq(npc), sep="")
 fml = paste(fml, collapse=" + ")
-fml = sprintf("Births ~ logPop + RUCC_2013 + %s", fml)
+fml = sprintf("Births ~ (logPop + RUCC_2013c) * yearc + %s", fml)
 fml = as.formula(fml)
-r4 = glm(fml, quasipoisson(), da)
+r7 = glm(fml, quasipoisson(), da)
 
 # GEE accounts for the correlated data, use logPop as offset
-fml = paste("pc", seq(npc), sep="")
-fml = paste(fml, collapse=" + ")
-fml = sprintf("Births ~ %s", fml)
-fml = as.formula(fml)
-r5 = geeglm(fml, data=da, id=FIPS, offset=da$logPop, family=poisson())
+r8 = geeglm(fml, data=da, id=FIPS, offset=da$logPop, family=poisson())
 
 # Get the fitted values on the log scale, without including the offset.
 # These values can be used to compare two counties as if they had the

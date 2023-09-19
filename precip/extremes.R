@@ -292,8 +292,8 @@ gev = block_max(annmax)
 yr = c(1, 10, 100, 500, 1000)
 cfg = list(list(f="exponential", gp=NULL), list(f="generalizedpareto", gp=eb))
 for (rr in cfg) {
-    cat(sprintf("\nM-observation returns for %s model:\n", f))
     f = rr$f
+    cat(sprintf("\nM-observation returns for %s model:\n", f))
     print(f)
     mr = mobs_return(df$PRCP, 365 * yr, family=rr$f, thresh=thresh, gp=rr$gp)
     rr = data.frame(Years=yr, MR=mr)
