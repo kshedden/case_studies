@@ -296,12 +296,13 @@ robust convergence.  One way to get good starting values is using the
 
 ### Return levels
 
-The *m-observation return level* is a value $x$ that is expected to be
+The *m-observation return level* (or simply $m-$ return) is a value $x$ that is expected to be
 exceeded once out of every $m$ observations.  In other words, $T$ is
 the m-observation return level if $I_i = {\cal I}(X_i > T)$
 and $E[I_1 + \cdots + I_m] = 1$, where the $X_i$ are identically distributed
-random variables. If $F(x)$ is the cumulative
-distribution function (CDF) of a random variable $X$, then the m-observation return level
+random variables. Since $E[I_1 + \cdots + I_m] = mE[I]$, where $I$ has the same
+distribution of the $I_i$, the $m$-return can be inferred from the equation $mE[I] = 1$.
+If $F(x)$ is the cumulative distribution function (CDF) of a random variable $X$, then the m-observation return level
 (for $m$ independent copies of $X$) is
 the solution to $F(x) = 1 - 1/m$.  Thus, the m-observation return level
 is the $1 - 1/m$ quantile of $X$.
