@@ -296,7 +296,7 @@ robust convergence.  One way to get good starting values is using the
 
 ### Return levels
 
-The *m-observation return level* (or simply $m-$ return) is a value $x$ that is expected to be
+The *m-observation return level* (or simply $m$-return) is a value $T$ that is expected to be
 exceeded once out of every $m$ observations.  In other words, $T$ is
 the m-observation return level if $I_i = {\cal I}(X_i > T)$
 and $E[I_1 + \cdots + I_m] = 1$, where the $X_i$ are identically distributed
