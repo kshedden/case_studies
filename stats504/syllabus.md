@@ -4,11 +4,13 @@
 
 Kerby Shedden (kshedden@umich.edu, 277 West Hall)
 
-Office hours: Tuesday, Thursda 4-5
+Office hours: Tuesday, Thursday 4-5
 
 ## GSI
 
 * Songkai Xue (sxue@umich.edu)
+
+GSI office hours Monday 10-11:30 in Angell Hall G219.
 
 ## Overview
 
