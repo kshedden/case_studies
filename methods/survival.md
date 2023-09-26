@@ -7,7 +7,7 @@ times* (e.g. the duration of time from when a person is diagnosed with
 a disease until they progress to a more advanced stage of the disease).
 There are many other applications of survival analysis methods that
 have nothing to do with "survival" or "failure", and these methods can
-even be applied in settings where "time" does not play a central role
+even be applied in settings where time does not play a central role
 (although this is less common).
 
 ## Time origin
@@ -29,7 +29,7 @@ means that the person graduated four years after beginning their studies.
 The theoretical basis of conventional survival analysis is that we are
 studying the distribution of a random variable $T$, corresponding to
 the time at which an event of interest occurs.  In conventional survival
-analysis, the event will eventually happen to everyone, so
+analysis, the event will always occur if we wait long enough, so
 $P(T < \infty) = 1$.  We note that in some situations this may not be completely
 realistic and there is a subdomain of survival analysis called "cure modeling"
 in which this assumption is not made.  However this document deals
@@ -55,12 +55,11 @@ we are studying $P(T | X)$.
 
 An example of left truncation would be a medical study where we are
 studying the incidence of stroke.  Suppose we use age as our time scale
-(so the time origin is a person's date of birth), and we recruit older
-people into our study based on some eligibility criteria.  Usually we
-would not recruit people into our study if they have already had a stroke.
-Suppose we recruit someone into the study who is currently 65 years
-of age.  We are selecting this subject conditionally on the event $T\ge 65$,
-and $Q=65$ is the subject's left truncation time.
+(so the time origin is a person's date of birth), and we wish to focus on
+the incidence of stroke after age 65.  Further, we exclude people who
+had a stroke before age 65.  Thus we are selecting subjects conditionally
+on the event $T> 65$, and $65$ is the subject's left truncation time.
+All our analysis is focused on the conditional distribution $P(T | T > 65, X)$.
 
 ## Censoring
 
@@ -157,8 +156,8 @@ play an important role in survival analysis.  While parametric methods
 can be useful, survival analysis tends to emphasize non-parametric and
 semi-parametric methods over parametric methods.
 
-The most elementary parametric distribution in survival analysis is the
-exponential distribution, although this is usually much too simplistic of
+The most elementary parametric distribution used for survival times
+is the exponential distribution, although this is usually too simplistic of
 a model to use in practice. The most commonly-encountered parameterized
 distribution in survival analysis is arguably the Weibull distribution,
 and Gamma and log-normal distributions are also encountered.
@@ -169,7 +168,8 @@ The *survival function* of a random variable $T$ is defined to be
 $S(t) \equiv P(T>t)$.  It is closely related to the cumulative distribution
 function (CDF) $F(t) = P(T\le t)$ since $S(t) = 1 - F(t)$.  In words,
 the survival function at time $t$ is the probability that the event has
-not occurred by time $t$.
+not occurred by time $t$.  It is the same function as the complementary
+CDF.
 
 The empirical CDF (eCDF) is one of the fundamental objects in statistics.
 Based on an independent and identically distributed (IID) sample from
@@ -182,8 +182,8 @@ As noted above, in survival analysis we usually have censoring and/or
 truncation.  We will consider here only the important subcase where there
 is right censoring and no truncation.  In this setting there is a simple
 estimator of the survival function $S(t)$ known as the *product limit*
-estimator or the *Kaplan-Meier* estimator.  It is worth understanding
-how this estimator is constructed.
+estimator or the [Kaplan-Meier](https://en.wikipedia.org/wiki/Kaplan%E2%80%93Meier_estimator)
+estimator.  It is worth understanding how this estimator is constructed.
 
 Let $t_1 < t_2 < \cdots < t_m$ denote the distinct times at which events
 are observed to occur, let $d_i$ denote the number of events that occur
@@ -245,8 +245,8 @@ $$
 Note that this also implies that when densities exist, $h(t) = f(t)/S(t)$,
 giving another natural view of the hazard funtion.
 
-In many applications, the hazard function has a very natural interpretation
-and in fact is easier to interpret than the survival function.  A common
+In many applications, the hazard function has a natural interpretation
+and may be easier to interpret than the survival function.  A common
 consideration is whether the hazard function is increasing, decreasing,
 approximately constant, or has some other shape like a "U" ("bathtub")
 shape.
@@ -257,7 +257,7 @@ or decreasing hazard function depending on its parameters.
 
 One common application of survival analysis is in the setting of failures of
 manufactured products, e.g. how likely is it that your car will break down at
-a particular point in time, given that it is currently working?  If the hazard function is constant, then the car
+a particular point in time, given that it is currently operational?  If the hazard function is constant, then the car
 is equally likely to break down on every day that you own it.  If the hazard function is increasing,
 then as the car gets older it becomes more likely to break down.  This could
 be due to the parts of the car wearing out and failing with use (e.g. due to
@@ -305,7 +305,7 @@ assumed proportionality may not hold in a particular setting.
 
 ## Estimating marginal hazard functions
 
-The cumulative survival function is easier to estimate than the
+The cumulative hazard function is easier to estimate than the
 hazard function, but is more difficult to interpret.  The most basic
 non-parametric estimate of the cumulative hazard function under right
 censoring with no truncation is the *Nelson-Aalen* estimator

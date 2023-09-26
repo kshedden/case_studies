@@ -2,7 +2,7 @@
 
 Empirical research is the process of using data to address
 questions about the natural world.  Such efforts always
-start with a well-formulated question.  After sepcifying
+should start with a well-formulated question.  After sepcifying
 a question, one can consider
 what data and analytic methods may be used to address the question.
 
