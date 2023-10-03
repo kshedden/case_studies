@@ -8,8 +8,11 @@ using CodecZlib
 pa = "/home/kshedden/data/Teaching/nhanes"
 mkpath(pa)
 
-files = ["DEMO", "BMX", "BPX"]
-years = collect(1999:2:2017)
+files = ["DEMO", "BMX", "BPX", "BIOPRO", "DPQ"]
+
+# Standard biochemistry starts in 2005
+# Depression screener starts in 2005
+years = collect(2005:2:2017)
 
 function do_download(years)
     # Download the files.
@@ -20,12 +23,24 @@ function do_download(years)
         for f in files
             g = "$(f)_$(letter).XPT"
 
+            # Prior to 2005, BIOPRO has different names
+            if y == 1999 && f == "BIOPRO"
+                g = "LAB18_$(letter).XPT"
+            elseif y < 2005 && f == "BIOPRO"
+                g = "L40_$(letter).XPT"
+            end
+
             # The first wave doesn't follow the naming pattern
             g = replace(g, "_A"=>"")
             h = joinpath(di, g)
             s = "https://wwwn.cdc.gov/Nchs/Nhanes/$(h)"
             println(s)
             Downloads.download(s, joinpath(pa, h))
+            r = read(joinpath(pa, h), 10)
+            if startswith(String(r), "<!DOCTYPE")
+                warning(@sprintf("Unable to read: %s\n", joinpath(pa, h)))
+                rm(joinpath(pa, h))
+            end
         end
     end
 end

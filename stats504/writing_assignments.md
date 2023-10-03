@@ -13,3 +13,8 @@ should incude some original ideas as well.  Your memo should reflect
 your own understanding and interpretation of the methods that you use
 and the findings that you obtain.
 
+3. (October 14th) Write a memo discusing a research question that can be
+addressed using the BHHT data discussed in class.  As always, your memo
+should address a specific question using methods that broadly align with
+the discussions from class.
+

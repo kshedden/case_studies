@@ -137,7 +137,7 @@ $$
 R_{ij} = \sum_{k=1}^p S_k U_{ik}V_{jk}.
 $$
 
-Although there are $p$ terms in the SVD of $S$, the first few terms may capture
+Although there are $p$ terms in the SVD of $R$, the first few terms may capture
 most of the structure, so
 
 $$
@@ -243,7 +243,7 @@ $1/2$, or $1$.
 
 The biplot shows which variables load on each of the
 two displayed components ($j$ and $k$), and simultaneously
-shows which of the observations most display the characteristics
+shows which of the observations most exhibit the characteristics
 summarized by each component.
 
 ### Principal Components Regression
