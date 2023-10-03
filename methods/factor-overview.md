@@ -110,7 +110,7 @@ $\tilde{X}$ is the closest matrix to $X$ in the *Frobenius norm*,
 which is defined as
 
 $$
-{\rm Frob}(X)^2 = \\|X\\|_F^2 \equiv \sum_i\sum_jX_{ij}^2 = {\rm trace}(X^\prime X).
+{\rm Frob}(X)^2 = \\|X\\|_F^2 \equiv \sum\_{ij}X_{ij}^2 = {\rm trace}(X^\prime X).
 $$
 
 Thus we have
@@ -637,7 +637,7 @@ $\bar{P}^c_{:,i} = 1/n$ for each $i$, and $r = n^{-1}1_n$.
 Therefore, a single element of the Gram matrix has the form
 
 $$
-[GG^T]_{ij} = q^{-1}(P^c_{:,i} - r)^T(P^c_{:,j} - r) = q^{-1}n\cdot {\rm cov}(P^c_{:,i}, P^c_{:,j}).
+[GG^T]\_{ij} = q^{-1}(P^c_{:,i} - r)^T(P^c_{:,j} - r) = q^{-1}n\cdot {\rm cov}(P^c_{:,i}, P^c_{:,j}).
 $$
 
 The diagonal elements of the Gram matrix are proportional to the variances of the column
