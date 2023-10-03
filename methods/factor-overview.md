@@ -110,11 +110,7 @@ $\tilde{X}$ is the closest matrix to $X$ in the *Frobenius norm*,
 which is defined as
 
 $$
-{\rm Frob}(X)^2 = \\|X\\|_F^2 \equiv \sum_{ij}
-$$
-
-$$
-{\rm Frob}(X)^2 = \\|X\\|_F^2 \equiv \sum_{ij}X_{ij}^2 = {\rm trace}(X^\prime X).
+{\rm Frob}(X)^2 = \\|X\\|_F^2 \equiv \sum_i\sum_jX_{ij}^2 = {\rm trace}(X^\prime X).
 $$
 
 Thus we have
@@ -648,7 +644,7 @@ The diagonal elements of the Gram matrix are proportional to the variances of th
 profiles:
 
 $$
-[GG^T]_{ii} = q^{-1}n\cdot {\rm var}(P^c_{:,i}).
+[GG^T]\_{ii} = q^{-1}n\cdot {\rm var}(P^c_{:,i}).
 $$
 
 It follows that the angle between two category profiles, say in columns $i$ and
