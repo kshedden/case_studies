@@ -8,8 +8,8 @@ the relationships among the objects.
 
 For example, we may have a sample of people (the "objects") with each
 person measured in terms of their height, weight, age, and sex.  In
-this example, two people are "similar" if they have similar values on
-most or all of the variables, and two variables are "similar" if
+this example, two people are similar if they have similar values on
+most or all of the variables, and two variables are similar if
 knowing the value of just one of the variables for a particular object
 allows one to predict the value of the other variable for that same
 object.
@@ -108,6 +108,10 @@ According to the
 theorem, among all rank $k$ matrices,
 $\tilde{X}$ is the closest matrix to $X$ in the *Frobenius norm*,
 which is defined as
+
+$$
+{\rm Frob}(X)^2 = \\|X\\|_F^2 \equiv.
+$$
 
 $$
 {\rm Frob}(X)^2 = \\|X\\|_F^2 \equiv \sum_{ij}X_{ij}^2 = {\rm trace}(X^\prime X).
@@ -221,6 +225,30 @@ $$
 Thus, $\hat{\Sigma}V = VS^2/n$, so $V$ contains the eigenvectors of
 $\hat{\Sigma}$ and the corresponding eigenvalues are in
 ${\rm diag}(S^2)/n$.
+
+### Biplots
+
+Suppose that $Z_c$ is the column-centered data (where the rows are
+observations and the columns are variables).  Let $Z_c = USV^T$
+denote the SVD.  A *biplot* is a plot that displays both the
+variables and the observations in a way that conveys (i) how
+the variables are related to each other, (ii) how the observations
+are related to each other, and (iii) how the variables are related
+to the observations.
+
+To construct the biplot, observation $i$ is plotted as
+$(S_{jj}^\alpha U_{ij}, S_{kk}^\alpha U_{ik})$ and
+variable $\ell$ is plotted as
+$(S_{jj}^\alpha V_{\ell j}, S_{kk}^\alpha V_{\ell k})$.
+Here, $j, k$ are chosen components, usually $j=1$ and
+$k=2$ (to show the dominant factors).  The parameter
+$1 \le \alpha \le 2$ is usually set to either $0$,
+$1/2$, or $1$.
+
+The biplot shows which variables load on each of the
+two displayed components ($j$ and $k$), and simultaneously
+shows which of the observations most display the characteristics
+summarized by each component.
 
 ### Principal Components Regression
 
