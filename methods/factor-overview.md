@@ -110,7 +110,7 @@ $\tilde{X}$ is the closest matrix to $X$ in the *Frobenius norm*,
 which is defined as
 
 $$
-{\rm Frob}(X)^2 = \\|X\\|_F^2 \equiv \sum\_{ij}X_{ij}^2 = {\rm trace}(X^\prime X).
+{\rm Frob}(X)^2 = \\|X\\|_F^2 \equiv \sum\_{ij}X\_{ij}^2 = {\rm trace}(X^\prime X).
 $$
 
 Thus we have
