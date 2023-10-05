@@ -233,9 +233,10 @@ are related to each other, and (iii) how the variables are related
 to the observations.
 
 To construct the biplot, observation $i$ is plotted as
+the point
 $(S_{jj}^\alpha U_{ij}, S_{kk}^\alpha U_{ik})$
 (the *object scores*) and
-variable $\ell$ is plotted as
+variable $\ell$ is plotted as the point
 $(S_{jj}^\alpha V_{\ell j}, S_{kk}^\alpha V_{\ell k})$
 (the *variable scores*).
 Here, $j, k$ are chosen components, usually $j=1$ and
@@ -248,8 +249,8 @@ Euclidean distances in the data.  For example, let
 $d = (1, -1, 0, 0, \ldots)^\prime$, and note that
 
 $$
-\|d^\prime Z_c)\|^2 = d^\prime Z_cZ_c^\prime d =
-d^\prime US^2U^\prime U = \|d^\prime US\|^2.
+\\|d^\prime Z_c\\|^2 = d^\prime Z_cZ_c^\prime d =
+d^\prime US^2U^\prime d = \\|d^\prime US\\|^2.
 $$
 
 This shows that the Euclidean distance between
