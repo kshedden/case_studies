@@ -2,9 +2,8 @@
 
 A large class of powerful statistical methods considers data in which
 many "objects" ("observations") are measured with respect to multiple variables.
-These analyses often focus on understanding the relationships
-among the variables, but sometimes also consider
-the relationships among the objects.
+These analyses focus on understanding the relationships
+among the variables as well as the relationships among the observations.
 
 For example, we may have a sample of people (the "objects") with each
 person measured in terms of their height, weight, age, and sex.  In
@@ -45,7 +44,7 @@ can be passed on to additional analysis procedures, or interpreted
 directly.  Embedding the variables provides a means to interpret the
 relationships among the variables.  When utilizing an embedding algorithm
 that embeds both objects and variables we have the opportunity to
-interpret the results through a *biplot*.
+interpret the results through a [biplot](https://en.wikipedia.org/wiki/Biplot).
 
 ## Centering and standardization
 
@@ -56,10 +55,11 @@ are the observations or objects, and whose columns are the variables.
 Some factor-type methods work with the covariance matrix of the variables,
 which is a $p\times p$ positive semidefinite (PSD) matrix.  Since covariances
 by definition are derived from mean centered variables, it is common to
-mean center the variables (columns) of $X$ prior to running a factor analysis.
+mean center the variables (columns) of the data matrix $X$ prior to running
+a factor analysis.
 
 We may wish for our results to be independent of the
-units in which each variable was measured, or we may wish to explicitly
+units in which each variable was measured, and
 remove any influence of differing dispersions of the variables on our results.
 This motivates standardizing the columns of $X$ prior to performing
 a factor analysis, where *standardization* involves first mean
@@ -233,13 +233,58 @@ are related to each other, and (iii) how the variables are related
 to the observations.
 
 To construct the biplot, observation $i$ is plotted as
-$(S_{jj}^\alpha U_{ij}, S_{kk}^\alpha U_{ik})$ and
+$(S_{jj}^\alpha U_{ij}, S_{kk}^\alpha U_{ik})$
+(the *object scores*) and
 variable $\ell$ is plotted as
-$(S_{jj}^\alpha V_{\ell j}, S_{kk}^\alpha V_{\ell k})$.
+$(S_{jj}^\alpha V_{\ell j}, S_{kk}^\alpha V_{\ell k})$
+(the *variable scores*).
 Here, $j, k$ are chosen components, usually $j=1$ and
 $k=2$ (to show the dominant factors).  The parameter
-$1 \le \alpha \le 2$ is usually set to either $0$,
+$0 \le \alpha \le 1$ is usually set to either $0$,
 $1/2$, or $1$.
+
+If we set $\alpha=1$, the object scores approximate
+Euclidean distances in the data.  For example, let
+$d = (1, -1, 0, 0, \ldots)^\prime$, and note that
+
+$$
+\|d^\prime Z_c)\|^2 = d^\prime Z_cZ_c^\prime d =
+d^\prime US^2U^\prime U = \|d^\prime US\|^2.
+$$
+
+This shows that the Euclidean distance between
+two rows of $Z_c$ is equal to the Euclidean
+distance between two rows of $US$ (which are
+the object scores if $\alpha=1$).
+
+If we set $\alpha=0$, then $n^{-1}Z_c^\prime Z_c$, which
+is the covariance matrix among the variables, can be
+written (up to a proportionality constant) as
+
+$$
+Z_c^\prime Z_c = VS^2V^\prime.
+$$
+
+This shows that the magnitudes of the object scores
+are equal to the variances of the variables, and
+the cosine of the angles between any two object
+scores is equal to the correlation between two variables.
+
+The interpretations of the object and variable scores
+given above are exact if we consider the non-truncated
+vectors of object/variable scores.  In practice we
+truncate to the dominant two components, to enable
+two-dimensional plotting.  In this case, the statements
+above are approximations.  In particular, the magnitudes
+of the variable scores reflect the variance of a variable
+that is reflected in the biplot, rather than its overall
+variance.
+
+Another pragmatic issue in biplots is that theoretically
+we should set $\alpha=1$ if we want to focus on the objects
+and $\alpha=0$ if we want to focus on the variables.  In
+practice we may set $\alpha=1/2$ to approximate both sets
+of relationships in the same plot.
 
 The biplot shows which variables load on each of the
 two displayed components ($j$ and $k$), and simultaneously
@@ -307,7 +352,7 @@ in $Y$.  This is often, but not always the case.
 
 Suppose we have two vectors of variables and a collection of objects that
 are assessed with respect to all variables in both vectors.
-Canonical Correlatoin Analysis (CCA) aims to understand
+Canonical Correlation Analysis (CCA) aims to understand
 the relationships between the two variable vectors.  This goal differs from
 the goal of PCA, which could be used to understand the
 relationships within each vector of variables separately.
