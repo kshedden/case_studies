@@ -241,7 +241,7 @@ the point
 $(S_{jj}^\alpha U_{ij}, S_{kk}^\alpha U_{ik})$
 (the *object scores*) and
 variable $\ell$ is plotted as the point
-$(S_{jj}^\alpha V_{\ell j}, S_{kk}^\alpha V_{\ell k})$
+$(S_{jj}^(1-\alpha) V_{\ell j}, S_{kk}^(1-\alpha) V_{\ell k})$
 (the *variable scores*).
 Here, $j, k$ are chosen components, usually $j=1$ and
 $k=2$ (to show the dominant factors).  The parameter
