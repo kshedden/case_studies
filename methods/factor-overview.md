@@ -231,6 +231,10 @@ variables and the observations in a way that conveys (i) how
 the variables are related to each other, (ii) how the observations
 are related to each other, and (iii) how the variables are related
 to the observations.
+In other words, the biplot shows which variables load on each of the
+two displayed components ($j$ and $k$), and simultaneously
+shows which of the observations most exhibit the characteristics
+summarized by each component.
 
 To construct the biplot, observation $i$ is plotted as
 the point
@@ -266,9 +270,9 @@ $$
 Z_c^\prime Z_c = VS^2V^\prime.
 $$
 
-This shows that the magnitudes of the object scores
+This shows that the magnitudes of the variable scores
 are equal to the variances of the variables, and
-the cosine of the angles between any two object
+the cosine of the angles between any two variables
 scores is equal to the correlation between two variables.
 
 The interpretations of the object and variable scores
@@ -286,11 +290,6 @@ we should set $\alpha=1$ if we want to focus on the objects
 and $\alpha=0$ if we want to focus on the variables.  In
 practice we may set $\alpha=1/2$ to approximate both sets
 of relationships in the same plot.
-
-The biplot shows which variables load on each of the
-two displayed components ($j$ and $k$), and simultaneously
-shows which of the observations most exhibit the characteristics
-summarized by each component.
 
 ### Principal Components Regression
 
