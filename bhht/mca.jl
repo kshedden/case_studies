@@ -1,6 +1,12 @@
-using DataFrames, CSV, DataFrames, UnicodePlots
-using MultivariateStats, Printf, StatsBase
-using UnicodePlots, PyPlot
+using DataFrames
+using CSV
+using DataFrames
+using UnicodePlots
+using MultivariateStats
+using Printf
+using StatsBase
+using UnicodePlots
+using PyPlot
 
 function variable_plot(mca::MCA; x = 1, y = 2, ordered=[], kwargs...)
 

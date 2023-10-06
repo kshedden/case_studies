@@ -50,12 +50,13 @@ def generate_biplot(uu, vv, c, title):
 
     # Plot the demographic categories as colored points, joined
     # by lines connecting the age groups.
-    for race in ["A", "B", "N", "W"]:
-        for eth in ["H", "N"]:
+    for race in ["W"]: #["A", "B", "N", "W"]:
+        for eth in ["N"]: #["H", "N"]:
             la = "%s_%s_%s" % (race, eth, sex)
             ii = [i for (i,x) in enumerate(c) if x.startswith(la)]
             ax.plot(vv[ii,0], vv[ii,1], "-o", color=colors[race], label=la, ms=3)
             ax.text(vv[ii[-1],0], vv[ii[-1],1], eth, ha="left", va="top", color=colors[race])
+            1/0
 
     ax.set_xlabel("Component 1", size=18)
     ax.set_ylabel("Component 2", size=18)

@@ -134,6 +134,27 @@ def convert_coef(c, npc):
 pve = s**2
 pve /= sum(pve)
 
+plt.clf()
+plt.grid(True)
+plt.plot(range(1, len(pve)+1), pve, "-")
+plt.xlabel("Component", size=18)
+plt.ylabel("Proportion of explained variance")
+pdf.savefig()
+
+plt.clf()
+plt.grid(True)
+plt.plot(np.log(range(1, len(pve)+1)), np.log(pve), "-")
+plt.xlabel("Log component", size=18)
+plt.ylabel("Log proportion of explained variance")
+pdf.savefig()
+
+plt.clf()
+plt.grid(True)
+plt.plot(range(1, len(pve)+1), np.cumsum(pve), "-")
+plt.xlabel("Component", size=18)
+plt.ylabel("Cumulative roportion of explained variance")
+pdf.savefig()
+
 # Put the demographic factors into a dataframe
 m = {("pc%02d" % k) : u[:, k] for k in range(100)}
 m["FIPS"] = demog.index

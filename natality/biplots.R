@@ -4,7 +4,7 @@ library(purrr)
 
 source("prep.R")
 
-# Get the demographics data
+# Get the demographics data for the largest counties.
 mv = births %>% group_by(FIPS) %>% summarize(births_mean=mean(Births), births_var=var(Births))
 mv = mv %>% mutate(log_births_mean=log(births_mean), log_births_var=log(births_var))
 demog = demog %>% mutate(across(where(anyNA), ~ replace_na(., 0)))
@@ -52,7 +52,7 @@ for (sex in c("F", "M")) {
     plt = ggplot(data=ud, aes(x=u1, y=u2)) + geom_point(alpha=0.2)
 
     # Plot colored points for the demographic variables
-    plt = plt + geom_line(data=vd1, aes(x=v1, y=v2, group=interaction(race, eth), color=interaction(race, eth)))
+    plt = plt + geom_path(data=vd1, aes(x=v1, y=v2, group=interaction(race, eth), color=interaction(race, eth)))
 
     plt = plt + ggtitle(ifelse(sex=="F", "Female", "Male"))
 
