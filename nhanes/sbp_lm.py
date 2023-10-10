@@ -9,7 +9,7 @@ from read import df
 cm = matplotlib.cm.get_cmap("tab10")
 pdf = PdfPages("sbp_py.pdf")
 
-dp = df.iloc[0:50, :]
+dp = df.iloc[0:50, :].copy()
 dp["RIDAGEYR"] = np.linspace(18, 80, 50)
 dp["RIDRETH1"] = "MA"
 
@@ -32,7 +32,7 @@ def plot1(rr, ii, dbands=False):
     plt.ylabel("SBP", size=15)
     plt.title("Model %d" % ii)
     ha, lb = plt.gca().get_legend_handles_labels()
-    leg = plt.figlegend(ha, lb, "center right")
+    leg = plt.figlegend(ha, lb, loc="center right")
     leg.draw_frame(False)
     pdf.savefig()
 
@@ -53,7 +53,7 @@ def plot2(rr, ii):
     plt.ylabel("SBP", size=15)
     plt.title("Model %d" % ii)
     ha, lb = plt.gca().get_legend_handles_labels()
-    leg = plt.figlegend(ha, lb, "center right")
+    leg = plt.figlegend(ha, lb, loc="center right")
     leg.draw_frame(False)
     leg.set_title("Sex/BMI")
     pdf.savefig()
@@ -80,9 +80,9 @@ def plot3(rr, ii):
     plt.fill_between(dp.RIDAGEYR, yd-2*se, yd+2*se, color="grey")
     plt.plot(dp.RIDAGEYR, yd, color="black")
     plt.xlabel("Age", size=15)
-    plt.ylabel("SBP", size=15)
+    plt.ylabel("SBP difference", size=15)
     plt.title("Model %d" % ii)
-    plt.title("Sex difference (F-M) at BMI=25")
+    plt.title("SBP difference based on sex (F-M) at BMI=25")
     pdf.savefig()
 
 # Compare BMI 25 to BMI 30, for females only
@@ -109,7 +109,7 @@ def plot4(rr, ii):
     plt.xlabel("Age", size=15)
     plt.ylabel("SBP", size=15)
     plt.title("Model %d" % ii)
-    plt.title("BMI difference (30-25) for females")
+    plt.title("SBP difference based on BMI (30-25) for females")
     pdf.savefig()
 
 def plot_all(rr, ii):
@@ -227,12 +227,12 @@ pdf.close()
 
 # Plot the basis functions
 pdf = PdfPages("splines.pdf")
-
 df = df.sort_values(by="RIDAGEYR")
 for j in [3, 5, 10]:
     y = patsy.dmatrix("0 + bs(RIDAGEYR, %d)" % j, df)
     plt.clf()
     plt.grid(True)
+    plt.title("%d dimensional cubic b-spline basis" % j)
     for k in range(j):
         plt.plot(df["RIDAGEYR"], y[:, k], "-", color="blue")
     plt.xlabel("RIDAGEYR", size=15)

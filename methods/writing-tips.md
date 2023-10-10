@@ -60,7 +60,7 @@ for the reader to understand your question, approach, and conclusions.
 course, you can assume that the reader is familiar with the statistical
 methodology that you use.  Nevertheless, it helps to reinforce certain key
 points by explaining the strengths and weaknesses of the methods that you
-emplot, and the statistical reasoning behind your conclusions.
+employ, and the statistical reasoning behind your conclusions.
 
 * To make the writing more realistic, do not refer to our class as such,
 or to prior assignments.
@@ -259,6 +259,12 @@ and only
 
 ## Graphics
 
+* Only include plots or tables that are essential for conveying your message
+  and that you explicitly refer to in your report.
+
+* Number all plots and tables and always use these numbers when referring to
+  plots/tables in the body of your report.
+
 * Avoid pie charts in almost all situations
 
 * Bar graphs are a very elementary and limited form of statistical
@@ -332,7 +338,7 @@ and only
   U.S. states, virtually everything (GDP, murders, bankruptcies, airports,
   ...) will track with state population.  If you rank the states by any of
   these features, you will usually get a list that starts with California,
-  Texas, Florida, etc.  In nearly all cases, when working with unbalanced
+  Texas, Florida, etc. and ends with Wyoming and Alaska.  In nearly all cases, when working with unbalanced
   groups you should report some type of rate or other normalized value.
   Note that this does not imply that you should never model absolute
   quantities.  But whether you are reporting modeled results, or raw data,
