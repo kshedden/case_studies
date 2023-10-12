@@ -60,10 +60,21 @@ for k,g in dx.groupby("era"):
 print(fig.show(legend=True))
 
 # Fit a proportional hazards regression model
-dx["time"] = np.sqrt(dx["birth"] - 1500)
-fml = "clifespan ~ bs(time, 4) + gender + level1_main_occ + un_region"
+fml = "clifespan ~ bs(birth, 4) + gender + level1_main_occ + un_region"
 m0 = sm.PHReg.from_formula(fml, dx, status="died")
 r0 = m0.fit()
+
+# Plot the partial effect of birth
+dp = dx.iloc[0:100, :].copy()
+dp["gender"] = "Female"
+dp["level1_main_occ"] = "Leadership"
+dp["un_region"] = "Asia"
+dp["birth"] = np.linspace(dx["birth"].min(), dx["birth"].max(), 100)
+lhr = r0.predict(exog=dp).predicted_values
+plt = plotille.plot(dp["birth"], lhr, X_label="Birth year (transformed)",
+                    Y_label="Cumulative hazard", width=60, height=20)
+print(plt)
+print("\n\n")
 
 # Plot the estimated baseline cumulative hazard function
 ti, cumhaz, surv = r0.baseline_cumulative_hazard[0]
@@ -91,8 +102,7 @@ print(plt)
 print("\n\n")
 
 # Fit a sex-stratified proportional hazards regression model
-dx["time"] = np.sqrt(dx["birth"] - 1500)
-fml = "clifespan ~ bs(time, 4) + level1_main_occ + un_region"
+fml = "clifespan ~ bs(birth, 4) + level1_main_occ + un_region"
 m1 = sm.PHReg.from_formula(fml, dx, status="died", strata="gender")
 r1 = m1.fit()
 
@@ -112,4 +122,3 @@ for k in 0,1:
     shaz = sm.nonparametric.lowess(np.log(haz), ti[0:-1])
     fig.plot(shaz[:,0], shaz[:,1], label=snames[k])
 print(fig.show(legend=True))
-
