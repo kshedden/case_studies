@@ -1,0 +1,78 @@
+library(earth)
+library(ggplot2)
+
+source("read.R")
+
+pdf("sbp_earth_r.pdf")
+
+dx = df %>% dplyr::select(BPXSY1, RIAGENDR, RIDAGEYR, BMXBMI, RIDRETH1)
+dx = dx[complete.cases(dx),]
+
+# An additive Earth model
+m0 = earth(BPXSY1 ~ RIDAGEYR + BMXBMI + RIAGENDR + RIDRETH1, trace=TRUE, data=dx)
+
+# An Earth model with pairwise interactions
+m1 = earth(BPXSY1 ~ RIDAGEYR + BMXBMI + RIAGENDR + RIDRETH1, degree=2, data=dx)
+
+# Plot fitted SBP versus age, for females and males.
+plot_sex_age = function(m, bmi=25, race="NHB", title="") {
+    dp = dx[1:100, ]
+    dp[1:50, "RIDAGEYR"] = seq(18, 80, length.out=50)
+    dp[51:100, "RIDAGEYR"] = seq(18, 80, length.out=50)
+    dp[1:50, "RIAGENDR"] = "F"
+    dp[51:100, "RIAGENDR"] = "M"
+    dp[, "BMXBMI"] = bmi
+    dp[, "RIDRETH1"] = race
+    dp[, "yy"] = predict(m, dp)
+    p = ggplot(dp, aes(y=yy, x=RIDAGEYR, color=RIAGENDR, by=RIAGENDR)) + geom_line()
+    p = p + xlab("Age") + ylab("SBP") + ggtitle(title)
+    print(p)
+    return(dp)
+}
+
+# Plot fitted SBP versus age, for two levels of BMI.
+sbp_by_age = function(m, sex="F", race="NHB", title="") {
+    dp = dx[1:100, ]
+    dp[1:50, "RIDAGEYR"] = seq(18, 80, length.out=50)
+    dp[51:100, "RIDAGEYR"] = seq(18, 80, length.out=50)
+    dp[1:50, "BMXBMI"] = 25
+    dp[51:100, "BMXBMI"] = 30
+    dp[, "RIAGENDR"] = "F"
+    dp[, "RIDRETH1"] = race
+    dp[, "yy"] = predict(m, dp)
+    dp[, "BMXBMI"] = as.factor(dp$BMXBMI)
+    p = ggplot(dp, aes(y=yy, x=RIDAGEYR, color=BMXBMI, by=RIAGENDR)) + geom_line()
+    p = p + xlab("Age") + ylab("SBP") + ggtitle(title)
+    print(p)
+    return(dp)
+}
+
+# Plot fitted SBP versus BMI for females and for males.
+sbp_by_bmi = function(m, age=40, race="NHB", title="") {
+    dp = dx[1:100, ]
+    dp[1:50, "BMXBMI"] = seq(20, 40, length.out=50)
+    dp[51:100, "BMXBMI"] = seq(20, 40, length.out=50)
+    dp[1:50, "RIAGENDR"] = "F"
+    dp[51:100, "RIAGENDR"] = "M"
+    dp[, "RIDAGEYR"] = age
+    dp[, "RIDRETH1"] = race
+    dp[, "yy"] = predict(m, dp)
+    p = ggplot(dp, aes(y=yy, x=BMXBMI, color=RIAGENDR, by=RIAGENDR)) + geom_line()
+    p = p + xlab("BMI") + ylab("SBP") + ggtitle(title)
+    print(p)
+    return(dp)
+}
+
+plot(m0)
+plot(m1)
+
+sbp_by_age(m0, title="degree=1")
+sbp_by_age(m1, title="degree=2")
+
+sbp_by_age(m0, title="degree=1")
+sbp_by_age(m1, title="degree=2")
+
+sbp_by_bmi(m0, title="degree=1")
+sbp_by_bmi(m1, title="degree=2")
+
+dev.off()
