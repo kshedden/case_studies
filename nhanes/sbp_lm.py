@@ -7,14 +7,14 @@ from matplotlib.backends.backend_pdf import PdfPages
 from read import df
 
 cm = matplotlib.cm.get_cmap("tab10")
-pdf = PdfPages("sbp_py.pdf")
+pdf = PdfPages("sbp_lm_py.pdf")
 
 dp = df.iloc[0:50, :].copy()
 dp["RIDAGEYR"] = np.linspace(18, 80, 50)
 dp["RIDRETH1"] = "MA"
 
-# Plot predicted SBP by sex
-def plot1(rr, ii, dbands=False):
+# Plot predicted SBP by sex at fixed BMI.
+def plot1(rr, ii, dbands=False, bmi=2):
     sigma = np.sqrt(rr.scale)
     plt.figure(figsize=(7.6, 5))
     plt.clf()
@@ -22,7 +22,7 @@ def plot1(rr, ii, dbands=False):
     plt.grid(True)
     for (jj,sex) in enumerate(["F", "M"]):
         dp["RIAGENDR"] = sex
-        dp["BMXBMI"] = 25
+        dp["BMXBMI"] = bmi
         yh = rr.predict(exog=dp)
         plt.plot(dp.RIDAGEYR, yh, color=cm(jj/10), label={"F": "Female", "M": "Male"}[sex])
         if dbands:
@@ -36,14 +36,14 @@ def plot1(rr, ii, dbands=False):
     leg.draw_frame(False)
     pdf.savefig()
 
-# Plot predicted SBP by sex and BMI (25 versus 30)
-def plot2(rr, ii):
+# Plot predicted SBP by sex at two different BMI levels (25 versus 30)
+def plot2(rr, ii, bmis = [25, 30]):
     plt.figure(figsize=(7.6, 5))
     plt.clf()
     plt.axes([0.12, 0.12, 0.7, 0.8])
     plt.grid(True)
     for sex in ["F", "M"]:
-        for bmi in [25, 30]:
+        for bmi in bmis:
             dp["RIAGENDR"] = sex
             dp["BMXBMI"] = bmi
             yh = rr.predict(exog=dp)
@@ -58,9 +58,9 @@ def plot2(rr, ii):
     leg.set_title("Sex/BMI")
     pdf.savefig()
 
-# Compare females and males at fixed BMI, with confidence bands
-def plot3(rr, ii):
-    dp["BMXBMI"] = 25
+# Compare females and males at fixed BMI, for each age, with confidence bands
+def plot3(rr, ii, bmi=25):
+    dp["BMXBMI"] = bmi
     yy, xm = [], []
     for sex in ["F", "M"]:
         dp["RIAGENDR"] = sex
@@ -85,9 +85,9 @@ def plot3(rr, ii):
     plt.title("SBP difference based on sex (F-M) at BMI=25")
     pdf.savefig()
 
-# Compare BMI 25 to BMI 30, for females only
-def plot4(rr, ii):
-    dp["RIAGENDR"] = "F"
+# Compare BMI 25 to BMI 30, for one sex only
+def plot4(rr, ii, sex="F"):
+    dp["RIAGENDR"] = sex
     yy, xm = [], []
     for bmi in [30, 25]:
         dp["BMXBMI"] = bmi
@@ -113,11 +113,11 @@ def plot4(rr, ii):
     pdf.savefig()
 
 def plot_all(rr, ii):
-    plot1(rr, ii)
+    plot1(rr, ii, bmi=25)
     plot1(rr, ii, dbands=True)
-    plot2(rr, ii)
-    plot3(rr, ii)
-    plot4(rr, ii)
+    plot2(rr, ii, bmis=[25, 30])
+    plot3(rr, ii, bmi=25)
+    plot4(rr, ii, sex="F")
 
 # Very basic model
 f0 = "BPXSY1 ~ RIDAGEYR + RIAGENDR + BMXBMI"

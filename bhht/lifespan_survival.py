@@ -72,7 +72,7 @@ dp["un_region"] = "Asia"
 dp["birth"] = np.linspace(dx["birth"].min(), dx["birth"].max(), 100)
 lhr = r0.predict(exog=dp).predicted_values
 plt = plotille.plot(dp["birth"], lhr, X_label="Birth year (transformed)",
-                    Y_label="Cumulative hazard", width=60, height=20)
+                    Y_label="Contribtution to the log hazard", width=60, height=20)
 print(plt)
 print("\n\n")
 

@@ -1,7 +1,7 @@
 library(dplyr)
 library(readr)
 
-pa = "/home/kshedden/data/Teaching/nhanes"
+pa = "/home/kshedden/data/Teaching/nhanes/2017-2018"
 
 fn = c("DEMO_J.csv.gz", "BMX_J.csv.gz", "BPX_J.csv.gz")
 
