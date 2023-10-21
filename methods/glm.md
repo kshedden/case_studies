@@ -515,7 +515,7 @@ QAIC discussed above.
 
 Many datasets contain data that are statistically dependent, and
 it is
-important to account for it in a data analysis.  There are many
+important to account for this in data analysis.  There are many
 approaches to working with dependent data.  Here we focus on a
 framework known as *Generalized Estimating Equations* (GEE), which
 extends the GLM approach to accommodate dependent data.
@@ -531,7 +531,7 @@ taken on one subject would likely be statistically dependent.  This
 form of dependence is called _serial dependence_ because it results
 from having repeated measures taken over time.  In most such cases
 we can assume that observations taken on different subjects are independent,
-so in effect we can partition our data into blocks such that there may
+so we can partition our data into blocks such that there may
 be dependence within blocks but not between blocks.
 
 * Suppose that we consider the number of accidental deaths per day in
@@ -540,19 +540,17 @@ These counts could be statistically dependent within counties
 over time (which is serial dependence as discussed above),
 and moreover could
 also be dependent between different counties within the same state.
+This may be called _clustered dependence_.
 
 Note that the data being dependent is mostly a property of the way in
 which the data were collected, rather than being intrinsic to one type
-of measurement.  For example, Cbiomarker data would generally be independent if
+of measurement.  For example, biomarker data would generally be independent if
 collected in a cross-sectional study, but becomes dependent when collected
 in a longitudinal study.
 
-Basic regression analysis focuses on the conditional mean relationship
-$E[Y|X=x]$.  Modeling
-multidimensional probability distributions is a much harder task.  The
-goal of GEE, like GLM, is to focus on the conditional mean
-relationship, while accommodating the presence of statistical
-dependence.
+Modeling multidimensional probability distributions is very challenging.  The
+goal of GEE, like GLM, is to focus on the conditional mean, but while
+accommodating the presence of statistical dependence.
 
 Above we used working variance models and quasi-likelihood analysis to
 justify the use of GLM fitting procedures in settings where the GLM
@@ -564,8 +562,8 @@ is a model for how observations in the dataset are thought to be
 related.  Most GEE
 software arranges the data into _clusters_ (also called _groups_ or
 _blocks_).  Two
-observations in different groups are always independent, but two
-observations in the same group may be dependent.  The working
+observations in different clusters are always independent, but two
+observations in the same cluster may be dependent.  The working
 correlation structure is an attempt to specify how these dependencies
 are structured.  Formally, $R_i(\alpha)$ is the $n_i\times n_i$ working
 correlation matrix for cluster $i$, where $n_i$ is the number of observations
@@ -578,28 +576,29 @@ $$
 \sum_i (y_i - \mu)_i^\prime \Sigma_i^{-1} (y_i - \mu_i),
 $$
 
-where $\Sigma_i = V_i^{1/2} R_i(\alpha) V_i^{1/2}$, with $V_i$ being
+where $\Sigma_i = V_i^{1/2} R_i(\alpha) V_i^{1/2}$ is the covariance
+matrix among observations on cluster $i$, with $V_i$ being
 the diagonal $n_i\times n_i$ matrix with diagonal values equal to
 $V(\mu_1), \ldots, V(\mu_{n_i})$.  Suppose for the moment that
 $\Sigma_i$ is known, rather than depending on $\beta$ through
 the $\mu_i$.  Then the value of $\beta$ that minimizes the Mahalanobis
-distance is solves the following *estimating equations*
+distance solves the following *estimating equations*
 
 $$
 \sum_i (\partial \mu_i/\partial \beta)^\prime \cdot \Sigma_i \cdot (y_i - \mu_i) = 0.
 $$
 
-The Jacobian $\partial \mu_i/\partial \beta$ is a $n_i\times p$
+The Jacobian $J_i = \partial \mu_i/\partial \beta$ is a $n_i\times p$
 matrix of partial derivatives and $y_i - \mu_i$ is a $n_i$-dimensional
 vector of residuals.
 
 The estimating equations can be solved using *Gauss-Seidel* iterations.
-Essentially this involves using $\hat{\beta}_i$ from the previous
-iteration to define $\Sigma_i$ and the Jacobian.  The resulting
-iterative update is
+Essentially this involves using $\hat{\beta}$ from the previous
+iteration to define $\Sigma_i$ and $J_i$, simplifying the
+iterative update of $\beta$.  The resulting update is
 
 $$
-\hat{\beta} \leftarrow \hat{\beta} + (\sum_i J_i^\prime\Sigma_i^{-1}J_i)^{-1} \sum_i J_i^\prime \Sigma_i^{-1}(y_i - \hat{\mu}_i).
+\hat{\beta} \leftarrow \hat{\beta} + \left(\sum_i J_i^\prime\Sigma_i^{-1}J_i\right)^{-1} \sum_i J_i^\prime \Sigma_i^{-1}(y_i - \hat{\mu}_i).
 $$
 
 The *robust* covariance matrix of $\hat{\beta}$ has the form $m^{-1}B^{-1}MB^{-1}$,
@@ -647,11 +646,3 @@ observations within a cluster are ordered, and the correlation between
 cases $i$ and $j$ is $\rho_{|i-j|}$ if $|i-j|\le m$, and the two cases
 are uncorrelated otherwise. The values of $\alpha=(\rho_1, \ldots, \rho_m)$ are
 estimated from the data, and $m$ is a tuning parameter.
-
-The algorithm for fitting a GEE alternates between updating the
-estimate of $\beta$, and updating the estimates of any correlation
-parameters $\alpha$.  It is a quasi-likelihood approach, so has
-many robustness properties such as being robust to mis-specification
-of the variance structure, and of the correlation structure.  Note
-that it remains a requirement for observations in different groups to
-be independent.
