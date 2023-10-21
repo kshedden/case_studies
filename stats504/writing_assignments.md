@@ -18,7 +18,7 @@ addressed using the BHHT data discussed in class.  As always, your memo
 should address a specific question using methods that broadly align with
 the discussions from class.
 
-4. (October 20th) Write a memo discussing a research question that can be
+4. (October 30th) Write a memo discussing a research question that can be
 addressed using the NHANES data, focusing on using regression analysis
 to understand factors associated with blood pressure.  You should pose
 and address a specific question and emphasize issues discussed in class,
