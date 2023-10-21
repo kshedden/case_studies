@@ -1,6 +1,6 @@
 # Generalized Linear Models
 
-Generalized Linear Models (GLMs) are a type of single-index regression
+*Generalized Linear Models* (GLMs) are a type of single-index regression
 model that substantially extends the range of analyses that can be
 meaningfully carried out compared to using conventional linear models.
 
@@ -12,7 +12,7 @@ $$
 \beta_0 + \beta_1x_1 + \cdots + \beta_p x_p.
 $$
 
-A linear model is a specific type of GLM that models the conditional
+A *linear model* is a specific type of GLM that models the conditional
 mean function directly as the linear predictor:
 
 $$
@@ -34,7 +34,7 @@ $$
 
 __Relationship to linear models with a transformed response
 variable:__ For a nonlinear function $g$, the value of $g(E[Y|X=x])$
-is not equal to the value of $E[g(Y)|X=x]$.  While there is a
+is not equal to the value of $E[g(Y)|X=x]$.  Thus, while there is a
 superficial similarity between fitting a GLM and fitting a linear
 model with a transformed dependent variable $g(Y)$, these approaches
 to regression can perform quite differently.
@@ -48,16 +48,18 @@ $\beta_0 + \beta_1x_1 + \beta_2x_2$.  With an identity link, the
 relationship between the covariates and the conditional mean is
 additive.  If we compare two cases with the same value of $x_2$ and
 whose values of $x_1$ differ by 1 unit, then the case with the greater
-value of $x_1$ will be expected to have a response that is $\beta_1$
-units greater compared to the case with the lower value of $x_1$.
-Written concisely, we have:
+value of $x_1$ is expected to have a response that is $\beta_1$
+units greater compared to the case with the lower value of $x_1$,
+that is
 
 $$
-E[Y|X_1=x_1+1, X_2=x_2] - E[Y|X_1=x_1, X_2=x_2] = \beta_1
+E[Y|X_1=x_1+1, X_2=x_2] - E[Y|X_1=x_1, X_2=x_2] = \beta_1.
 $$
+
+The covariate effect in this case is *additive*.
 
 If instead of a linear link we have a log link function, then the case
-with the greater value of $x_1$ will be expected to have a response
+with the greater value of $x_1$ is expected to have a response
 that is $\exp(\beta_1)$ times greater than the case with the lower
 value of $x_1$:
 
@@ -65,19 +67,27 @@ $$
 E[Y|X_1=x_1+1, X_2=x_2] / E[Y|X_1=x_1, X_2=x_2] = \exp(\beta_1).
 $$
 
+The covariate effect in this case is *multiplicative*.
+
 __Variance functions:__ GLM's specify a condfitional variance function $V(\cdot)$
-as well as a mean function.  For a basic GLM, the variance function
-has the form
+as well as a mean function.  The conditional variance of the response is determined
+from the variance function via the relationship
 
 $$
 {\rm Var}[Y|X=x] = \phi \cdot V(E[Y|X=x]),
 $$
 
-where $V(\cdot): {\cal R}\rightarrow R^+$ is a given function and
+where $V(\cdot): {\mathbb R}\rightarrow {\mathbb R}^+$ is a given function and
 $\phi \ge 0$ is a *scale parameter*.  In words, the
-variance is expressed through a "mean/variance relationship", i.e.
-the variance can only depend on the covariates through the mean that
+variance is expressed through a *mean/variance relationship*, i.e.
+the conditional variance can only depend on the covariates through the conditional mean that
 they imply.
+
+Mean/variance relationships are a powerful way to accommodate *heteroscedasticity* in
+regression analyses.  They provide a simpler alternative to *variance regression*
+in which the conditional variance function $Var[Y|X=x]$ is an arbitrary function
+of $x$, rather than being restricted to being a function of the conditional
+mean.
 
 __GLM's and parametric probability models:__ Many basic GLM's are
 equivalent to using maximum likelihood analysis to fit a parametric
@@ -108,59 +118,68 @@ equivalent to using maximum likelihood estimation to fit the model in
 which $P(Y | X=x)$ is parameterized as a Poisson PMF with mean
 $\exp(\beta_0 + \beta_1x_1+\cdots+ \beta_px_p)$.
 
-When viewed in terms of parameterized probability distributions, a GLM
-can be seen as indexing an infinite family of distributions through
-the covariate vector $x$.  That is, in a Poisson GLM, $P(Y | X=x)$ is
-Poisson for every $x$, but with a different mean value (and variance)
-in each case.
+A GLM can be seen as indexing a collection of distributions through
+the covariate vector $x$.  If we have observations
+$(y_i, x_i), i=1, \ldots, n$, each observation follows a specific probability
+distribution in the collection.
+For example, in a Poisson GLM, $P(Y_i | X=x_i)$ is a Poisson distribution,
+so every $i$, and different observations in general will follow different
+Poisson distributions.  Except for the Gaussian case, there is no way
+to write a GLM in the form $y_i = \beta^\prime x_i + \epsilon_i$ for
+an *error term* $\epsilon_i$.
 
-Note that a GLM describes a collection of conditional distributions,
+Note that a GLM describes the conditional distributions
 $P(Y | X=x)$, for different values of $x$.  A GLM (like any regression
 procedure) says very little about the marginal distribution $P(Y)$.
 In a Poisson GLM, repeated observations of $Y$ at the same value of
-$X$ will follow a Poisson distribution, but the marginal distribution
-of $Y$, which describes the pooled set of all $Y$ values (taken at
-different values of $X$) will not be Poisson.  Similarly, in a
+$X$ will follow a Poisson distribution, but the *pooled* (or *marginal*)
+distribution of $Y$, which describes the set of all $Y$ values taken at
+different values of $X$ will not be Poisson.  Similarly, in a
 Gaussian linear model, $Y$ values taken at the same $X$ are Gaussian,
 but the marginal distribution of $Y$ is not Gaussian.
 
 ## Overview of different GLM families
 
-As noted above, some GLMs are "inspired" by parameteric families of
-probability distributions.  The Poisson and Gaussian GLMs are very
-widely used, but there are many other useful GLMs that can be
-specified through different choices of the family, link function, and
-variance function.  In fact there are infinitely many possible GLMs.
+Some GLMs are derived from parameteric families of
+probability distributions.  The Gaussian, Poisson, and binomial GLMs
+are very widely used, but there are many other useful GLMs.
 We will discuss a few of the most prominent ones here.
 
-Note that all of the approaches discussed below are suitable for
-non-negative response variables.  The main GLM family that is used
-with data that can take on both positive and negative values is the
-Gaussian family.
+The Gaussian GLM typically uses the identity link funtion $g(x) = x$,
+the Poisson GLM typically uses the log link function $g(x) = \log(x)$,
+and the binomial GLM typically uses the logistic linnk function $g(x) = log(x/(1-x))$.
+It is possible to use alternative link functions with any of these families,
+e.g. we can use the log link function for a Gaussian GLM, but we do not consider
+this possibility further here.
 
-Other than the Gaussian/linear model, all of the GLM's discussed
-here most commonly use the logarithm as the
+All of the examples introduced below use the logarithm as the
 link function, so the mean structure model is
-$E[Y|X=x] = \exp(\beta^\prime x)$, although alternative link functions are
-possible, giving rise to different mean structures.
+$E[Y|X=x] = \exp(\beta^\prime x)$.
 
-The _negative binomial_ GLM can be seen as an extension of the Poisson
-GLM.  Its mean/variance relationship involves a shape parameter
-$\alpha$, such that
+The _quasi Poisson_ GLM introduces a scale parameter into the Poisson
+variance model (which fixes $\phi=1$):
+
+$$
+{\rm Var}[Y|X=x] = \phi E[Y|X=x].
+$$
+
+The _negative binomial_ GLM introduces a shape parameter
+$\alpha$ into the variance model, such that
 
 $$
 {\rm Var}[Y|X=x] = E[Y|X=x] + \alpha \cdot E[Y|X=x]^2.
 $$
 
-If $\alpha=0$, the mean/variance relationship is the same as in the
-Poisson model.  If $\alpha > 0$, the variance increases faster with
-the mean compared to the Poisson GLM.  The _quasi negative binomial_
-model introduces a scale parameter to the mean/variance relationship,
-which becomes
+The _quasi negative binomial_ model has both scale and shape parameters, so that
+the mean/variance relationship is
 
 $$
 {\rm Var}[Y|X=x] = \phi\cdot (E[Y|X=x] + \alpha \cdot E[Y|X=x]^2).
 $$
+
+In the negative binomial models, if $\alpha=0$, the mean/variance relationship
+is the same as in the Poisson model or quasi-Poisson models.  If $\alpha > 0$,
+the variance increases faster as a convex non-linear function of the mean.
 
 The _Tweedie GLM_ interpolates the mean/variance relationship between
 a Poisson and a negative binomial GLM.  It has the form
@@ -184,8 +203,8 @@ $$
 $$
 
 which is constant.  By contrast, in a Poisson GLM, the CV is
-$1/E[Y|X=x]^{1/2}$, meaning that the relative error is smaller when
-the mean is larger.
+$1 / E[Y|X=x]^{1/2}$, meaning that the comditioal variance is
+smaller in relative terms when the conditional mean is larger.
 
 An _inverse Gaussian GLM_ has
 
@@ -198,12 +217,13 @@ case grows very fast with the mean.
 
 ## Mean/variance relationships and "overdispersion"
 
-For data sets that involve counting the number of times that a rare
+For data sets that involve counting the number of times that an
 event happens, it is natural to think in terms of a Poisson model.
 For example, if we have the number of car accidents that occur at a
 particular roadway intersection in a city during one year, we might
 imagine that this count is Poisson-distributed.  Recall that a Poisson
-distribution describes the number of times that an event occurs when
+distribution describes the number of times that an event occurs over a
+long period of time when
 the event has a constant probability of happening in each small time
 interval, and if these occurrences are independent.  If there is a
 fixed, small probability of a car accident occurring at a particular
@@ -237,12 +257,15 @@ than the mean (underdispersion is also possible but we will not
 consider that here).  Overdispersion typically results from
 "heterogeneity" -- the total count being modeled is a sum of counts
 over temporal or spatial sub-units with different event rates.
+Overdispersion can be accommodated by using the quasi-Poisson,
+negative binomial, quasi-negative binomial, Tweedie, Gamma, or
+inverse Gaussian models as discussed above.
 
 ## Scale parameters
 
 The variance function $V(\mu)$, where $\mu = \mu(x)$ is the mean
 structure, describes how the mean and variance are related in a GLM.
-The value of $V(\cdot)$ must be either explicitly or implicitly
+The function $V(\cdot)$ must be
 specified when fitting a GLM.  However it turns out that $V(\cdot)$
 only needs to be the correct variance function up to an unknown
 constant multiplier.  That is, as long as the true conditional
@@ -251,23 +274,25 @@ $\textrm{Var}(Y|X=x) = \phi\cdot V(\mu)$, where $\phi \ge 0$
 is a constant, then we can still
 estimate $\beta$ with good theoretical guarantees.
 
-When working with binary data, the variance is completely determined
-by the mean and the scale parameter must be set to $\phi=1$.
+A special case arises when working with binary data, where the variance
+is completely determined by the mean (i.e. there is only one possible
+conditional distribution for a binary random variable once its mean
+is known).  In this case, the scale parameter must be set to $\phi=1$.
 
 ### Scale parameter estimation
 
 One challenge to understanding the variance structure is that, as
 noted above, a GLM defines a probability model for each value of the
-covariate $x$.  That is, we observe a value $y$ drawn from the
+covariate $x$.  That is, we observe one value $y$ drawn from the
 probability model defined by the GLM at $X=x$.
 
-It is the conditional distribution of $Y$ at a single value of $x$,
+As noted above, it is the conditional distribution of $Y$ at a single value of $x$,
 not the marginal distribution of $Y$, that matches the "family"
 (Poisson, Gaussian, etc.).  Unless there are ties (replicate
 observations at one $x$), we only observe one $y$ for each $x$, so we
 only observe one $y$ from each distribution.  With a sample of size 1
-(at each $x$), it is not straightforward to assess the shape of the
-distribution or even its variance.
+(at each $x$), it is not straightforward to assess the shape of these
+conditional distributions or even their variances.
 
 Fortunately, there is a way to estimate the scale parameter $\phi$
 even when there are no replicates.  The most basic way of doing this
@@ -319,14 +344,23 @@ population variance.
 
 ### Variance diagnostics
 
-If we have enough data, it is possible to assess the goodness of fit
-of the working variance model directly.  Taking the Poisson case
-as an example, we can fit a preliminary Poisson regression, then
-stratify the data into bins based on the fitted values $\hat{y}$ from
-this model.  We then estimate the scale parameter within individual
-bins.  If the variance model is correct, these
-estimated scale parameters should be approximately constant with
-respect to the estimated means.
+It is possible to assess the goodness of fit of the variance model directly
+by considering the *Pearson residuals*, which are defined to be
+$r_i = (y_i - \hat{y}_i) / V(\hat{y}_i)^{1/2}$.  These quantities
+should be approximately independent with mean zero and variance $\phi$.
+
+A powerful way to detect miss-specification of the variance model is
+to consider the relationship between the Pearson residuals $r_i$ and
+the fitted values $\hat{y}_i$.  This is a generalization of the
+"residuals on fitted values plot" used in basic multiple regression
+analysis.  We can plot $r_i$ on $\hat{y}_i$ and visually assess
+non constant variance, which would imply that the heteroscedasticity
+in the data is not correctly captured by the chosen variance function.
+A more focused way to consider this is to
+plot $|r_i|$ against $\hat{y}_i$ and use a scatterplot smoothing technique
+like Lowess to estimate the
+conditional mean relationship between these two
+quantities, which should be constant.
 
 ## GLMs via quasi-likelihood
 
@@ -335,11 +369,10 @@ depend on Gaussianity of the data, most of the favorable properties of
 GLMs do not require the data to follow the specific family used to
 define the model.  For example, Poisson regression can often be used
 even if the data do not follow a Poisson distribution.  The primary
-requirement for attaining good performance with a GLM is that the mean
-structure is (approximately) correct.  An important secondary
-requirement is to have a reasonably accurate model for the conditional
-variance.  Other properties of the distribution (other than the
-conditional mean and variance) are less important. For example,
+requirement for attaining good performance with a GLM is that the
+specified mean and variance structures are correct.
+Other properties of the distribution such as higher moments do not
+need to match the specified parametric family. For example,
 domain constraints can generally be ignored, so a Poisson GLM can be
 fit to data that includes non-integer values, as long as the mean and
 variance models hold.
@@ -360,47 +393,15 @@ theory for GLMs.
 
 If we believe that the specified mean structure, and the variance
 model are approximately correct, then quasi-likelihood theory
-justifies that we (i) use standard GLM fitting procedures to estimate
+justifies that we may (i) use standard GLM fitting procedures to estimate
 $\beta$, ignoring the scale parameter $\phi$ at the time of fitting,
 and (ii) adjust the standard errors for the regression parameter
 estimates by multiplying them by a factor of $\hat{\phi}^{1/2}$. Some
 other tools from maximum likelihood analysis can be adapted to the
 quasi-likelihood setting, such as using the quasi-AIC instead of the
-standard AIC.  Note that some ideas from maximum likelihood theory
+standard AIC.  Note that other ideas from maximum likelihood theory
 such as likelihood ratio testing are not directly applicable in the
 quasi-likelihood setting.
-
-### Estimation without valid inference
-
-An important robustness property of quasi-GLMs is that the mean
-parameters can be estimated consistently even when the variance is
-mis-specified.  Incorrect specification of the variance leads to a
-loss of efficiency, but does not completely invalidate the analysis.
-For example, we can use quasi-Poisson regression with a _working
-variance structure_ ${\rm Var}(Y|X=x) = \phi\exp(\beta^\prime x)$ to
-estimate the mean structure even if we are not confident that this
-working variance structure is correct, as long as we believe that the
-mean structure (e.g. based on the log link function) is correct.  In
-this setting, we can consistently estimate the mean structure
-parameters $\beta$, but most tools for statistical inference
-(e.g. standard errors) may be incorrect.  This approach can be useful
-if we are willing to sacrifice a (usually small) amount of efficiency
-for the sake of simplicity, and do not need standard errors (e.g. if
-our research aims are primarily predictive).
-
-### Non-standard variance functions
-
-There are canonical choices of the variance function for basic GLMs
-that are modeled on parametric probability models.  For example,
-$V(\mu) = 1$ matches the Gaussian distribution, and $V(\mu) = \mu$
-matches the Poisson distribution, where $\mu = E[Y|X=x]$.  However it
-is entirely legitimate to specify a non-standard variance function if
-that provides a better fit to the data.  For example, we can fit a
-Poisson regression model with variance function $V(\mu) = \mu^p$, for
-a given value of $p$ suggested by the data.  This is a quasi-GLM,
-since the fitting process is not equivalent to maximum likelihood
-estimation for a model with the specified mean and variance
-structures.
 
 ### Robust inference for GLMs
 
@@ -510,34 +511,40 @@ ratio testing.  Note that the AIC derived from Wedderburn's
 quasi-likelihood is called QIC, and is generally different from the
 QAIC discussed above.
 
-## Generalized estimating equations
+## Generalized Estimating Equations
 
-Many datasets contain data that are statistically dependent.  In some
-settings, this dependence can be ignored, but in most cases it is
+Many datasets contain data that are statistically dependent, and
+it is
 important to account for it in a data analysis.  There are many
 approaches to working with dependent data.  Here we focus on a
-framework known as "Generalized Estimating Equations" (GEE), which
+framework known as *Generalized Estimating Equations* (GEE), which
 extends the GLM approach to accommodate dependent data.
 
 First, we present two examples of data that would likely be dependent:
 
-* Suppose that we measure a person's C-reactive protein (CRP) levels,
-a biomarker for inflammation.  A longitudinal study design might have
-each subject return for annual assessments.  The repeated measures
+* Suppose we have a collection of subjects $i=1, \ldots, n$ and repeatedly
+measure a biomarker in each person's blood.  Let $y_{ij}$ denote the
+$j^{\rm th}$ repeated measure of the biomarker for subject $i$, with this
+measurement taking place at time $t_{ij}$, which does not need to
+be the same for all subjects.  The repeated measures
 taken on one subject would likely be statistically dependent.  This
 form of dependence is called _serial dependence_ because it results
-from having repeated measures taken over time.
+from having repeated measures taken over time.  In most such cases
+we can assume that observations taken on different subjects are independent,
+so in effect we can partition our data into blocks such that there may
+be dependence within blocks but not between blocks.
 
-* Suppose that we consider the number of COVID-19 deaths per day in
-each US county, over the span of several months.  These counts could
-be statistically dependent over time (serial dependence), and could
-also be dependent within states.  That is,
-all counties within a state may move up or down together.
+* Suppose that we consider the number of accidental deaths per day in
+each US county, considering days ranging over a span of several months.
+These counts could be statistically dependent within counties
+over time (which is serial dependence as discussed above),
+and moreover could
+also be dependent between different counties within the same state.
 
 Note that the data being dependent is mostly a property of the way in
 which the data were collected, rather than being intrinsic to one type
-of measurement.  For example, CRP data would be independent if
-collected in a cross-sectional study, but is dependent when collected
+of measurement.  For example, Cbiomarker data would generally be independent if
+collected in a cross-sectional study, but becomes dependent when collected
 in a longitudinal study.
 
 Basic regression analysis focuses on the conditional mean relationship
@@ -553,34 +560,65 @@ probability model may not hold.  We can now extend this idea to
 develop a GLM-like procedure to accommodate non-independent data.
 
 The key idea here is that of a _working correlation structure_.  This
-is a model for how observations in the dataset are related.  Most GEE
-software arranges the data into _clusters_, or _groups_.  Two
-observations in different groups are always independent.  Two
+is a model for how observations in the dataset are thought to be
+related.  Most GEE
+software arranges the data into _clusters_ (also called _groups_ or
+_blocks_).  Two
+observations in different groups are always independent, but two
 observations in the same group may be dependent.  The working
 correlation structure is an attempt to specify how these dependencies
 are structured.  Formally, $R_i(\alpha)$ is the $n_i\times n_i$ working
 correlation matrix for cluster $i$, where $n_i$ is the number of observations
 in cluster $i$.  The vector $\alpha$ contains parameters
-that determine the correlation structure.
+that determine the correlation structure (generally $\alpha$ has low dimension).
 
-The mean structure parameters $\beta$ are estimated by solving the
-following estimating equations
+We can estimate the parameter vector $\beta$ by minimizing the *Mahalanobis distance*:
 
 $$
-\sum_i \partial \mu_i/\partial \beta \cdot V(\mu_i)^{-1/2}R_i(\alpha)^{-1}V(\mu_i)^{-1/2}(y_i - \mu_i) = 0.
+\sum_i (y_i - \mu)_i^\prime \Sigma_i^{-1} (y_i - \mu_i),
 $$
 
-The Jacobian $\partial \mu_i/\partial \beta$ is a $p\times n_i$
+where $\Sigma_i = V_i^{1/2} R_i(\alpha) V_i^{1/2}$, with $V_i$ being
+the diagonal $\n_i\times n_i$ matrix with diagonal values equal to
+$V(\mu_1), \ldots, V(\mu_{n_i})$.  Suppose for the moment that
+$\Sigma_i$ is known, rather than depending on $\beta$ through
+the $\mu_i$.  Then the value of $\beta$ that minimizes the Mahalanobis
+distance is solves the following *estimating equations*
+
+$$
+\sum_i (\partial \mu_i/\partial \beta)^\prime \cdot \Sigma_i (y_i - \mu_i) = 0.
+$$
+
+The Jacobian $\partial \mu_i/\partial \beta$ is a $n_i\times p$
 matrix of partial derivatives and $y_i - \mu_i$ is a $n_i$-dimensional
-vector of residuals. The working correlation structure $R_i(\alpha)$
-is a $n_i\times n_i$ correlation matrix that
-does not need to be correct in order to obtain meaningful results.
-The variance term $V(\mu_i)$ here is interpreted as a diagonal
-$n_i\times n_i$ matrix whose diagonal values are derived from
-the variance function.
-The mean structure parameters $\beta$ can be estimated, and standard
-errors can be obtained, even if the working correlation structure is
-wrong.  However the estimate of $\beta$ will be more efficient if the
+vector of residuals.
+
+The estimating equations can be solved using *Gauss-Seidel* iterations.
+Essentially this involves using $\hat{\beta}_i$ from the previous
+iteration to define $\Sigma_i$ and the Jacobian.  The resulting
+iterative update is
+
+$$
+\hat{\beta} \leftarrow \hat{\beta} + (\sum_i J_i^\prime\Sigma_i^{-1}J_i)^{-1} \sum_i J_i^\prime \Sigma_i^{-1}(y_i - \hat{\mu_i).
+$$
+
+The *robust* covariance matrix of $\hat{\beta}$ has the form $m^{-1}B^{-1}MB^{-1}$,
+where $m$ is the number of clusters,
+
+$$
+B = m^{-1}\sum_i J_i^\prime\Sigma_i^{-1}J_i
+$$
+
+and
+
+$$
+M = m^{-1} \sum_i J_i^\prime \Sigma_i^{-1} r_ir_i^\prime \Sigma_i^{-1} J_i
+$$
+
+where $r_i = y_i - \hat{\mu}_i \in {\cal R}^{n_i}$ are working residuals.
+This covariance matrix is robust to miss-specification of the working
+correlation model $R_i(\alpha)$, however the estimate of $\beta$ will be
+more efficient if the
 working correlation structure is approximately correct.
 
 There are many possible working correlation structures, but these are
