@@ -579,14 +579,14 @@ $$
 $$
 
 where $\Sigma_i = V_i^{1/2} R_i(\alpha) V_i^{1/2}$, with $V_i$ being
-the diagonal $\n_i\times n_i$ matrix with diagonal values equal to
+the diagonal $n_i\times n_i$ matrix with diagonal values equal to
 $V(\mu_1), \ldots, V(\mu_{n_i})$.  Suppose for the moment that
 $\Sigma_i$ is known, rather than depending on $\beta$ through
 the $\mu_i$.  Then the value of $\beta$ that minimizes the Mahalanobis
 distance is solves the following *estimating equations*
 
 $$
-\sum_i (\partial \mu_i/\partial \beta)^\prime \cdot \Sigma_i (y_i - \mu_i) = 0.
+\sum_i (\partial \mu_i/\partial \beta)^\prime \cdot \Sigma_i \cdot (y_i - \mu_i) = 0.
 $$
 
 The Jacobian $\partial \mu_i/\partial \beta$ is a $n_i\times p$
@@ -599,7 +599,7 @@ iteration to define $\Sigma_i$ and the Jacobian.  The resulting
 iterative update is
 
 $$
-\hat{\beta} \leftarrow \hat{\beta} + (\sum_i J_i^\prime\Sigma_i^{-1}J_i)^{-1} \sum_i J_i^\prime \Sigma_i^{-1}(y_i - \hat{\mu_i).
+\hat{\beta} \leftarrow \hat{\beta} + (\sum_i J_i^\prime\Sigma_i^{-1}J_i)^{-1} \sum_i J_i^\prime \Sigma_i^{-1}(y_i - \hat{\mu}_i).
 $$
 
 The *robust* covariance matrix of $\hat{\beta}$ has the form $m^{-1}B^{-1}MB^{-1}$,
