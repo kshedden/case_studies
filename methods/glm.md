@@ -20,7 +20,7 @@ E[Y|X=x] = \beta_0 + \beta_1x_1 + \cdots + \beta_p x_p.
 $$
 
 A GLM relates the conditional mean to the linear predictor via a link
-function $g: {\cal R}\rightarrow {\cal R}$:
+function $g: {\mathbb R}\rightarrow {\mathbb R}$:
 
 $$
 g(E[Y|X=x]) = \beta_0 + \beta_1x_1 + \cdots + \beta_p x_p.
@@ -85,7 +85,7 @@ they imply.
 
 Mean/variance relationships are a powerful way to accommodate *heteroscedasticity* in
 regression analyses.  They provide a simpler alternative to *variance regression*
-in which the conditional variance function $Var[Y|X=x]$ is an arbitrary function
+in which the conditional variance function ${\rm Var}[Y|X=x]$ is an arbitrary function
 of $x$, rather than being restricted to being a function of the conditional
 mean.
 
@@ -123,8 +123,9 @@ the covariate vector $x$.  If we have observations
 $(y_i, x_i), i=1, \ldots, n$, each observation follows a specific probability
 distribution in the collection.
 For example, in a Poisson GLM, $P(Y_i | X=x_i)$ is a Poisson distribution,
-so every $i$, and different observations in general will follow different
-Poisson distributions.  Except for the Gaussian case, there is no way
+so different observations in general will follow different
+Poisson distributions.  Except for the Gaussian case, there is no
+meaningful way
 to write a GLM in the form $y_i = \beta^\prime x_i + \epsilon_i$ for
 an *error term* $\epsilon_i$.
 
@@ -134,20 +135,20 @@ procedure) says very little about the marginal distribution $P(Y)$.
 In a Poisson GLM, repeated observations of $Y$ at the same value of
 $X$ will follow a Poisson distribution, but the *pooled* (or *marginal*)
 distribution of $Y$, which describes the set of all $Y$ values taken at
-different values of $X$ will not be Poisson.  Similarly, in a
+different values of $X$, will not be Poisson.  Similarly, in a
 Gaussian linear model, $Y$ values taken at the same $X$ are Gaussian,
 but the marginal distribution of $Y$ is not Gaussian.
 
 ## Overview of different GLM families
 
-Some GLMs are derived from parameteric families of
-probability distributions.  The Gaussian, Poisson, and binomial GLMs
-are very widely used, but there are many other useful GLMs.
-We will discuss a few of the most prominent ones here.
+Some GLMs such as the Gaussian, Poisson, and binomial GLMs are derived
+from parameteric families of probability distributions.  We discuss
+these familiar GLMs here.
 
 The Gaussian GLM typically uses the identity link funtion $g(x) = x$,
 the Poisson GLM typically uses the log link function $g(x) = \log(x)$,
-and the binomial GLM typically uses the logistic linnk function $g(x) = log(x/(1-x))$.
+and the binomial GLM typically uses the logistic link function
+$g(x) = {\rm log}(x / (1-x))$.
 It is possible to use alternative link functions with any of these families,
 e.g. we can use the log link function for a Gaussian GLM, but we do not consider
 this possibility further here.
@@ -156,8 +157,8 @@ All of the examples introduced below use the logarithm as the
 link function, so the mean structure model is
 $E[Y|X=x] = \exp(\beta^\prime x)$.
 
-The _quasi Poisson_ GLM introduces a scale parameter into the Poisson
-variance model (which fixes $\phi=1$):
+The _quasi Poisson_ GLM introduces a non-negative scale parameter $\phi$
+into the Poisson variance model (in which $\phi=1$ is fixed):
 
 $$
 {\rm Var}[Y|X=x] = \phi E[Y|X=x].
@@ -203,7 +204,7 @@ $$
 $$
 
 which is constant.  By contrast, in a Poisson GLM, the CV is
-$1 / E[Y|X=x]^{1/2}$, meaning that the comditioal variance is
+$1 / E[Y|X=x]^{1/2}$, meaning that the conditional variance is
 smaller in relative terms when the conditional mean is larger.
 
 An _inverse Gaussian GLM_ has
@@ -232,20 +233,20 @@ intersection per year might follow a Poisson distribution, as long as
 the accidents on different days are independent.  If all the roadway
 intersections in a city have the same probability of having an
 accident per day, then the set of counts for all such intersections
-may behave like a sample from a Poisson distribution.
+may behave like a sample from a (common) Poisson distribution.
 
 If either the independence or homogeneity (equal probability)
 conditions for a Poisson process stated above do not hold, then the
 resulting counts may not be Poisson-distributed.  For example, if
 there are differences in risk for different days of the week, or
-during different seasons, then the total number of events in one year
+during different seasons of the year, then the total number of events in one year
 will generally not follow a Poisson distribution.  For example, even
 if the count for each intersection is Poisson-distributed, the
 collection of counts for all intersections will not be a sample from a
 Poisson distribution unless the daily probabilities of an accident
 occurring at the different roadway intersections are the same.
 
-To apply Poisson regression, we do not need the data to be exactly
+To make use of Poisson regression, we do not need the data to be exactly
 Poisson-distributed.  We only need the specified mean and variance
 structures to hold.  In this case the model is being fit from a
 "quasi-likelihood" perspective, and this does not make the findings
@@ -354,9 +355,9 @@ to consider the relationship between the Pearson residuals $r_i$ and
 the fitted values $\hat{y}_i$.  This is a generalization of the
 "residuals on fitted values plot" used in basic multiple regression
 analysis.  We can plot $r_i$ on $\hat{y}_i$ and visually assess
-non constant variance, which would imply that the heteroscedasticity
+non constant variance, which if present would imply that the heteroscedasticity
 in the data is not correctly captured by the chosen variance function.
-A more focused way to consider this is to
+A more focused way to detect heteroscedasticity is to
 plot $|r_i|$ against $\hat{y}_i$ and use a scatterplot smoothing technique
 like Lowess to estimate the
 conditional mean relationship between these two
