@@ -495,7 +495,7 @@ must be *positive semi-definite* meaning that $K(x, x) \ge 0$ for all
 $x$.  Two common choices for kernel functions are the *squared exponential kernel*
 
 $$
-K(u, v) = \exp(-\\|u - v\\|^2/2\lambda^2)
+K(u, v) = \exp(-\\|u - v\\|^2/2\omega^2)
 $$
 
 and the polynomial kernel of degree $m$
@@ -530,7 +530,7 @@ $$
 which minimizes the criterion
 
 $$
-\|y - K\alpha\|^2 + \lambda \alpha^prime K\alpha.
+\\|y - K\alpha\\|^2 + \lambda \alpha^prime K\alpha.
 $$
 
 It turns out that $\alpha^prime K \alpha$ is a form of _functional regularization_,
