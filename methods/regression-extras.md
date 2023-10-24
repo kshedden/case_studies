@@ -533,7 +533,7 @@ $$
 \\|y - K\alpha\\|^2 + \lambda \alpha^\prime K\alpha.
 $$
 
-It turns out that $\alpha^prime K \alpha$ is a form of _functional regularization_,
+It turns out that $\alpha^\prime K \alpha$ is a form of _functional regularization_,
 in the sense that $\alpha K\alpha$ measures the smoothness of the function
 $x\rightarrow \sum_i\alpha_i K(x,x_i)$.
 
