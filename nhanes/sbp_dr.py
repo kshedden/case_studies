@@ -27,7 +27,6 @@ vz = [x.replace("RIAGENDR", "RIAGENDRx") for x in vx]
 x = np.asarray(dx[vz])
 m = SIR(y, x)
 r = m.fit()
-
 scores = np.dot(x, r.params)
 
 # Stratify on the j'th score, plot the mean of SBP with respect to the

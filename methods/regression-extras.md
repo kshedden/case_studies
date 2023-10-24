@@ -105,6 +105,8 @@ technique because it allows familiar estimation methods to be used in a much
 broader range of settings, simply by augmenting the regression design
 matrix with additional columns.
 
+## Generalized Additive Models
+
 In recent years a power class of methods has emerged that combines
 the use of basis functions with smoothness penalties.  Many of these
 methods broadly can be considered forms of
@@ -469,7 +471,7 @@ functions are constructed by mutliplying hinges for different
 variables, and nonlinearity can be obtained by summing and/or
 taking products of hinge functions of a single variable.
 
-EARTH is a greedy algorithm that sequentially searchers through
+EARTH is a greedy algorithm that sequentially searches through
 the space of basis functions derived as products of hinges.  It
 can capture additive and non-additive relationships.  While
 EARTH remains useful, some drawbacks of this approach have been
@@ -492,20 +494,21 @@ term "kernel" to what we are discussing here.
 In the present setting, a kernel is a bivariate function $K(\cdot, \cdot)$
 mapping ${\mathbb R}^p\times {\mathbb R}^p\rightarrow {\mathbb R}$.  The kernel
 must be *positive semi-definite* meaning that $K(x, x) \ge 0$ for all
-$x$.  Two common choices for kernel functions are the *squared exponential kernel*
+$x\in{\mathbb R}^p$.  Two common choices for kernel functions are the
+*squared exponential kernel* with bandwith $\omega$
 
 $$
 K(u, v) = \exp(-\\|u - v\\|^2/2\omega^2)
 $$
 
-and the polynomial kernel of degree $m$
+and the *polynomial kernel* of degree $m$
 
 $$
 K(u, v) = (1 + u^\prime v)^m.
 $$
 
-Each of these kernel functions has a tuning parameter: $\lambda$ in
-the first case and $m$ in the second case.
+Each of these kernel functions has a tuning parameter: $\omega > 0$ in
+the first case and $m \in 1, 2, \ldots$ in the second case.
 
 Two ways to use a kernel to build a regression model are as follows.  Let ${\bf K}$
 denote the $n\times n$ kernel matrix defined by
@@ -516,7 +519,7 @@ $$
 
 where $x_i$ and $x_j$ are the covariate vectors for the $i^{\rm th}$
 and $j^{\rm th}$ covariates.  Note that this is a very large matrix
-and is computationally expensive to produce (usually in regression
+and is expensive to produce and store (usually in regression analysis
 we construct $n\times p$ and $p\times p$ matrices but avoid constructing
 any $n\times n$ matrices).
 
@@ -534,7 +537,7 @@ $$
 $$
 
 It turns out that $\alpha^\prime K \alpha$ is a form of _functional regularization_,
-in the sense that $\alpha K\alpha$ measures the smoothness of the function
+in the sense that $\alpha^\prime K\alpha$ measures the smoothness of the function
 $x\rightarrow \sum_i\alpha_i K(x,x_i)$.
 
 *Kernel principal components regression* (KPCR) involves finding a limited
@@ -544,7 +547,7 @@ expensive if done directly, but there is an efficient class of algorithms
 eigenvectors of a large symmetric matrix
 that are much faster than calculating all of the eigenvectors.
 
-Let $v_1, \ldots, v_q$ denote the leading $q$ eigenvectors.  In KPCR,
+Let $v_1, \ldots, v_q$ denote the leading $q$ eigenvectors of ${\bf K}$.  In KPCR,
 after finding the eigenvectors we use ordinary least squares to regress
 the dependent variable $y$ on $v_1, \ldots, v_q$.  It turns out that
 for certain settings where the true regression function lies within
