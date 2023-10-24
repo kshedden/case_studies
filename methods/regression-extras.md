@@ -24,7 +24,7 @@ algorithms to compute the estimates.
 
 Linearity in $x$ for fixed $\beta$ is sometimes cited as a weakness of
 this type of model.  People incorrectly argue that models with this
-property are only suitable for describgin systems that behave linearly, and since
+property are only suitable for describing systems that behave linearly, and since
 most natural and social processes are not linear, such models are
 sometimes claimed to have limited utility.
 
@@ -39,19 +39,28 @@ to be non-linear in the covariates.
 Including powers of covariates (like $x^2$) as regressors is a method
 known as *polynomial regression* may be the earliest example
 of a general technique utilizing *basis functions* to incorporate nonlinearity
-into regression analyses.  A family of basis
+into regression analyses.  A family of (univariate) basis
 functions is a collection of functions $g_1, g_2, \ldots$, each from
-${\cal R}\rightarrow {\cal R}$, such that we can include
+${\mathbb R}\rightarrow {\mathbb R}$, such that we can include
 $g_1(x), g_2(x), \ldots$ as covariates in a model in place of $x$.  This allows the
 fitted mean function to take on any form that can be represented as a
-linear combination $\beta_1 g_1(x) + \beta_2 g_2(x) + \cdots$.  Using
-a large collection of basis functions allows a wide range of
+linear combination
+
+$$
+\beta_1 g_1(x) + \beta_2 g_2(x) + \cdots.
+$$
+
+The parameters $\beta_j$ can be estimated using least squares, or other approaches
+such as penalized least squares (lasso/ridge/elastic net), least absolute deviations,
+or other forms of [M-estimation](https://en.wikipedia.org/wiki/M-estimator).
+
+Using a large collection of basis functions allows a wide range of
 non-linear forms to be represented.  Basis functions thus
 allow non-linear mean structures to be fit to data using linear
 estimation techniques.
 
 While the basis function approach is very powerful, some families of
-basis functions have less desirable properties.
+basis functions have undesirable properties.
 For example, polynomial basis functions can be badly scaled
 (e.g. this happens when raising a large number to a high power).
 Also, polynomial basis functions can be highly colinear with each
@@ -91,19 +100,50 @@ of $E[{\rm BMI} | {\rm age}, {\rm sex}]$ plotted against age,
 for each sex.
 
 Using splines or other families of basis functions is a very powerful
-technique because it allows familiar methods to be used in a much
+technique because it allows familiar estimation methods to be used in a much
 broader range of settings, simply by augmenting the regression design
-matrix with additional columns.  However in recent years even more
-powerful approaches to accommodating non-linearities in regression
-modeling have been devised that combine the use of basis functions
-with smoothing penalties.  These approaches can do a better job of
-capturing non-linearity while also controlling the degree of
-smoothness.  However they cannot use standard algorithms for fitting,
-or standard methods for inference.  A class of models known as
-_generalized additive models_ provides a practical framework for
-regression analysis using penalized splines, and addresses both the
-computational and inferential aspects of performing this type of
-analysis.
+matrix with additional columns.
+
+In recent years a power class of methods has emerged that combines
+the use of basis functions with smoothness penalties.  Many of these
+methods broadly can be considered forms of
+_generalized additive modeling_.  The basic idea of a GAM is that we
+begin with the mean structure model
+
+$$
+g^{-1}(E[y|x]) = \beta_0 + \beta_1 g_1(x) + \beta_2 g_2(x) + \cdots.
+$$
+
+For the moment suppose that there is only one covariate $x$.  In a GAM,
+we impose a smoothing penalty, often based on the second derivative
+of the fitted regression function, such as
+
+$$
+\sum_i (g_1^{\prime\prime}(x_i) + \cdots + g_p^{\prime\prime}(x_i)^2.
+$$
+
+The quantity above is larger when the fitted regression function
+$\sum_j g_j(x)$ is less smooth.
+
+Considering now the setting with more than one covariate, a true generalized additive model
+is additive in the sense that we model the conditional mean in the form
+
+$$
+g^{-1}(E[y|x_1, \ldots, x_p]) = \sum_j\sum_k \beta_{jk}g_{jk}(x_j),
+$$
+
+and use a smoothing penalty of the form
+
+$$
+\sum_j (\sum_k \beta_{jk}g_{jk}^{\prime\prime}(x_j))^2.
+$$
+
+A true GAM is additive in the sense that $g^{-1}E[y|x_1, \ldots, x_p] = \sum_j h_j(x_j)$,
+where each $h_j$ is represented in terms of basis functions.  Such a model
+does not describe any interactions among the covariates.  Most GAM software
+supports the inclusion of selected pairwise or higher order interactions, in which
+case the model is no longer additive.  Defining tractable smoothing penalties for
+non-additive models is challenging and remains an area of research.
 
 
 ## Transformations
@@ -410,6 +450,29 @@ variable selection procedures enforce a _hereditary constraint_ in
 which main effects cannot be dropped in a model selection process if
 their interaction is included.
 
+## MARS/EARTH
+
+MARS (multivariate adaptive regression splines), also known as EARTH
+(extended additive regression through hinges) is a method for adaptively
+constructing multivariate basis functions.  We will only describe the
+approach at a high level here.  A _hinge function_ is a function of
+a single variable of the form $h(x) = {\rm max}(x-a, 0)$ or
+$h(x) = {\rm min}(x-a, 0)$.  In EARTH, multivariate regression
+functions are constructed by mutliplying hinges for different
+variables, and nonlinearity can be obtained by summing and/or
+taking products of hinge functions of a single variable.
+
+EARTH is a greedy algorithm that sequentially searchers through
+the space of basis functions derived as products of hinges.  It
+can capture additive and non-additive relationships.  While
+EARTH remains useful, some drawbacks of this approach have been
+noted.  One drawback is that as a greedy algorithm, it typically
+cannot achieve the statistical performance of methods that use
+ensembles or regularization to more efficiently manage the
+bias/variance tradeoff.  A second weakness of EARTH is that there
+is no rigorous way to perform statistical inference on models fitted
+using EARTH-like methods.
+
 ## Kernel regression
 
 Since the 1990's new approaches to regression based on *kernels* have
@@ -420,7 +483,7 @@ regression procedure.  That is a different and unrelated use of the
 term "kernel" to what we are discussing here.
 
 In the present setting, a kernel is a bivariate function $K(\cdot, \cdot)$
-mapping ${\cal R}^p\times {\cal R}^p\rightarrow {\cal R}$.  The kernel
+mapping ${\mathbb R}^p\times {\mathbb R}^p\rightarrow {\mathbb R}$.  The kernel
 must be *positive semi-definite* meaning that $K(x, x) \ge 0$ for all
 $x$.  Two common choices for kernel functions are the *squared exponential kernel*
 
@@ -437,8 +500,7 @@ $$
 Each of these kernel functions has a tuning parameter: $\lambda$ in
 the first case and $m$ in the second case.
 
-One way to use a kernel to build a regression model
-in practice is as follows.  Let ${\bf K}$
+Two ways to use a kernel to build a regression model are as follows.  Let ${\bf K}$
 denote the $n\times n$ kernel matrix defined by
 
 $$
@@ -450,6 +512,23 @@ and $j^{\rm th}$ covariates.  Note that this is a very large matrix
 and is computationally expensive to produce (usually in regression
 we construct $n\times p$ and $p\times p$ matrices but avoid constructing
 any $n\times n$ matrices).
+
+*Kernel ridge regression* (KRR) estimates coefficients using the ridge-like
+estimator
+
+$$
+\hat{\alpha} = (K^2 + \lambda I)^{-1}Ky,
+$$
+
+which minimizes the criterion
+
+$$
+\|y - K\alpha\|^2 + \lambda \alpha^prime K\alpha.
+$$
+
+It turns out that $\alpha^prime K \alpha$ is a form of _functional regularization_,
+in the sense that $\alpha K\alpha$ measures the smoothness of the function
+$x\rightarrow \sum_i\alpha_i K(x,x_i)$.
 
 *Kernel principal components regression* (KPCR) involves finding a limited
 number of leading eigenvectors of ${\bf K}$.  This would be computationally
