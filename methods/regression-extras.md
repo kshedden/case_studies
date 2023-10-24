@@ -530,7 +530,7 @@ $$
 which minimizes the criterion
 
 $$
-\\|y - K\alpha\\|^2 + \lambda \alpha^prime K\alpha.
+\\|y - K\alpha\\|^2 + \lambda \alpha^\prime K\alpha.
 $$
 
 It turns out that $\alpha^prime K \alpha$ is a form of _functional regularization_,
