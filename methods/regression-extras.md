@@ -7,8 +7,8 @@ of regression analysis.
 
 Many approaches to regression analysis relate the expected value of
 the response variable $y$ to a linear predictor $x^\prime \beta$,
-formed from the covariates $x \in {\cal R}^p$ using coefficients
-$\beta \in {\cal R}^p$.  Examples include the linear mean structure
+formed from the covariates $x \in {\mathbb R}^p$ using coefficients
+$\beta \in {\mathbb R}^p$.  Examples include the linear mean structure
 model $E[y|x] = x^\prime\beta$ and the single index model with link
 function $g$, $E[y|x] = g^{-1}(x^\prime\beta)$.
 
@@ -51,7 +51,8 @@ $$
 $$
 
 The parameters $\beta_j$ can be estimated using least squares, or other approaches
-such as penalized least squares (lasso/ridge/elastic net), least absolute deviations,
+such as penalized least squares (lasso/ridge/elastic net),
+[least absolute deviations](https://en.wikipedia.org/wiki/Least_absolute_deviations),
 or other forms of [M-estimation](https://en.wikipedia.org/wiki/M-estimator).
 
 Using a large collection of basis functions allows a wide range of
