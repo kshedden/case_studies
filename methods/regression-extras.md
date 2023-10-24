@@ -139,13 +139,19 @@ $$
 \sum_j (\sum_k \beta_{jk}g_{jk}^{\prime\prime}(x_j))^2.
 $$
 
-A true GAM is additive in the sense that $g^{-1}E[y|x_1, \ldots, x_p] = \sum_j h_j(x_j)$,
+A true GAM is additive in the sense that $g^{-1}(E[y|x_1, \ldots, x_p]) = \sum_j h_j(x_j)$,
 where each $h_j$ is represented in terms of basis functions.  Such a model
 does not describe any interactions among the covariates.  Most GAM software
 supports the inclusion of selected pairwise or higher order interactions, in which
 case the model is no longer additive.  Defining tractable smoothing penalties for
 non-additive models is challenging and remains an area of research.
 
+Another form of model that is often encountered is a _partial linear model_ which
+has the form
+
+$$
+g^{-1}(E[y|x, z]) = \sum_j h_j(x_j) + \theta^\prime z.
+$$
 
 ## Transformations
 
