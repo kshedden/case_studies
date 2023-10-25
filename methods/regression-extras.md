@@ -122,7 +122,7 @@ we impose a smoothing penalty, often based on the second derivative
 of the fitted regression function, such as
 
 $$
-\sum_i (g_1^{\prime\prime}(x_i) + \cdots + g_p^{\prime\prime}(x_i)^2.
+\sum_i (\beta_1g_1^{\prime\prime}(x_i) + \cdots + \bea_pg_p^{\prime\prime}(x_i))^2.
 $$
 
 The quantity above is larger when the fitted regression function
