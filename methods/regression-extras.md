@@ -126,7 +126,11 @@ $$
 $$
 
 The quantity above is larger when the fitted regression function
-$\sum_j g_j(x)$ is less smooth.
+$\sum_j \beta_jg_j(x)$ is less smooth (and is zero when the fitted
+regression is linear in $x$).  Note that the penalty is quadratic
+in $\beta$ and therefore when using this expression to penalize the
+usual regression sum of squares, the calculations of the estimator and
+standard errors are straightforward.
 
 Considering now the setting with more than one covariate, a true generalized additive model
 is additive in the sense that we model the conditional mean in the form
