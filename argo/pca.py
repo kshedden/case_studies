@@ -17,6 +17,10 @@ date = pd.to_datetime(date)
 ddate = date - date.min()
 day = [x.days for x in ddate]
 
+# Convert latitude so that the Pacific ocean doesn't wrap
+# around the origin.
+lon = (lon + 60) % 360
+
 # Create a matrix of observed variables that describe
 # the location and time at which each profile was
 # obtained.
@@ -25,6 +29,14 @@ Y = np.zeros((n, 3))
 Y[:, 0] = lat
 Y[:, 1] = lon
 Y[:, 2] = day
+
+plt.clf()
+plt.grid(True)
+plt.plot(lon, lat, "o", rasterized=True, alpha=0.2)
+plt.xlabel("Longitude (translated)", size=15)
+plt.ylabel("Latitude", size=15)
+plt.title("Float positions")
+pdf.savefig()
 
 # Get the principal components.
 def get_pcs(x):
@@ -178,7 +190,7 @@ for q in [1, 2, 5, 10, 20, 50]:
     if xc1[:, 0].min() > 0:
         plt.ylim(ymin=0)
     plt.xlabel("Pressure", size=15)
-    plt.ylabel("Temperature", size=15)
+    plt.ylabel("Temperature loading", size=15)
     pdf.savefig()
 
     # Plot the salinity loadings
@@ -190,7 +202,7 @@ for q in [1, 2, 5, 10, 20, 50]:
     if yc1[:, 0].min() >= 0:
         plt.ylim(ymin=0)
     plt.xlabel("Pressure", size=15)
-    plt.ylabel("Salinity", size=15)
+    plt.ylabel("Salinity loading", size=15)
     pdf.savefig()
     print(np.corrcoef(np.dot(X, xc1[:, 0]), np.dot(Y, yc1[:, 0]))[0,1])
 
@@ -207,7 +219,7 @@ plt.grid(True)
 for j in range(3):
     plt.plot(pressure, cf[:, j], "-", label="%d" % (j + 1))
 ha, lb = plt.gca().get_legend_handles_labels()
-leg = plt.figlegend(ha, lb, "center right")
+leg = plt.figlegend(ha, lb, loc="center right")
 leg.draw_frame(False)
 plt.xlabel("Pressure", size=15)
 plt.ylabel("SIR loading", size=15)
@@ -219,6 +231,13 @@ for j in range(3):
     plt.clf()
     plt.grid(True)
     plt.plot(lat, scores[:, j], "o", color="grey", alpha=0.3, rasterized=True)
+
+    # Use lowess to estimate the conditional mean of the scores given latitude.
+    # Lowess is slow and doesn't need all the data to give an accurate estimate.
+    ii = np.random.choice(np.arange(scores.shape[0]), 2000, replace=False)
+    m = lowess(scores[ii, j], lat[ii], frac=0.2)
+    plt.plot(m[:, 0], m[:, 1], "-", color="orange")
+
     plt.xlabel("Latitude", size=15)
     plt.ylabel("Component %d SIR score" % (j + 1), size=15)
     pdf.savefig()

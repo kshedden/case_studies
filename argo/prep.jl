@@ -95,14 +95,6 @@ end
 
 lat, lon, date, temp, psal = get_profiles()
 
-# The Atlantic ocean is mostly west of 20 degrees longitude.
-ii = findall(lon .< 20)
-lat = lat[ii]
-lon = lon[ii]
-date = date[ii]
-temp = temp[:, ii]
-psal = psal[:, ii]
-
 open(GzipCompressorStream, joinpath(qpath, "lat.csv.gz"), "w") do io
     CSV.write(io, Tables.table(lat))
 end

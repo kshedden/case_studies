@@ -7,7 +7,7 @@ import matplotlib.dates as mdates
 import os
 
 # Adjust the path below to find the data files.
-pa = "/home/kshedden/mynfs/data/Teaching/plantnet"
+pa = "/home/kshedden/data/Teaching/plantnet"
 df = pd.read_csv(os.path.join(pa, "plants_occurrences.csv.gz"))
 dz = pd.read_csv(os.path.join(pa, "plants_locations.csv.gz"))
 

@@ -43,4 +43,4 @@ def get_year(ocean, year):
             getdata(ocean, year, month, day)
         print("")
 
-get_year("atlantic", 2020)
+get_year("pacific", 2020)

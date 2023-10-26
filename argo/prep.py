@@ -14,7 +14,7 @@ dpath = os.path.join(tpath, "argo/raw")
 qpath = "/home/kshedden/data/Teaching/argo/python"
 os.makedirs(qpath, exist_ok=True)
 
-# Retain only profiles that span this range
+# Retain only profiles that span this range of pressures
 minpress = 20
 maxpress = 1500
 
@@ -103,13 +103,7 @@ def get_profiles():
 
 lat, lon, date, temp, psal = get_profiles()
 
-# The Atlantic ocean is mostly west of 20 degrees longitude.
-ii = np.flatnonzero(lon < 20)
-lat = lat[ii]
-lon = lon[ii]
-date = [x.isoformat() for x in date[ii]]
-temp = temp[:, ii]
-psal = psal[:, ii]
+date = [x.isoformat() for x in date]
 
 # Save all the files
 np.savetxt(os.path.join(qpath, "lat.csv.gz"), lat, header="Column1", comments="")

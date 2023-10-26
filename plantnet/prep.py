@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 # The raw file from plantnet should be located here.
-pa = "/home/kshedden/mynfs/data/Teaching/plantnet"
+pa = "/home/kshedden/data/Teaching/plantnet"
 
 # This is the name of the raw data file.  If your file
 # name does not match it this needs to be changed.
@@ -14,7 +14,7 @@ df = pd.read_csv(os.path.join(pa, fn), delimiter="\t")
 # Keep the 200 most common species.
 ds = df.groupby("scientificName").size()
 ds = ds.sort_values(ascending=False)
-species = ds.index[0:200].values
+species = ds.head(200).tolist()
 df = df.loc[df.scientificName.isin(set(species)), :]
 df["Date"] = pd.to_datetime(df[["year", "month", "day"]])
 

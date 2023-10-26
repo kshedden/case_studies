@@ -7,6 +7,10 @@ library(dr)
 m = dim(temp)[1] # Number of pressure points
 n = dim(temp)[2] # Number of profiles
 
+# Convert latitude so that the Pacific ocean doesn't wrap
+# around the origin.
+lon = (lon + 60) %% 360
+
 # The mean profile
 tempmean = apply(temp, 1, mean)
 psalmean = apply(psal, 1, mean)
