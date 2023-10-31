@@ -52,13 +52,13 @@ $\{x_i; i=1, \ldots, n\}$, with each $x_i \in {\cal R}^d$, let $U$ denote the se
 of all unit vectors in ${\cal R}^d$ and define the halfspace depth as
 
 $$
-D_{HS}(z; \\{x_i\\}) = {\rm min}_{u\in U} n^{-1}\\;\sum_i {\cal I}(u^\prime (x_i - z) > 0)
+D_{HS}(z; \\{x_i\\}) = {\rm min}_{u\in U} \\,n^{-1}\\,\sum_i {\cal I}(u^\prime (x_i - z) > 0)
 $$
 
 
-What we are doing here is searching for a line passing through $z$
+What we are doing here is searching for a hyperplane passing through $z$
 that places the greatest fraction of the $x_i$ on one side of the
-line.  If $z$ falls at the geometric center of a collection of
+hyperplane.  If $z$ falls at the geometric center of a collection of
 symmetrically distributed points, then $z$ is as deep as possible
 and will have halfspace depth approximately equal to 1/2.  At the
 other extreme there is a line passing through $z$ such that all of
@@ -107,7 +107,7 @@ triples of points in the reference set.  A more formal definition is as
 follows:
 
 $$
-D_B(z; \\{x_i\\}) = {\rm Avg}_{j_1 < j_2 < j_3} {\rm Avg}_k {\cal I}[{\rm min}(x_{j_1}(k), x_{j_2}(k), x_{j_3}(k)) < z(k) < {\rm max}(x_{j_1}(k), x_{j_2}(k), x_{j_3}(k))].
+D_B(z; \\{x_i\\}) = {\rm Avg} {\rm Avg}_k {\cal I}[{\rm min}(x_{j_1}(k), x_{j_2}(k), x_{j_3}(k)) < z(k) < {\rm max}(x_{j_1}(k), x_{j_2}(k), x_{j_3}(k))].
 $$
 
 ### Properties of a good depth function
