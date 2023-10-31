@@ -25,9 +25,9 @@ methods have been developed to take advantage of this property.
 ## Data Depth
 
 There are various ways to measure the *depth* of a point
-$z \in {\cal R}^d$ relative to a distribution or collection of points
-$\\{x_i\in {\cal R}^d; i=1,\ldots,n\\}$.  Formally, a *depth measure* on ${\cal R}^d$
-is a function from ${\cal R}^d\rightarrow{\cal R}^+$ that quantifies the
+$z \in {\mathbb R}^d$ relative to a distribution or collection of points
+$\\{x_i\in {\mathbb R}^d; i=1,\ldots,n\\}$.  Formally, a *depth measure* on ${\mathbb R}^d$
+is a function from ${\cal R}^d\rightarrow{\mathbb R}^+$ that quantifies the
 depth of each point as a non-negative real number.
 
 "Deep" points are surrounded in all
