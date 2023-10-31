@@ -52,7 +52,7 @@ $\{x_i; i=1, \ldots, n\}$, with each $x_i \in {\cal R}^d$, let $U$ denote the se
 of all unit vectors in ${\cal R}^d$ and define the halfspace depth as
 
 $$
-D_{HS}(z; \\{x_i\\}) = {\rm min}_{u\in U} n^{-1}\;\sum_{1\le i\le n} {\cal I}(u^\prime (x_i - z) > 0)
+D_{HS}(z; \\{x_i\\}) = {\rm min}_{u\in U} n^{-1}\;\sum_i {\cal I}(u^\prime (x_i - z) > 0)
 $$
 
 
