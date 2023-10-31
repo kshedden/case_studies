@@ -52,15 +52,11 @@ $\{x_i; i=1, \ldots, n\}$, with each $x_i \in {\cal R}^d$, let $U$ denote the se
 of all unit vectors in ${\cal R}^d$ and define the halfspace depth as
 
 $$
-D_H(z; \\{x_i\\}) = {\rm min}_{u\in U} n^{-1}\sum_{i=1}^n {\cal I}(u^\prime (x_i - z) > 0).
+D_{HS}(z; \\{x_i\\}) = {\rm min}_{u\in U} n^{-1}\sum_{i=1}^n {\cal I}(u^\prime (x_i - z) > 0).
 $$
 
 $$
-D_H(z; \\{x_i\\}) =
-$$
-
-$$
-{\rm min}_{u\in U} n^{-1}\sum_{i=1}^n {\cal I}(u^\prime (x_i - z) > 0).
+{\rm min}_{u\in U} n^{-1}
 $$
 
 What we are doing here is searching for a line passing through $z$
