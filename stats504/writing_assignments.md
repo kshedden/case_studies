@@ -23,3 +23,6 @@ addressed using the NHANES data, focusing on using regression analysis
 to understand factors associated with blood pressure.  You should pose
 and address a specific question and emphasize issues discussed in class,
 while also providing some additional insights of your own.
+
+5. (November 10th) Write a memo discussing a research question that can be
+addressed using the ARGO data.

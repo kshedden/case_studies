@@ -24,10 +24,10 @@ for m in dx.columns:
 
 y = np.asarray(dx["BPXSY1"])
 vz = [x.replace("RIAGENDR", "RIAGENDRx") for x in vx]
-x = np.asarray(dx[vz])
-m = SIR(y, x)
+X = np.asarray(dx[vz])
+m = SIR(y, X)
 r = m.fit()
-scores = np.dot(x, r.params)
+scores = np.dot(X, r.params)
 
 # Stratify on the j'th score, plot the mean of SBP with respect to the
 # k'th score.
@@ -48,7 +48,7 @@ def plotstrat(j, k):
         plt.plot(xx, f(xx), "-", label=la)
 
     ha, lb = plt.gca().get_legend_handles_labels()
-    leg = plt.figlegend(ha, lb, "center right")
+    leg = plt.figlegend(ha, lb, loc="center right")
     leg.draw_frame(False)
     leg.set_title("Score %d" % (j + 1))
 
@@ -92,7 +92,7 @@ for j in range(2):
                          alpha=0.2, label=sex, rasterized=True)
                 plt.plot(lw[:, 0], lw[:, 1], "-", color=cols[sex])
         ha, lb = plt.gca().get_legend_handles_labels()
-        leg = plt.figlegend(ha, lb, "center right")
+        leg = plt.figlegend(ha, lb, loc="center right")
         leg.draw_frame(False)
         pdf.savefig()
 
