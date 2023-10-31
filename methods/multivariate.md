@@ -7,18 +7,19 @@ multivariate methods such as PCA, CCA, etc.
 ## Functional data
 
 A particular type of multivariate data is known as *functional data*,
-in which we observe vectors $v \in {\cal R}^d$ that arise from evaluating
-a function on a grid of points, i.e. $v_i = f_i(t_i)$ for
-a grid $t_1 < t_2 < \cdots < t_d$.  If the functions $f_i$ are smooth
+in which we observe vectors $v \in {\mathbb R}^d$ that arise from evaluating
+a function on a grid of points, i.e. $v = [f(t_i)]_{i=1}^d$ for
+a grid $t_1 < t_2 < \cdots < t_d$.  If the function $f$ is smooth
 then the elements of each $v_i$ will reflect this smoothness.
 *Functional Data Analysis* (FDA) encompasses many methods for
 analyzing functions as data.  In practice we never
-actually observe a function in its entirety, and instead only
-observe a function evaluated on a finite set of points.  Thus
+actually observe a function in its entirety, thus
 the data we work with in FDA are finite dimensional vectors,
-and have the same form as other types
+and (superficially) have the same form as other types
 of quantitative multivariate data.  But since the data are
-considered to arise by evaluating smooth functions, a distinct set of
+considered to arise by evaluating smooth functions, we can
+view the population of interest as consisting of functions,
+even while the data are vectors. A distinct set of
 methods have been developed to take advantage of this property.
 
 ## Data Depth
