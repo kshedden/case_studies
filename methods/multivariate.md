@@ -56,7 +56,7 @@ D_{HS}(z; \\{x_i\\}) = {\rm min}_{u\in U} n^{-1}\sum_{i=1}^n {\cal I}(u^\prime (
 $$
 
 $$
-D_{HS}(z; \\{x_i\\}) = {\rm min}_{u\in U} n^{-1}\sum_i {\cal I}
+D_{HS}(z; \\{x_i\\}) = {\rm min}_{u\in U} n^{-1}\sum_i {\cal I}(u^\prime (x_i - z) > 0)
 $$
 
 
