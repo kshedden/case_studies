@@ -56,8 +56,9 @@ D_{HS}(z; \\{x_i\\}) = {\rm min}_{u\in U} n^{-1}\sum_{i=1}^n {\cal I}(u^\prime (
 $$
 
 $$
-{\rm min}_{u\in U} n^{-1}
+D_{HS}(z; \\{x_i\\}) = {\rm min}_{u\in U} n^{-1}\sum_{i=1}^n u
 $$
+
 
 What we are doing here is searching for a line passing through $z$
 that places the greatest fraction of the $x_i$ on one side of the
