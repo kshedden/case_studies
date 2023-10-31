@@ -27,7 +27,7 @@ methods have been developed to take advantage of this property.
 There are various ways to measure the *depth* of a point
 $z \in {\mathbb R}^d$ relative to a distribution or collection of points
 $\\{x_i\in {\mathbb R}^d; i=1,\ldots,n\\}$.  Formally, a *depth measure* on ${\mathbb R}^d$
-is a function from ${\cal R}^d\rightarrow{\mathbb R}^+$ that quantifies the
+is a function from ${\mathbb R}^d\rightarrow{\mathbb R}^+$ that quantifies the
 depth of each point as a non-negative real number.
 
 "Deep" points are surrounded in all
@@ -53,6 +53,14 @@ of all unit vectors in ${\cal R}^d$ and define the halfspace depth as
 
 $$
 D_H(z; \\{x_i\\}) = {\rm min}_{u\in U} n^{-1}\sum_{i=1}^n {\cal I}(u^\prime (x_i - z) > 0).
+$$
+
+$$
+D_H(z; \\{x_i\\}) =
+$$
+
+$$
+{\rm min}_{u\in U} n^{-1}\sum_{i=1}^n {\cal I}(u^\prime (x_i - z) > 0).
 $$
 
 What we are doing here is searching for a line passing through $z$
