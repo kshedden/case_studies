@@ -8,7 +8,7 @@ import numpy as np
 # as 'tpath' in the get_data.py script.  After running
 # prep.py, the contents of tpath can be deleted.
 tpath = Path("/scratch/stats_dept_root/stats_dept1/kshedden/argo/python")
-dpath = tpath / "argo/raw"
+dpath = tpath / Path("argo/raw")
 
 # Store the files produced by this script here.  This must
 # agree with the path set in the 'read.py' script.
