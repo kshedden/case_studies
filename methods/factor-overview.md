@@ -360,7 +360,7 @@ Specifically, in CCA we can search for linear combinations of each vector
 that are maximally correlated with each other.
 
 Let $X \in {\mathbb R}^{n\times p}$ and $Y \in {\mathbb R}^{n\times q}$ denote
-the data for the two vectors of variables.  In these data, we have measurements
+the data for the two collections of variables.  In these data, we have measurements
 on $n$ objects (the rows of $X$ and $Y$), a vector of $p$ variables in the columns of $X$,
 and a vector of $q$ variables in the columns of $Y$.  Row $i$ of $X$ and row $i$ of $Y$
 correspond to the same object.
@@ -368,8 +368,8 @@ correspond to the same object.
 Given coefficient vectors $a\in {\mathbb R}^p$ and $b\in {\mathbb R}^q$, we can
 form linear predictors $Xa$ and $Yb$, both of which are $n$-dimensional
 vectors.  The goal of CCA is to find $a$ and $b$ to maximize the correlation
-coefficient between $Xa$ and $Yb$.  Inspecting plots of these canonical loadings
-can yield insight into the relationship between the variables in $X$ and the variables
+coefficient between $Xa$ and $Yb$.  Inspecting plots of the canonical loadings
+$a$ and $b$ can yield insight into the relationship between the variables in $X$ and the variables
 in $Y$.
 
 Specifically, taking $X$ and $Y$ to be column-centered, the objective function is
@@ -380,6 +380,11 @@ $$
 
 where $S_{xy} = X^\prime Y/n$, $S_{xx} = X^\prime X/n$, and $S_{yy} = Y^\prime Y/n$
 are the cross-correlation and correlation matrices.
+
+Once we have found the leading canonical loadings, say $a^{(1)}$ and $b^{(1)}$, we can maximize
+the same objective function subject to the constraints $a^\prime S_{xx}a^{(1)} = 0$ and
+$b^\prime S_{yy}b^{(1)} = 0$.  This can be repeated up to ${\rm min}(p, q}$ times to
+produce a series of canonical variate loading pairs
 
 If the dimension is high, CCA can overfit the data.  A procedure analogous to
 principal components regression can be used to address this.  We first reduce $X$ and $Y$ to lower
