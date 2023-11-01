@@ -21,7 +21,7 @@ day = [x.days for x in ddate]
 lon_sin = np.sin(2*np.pi*lon/360)
 lon_cos = np.cos(2*np.pi*lon/360)
 cmean_lon = np.arctan2(lon_sin.mean(), lon_cos.mean()) * 360 / (2*np.pi)
-1/0
+
 # Convert latitude so that the Pacific ocean doesn't wrap
 # around the origin.
 lon = (lon + 60) % 360

@@ -1,3 +1,4 @@
+from pathlib import Path
 import os, datetime
 from scipy.interpolate import interp1d
 from netCDF4 import Dataset
@@ -6,12 +7,12 @@ import numpy as np
 # Path to the NetCDF files here, this path must be the same
 # as 'tpath' in the get_data.py script.  After running
 # prep.py, the contents of tpath can be deleted.
-tpath = "/scratch/stats_dept_root/stats_dept1/kshedden/argo/python"
-dpath = os.path.join(tpath, "argo/raw")
+tpath = Path("/scratch/stats_dept_root/stats_dept1/kshedden/argo/python")
+dpath = tpath / "argo/raw"
 
 # Store the files produced by this script here.  This must
 # agree with the path set in the 'read.py' script.
-qpath = "/home/kshedden/data/Teaching/argo/python"
+qpath = Path("/home/kshedden/data/Teaching/argo/python")
 os.makedirs(qpath, exist_ok=True)
 
 # Retain only profiles that span this range of pressures
@@ -80,7 +81,7 @@ def get_profiles():
             print(file)
 
             dt = datetime.date(year, month, day)
-            lat1, lon1, pres1, temp1, psal1 = get_raw(os.path.join(root, file))
+            lat1, lon1, pres1, temp1, psal1 = get_raw(Path(root) / file)
 
             for j in range(pres1.shape[0]):
                 temp2, psal2 = interp_profile(pres1[j, :], temp1[j, :], psal1[j, :])
@@ -106,11 +107,11 @@ lat, lon, date, temp, psal = get_profiles()
 date = [x.isoformat() for x in date]
 
 # Save all the files
-np.savetxt(os.path.join(qpath, "lat.csv.gz"), lat, header="Column1", comments="")
-np.savetxt(os.path.join(qpath, "lon.csv.gz"), lon, header="Column1", comments="")
-np.savetxt(os.path.join(qpath, "date.csv.gz"), date, fmt="%s", header="Column1", comments="")
-np.savetxt(os.path.join(qpath, "pressure.csv.gz"), pressure, header="Column1", comments="")
+np.savetxt(qpath / "lat.csv.gz", lat, header="Column1", comments="")
+np.savetxt(qpath / "lon.csv.gz", lon, header="Column1", comments="")
+np.savetxt(qpath / "date.csv.gz", date, fmt="%s", header="Column1", comments="")
+np.savetxt(qpath / "pressure.csv.gz", pressure, header="Column1", comments="")
 header = ["Column%d" % j for j in range(temp.shape[1])]
 header = ",".join(header)
-np.savetxt(os.path.join(qpath, "temp.csv.gz"), temp, delimiter=",", header=header, comments="")
-np.savetxt(os.path.join(qpath, "psal.csv.gz"), psal, delimiter=",", header=header, comments="")
+np.savetxt(qpath / "temp.csv.gz", temp, delimiter=",", header=header, comments="")
+np.savetxt(qpath / "psal.csv.gz", psal, delimiter=",", header=header, comments="")

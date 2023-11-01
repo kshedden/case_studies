@@ -49,4 +49,5 @@ get_year = function(ocean, year) {
     }
 }
 
-get_year("atlantic", 2020)
+#get_year("atlantic", 2020)
+get_year("pacific", 2020)

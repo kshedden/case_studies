@@ -1,5 +1,8 @@
 library(readr)
 
+# There is no R version of prep.py, you must run the
+# Python or julia prep script before using read.R.
+
 # This path must match the path in prep.py.
 qpath = "/home/kshedden/data/Teaching/argo/python"
 

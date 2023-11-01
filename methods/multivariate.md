@@ -107,7 +107,8 @@ triples of points in the reference set.  A more formal definition is as
 follows:
 
 $$
-D_B(z; \\{x_i\\}) = {\rm Avg} {\rm Avg}_k {\cal I}[{\rm min}(x_{j_1}(k), x_{j_2}(k), x_{j_3}(k)) < z(k) < {\rm max}(x_{j_1}(k), x_{j_2}(k), x_{j_3}(k))].
+D_B(z; \\{x_i\\}) = {\rm Avg} {\rm Avg}_k {\cal I}[{\rm min}(x_{j_1}(k), x_{j_2}(k), x_{j_3}(k)) <
+    z(k) < {\rm max}(x_{j_1}(k), x_{j_2}(k), x_{j_3}(k))].
 $$
 
 ### Properties of a good depth function

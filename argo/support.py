@@ -3,7 +3,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 import matplotlib
 from statsmodels.nonparametric.smoothers_lowess import lowess
-from mpl_toolkits.basemap import Basemap
+#from mpl_toolkits.basemap import Basemap
 from read import *
 
 # See this reference for information about the support points
