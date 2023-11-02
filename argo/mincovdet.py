@@ -50,12 +50,12 @@ def run_mcd(X, label):
     plt.title("Comparison of spectra for %s" % label.lower())
     pdf.savefig()
 
-    # Get the distance of each observation to the center
-    # in the MCD covariance
+    # Get the squared distance of each observation to the center of the
+    # distribution using the MCD covariance.
     dmcd = cc.mahalanobis(X)
 
-    # Get the distance of each observation to the center
-    # in the conventional covariance.
+    # Get the squared distance of each observation to the center
+    # of the distribution using the conventional covariance.
     Xc = X - cc.location_
     dcov = (Xc * np.linalg.solve(c0, Xc.T).T).sum(1)
 
@@ -80,7 +80,6 @@ def run_mcd(X, label):
             plt.plot(pressure, X[i, :], color="grey", alpha=0.8)
         ha, lb = plt.gca().get_legend_handles_labels()
         leg = plt.legend(ha, lb, loc="upper right")
-        #leg.draw_frame(False)
         plt.xlabel("Pressure", size=15)
         plt.ylabel(label, size=15)
         pdf.savefig()
