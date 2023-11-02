@@ -241,10 +241,12 @@ the paper linked above for computational details).
 
 ## Minimum covariance determinant
 
-Much of classical multivariate analysis is based on the covariance
-matrix between a collection of variables.  The most common way to
-estimate this matrix is the *sample covariance matrix*, which (but for
-a minor scaling difference) coincides with the maximum likelihood
+Much of classical multivariate analysis is based on the
+[covariance matrix](https://en.wikipedia.org/wiki/Covariance_matrix)
+of a collection of variables.  The most common way to
+estimate this matrix is the
+[sample covariance matrix](https://en.wikipedia.org/wiki/Estimation_of_covariance_matrices),
+which (but for a minor scaling difference) coincides with the maximum likelihood
 estimate for Gaussian data.  The sample covariance matrix has some
 desirable properties including being unbiased and elementwise
 consistent.  It also is guaranteed to concentrate around the true
