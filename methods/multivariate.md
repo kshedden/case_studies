@@ -238,3 +238,37 @@ $$
 Our goal here was to discuss the motivation behind the support point algorithm.
 We will not proceed further with discussion of the process of numerically minimizing this function (see
 the paper linked above for computational details).
+
+## Minimum covariance determinant
+
+Much of classical multivariate analysis is based on the covariance
+matrix between a collection of variables.  The most common way to
+estimate this matrix is the *sample covariance matrix*, which (but for
+a minor scaling difference) coincides with the maximum likelihood
+estimate for Gaussian data.  The sample covariance matrix has some
+desirable properties including being unbiased and elementwise
+consistent.  It also is guaranteed to concentrate around the true
+covariance matrix as long as the dimension is well-controlled.
+However for larger dimensions or smaller sample sizes, the sample
+covariance matrix can perform poorly.  Also, the sample covariance
+matrix is not robust to outliers.
+
+To address these limitations, many alternative estimators of the
+covariance matrix have been devised.  Here we describe one of them,
+the [minimum determinant covariance](https://arxiv.org/abs/1709.07045).
+We will not give full details here, but the main idea is to select a
+constant $m \ge d/2$, where $d$ is the dimension, and define the
+estimate $\tilde{S}$ to be the sample covariance matrix of the subset
+of $m$ observations that has the smallest determinant among all such
+subsets.  To avoid the impossible "all subsets" optimization, a greedy
+approach is used in practice.
+
+One use for the covariance matrix is to quantify the "ouytlyingness"
+of individual observations.  Let $x\in{\mathbb R}^d$ denote an observation,
+$\mu$ denote the mean, and $\Sigma$ denote the covariance matrix.  The
+squared [Mahalanobis distance](https://en.wikipedia.org/wiki/Mahalanobis_distance)
+is defined to be $(x-\mu)^\prime \Sigma^{-1}(x-\mu)$.  Using the MCD or
+another "robust" estimate of the covariance matrix (and of the mean) can
+reveal more interesting sets of outliers than those that are identified
+by the sample covariance matrix.
+
