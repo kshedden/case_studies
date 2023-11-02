@@ -1,3 +1,11 @@
+"""
+Estimate the covariance matrix of the temperature and salinity
+profiles in Argo using the "minimum determinant covariance"
+appproach (MCD).  This estimator is robust to outliers and
+can be used to identify unusual observations in large collections
+of high-dimensional data.
+"""
+
 import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
