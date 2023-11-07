@@ -2,19 +2,27 @@
 
 Regression analysis aims to understand the conditional distribution of
 a scalar response $y$ in relation to explanatory variables
-$x \in {\cal R}^p$.  In many familiar forms of regression, we focus on the
-marginal distribution $y|x$.  However it may be that we collect data
+$x \in {\mathbb R}^p$.  In many familiar forms of regression, we focus on the
+marginal distribution $y\,|\,x$.  However it may be that we collect data
 in such a way that different observed values of $y$ are correlated
-with each other.  Multilevel regression is a means to understand the
-conditional mean, conditional variance, and conditional covariances
+with each other, i.e.
+
+$$
+P(y_1, \ldots, y_n | x_1, \ldots, x_n) \ne \prod_i P(y_i | x_i).
+$$
+
+Multilevel regression is a means to understand the
+conditional mean $E[y|x]$, conditional variance ${\rm var}(y | x)$, and 
+conditional covariances ${\rm cov}(y_i, y_j | x_i, x_j)$
 among the observations.
 
-The usual manner in which correlated data arise in practice is through
-some manner of collecting data as *repeated measures*.  For example,
-we may be studying a characteristic of individual people, say income,
-and we collect this data every year for 5 years on each person.  Since
-a person's income may not change much from year to year, there is a
-correlation between two income observations made on the same person.
+The usual manner in which correlated data arise in practice is when
+the data are collected as *repeated measures*.  For example,
+we may be studying a characteristic of individual people such as income,
+and we collect this data every year for 5 years on each person.
+Two repeated measures of one person's income are likely to be more similar
+than incomes for two different people, so there is an *intraclass correlation*
+between two income observations made on the same person.
 This is called *longitudinal data*.
 
 Another typical setting in which correlated data arise is when we have
