@@ -3,27 +3,28 @@
 Regression analysis aims to understand the conditional distribution of
 a scalar response $y$ in relation to explanatory variables
 $x \in {\mathbb R}^p$.  In many familiar forms of regression, we focus on the
-marginal distribution $y\,|\,x$.  However it may be that we collect data
-in such a way that different observed values of $y$ are correlated
-with each other, i.e.
+marginal distribution $y\\,|\\,x$.  However it may be that we collect data
+in such a way that different observed values of $y$ are not statistically
+independent of each other, i.e.
 
 $$
 P(y_1, \ldots, y_n | x_1, \ldots, x_n) \ne \prod_i P(y_i | x_i).
 $$
 
 Multilevel regression is a means to understand the
-conditional mean $E[y|x]$, conditional variance ${\rm var}(y | x)$, and 
-conditional covariances ${\rm cov}(y_i, y_j | x_i, x_j)$
-among the observations.
+conditional mean $E[y|x]$, conditional variance ${\rm var}(y | x)$,
+conditional covariances ${\rm cov}(y_i, y_j | x_i, x_j)$, and other
+forms of dependence among the observations.
 
 The usual manner in which correlated data arise in practice is when
 the data are collected as *repeated measures*.  For example,
 we may be studying a characteristic of individual people such as income,
-and we collect this data every year for 5 years on each person.
+and we collect this data from each person every year for multiple years.
 Two repeated measures of one person's income are likely to be more similar
-than incomes for two different people, so there is an *intraclass correlation*
+than incomes for two different people, so there is an 
+[intraclass correlation](https://en.wikipedia.org/wiki/intraclass_correlation)
 between two income observations made on the same person.
-This is called *longitudinal data*.
+Data collected in this way are called *longitudinal data*.
 
 Another typical setting in which correlated data arise is when we have
 a *clustered sample*.  For example, suppose that we randomly sample
@@ -32,9 +33,12 @@ people and obtain their incomes.  Since two people in a community tend
 to have similar incomes, any two observations made in the same
 community will be correlated.
 
-Generically, we can refer to a collection of repeated measures as a
+Generically, we can refer to a collection of repeated measures that
+may be statistically dependent as a
 *block*.  If we have longitudinal data, then each person is a block.
-If we have a cluster sample, then each community is a block.
+If we have a cluster sample, then each cluster is a block.
+
+## A single level of blocking
 
 Let $y_{ij}$ denote the $j^{\rm th}$ repeated measure for the $i^{\rm
 th}$ block.  One way to account for the correlations in the data is to
@@ -53,24 +57,25 @@ $i$).
 The *mean structure* is parameterized through the linear predictor
 
 $$
-\beta^\prime_{ij} = \beta_0 + \beta_1x_{ij1} + \cdots \beta_p x_{ijp}.
+\beta^\prime x_{ij} = \beta_0 + \beta_1x_{ij1} + \cdots \beta_p x_{ijp}.
 $$
 
 This linear predictor is exactly the same as would be present in a
-single-level (conventional) linear model.
+conventional linear model.
 
 The random intercepts $\theta_i$ are a collection of independent and
 identically distributed (IID) random variables assumed to follow a
-Gaussian distribution with mean zero and variance $\tau^2$. The
-*unexplained variation* is represented through the random variables
-$\epsilon_{ij}$, which are IID Gaussian random variables with mean
+distribution with mean zero and variance $\tau^2$. Finally, we have
+*unexplained variation* specific to each observation that is represented 
+through the random variables
+$\epsilon_{ij}$, which are IID random variables with mean
 zero and variance $\sigma^2$.
 
 We can now study the marginal moments of the multilevel model.  The
 marginal mean is
 
 $$
-E[y_{ij}] = \beta^\prime x_{ij},
+E[y_{ij} | x_{ij}] = \beta^\prime x_{ij},
 $$
 
 since the random effects $\theta_i$ and the unexplained "errors"
@@ -79,7 +84,7 @@ $\epsilon_{ij}$ all have mean zero.
 The marginal variance is
 
 $$
-{\rm var}[y_{ij}] = {\rm var}(\theta_i) + {\rm var}(\epsilon_{ij}) = \tau^2 + \sigma^2.
+{\rm var}[y_{ij} | x_{ij}] = {\rm var}(\theta_i) + {\rm var}(\epsilon_{ij}) = \tau^2 + \sigma^2.
 $$
 
 Note that
@@ -93,7 +98,7 @@ since $\theta_i$ and $\epsilon_{ij}$ are independent.
 The marginal covariance between two observations in the same block is
 
 $$
-{\rm cov}[y_{ij}, y_{ij^\prime}] = {\rm cov}(\theta_i+\epsilon_{ij}, \theta_i+\epsilon_{ij^\prime}) = \tau^2.
+{\rm cov}[y_{ij}, y_{ij^\prime} | x_{ij}, x_{ij^\prime}] = {\rm cov}(\theta_i+\epsilon_{ij}, \theta_i+\epsilon_{ij^\prime}) = \tau^2.
 $$
 
 Further, the marginal correlation between two observations in the same
@@ -114,6 +119,8 @@ The parameters of the model discussed above are $\beta$, $\tau^2$, and
 $\sigma^2$.  All these parameters are estimated jointly, usually via
 maximum likelihood estimation (MLE) or the closely-related restricted
 maximum likelihood estimation (REML) which we will not define here.
+
+### Using OLS to model multilevel data
 
 It would be possible to fit a model to correlated data using OLS,
 ignoring the correlations. Let $\check{\beta}$ denote this estimator,

@@ -27,9 +27,9 @@ pdf(sprintf("%s_r.pdf", pclass))
 
 # Plot the locations of the occurrences.
 world = map_data("world")
-plt = ggplot()
+plt = ggplot() + ggtitle(pclass)
 plt = plt + geom_map(data=world, map=world, aes(long, lat, map_id=region, fill="grey"))
-plt = plt + geom_point(data=da, aes(decimalLongitude, decimalLatitude, size=0.1), alpha=0.2)
+plt = plt + geom_point(data=da, aes(decimalLongitude, decimalLatitude), alpha=0.2)
 plt = plt + theme(legend.position="none")
 plt = rasterize(plt, dpi=100)
 print(plt)
