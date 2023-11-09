@@ -240,3 +240,42 @@ precision.  However if we use the BLUP $\hat{b}_i$ to predict the
 random interept $b_i$, we will only ever have two observations for
 case $i$ and therefore the prediction cannot be consistent for the
 truth.
+
+# Generalized linear multilevel regression
+
+We may wish to use a GLM-like method to accommodate a non-linear single index
+mean structure, and also accommodate non-indepence in the data.  
+Generalized linear multilevel models (also known as GLIMMIX models) have been developed
+for this purpose.  
+
+For a single set of blocks (i.e. a random intercept model), the mean structure of a GLIMMIX model is
+
+$$
+g(E[y_{ij} | x_{ij}, \eta_i]) = \beta^\prime x_{ij} + \eta_i
+$$
+
+where a above $\eta_i$ is a random effect with mean zero and variance $\tau^2$.
+
+As with conventional GLMs, there is a mean/variance relationship, so the conditional 
+
+$$
+{\rm var}[y_{ij} | x_{ij}, \eta_i] = \phi \cdot E[y_{ij} | x_{ij}, \eta_i]. 
+$$
+
+GLIMMIX models do not enjoy the distributional robustness of conventional GLMs.  For
+example, if we model the data as Poisson (given random effects), the data need to
+actually be Poisson.  In contrast, in a conventional GLM the "Poisson model" actually
+only requires the conditional mean and conditional variance of the Poisson model
+to hold.
+
+A major phenomenon that arises in the multilevel GLM setting with a non-linear
+link function is that the marginal and conditional covariate effects differ.  That is,
+$\beta_1$ is the change in expected response (on the scale of the link function)
+for a unit chance in $x_1$, for a fixed value of the random effect $\eta$.  This 
+leads to an important distinction between "subject specific" and "population average" covariate
+effects.
+
+Another important aspect of GLIMMIX models is that in practice they
+are quite difficult to fit using maximum likelihood methods.  While algorithms
+and software exist for this purpose, fitting such models can be slow and 
+issues such as non-convergence can occur.
