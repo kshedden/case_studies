@@ -244,27 +244,32 @@ truth.
 # Generalized linear multilevel regression
 
 We may wish to use a GLM-like method to accommodate a non-linear single index
-mean structure, and also accommodate non-indepence in the data.  
-Generalized linear multilevel models (also known as GLIMMIX models) have been developed
+mean structure, and also accommodate non-indepence in the data.  Generalized linear 
+multilevel models (also known as GLIMMIX models) have been developed
 for this purpose.  
 
-For a single set of blocks (i.e. a random intercept model), the mean structure of a GLIMMIX model is
+For a setting with a single set of blocks (i.e. a random intercept model), the mean structure of a GLIMMIX model is
 
 $$
 g(E[y_{ij} | x_{ij}, \eta_i]) = \beta^\prime x_{ij} + \eta_i
 $$
 
-where a above $\eta_i$ is a random effect with mean zero and variance $\tau^2$.
+where $\eta_i$ is a random effect with mean zero and variance $\tau^2$.
 
 As with conventional GLMs, there is a mean/variance relationship, so the conditional 
+variance is
 
 $$
-{\rm var}[y_{ij} | x_{ij}, \eta_i] = \phi \cdot E[y_{ij} | x_{ij}, \eta_i]. 
+{\rm var}[y_{ij} | x_{ij}, \eta_i] = \phi \cdot v(E[y_{ij} | x_{ij}, \eta_i]) 
 $$
+
+for a variance function $v: {\mathbb R}\rightarrow {\mathbb R}^+$ and a scale
+parameter $\phi$.
 
 GLIMMIX models do not enjoy the distributional robustness of conventional GLMs.  For
 example, if we model the data as Poisson (given random effects), the data need to
-actually be Poisson.  In contrast, in a conventional GLM the "Poisson model" actually
+actually be Poisson for most theoretical guarantees to hold.  In contrast, 
+in a conventional GLM the "Poisson model" actually
 only requires the conditional mean and conditional variance of the Poisson model
 to hold.
 
