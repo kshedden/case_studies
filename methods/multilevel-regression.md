@@ -269,13 +269,13 @@ parameter $\phi$.
 GLIMMIX models do not enjoy the distributional robustness of conventional GLMs.  For
 example, if we model the data as Poisson (given random effects), the data need to
 actually be Poisson for most theoretical guarantees to hold.  In contrast, 
-in a conventional GLM the "Poisson model" actually
-only requires the conditional mean and conditional variance of the Poisson model
-to hold.
+in a conventional GLM, obtaining valid results from a "Poisson model" 
+only requires that the conditional mean and conditional variance of the Poisson model
+hold.
 
 A major phenomenon that arises in the multilevel GLM setting with a non-linear
 link function is that the marginal and conditional covariate effects differ.  That is,
-$\beta_1$ is the change in expected response (on the scale of the link function)
+in a GLIMMIX model $\beta_1$ is the change in expected response (on the scale of the link function)
 for a unit chance in $x_1$, for a fixed value of the random effect $\eta$.  This 
 leads to an important distinction between "subject specific" and "population average" covariate
 effects.
