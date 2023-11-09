@@ -26,3 +26,6 @@ while also providing some additional insights of your own.
 
 5. (November 10th) Write a memo discussing a research question that can be
 addressed using the ARGO data.
+
+6. (November 27th) Write a memo discussing a research question that can be
+addressed using either the iNaturalist or Plantnet data.
