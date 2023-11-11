@@ -8,13 +8,14 @@ library(ggrastr)
 library(ggfortify)
 library(mapdata)
 
-#pclass = "Pinopsida"
-pclass = "Polypodiopsida"
+pclass = "Pinopsida"
+#pclass = "Polypodiopsida"
 
 pa = sprintf("/home/kshedden/data/Teaching/inaturalist/Plantae_%s.csv.gz", pclass)
 
 da = read_csv(pa)
 da = da %>% mutate(eventDate = as.Date(eventDate))
+da = da %>% filter(eventDate >= as.Date('2010-01-01'))
 
 # Count days since January 1, 2010
 da = da %>% mutate(date1 = as.Date('2010-01-01'))
@@ -37,7 +38,7 @@ print(plt)
 # A multilevel linear regression with random intercepts. 
 m0 = lmer(decimalLatitude ~ (1 | species) + day + sin(lonrad) + cos(lonrad) + sin(lonrad/2) + cos(lonrad/2), da)
 
-# A multilevel linear regression with random intercepts and ramdom slopes.
+# A multilevel linear regression with random intercepts and random slopes.
 m1 = lmer(decimalLatitude ~ (1 + day | species) + day + sin(lonrad) + cos(lonrad) + sin(lonrad/2) + cos(lonrad/2), da)
 
 # Estimate the marginal mean latitude at Detroit
@@ -47,7 +48,7 @@ dp = dp %>% mutate(lonrad=-pi*83/180) # Detroit longitude
 dp$yy = predict(m0, dp, re.form=NA)
 
 # Plot the marginal mean latitude
-plt = ggplot(dp, aes(x=day, y=yy)) + geom_line() + xlab("Day (x100)") + ylab("Marginal mean latitude")
+plt = ggplot(dp, aes(x=day, y=yy)) + geom_line() + xlab("Day (x1000)") + ylab("Marginal mean latitude")
 print(plt)
 
 # Get a day 0 value for each species, based on its longitude
@@ -78,7 +79,7 @@ pr = pr %>% mutate(name=ifelse(day=="Latitude0", day1, day2))
 
 # Plot species-level trends in latitude
 plt = ggplot(pr, aes(x=day, y=latitude, group=species)) + geom_line(alpha=0.5) 
-plt = plt + xlab("Day (x100)") + ylab("Species latitude")
+plt = plt + xlab("Day (x1000)") + ylab("Species latitude")
 print(plt)
 
 dev.off()

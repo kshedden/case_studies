@@ -185,6 +185,8 @@ for q in [1, 2, 5, 10, 20, 50]:
     xc1 = np.dot(vtx.T[:, 0:q], np.linalg.solve(np.diag(sx[0:q]), xc))
     yc1 = np.dot(vty.T[:, 0:q], np.linalg.solve(np.diag(sy[0:q]), yc))
     xc1, yc1 = flip(xc1, yc1)
+    print(np.std(xc1[:, 0]))
+    print(np.std(yc1[:, 0]))
 
     # Plot the temperature loadings
     plt.clf()

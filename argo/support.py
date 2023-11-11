@@ -1,9 +1,9 @@
 import numpy as np
+import cartopy.crs as ccrs
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 import matplotlib
 from statsmodels.nonparametric.smoothers_lowess import lowess
-#from mpl_toolkits.basemap import Basemap
 from read import *
 
 # See this reference for information about the support points
@@ -46,24 +46,23 @@ def support(Y, N, maxiter=1000):
 
 pdf = PdfPages("support_py.pdf")
 
+support_iter = 100
+
 def plot_support_map(ii, title):
     plt.clf()
-    plt.figure(figsize=(7, 8))
-    plt.axes([0.1, 0.1, 0.8, 0.8])
-    m = Basemap(llcrnrlon=-100.,llcrnrlat=-65.,urcrnrlon=30.,urcrnrlat=80.,
-                resolution='l',projection='merc', lat_0=0.,lon_0=0.)
+    plt.figure(figsize=(8, 7.25))
+    ax = plt.axes([0.05, 0.05, 0.84, 0.88], projection=ccrs.PlateCarree(central_longitude=180))
+    ax.coastlines()
+    ax.set_extent([115, 290, -70, 60])
 
     for j in range(ii.max() + 1):
         jj = np.flatnonzero(ii == j)
-        x, y = m(lon[jj], lat[jj])
-        plt.scatter(x, y, s=8, label=str(1+j))
+        plt.scatter(lon[jj], lat[jj], s=8, label=str(1+j), transform=ccrs.Geodetic(), rasterized=True)
 
     ha,lb = plt.gca().get_legend_handles_labels()
-    leg = plt.figlegend(ha, lb, "center right")
+    leg = plt.figlegend(ha, lb, loc="center right")
     leg.draw_frame(False)
 
-    m.drawcoastlines()
-    m.drawmapboundary()
     plt.title(title)
     pdf.savefig()
 
@@ -81,16 +80,16 @@ def support_neighbor(X, S):
 for (j,x) in enumerate([temp, psal]):
 
     # Make plots with different numbers of support points.
-    for npt in 5, 10, 20:
+    for npt in 5, 10:
         print("npt=", npt)
-        X = support(x.T, npt, maxiter=200)
+        X = support(x.T, npt, maxiter=support_iter)
         plt.clf()
         plt.figure(figsize=(6.4,4.8))
         plt.grid(True)
         plt.title("%d support points" % npt)
         for i in range(npt):
             plt.plot(pressure, X[i, :], "-", color="grey")
-        plt.xlabel("Pressure", size=15)
+        plt.xlabel("Pressure (depth)", size=15)
         plt.ylabel(["Temperature", "Salinity"][j], size=15)
         pdf.savefig()
 
@@ -98,13 +97,13 @@ for (j,x) in enumerate([temp, psal]):
 # trajectories.  Normalize the ranges of temperature and salinity
 # so that the support points are more equally based on the two
 # variables.
-cm = matplotlib.cm.get_cmap("tab10")
+cm = matplotlib.colormaps["tab10"]
 tempz = (temp - temp.mean()) / temp.std()
 psalz = (psal - psal.mean()) / psal.std()
 pt = np.vstack([tempz, psalz])
 for npt in 5,:
     print("npt=", npt)
-    X = support(pt.T, npt, maxiter=200)
+    X = support(pt.T, npt, maxiter=support_iter)
     plt.clf()
     plt.figure(figsize=(6.4,4.8))
     plt.axes([0.1, 0.1, 0.78, 0.8])
@@ -118,14 +117,14 @@ for npt in 5,:
     for i in range(npt):
         ax2.plot(pressure, X[i, 100:200], ":", color=cm(i/10))
     ax2.set_ylabel("Salinity (broken lines)", size=15)
-    ax1.set_xlabel("Pressure", size=15)
+    ax1.set_xlabel("Pressure (depth)", size=15)
     pdf.savefig()
 
 # Make maps showing the distribution of points falling closest
 # to each support point.
 npt = 10
 for j,x in enumerate([temp, psal]):
-    S = support(x.T, npt, maxiter=200)
+    S = support(x.T, npt, maxiter=support_iter)
     ii = support_neighbor(x, S)
     plot_support_map(ii, ["Temperature", "Salinity"][j])
 
