@@ -9,9 +9,12 @@ library(ggfortify)
 library(mapdata)
 library(RLRsim)
 
-# Use multileel regression to assess for species-specific temporal trends in the
-# occurrences of species within a class of plants.
+# Use multilevel regression to assess for the presence of species-specific 
+# temporal trends in the latitudes of occurrences of species within a class 
+# of plants.  These trends may be consistent with climate change, especially
+# if species are generally found to move away from the equator.
 
+# Select a class of plants
 pclass = "Pinopsida"
 #pclass = "Polypodiopsida"
 
@@ -20,10 +23,15 @@ pa = sprintf("/home/kshedden/data/Teaching/inaturalist/Plantae_%s.csv.gz", pclas
 da = read_csv(pa)
 da = da %>% mutate(eventDate = as.Date(eventDate))
 da = da %>% filter(eventDate >= as.Date('2010-01-01'))
+da = da %>% select(!elevation) %>% drop_na()
 
 # Count days since January 1, 2010
 da = da %>% mutate(date1 = as.Date('2010-01-01'))
 da = da %>% mutate(day=difftime(eventDate, date1, units="days")/1000)
+
+# Get the mean latitude for each species
+dm = da %>% group_by(species) %>% summarize(species_latitude=mean(decimalLatitude))
+da = inner_join(da, dm, by=join_by(species))
 
 # Convert longitude to radians
 da = da %>% mutate(lonrad=pi*decimalLongitude/180)
@@ -71,21 +79,24 @@ dx = dx %>% group_by(species) %>% summarize(Latitude0=mean(Latitude0))
 day1 = as.numeric(min(da$day))
 day2 = as.numeric(max(da$day))
 
+# Species random effects (random day slopes and intercepts)
+r0 = ranef(m2)$species
+r0 = as.data.frame(r0)
+r0$species = row.names(r0)
+row.names(r0) = NULL
+r0 = r0 %>% left_join(group_by(da, species) %>% summarize(species_latitude=mean(species_latitude)))
+
 # Use the predicted random effects to predict species-level
 # mean latitudes on the first and last day of the dataset.
-rr = ranef(m2)$species
-rr = as.data.frame(rr)
-rr$species = row.names(rr)
-row.names(rr) = NULL
-rr = left_join(rr, dx, by="species")
+rr = left_join(r0, dx, by="species")
 rr = rr %>% mutate(Latitude1=Latitude0+day*(day2-day1))
 rr = rr %>% select(species, Latitude0, Latitude1)
 
 # Reshape the predictions for plotting
 pr = pivot_longer(rr, cols=Latitude0:Latitude1)
-pr = rename(pr, day=name)
-pr = rename(pr, latitude=value)
-pr = pr %>% mutate(name=ifelse(day=="Latitude0", day1, day2))
+pr = rename(pr, day=name, latitude=value)
+pr = pr %>% mutate(day=recode(day, Latitude0='Day0', Latitude1='Day1'))
+pr = pr %>% mutate(name=ifelse(day=="Day0", day1, day2))
 
 # Plot species-level trends in latitude
 plt = ggplot(pr, aes(x=day, y=latitude, group=species)) + geom_line(alpha=0.5) 
