@@ -3,14 +3,15 @@ import pandas as pd
 import statsmodels.api as sm
 from pathlib import Path
 from scipy.stats.distributions import norm
+from scipy.stats.distributions import t as tdist
 from statsmodels.stats.multitest import local_fdr
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
-#pclass = "Pinopsida"
-pclass = "Polypodiopsida"
+pclass = "Pinopsida"
+#pclass = "Polypodiopsida"
 
-pdf = PdfPages("%s_largescale.pdf" % pclass) 
+pdf = PdfPages("%s_largescale.pdf" % pclass)
 
 pa = Path("/home/kshedden/data/Teaching/inaturalist")
 
@@ -19,6 +20,7 @@ fn = pa / ("Plantae_%s.csv.gz" % pclass)
 df = pd.read_csv(fn, parse_dates=["eventDate"])
 
 df["day"] = (df["eventDate"] - pd.to_datetime("2010-01-01")).dt.days
+df["day"] /= 1000
 
 # Treat longitude as a circular variable
 df["lonrad"] = np.pi * df["decimalLongitude"] / 180
@@ -38,6 +40,12 @@ for (sp,dx) in df.groupby("species"):
 
 rr = pd.DataFrame(rr, columns=["species", "n", "day_slope", "day_slope_se"])
 rr["day_slope_z"] = rr["day_slope"] / rr["day_slope_se"]
+
+# Account for sample size (degrees of freedom in t-distribution)
+xx = rr["day_slope_z"].copy()
+rr["day_slope_z"] = tdist.cdf(rr["day_slope_z"], rr["n"]-3)
+rr["day_slope_z"] = rr["day_slope_z"].clip(1e-8, 1-1e-8
+rr["day_slope_z"] = norm.ppf(rr["day_slope_z"])
 
 # To control family-wise error rates using the Bonferroni approach,
 # the Z-scores must exceed this value in magnitude.
