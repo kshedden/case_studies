@@ -42,9 +42,8 @@ rr = pd.DataFrame(rr, columns=["species", "n", "day_slope", "day_slope_se"])
 rr["day_slope_z"] = rr["day_slope"] / rr["day_slope_se"]
 
 # Account for sample size (degrees of freedom in t-distribution)
-xx = rr["day_slope_z"].copy()
 rr["day_slope_z"] = tdist.cdf(rr["day_slope_z"], rr["n"]-3)
-rr["day_slope_z"] = rr["day_slope_z"].clip(1e-8, 1-1e-8
+rr["day_slope_z"] = rr["day_slope_z"].clip(1e-8, 1-1e-8)
 rr["day_slope_z"] = norm.ppf(rr["day_slope_z"])
 
 # To control family-wise error rates using the Bonferroni approach,
