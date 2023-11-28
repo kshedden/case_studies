@@ -217,23 +217,7 @@ $$
 $$
 
 is $\sigma^2/m$. Thus, if we double the sample size to $2m$, the variance of the sample
-mean becomes
-
-$$
-\bar{x} = (x_1 + \cdots + x_{2m}) / (2m)
-$$
-
-$$
-\bar{x}_{2m} = (x_1 + \cdots + x_{2m})/(2m)
-$$
-
-$$
-\begin{tabular}{ccc}
-\bar{x}_{2m} &=& (x_1 + \cdots + x_{2m})/(2m)
-\end{tabular}
-$$
-
-is $\sigma^2/(2m)$ -- the variance of the sample mean is
+mean $(x_1 + \cdots + x_{2m})/(2m)$ is $\sigma^2/(2m)$ -- the variance of the sample mean is
 reduced by a factor of two when we double the sample size.
 If we consider the log variance of the sample mean in relation
 to to the log sample size, we get
