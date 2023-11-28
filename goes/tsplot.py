@@ -43,7 +43,7 @@ for year in years:
                 plt.axhline(10**-5, label="M", color="orange")
                 plt.axhline(10**-4, label="X", color="purple")
             ha, lb = plt.gca().get_legend_handles_labels()
-            leg = plt.figlegend(ha, lb, "center right")
+            leg = plt.figlegend(ha, lb, loc="center right")
             leg.draw_frame(False)
             plt.xlabel("Day of year", size=15)
             plt.ylabel(vn, size=15)

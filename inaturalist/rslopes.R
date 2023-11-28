@@ -9,8 +9,8 @@ library(ggfortify)
 library(mapdata)
 library(RLRsim)
 
-# Use multilevel regression to assess for the presence of species-specific 
-# temporal trends in the latitudes of occurrences of species within a class 
+# Use multilevel regression to assess for the presence of species-specific
+# temporal trends in the latitudes of occurrences of species within a class
 # of plants.  These trends may be consistent with climate change, especially
 # if species are generally found to move away from the equator.
 
@@ -47,7 +47,7 @@ plt = plt + theme(legend.position="none")
 plt = rasterize(plt, dpi=100)
 print(plt)
 
-# A multilevel linear regression with random species intercepts. 
+# A multilevel linear regression with random species intercepts.
 m1 = lmer(decimalLatitude ~ (1 | species) + day + sin(lonrad) + cos(lonrad) + sin(lonrad/2) + cos(lonrad/2), da)
 
 # A multilevel linear regression with random species intercepts and random day slopes for species.
@@ -99,7 +99,16 @@ pr = pr %>% mutate(day=recode(day, Latitude0='Day0', Latitude1='Day1'))
 pr = pr %>% mutate(name=ifelse(day=="Day0", day1, day2))
 
 # Plot species-level trends in latitude
-plt = ggplot(pr, aes(x=day, y=latitude, group=species)) + geom_line(alpha=0.5) 
+plt = ggplot(pr, aes(x=day, y=latitude, group=species)) + geom_line(alpha=0.5)
+
+# Plot the population averaged trend line in red.
+ang = -pi*83/180
+f = fixef(m2)
+a = f[["(Intercept)"]] + f[["sin(lonrad)"]]*sin(ang) + f[["cos(lonrad)"]]*cos(ang) +
+    f["sin(lonrad/2)"]*sin(ang/2) + f["cos(lonrad/2)"]*cos(ang/2)
+b = f[["day"]]
+plt = plt + geom_abline(aes(intercept=a, slope=b, color="red"))
+
 plt = plt + xlab("Day (x1000)") + ylab("Species latitude")
 print(plt)
 

@@ -26,7 +26,6 @@ tix, flx = make_blocks(df, 2000, 0)
 n, p = flx.shape
 
 # Consider autocorrelation at these time lags
-d = 25
 dlags = np.arange(1, 200, 10)
 
 # Convert lags to time in minutes
@@ -50,7 +49,7 @@ plt.grid(True)
 for i, p in enumerate(pr):
     plt.plot(dtime, qa[:, i], label="%.2f" % p)
 ha, lb = plt.gca().get_legend_handles_labels()
-leg = plt.figlegend(ha, lb, "center right")
+leg = plt.figlegend(ha, lb, loc="center right")
 leg.draw_frame(False)
 plt.xlabel("Time lag (minutes)", size=15)
 plt.ylabel("Tau autocorrelation quantile", size=15)

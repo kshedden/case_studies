@@ -128,7 +128,7 @@ pdf.savefig()
 plt.clf()
 plt.grid(True)
 plt.plot(np.log(rr["n"]), rr["day_slope_z"], "o", alpha=0.5)
-plt.xlabel("n", size=15)
+plt.xlabel("Log n", size=15)
 plt.ylabel("Day slope (Z)", size=15)
 pdf.savefig()
 
