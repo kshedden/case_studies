@@ -220,7 +220,7 @@ is $\sigma^2/m$. Thus, if we double the sample size to $2m$, the variance of the
 mean becomes
 
 $$
-\bar{x}_{2m}
+\bar{x}_{2m} = (x_1 + \cdots + x_{2m})
 $$
 
 $$
