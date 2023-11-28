@@ -227,6 +227,12 @@ $$
 \bar{x}_{2m} = (x_1 + \cdots + x_{2m})/(2m)
 $$
 
+$$
+\begin{tabular}{ccc}
+\bar{x}_{2m} &=& (x_1 + \cdots + x_{2m})/(2m)
+\end{tabular}
+$$
+
 is $\sigma^2/(2m)$ -- the variance of the sample mean is
 reduced by a factor of two when we double the sample size.
 If we consider the log variance of the sample mean in relation
