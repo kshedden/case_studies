@@ -24,4 +24,3 @@ def l4(x):
     m = np.dot(x, comb(ix, 3) - 3*comb(ix, 2)*comb(n-ix-1, 1) + 3*comb(ix, 1)*comb(n-ix-1, 2) - comb(n-ix-1, 3))
     m /= (4 * comb(n, 4))
     return m
-

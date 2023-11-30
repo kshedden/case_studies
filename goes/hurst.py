@@ -29,8 +29,9 @@ def hurst(df, nn, d):
 
     return 1 + b/2
 
-# As a check, estimate the Hurst parameter for 
-# IID normal data (the true value is 1/2). 
+# As a check, estimate the Hurst parameter for
+# IID normal data (the true value of the Hurst
+# parameter is 1/2).
 dx = df.iloc[0:100000, :].copy()
 dx["Flux1"] = np.random.normal(size=100000)
 h0 = hurst(dx, nn, 0)
@@ -39,7 +40,7 @@ print(h0)
 
 # As another check, simulate correlated data
 # with short-range dependence (the true value
-# is 1/2).
+# of the Hurst parameter is 1/2).
 fx = np.random.normal(size=dx.shape[0])
 r = 0.5
 for i in range(1, len(fx)):
