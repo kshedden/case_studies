@@ -10,16 +10,46 @@ is appropriate to do so.
 
 ## Content/overall approach
 
+* Scientific writing follows a constrained style, yet there is plenty of opportunity to develop
+  your own voice.  This is the reason that we do not provide templates or example memos for
+  this course.  However, it will be impossible for you to write well in an appropriate
+  scientific/academic style if you have not read a lot of scientific writing.  We will provide
+  some pointers to good sources of scientific writing.
+
+* The goal of these memos is to document a specific research question that you have devised, and
+  an analysis that you have conducted using the data that we provide.
+  You will then present an interpretation of your findings in relation to your
+  research question.  Little-to-no space should be devoted to broader discussion of
+  the scientific domain or statistical issues not directly related
+  to your analysis and findings.  Since the length of your memo is strictly limited, any such
+  broad discussion will take away from the qaulity and quantity of your specific
+  findings and will lead to the ideas presented in your memo being underdeveloped.
+
 * Write in complete sentences, with the content organized logically into
-  paragraphs.  Do not submit an outline or bulleted list of points.  You
+  paragraphs that are usually 3-5 sentences long.  Do not submit an outline or bulleted list of points.  You
   do not need to include section headers but may do so if you wish.
 
-* At a high level, most memos will include a brief introductory paragraph
+* Most memos will include a brief introductory paragraph
   containing an explicit statement of the research question along with
   essential background information, one or two paragraphs discussing the
   methods used in your analysis, one or two paragraphs of results, and
-  one or two paragraphs of discussion.  There is no need to discuss
-  future work or things that you could have done but did not do.
+  one or two paragraphs of discussion.  In the discussion paragraphs you
+  can be a bit more interprative than the results paragraphs, which should
+  be more "matter of fact".
+
+*  Do not discuss
+  "future work" or things that you could have done but did not do. It
+  may be appropriate to discuss some limitations of your analysis but these should
+  be very specific to your analysis and conclusions, not a generic list of limitations
+  that would apply in almost any setting.
+
+* Aim for an academic tone. Avoid the excessive use of vague adjectives like
+  "comprehensive", "nuanced", and "intricate" unless you can specifically
+  state why these terms are relevant.
+
+* You can write in the first person "I found..."" or using the "majestic we"
+  (presenting your results using the pronoun "we" even though the analysis
+  was done by one person).
 
 * Make specific claims and assertions, then back them up with specific
   evidence and arguments.
@@ -54,7 +84,9 @@ should follow the logic of the question you are aiming to address, and the
 evidence and interpretation that you use to support your claims.
 
 * Discussion of how you "cleaned" the data is only relevant if it is needed
-for the reader to understand your question, approach, and conclusions.
+for the reader to understand your question, approach, and conclusions.  Avoid
+use of programming language syntax.  There is no need to document menial data
+processing tasks that involve no statistical judgement.
 
 * Try to make your writing as self-contained as reasonably possible.  For this
 course, you can assume that the reader is familiar with the statistical
@@ -95,21 +127,21 @@ or to prior assignments.
   heterogeneity.  When building models, you should generally aim to fit
   as complicated of a model as you have statistical power to estimate.
   If presenting summary statistics for heterogeneous data, present them at
-  an appropriately disaggregated level.
+  an appropriately disaggregated or stratified level.
 
 * Don't overstate or misstate the role of Gaussianity in statistical
   analyses.  Often it is a minor consideration.  It is almost never important
   that the data are Gaussian.  To the extent that Gaussianity matters,
-  it is usually only that aggregated summary values should be Guassian in
+  it is usually because in some cases aggregated summary values should be Guassian in
   order to calibrate tests and confidence intervals.
 
 ## Organization and structure
 
 * Always include a title.  The title should convey something specific about the
-main focus or your writing.  It should reflect the main substantive question
+main focus of your writing.  It should reflect the main substantive question
 that you are addressing, and may also refer to the data that you will be using.
-You generally will not want to mention the analytic methodology (e.g. Poisson
-regression) in the title.
+You generally will not want to mention the analytic methodology (e.g.
+regression analysis) in the title.
 
 * The introductory paragraph should convey the main topic and focus of
 your writing.  Information about the data set, and the methodology that you
@@ -167,7 +199,7 @@ the very next sentence).
 * Don't be afraid to use technical terms as needed, but use them precisely
 and only
   where the exact definition is important.  Avoid "jargon" (technical language
-  that is used informally, needlessly excluding people from a discussion).
+  that is used informally and needlessly).
 
 * Since the word "significant" has a specific technical meaning in
   statistics, it is best to avoid using it in its colloquial sense.
@@ -222,10 +254,15 @@ and only
 
 * Causality is a fundamental issue in most statistical analysis.  In
   some cases such as an controlled experiment with randomization, it is
-  possible to interpret associations in causal terms.  More often, however,
+  possible to interpret associations in causal terms.  More often,
   we have imperfect experiments or data from observational studies, so are
   unable to be strongly confident about the extent to which any findings
   reflect mechanisms in a causal sense.
+
+* Many common-language terms have a connotation of causality and should
+  be avoided unless you have done something to demonstrate that your
+  findings have a causal interpretation.  This includes words such as:
+  "impacts", "causes", "affects", "determines", and "changes".
 
 * Certain phrases such as "the effect of x on y" can be re-worded to
   convey that the findings are not meant to be interpreted causally.
@@ -236,7 +273,8 @@ and only
   "coefficient for x" or the "slope parameter for x" rather than the "effect
   of x", since the latter implies causality.
 
-* It is usually not necessary to eliminate all hints of causal
+* While you should be very careful about casually implying that your findings
+  have a causal interpretation, it is usually not necessary to eliminate all hints of causal
   thinking from your writing.  Science is primarily concerned with identifying
   causal relationships.  Evidence for causality does not need to come solely
   from the data that you are analyzing.  In some cases, there may be a basis
@@ -250,7 +288,8 @@ and only
   "causal inference" and other statistical methods.  A regression model
   with suitable control variables may support a causal interpretation,
   even though it is not viewed as being a technique from causal inference.
-  In general, demonstrating causality is a trade-off between rigor and power.
+
+*  In general, demonstrating causality is a trade-off between rigor and power.
   Causal inference tends to favor rigor even when a great sacrifice of
   power results.  Mainstream regression analysis favors a different balance
   in which some effort is made to promote a causal interpretation (e.g. by
@@ -260,10 +299,14 @@ and only
 ## Graphics
 
 * Only include plots or tables that are essential for conveying your message
-  and that you explicitly refer to in your report.
+  and that you explicitly refer to in your report.  Do include any graphs
+  that are discussed in your report and that are used to support your main
+  conclusions.  In most cases 1-4 graphs is appropriate for a memo of two
+  pages.
 
 * Number all plots and tables and always use these numbers when referring to
-  plots/tables in the body of your report.
+  plots/tables in the body of your report.  Do not refer to graphs as being
+  "above" or "below" a particular location in the text.
 
 * Avoid pie charts in almost all situations
 
@@ -279,6 +322,12 @@ and only
 
 * In general, it is better to avoid contractions (e.g. "it's") in this
   type of writing.
+
+* Either place a blank line between paragraphs, or indent each paragraph (or do
+  both).
+
+* If you use parenthetical expressions, place a space before each opening
+  parenthesis.
 
 ## Statistical content
 
@@ -330,6 +379,12 @@ and only
   and inadequacies.  This can be accomplished in many ways, for example, by
   reporting summary statistics on stratified data, or by using a model-based
   adjustment (e.g. regression).
+
+* Be aware of which of your quantitative findings have units and which are
+  dimension free.  If your results depend on units make sure that the units
+  are clearly reported, and avoid drawing conclusions about a value being
+  "big" or "small" if the scale of the value is dependent on (arbitrary)
+  measurement units.
 
 * Administrative geographical units (e.g. US states and counties) are
   generally very unbalanced in terms of population.  When using such an
