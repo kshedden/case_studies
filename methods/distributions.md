@@ -2,22 +2,21 @@
 
 Probability distributions are the central object of interest in probability theory
 and statistics.  There are several ways to
-represent a probability distribution, such as the [probability density
+represent a probability distribution, including the [probability density
 function](https://en.wikipedia.org/wiki/Probability_density_function)
 (pdf), the [cumulative distribution
 function](https://en.wikipedia.org/wiki/Cumulative_distribution_function)
 (cdf), and the [moment generating
 function](https://en.wikipedia.org/wiki/Moment-generating_function)
-(mgf).  Since the space of probability distributions is infinite-dimensional,
-many useful ways to summarize probability distributions in finite dimensions
-have been developed, using numerical characteristics such as the mean and variance.
+(mgf).  The space of probability distributions is infinite-dimensional,
+so in practice we often use finite dimensional numerical summaries such as the mean and variance.
 The field of statistics (as opposed to the field of probability)
 focuses on estimating these summary quantities from data, using estimators such as the
-[empirical cdf](https://en.wikipedia.org/wiki/Empirical_distribution_function),
+[empirical cdf](https://en.wikipedia.org/wiki/Empirical_distribution_function) (an estimator of the cdf),
 the [histogram](https://en.wikipedia.org/wiki/Histogram) (an estimator
-of the pdf), and the sample mean.
+of the pdf), and the sample mean (an estimator of the population mean).
 
-At a high level, the two most common characteristics used to summarize univariate
+The two most common characteristics used to summarize univariate
 distributions of a quantitative value (i.e. probability distributions
 on the real line) are
 [moments](https://en.wikipedia.org/wiki/Moment_(mathematics)) and
@@ -45,21 +44,23 @@ distributions, and discuss how to estimate these characteristics from data.
 ## Extremes, heavy-tailed distributions, and tail parameter estimation
 
 Many important research questions involve the frequency of "extreme" events, for
-example major earthquakes, large movements in financial markets, people with
-extremely long lifespans, or extreme rainfall events.  The study of
+example major earthquakes, large movements in financial markets,
+extremely long human lifespans, or extreme rainfall events.  The study of
 extremes naturally leads us to focus on the right tail of a probability
 distribution.  In some cases the extremes of interest may involve the left
 tail, but in that case we can flip the distribution, so by convention,
 methods for studying extremes focus on the right tail.
 
-The tail parameter of a random variable $X$ describes how rapidly the
-tail probability $P(X > t)$ (the complementary CDF, CCDF, or *survival function*)
-converges to zero as $t$ grows.  In many familiar distributions, the tails
+The *complementary cdf* (ccdf), also known as the *survival function*,
+is the right tail probability $P(X > t)$, viewed as a function of $t \in {\mathbb R}^+$.
+To understand the frequency of extreme (large) values, we should consider how rapidly the
+tail probability converges to zero as $t$ increases.  In many familiar distributions, the tails
 are *exponential*  meaning that $P(X > t) = L(t)\cdot \exp(-t/\mu)$, where
 $L(t)$ is a [slowly varying function](https://en.wikipedia.org/wiki/Slowly_varying_function)
 and $\mu$ is a scale parameter.
 For our purposes, we can treat $L(t)$ as a constant, so having exponential tails
 implies that $P(L > t) \propto \exp(-t/\mu)$.
+
 In a [heavy tailed distribution](https://en.wikipedia.org/wiki/Heavy-tailed_distribution),
 the tail probabilities do not shrink exponentially fast, which means that
 for all $k > 0$,
@@ -79,9 +80,8 @@ The simplest family of distributions with power law tails is the
 [Pareto distribution](https://en.wikipedia.org/wiki/Pareto_distribution).
 The sample space of the Pareto distribution is $[1, \infty)$, and the
 CCDF is $P(X > t) = 1/t^\alpha$. This distribution has a tail index of
-$\alpha$ as defined above.
-
-If $U$ follows a uniform distribution, then $U^{-1/\alpha}$ is Pareto.
+$\alpha$ as defined above. If $U$ follows a uniform distribution, then
+$U^{-1/\alpha}$ is Pareto.
 Alternativey, if $Y$ follows a standard exponential
 distribution, then $Z = \exp(Y / \alpha)$ follows a Pareto distribution.
 
@@ -92,15 +92,20 @@ and in general will not fit many datasets well.  When focusing on extreme
 values we usually don't want to become distracted by the structure of the
 center of the distribution.  One way to focus on the tail is to convert
 the data to *exceedances*.  This means that we find a parameter $T$ and replace
-the dataset $\{X_i\}$ with the dataset $\\{X_i-T | X_i \ge T\\}$.  Since
-the Pareto distrubution has sample space $[1, \infty)$, the exceedances
-may instead be defined as $\\{X_i-T+1 | X_i \ge T\\}$.
+the dataset $\{X_i\}$ with the dataset $\\{X_i-T | X_i \ge T\\}$.
 
 If $T$ is appropriately selected then the exceedances may follow a
 Pareto or exponential distribution, even though these models are a
-poor fit to the full dataset.
+poor fit to the full dataset.  However in general we will want to use
+a more flexible two-parameter family of models in most cases.
 
 ### Tail plots
+
+Before considering formal estimation and inference for the tail of a distribution,
+we will discuss some graphical approaches that capture the structure of the
+tail of a distribution.  These approaches consider the upper *order statistics*
+of a sample of data and plot them in log space to best reflect the shape of the
+tail.
 
 Let $X_{(j)}$ denote the $j^{\rm th}$ order statistic either of our data,
 or of the exceedances derived from our data.  Recall that the $j^{\rm th}$
@@ -152,7 +157,7 @@ parameters ($\alpha$ or $\mu$) by fitting a least squares regression
 line to the points in the plot.  The number of points used in the
 least squares fit is a tuning parameter that must be selected, typically
 in the range $20-200$.  These estimators are convenient, intuitive,
-and *distributionally robust* (since the depend on the assumed form of
+and *distributionally robust* (since they depend on the assumed form of
 the tail but do not require a complete specification of a probability
 model).  However these estimators may not be very efficient.
 Alternative estimators will be discussed below.
@@ -240,24 +245,34 @@ same tail parameter $\alpha$.
 As $\alpha\rightarrow\infty$ (or equivalently $\xi=1/\alpha\rightarrow 0$, the generalized
 Pareto distribution becomes the exponential distribution.
 
-A famous [theorem](https://en.wikipedia.org/wiki/Pickands%E2%80%93Balkema%E2%80%93De_Haan_theorem) demonstrates
+A famous [theorem](https://en.wikipedia.org/wiki/Pickands%E2%80%93Balkema%E2%80%93De_Haan_theorem)
+known as the Pickands-Balkema-De Haan theorem demonstrates
 that with appropriate choice of threshold $T$, the exceedances for many distributions approximately
-follow a generalized Pareto distribution.
+follow a generalized Pareto distribution.  This theorem plays the role of the central limit theorem
+in the study of extremes, since it allows us to use a specific parametric model to study data that
+may follow a large range of distributions.
 
 ## Block maxima and the generalized extreme value distribution
 
-Another way to approach extremes is to define a meaningful block size,
-such as one year for data measured at a daily frequency, and calculate the maximum observed
-value within each block.  The distribution of these values should be
+Another way to approach extremes is to partition the data into blocks,
+and calculate the maximum observed value within each block.  The distribution of these values should be
 well approximated by a
 [generalized extreme value distribution](https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution),
-(GEV), which is a three-parameter distribution.
+(GEV), which is a three-parameter distribution.  This is another example of a central limit theorem-like
+result for extremes, since a wide variety of populations have block maxima that are well-approximated
+by the GEV distribution.
+
+The block maxima approach is most often used with serially observed
+data (time series), and the block is a coarse resolution of time.  For example, if our time series consists
+of daily values, we might choose a block size of one year.  To estimate a GEV, we need to have a sufficient
+number of blocks.  If there are too few blocks, say 50 or fewer, then the GEV parameter estimates will be
+very uncertain.
 
 One advantage of working with block-wise maxima is that they are less
 sensitive to positive serial dependence that causes clusters of extreme
 values to occur in close proximity to each other.  These clusters
 will generally occur within one block and only the largest among them
-will influence the analysis results.  On the other hand, fitting a generalized
+will influence the analysis results.  Fitting a generalized
 Pareto distribution to the exceedances may produce biased estimates due
 to such dependence.
 
@@ -301,8 +316,9 @@ exceeded once out of every $m$ observations.  In other words, $T$ is
 the m-observation return level if $I_i = {\cal I}(X_i > T)$
 and $E[I_1 + \cdots + I_m] = 1$, where the $X_i$ are identically distributed
 random variables. Since $E[I_1 + \cdots + I_m] = mE[I]$, where $I$ has the same
-distribution as the $I_i$, the $m$-return can be inferred from the equation $mE[I] = 1$.
-If $F(x)$ is the cumulative distribution function (CDF) of a random variable $X$, then the m-observation return level
+distribution as the $I_i$, the $m$-return can be inferred from the equation $mE[I] = 1$ or $E[I] = 1/m$.
+Since $E[I] = P(X > t) = 1 - P(X \le t)$, if
+$F(x)$ is the cumulative distribution function (CDF) of a random variable $X$, then the m-observation return level
 (for $m$ independent copies of $X$) is
 the solution to $F(x) = 1 - 1/m$.  Thus, the m-observation return level
 is the $1 - 1/m$ quantile of $X$.
