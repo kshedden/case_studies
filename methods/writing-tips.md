@@ -348,6 +348,13 @@ and only
 * Avoid fitting overly-simple models to large datasets.  Underfitting
   is just as serious a problem as overfitting.
 
+* When referring to a p-value always make clear what hypothesis the p-value evaluates.
+
+* A correlation is a specific type of statistical measure describing the relationship
+between two variables. In most cases, if you are not talking about one of the standard
+correlation measures (Pearson, Spearment, Kendall) it is best to refer to the
+statistic as an "association".
+
 * Be explicit when discussing percentage changes in variables that are
   themselves percentages.  The term "percentage points" can clarify your
   meaning in this setting.  For example, if you say that the unemployment

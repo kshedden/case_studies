@@ -9,6 +9,8 @@ The null standard error of each Kendalls' tau autocorrelation is `tse`.
 This analysis is informative about local dependence within each block,
 as well as about the extent of non-stationarity in the full (year-long)
 time series.
+
+https://escholarship.org/uc/item/7jt8s827
 """
 
 import numpy as np

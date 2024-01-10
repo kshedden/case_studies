@@ -242,7 +242,7 @@ $$
 so the generalized Pareto and Pareto distributions both have power law tails with the
 same tail parameter $\alpha$.
 
-As $\alpha\rightarrow\infty$ (or equivalently $\xi=1/\alpha\rightarrow 0$, the generalized
+As $\alpha\rightarrow\infty$ (or equivalently $\xi=1/\alpha\rightarrow 0$), the generalized
 Pareto distribution becomes the exponential distribution.
 
 A famous [theorem](https://en.wikipedia.org/wiki/Pickands%E2%80%93Balkema%E2%80%93De_Haan_theorem)
