@@ -46,7 +46,7 @@ and lectures will not be recorded or streamed.
 Course materials will be available through the course github site
 [here](https://github.com/kshedden/case_studies).  There is no textbook
 for this course.  Grades and announcements will use the course canvas
-site, and we will have a Piazza site.
+site, and we will have a [Piazza site](https://piazza.com/umich/winter2024/stats485001fa2019/home).
 
 ## Coursework
 
