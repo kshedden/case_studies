@@ -91,7 +91,7 @@ including human health, social and behavioral science, natural science,
 and industry/commerce. We will spend approximately three lectures
 discussing the background and relevant statistical issues associated
 with each case study. After this context is provided, you will be given
-a writing prompt and will have approximately 10 days two prepare your
+a writing prompt and will have approximately 10 days to prepare your
 report.  Extensions will be given only in extreme situations.
 
 ## Computing

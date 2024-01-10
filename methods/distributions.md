@@ -111,25 +111,25 @@ Let $X_{(j)}$ denote the $j^{\rm th}$ order statistic either of our data,
 or of the exceedances derived from our data.  Recall that the $j^{\rm th}$
 order statistic is the $j^{\rm th}$ sorted value in our data, sorted in
 increasing order.  The $j^{\rm th}$ order statistic corresponds
-to *probability point* $j/(n+1)$.  That is, $P(X \le X_{(j)}) = j/(n+1)$
-and $P(X > X_{(j)}) = 1 - j/(n+1)$.
+to *probability point* $j/(n+1)$.  That is, $P(X \le X_{(j)}) \approx j/(n+1)$
+and $P(X > X_{(j)}) \approx 1 - j/(n+1)$.
 
 Suppose that the tail of $X$ is a power law with tail index $\alpha$.
 Then we have
 
 $$
-P(X > X_{(j)}) = c/X_{(j)}^\alpha = 1 - j/(n+1).
+P(X > X_{(j)}) = c/X_{(j)}^\alpha \approx 1 - j/(n+1).
 $$
 
 Therefore in log-space we have
 
 $$
-\log(1 - j/(n+1)) = \log(c) - \alpha\log(X_{(j)}).
+\log(1 - j/(n+1)) \approx \log(c) - \alpha\log(X_{(j)}).
 $$
 
 This implies that if we plot the probability points $1 - j/(n+1)$
 against the order statistics $X_{(j)}$ in log-space, we obtain
-a linear relationship with slope $-\alpha$.  This type of
+an approximate linear relationship with slope $-\alpha$.  This type of
 probability plot can be used both as a means for estimating
 $\alpha$, and as a diagnostic for whether the tails actually
 follow a power law.
@@ -138,13 +138,13 @@ Alternatively, if our tails are exponential we have the
 relationship
 
 $$
-P(X > X_{(j)}) = c\cdot\exp(-X_{(j)}/\mu) = 1 - j/(n+1),
+P(X > X_{(j)}) = c\cdot\exp(-X_{(j)}/\mu) \approx 1 - j/(n+1),
 $$
 
 therefore
 
 $$
-\log(1 - j/(n+1)) = \log(c) - X_{(j)}/\mu.
+\log(1 - j/(n+1)) \approx \log(c) - X_{(j)}/\mu.
 $$
 
 In a *semi-log* plot (log transforming the probability points
