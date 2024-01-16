@@ -4,7 +4,7 @@
 
 Kerby Shedden (kshedden@umich.edu, 277 West Hall)
 
-Office hours: TBD
+Office hours: Monday & Thursday from 1:30-2:30, starting 1/22
 
 ## GSIs
 
