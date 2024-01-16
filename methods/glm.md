@@ -19,7 +19,7 @@ $$
 E[Y|X=x] = \beta_0 + \beta_1x_1 + \cdots + \beta_p x_p.
 $$
 
-A GLM relates the conditional mean to the linear predictor via a link
+A *generalized linear model* relates the conditional mean to the linear predictor via a link
 function $g: {\mathbb R}\rightarrow {\mathbb R}$:
 
 $$
@@ -41,7 +41,8 @@ to regression can perform quite differently.
 
 __Additive and multiplicative mean structures:__ By far the most
 common link functions are the identify function $g(x)=x$ and the
-logarithm function $g(x)=\log(x)$.  These give very different models
+logarithm function $g(x)=\log(x)$.  These give very different
+*mean structure models*
 for how the covariates are related to the mean response.  Suppose we
 have two covariates $x_1$ and $x_2$, leading to the linear predictor
 $\beta_0 + \beta_1x_1 + \beta_2x_2$.  With an identity link, the
@@ -115,26 +116,32 @@ $g$ is the logarithm function.  The variance function is the identity
 function $V(\mu) = \mu$.  The scale parameter is fixed at $\phi=1$.
 Fitting the Poisson log-linear model as a GLM is
 equivalent to using maximum likelihood estimation to fit the model in
-which $P(Y | X=x)$ is parameterized as a Poisson PMF with mean
+which $P(Y | X=x)$ is parameterized as a Poisson probability mass
+function (PMF) with mean
 $\exp(\beta_0 + \beta_1x_1+\cdots+ \beta_px_p)$.
 
 A GLM can be seen as indexing a collection of distributions through
 the covariate vector $x$.  If we have observations
-$(y_i, x_i), i=1, \ldots, n$, each observation follows a specific probability
-distribution in the collection.
+$(y_i, x_i), i=1, \ldots, n$, the conditional distribution $y_i | x_i$
+of each observation follows a specific probability
+distribution in the collection, based on $x_i$.
 For example, in a Poisson GLM, $P(Y_i | X=x_i)$ is a Poisson distribution,
-so different observations in general will follow different
-Poisson distributions.  Except for the Gaussian case, there is no
-meaningful way
-to write a GLM in the form $y_i = \beta^\prime x_i + \epsilon_i$ for
-an *error term* $\epsilon_i$.
+and different observations in general will follow different
+Poisson distributions.
+
+Here we express GLMs through expressions for the conditional mean structure
+$E[Y|X=x]$ and conditional variance structure ${\rm Var}[Y | X=x]$.
+Except for the Gaussian case, there is no
+meaningful way to write a GLM in the "generative form"
+$y_i = \beta^\prime x_i + \epsilon_i$ for an *error term* $\epsilon_i$.
 
 Note that a GLM describes the conditional distributions
 $P(Y | X=x)$, for different values of $x$.  A GLM (like any regression
 procedure) says very little about the marginal distribution $P(Y)$.
 In a Poisson GLM, repeated observations of $Y$ at the same value of
-$X$ will follow a Poisson distribution, but the *pooled* (or *marginal*)
-distribution of $Y$, which describes the set of all $Y$ values taken at
+$X$ will follow a Poisson distribution, but the *pooled* (or *marginal*,
+or *unconditional*)
+distribution of $Y$, which describes the all $Y$ values taken at
 different values of $X$, will not be Poisson.  Similarly, in a
 Gaussian linear model, $Y$ values taken at the same $X$ are Gaussian,
 but the marginal distribution of $Y$ is not Gaussian.
@@ -155,20 +162,20 @@ this possibility further here.
 
 All of the examples introduced below use the logarithm as the
 link function, so the mean structure model is
-$E[Y|X=x] = \exp(\beta^\prime x)$.
+$E[Y | X=x] = \exp(\beta^\prime x)$.
 
 The _quasi Poisson_ GLM introduces a non-negative scale parameter $\phi$
 into the Poisson variance model (in which $\phi=1$ is fixed):
 
 $$
-{\rm Var}[Y|X=x] = \phi E[Y|X=x].
+{\rm Var}[Y | X=x] = \phi E[Y | X=x].
 $$
 
 The _negative binomial_ GLM introduces a shape parameter
 $\alpha$ into the variance model, such that
 
 $$
-{\rm Var}[Y|X=x] = E[Y|X=x] + \alpha \cdot E[Y|X=x]^2.
+{\rm Var}[Y | X=x] = E[Y | X=x] + \alpha \cdot E[Y | X=x]^2.
 $$
 
 The _quasi negative binomial_ model has both scale and shape parameters, so that
