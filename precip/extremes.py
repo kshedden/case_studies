@@ -24,7 +24,8 @@ def tail_shape(z, p0=0.1, family="powerlaw"):
     The returned values in x are the order statistics of z in the
     Exponential case, and the log order statistics of z in the Pareto
     case. The returned values in p are derived from probability
-    points.
+    points.  Scatterplot p against x to get a visualization of the
+    tail shape.
     """
 
     if family not in ["exponential", "powerlaw"]:
@@ -43,9 +44,9 @@ def tail_shape(z, p0=0.1, family="powerlaw"):
 
 def fit_tail_reg(x, ax, p0=0.99, family="powerlaw"):
     """
-    Use least squares regression in the upper 'p0' tail of a quantile plot
-    to estimate the shape parameter, and add the best fit line to the
-    plot in axes 'ax'.
+    Use least squares regression in the upper 'p0' fraction of the right
+    tail of a quantile plot to estimate the shape parameter, and add the
+    best fit line to the plot in axes 'ax'.
     """
 
     x, p = tail_shape(x, p0=p0, family=family)
@@ -325,6 +326,8 @@ pdf.savefig()
 plt.clf()
 plt.grid(True)
 plt.hist(df["PRCP"])
+plt.xlabel("Precipitation (mm)", size=13)
+plt.ylabel("Frequency", size=14)
 pdf.savefig()
 
 # Plot the data as a CDF
@@ -335,6 +338,16 @@ p = np.linspace(0, 1, len(x))
 plt.plot(x, p, "-")
 plt.xlabel("Precipitation (mm)", size=15)
 plt.ylabel("Cumulative probability", size=15)
+pdf.savefig()
+
+# Plot the data as a complementary CDF (ccdf, survival function)
+plt.clf()
+plt.grid(True)
+x = np.sort(df["PRCP"])
+p = np.linspace(0, 1, len(x))
+plt.plot(x, 1 - p, "-")
+plt.xlabel("Precipitation (mm)", size=15)
+plt.ylabel("Complementary cumulative probability", size=14)
 pdf.savefig()
 
 # Quantile plots
