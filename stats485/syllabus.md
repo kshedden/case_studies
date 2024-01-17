@@ -10,9 +10,9 @@ Office hours: Monday & Thursday from 1:30-2:30, starting 1/22
 
 * Aaron Abkemeier (aaronabk@umich.edu)
 
-* Samuel Rosenberg (rosesamk@umich.edu)
+* Samuel Rosenberg (rosesamk@umich.edu): office hours 2-3:30 on Tuesdays and Thursdays
 
-GSI office hours TBD
+GSI office hours are held in Angell Hall, Room G219
 
 ## Overview
 

@@ -8,6 +8,7 @@ library(dplyr)
 
 # Estimate the parameters of a generalized Pareto distribution
 # using the empirical Bayes method of Zhang and Stephens.
+#
 # https://www.jstor.org/stable/pdf/40586625.pdf
 gp_estimate = function(z) {
 
@@ -94,6 +95,7 @@ gp_simstudy = function(z, nrep=500) {
 # Fit a generalized extreme value distribution using maximum likelihood
 # estimation.  Probability weighted moments are used to obtain starting
 # values:
+#
 # https://www.stat.cmu.edu/technometrics/80-89/VOL-27-03/v2703251.pdf
 fit_gev = function(x) {
 
@@ -133,7 +135,7 @@ fit_gev = function(x) {
 # a distribution with power-law tails, or the rate parameter
 # of a distribution with exponential tails.
 # The upper p0 fraction of the data in z are used
-# to produce x, p.  The values in x are the order
+# to produce the returned values in (x, p).  The values in x are the order
 # statistics of z in the Exponential case, and the log
 # order statistics of z in the Pareto case. The values in
 # p are derived from probability points.
@@ -252,8 +254,11 @@ mobs_return = function(z, mr, thresh=thresh, family="exponential", gp=NULL) {
     return(m0)
 }
 
+# Change this to point to the location of the data, matching the path
+# name in get_data.R
 target_dir = "/home/kshedden/data/Teaching/precip"
 
+# Choose a specific location to analyze.
 fname = "USW00094847.csv" # Detroit
 #fname = "USW00012839.csv" # Miami
 
@@ -281,8 +286,10 @@ for (family in c("powerlaw", "exponential")) {
     }
 }
 
+# Construct exceedances
 z = df$PRCP - thresh
 z = z[z > 0]
+
 eb = gp_estimate(z)
 gp_simstudy(df$PRCP)
 gev = block_max(annmax)

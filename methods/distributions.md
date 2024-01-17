@@ -9,12 +9,15 @@ function](https://en.wikipedia.org/wiki/Cumulative_distribution_function)
 (cdf), and the [moment generating
 function](https://en.wikipedia.org/wiki/Moment-generating_function)
 (mgf).  The space of probability distributions is infinite-dimensional,
-so in practice we often use finite dimensional numerical summaries such as the mean and variance.
+so in practice we often work with finite dimensional numerical summaries such as the mean and variance.
 The field of statistics (as opposed to the field of probability)
-focuses on estimating these summary quantities from data, using estimators such as the
+focuses on estimating either the full distribution or a summary quantity from data.  The full distribution
+can be estimated using the
 [empirical cdf](https://en.wikipedia.org/wiki/Empirical_distribution_function) (an estimator of the cdf),
-the [histogram](https://en.wikipedia.org/wiki/Histogram) (an estimator
-of the pdf), and the sample mean (an estimator of the population mean).
+or the [histogram](https://en.wikipedia.org/wiki/Histogram) (an estimator
+of the pdf), among other tools not discussed here.
+Summary measures often have a natural estimator, such as the sample mean (an estimator of the population mean),
+and the sample median (an estimator of the population median).
 
 The two most common characteristics used to summarize univariate
 distributions of a quantitative value (i.e. probability distributions
@@ -34,7 +37,7 @@ range](https://en.wikipedia.org/wiki/Interquartile_range) (IQR) and the
 [MAD](https://en.wikipedia.org/wiki/Median_absolute_deviation) (median
 absolute deviation).
 
-"Higher order" characteristics of a distribution such as [skew](https://en.wikipedia.org/wiki/Skewness)
+"Higher order" summary characteristics of a distribution such as [skew](https://en.wikipedia.org/wiki/Skewness)
 and [kurtosis](https://en.wikipedia.org/wiki/Kurtosis) are less commonly
 encountered but are of great interest in certain settings.
 
@@ -51,8 +54,10 @@ distribution.  In some cases the extremes of interest may involve the left
 tail, but in that case we can flip the distribution, so by convention,
 methods for studying extremes focus on the right tail.
 
+Recall that the cumulative distribution funtion (cdf) of a random variable $X$ is the
+function $F(t) = P(X \le t)$, viewed as a function of $t \in {\mathbb R}^+$.
 The *complementary cdf* (ccdf), also known as the *survival function*,
-is the right tail probability $P(X > t)$, viewed as a function of $t \in {\mathbb R}^+$.
+is the right tail probability $S(t) = P(X > t) = 1 - F(t)$.
 To understand the frequency of extreme (large) values, we should consider how rapidly the
 tail probability converges to zero as $t$ increases.  In many familiar distributions, the tails
 are *exponential*  meaning that $P(X > t) = L(t)\cdot \exp(-t/\mu)$, where
@@ -159,8 +164,9 @@ least squares fit is a tuning parameter that must be selected, typically
 in the range $20-200$.  These estimators are convenient, intuitive,
 and *distributionally robust* (since they depend on the assumed form of
 the tail but do not require a complete specification of a probability
-model).  However these estimators may not be very efficient.
-Alternative estimators will be discussed below.
+model).  However these estimators may not be very efficient (i.e. they
+may have high estimations variance).
+Alternative and more efficient estimators will be discussed below.
 
 ### The Hill estimate of the tail parameter
 
@@ -269,7 +275,7 @@ number of blocks.  If there are too few blocks, say 50 or fewer, then the GEV pa
 very uncertain.
 
 One advantage of working with block-wise maxima is that they are less
-sensitive to positive serial dependence that causes clusters of extreme
+sensitive to *positive serial dependence* that causes clusters of extreme
 values to occur in close proximity to each other.  These clusters
 will generally occur within one block and only the largest among them
 will influence the analysis results.  Fitting a generalized

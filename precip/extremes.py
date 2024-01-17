@@ -1,3 +1,9 @@
+## This notebook demonstrates several methods for assessing the frequency
+## of extreme precipitation events.
+
+## For reference, a paper using extreme value techniques to study rainfall in Brazil:
+## https://link.springer.com/article/10.1007/s42452-020-03199-8
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,21 +13,102 @@ from scipy.optimize import minimize
 from scipy.special import gamma
 import os
 
-# A paper using extreme value techniques to study rainfall in Brazil:
-# https://link.springer.com/article/10.1007/s42452-020-03199-8
 
-# Fit a generalized extreme value distribution (GEV) using maximum likelihood
-# estimation. Probability weighted moments are used to obtain starting
-# values:
-# https://www.stat.cmu.edu/technometrics/80-89/VOL-27-03/v2703251.pdf
+def tail_shape(z, p0=0.1, family="powerlaw"):
+    """
+    Returns values x, p such that the slope of p on x estimates the
+    shape parameter (tail index) of a distribution with power-law
+    tails (if family='powerlaw'), or the rate parameter of a
+    distribution with exponential tails (if family='exponential').
+    The upper p0 fraction of the data in z are used to produce x, p.
+    The returned values in x are the order statistics of z in the
+    Exponential case, and the log order statistics of z in the Pareto
+    case. The returned values in p are derived from probability
+    points.
+    """
+
+    if family not in ["exponential", "powerlaw"]:
+        raise ValueError("Unknown family %s" % family)
+
+    p = 1 - p0
+    z = np.asarray(z)
+    z.sort()
+    n = len(z)
+    m = int(np.around(p*n))
+    x = z[m-1:]
+    if family == "powerlaw":
+        x = np.log(x)
+    p = np.log(1 - np.arange(m, n+1) / (n+1))
+    return x, p
+
+def fit_tail_reg(x, ax, p0=0.99, family="powerlaw"):
+    """
+    Use least squares regression in the upper 'p0' tail of a quantile plot
+    to estimate the shape parameter, and add the best fit line to the
+    plot in axes 'ax'.
+    """
+
+    x, p = tail_shape(x, p0=p0, family=family)
+
+    ax.plot(x, p, color="orange")
+
+    # Estimate the tail index using a least squares fit to the order
+    # statistics.
+    alpha_hat = -np.cov(p, x)[0, 1] / np.var(x)
+    icept = p.mean() + alpha_hat*x.mean()
+
+    # The coordinates of the best-fit line
+    xx = np.asarray([x.min(), x.max()])
+    yy = icept - alpha_hat*xx
+
+    ax.plot(xx, yy, color="purple")
+
+    return icept, alpha_hat
+
+def hill(z, k=200):
+    """
+    Estimate the tail index of a distribution with poower law tails using Hill's
+    estimator, based on the upper k order statistics.
+    """
+
+    z = np.sort(z)
+    z = np.log(z[-k:])
+    return 1 / (z[1:] - z[0]).mean()
+
+def plot_hill(z):
+    """
+    Plot the Hill estimate of the tail index for a range
+    of values of the tuning parameter k.
+    """
+
+    kv = np.arange(20, 501, 5)
+    ta = np.asarray([hill(z, k=k) for k in kv])
+
+    plt.clf()
+    ax = plt.axes()
+    plt.grid(True)
+    ax.set_title("Hill estimate of the tail index")
+    ax.plot(kv, ta)
+    ax.set_xlabel("k", size=16)
+    ax.set_ylabel("Tail index estimate", size=16)
+    pdf.savefig()
+
 def fit_gev(x):
+    """
+    Fit a generalized extreme value distribution (GEV) using maximum likelihood
+    estimation to the data in 'x'. Probability weighted moments are used to obtain
+    starting values:
+    https://www.stat.cmu.edu/technometrics/80-89/VOL-27-03/v2703251.pdf
+    """
 
     x = np.sort(x)
     n = len(x)
 
-    # The first three probability weighted moments
+    # Plotting positions
+    pp = np.arange(1/2, n + 1/2) / n
+
+    # Calculate the first three probability weighted moments
     b = np.zeros(3)
-    pp = np.arange(1, n + 1) / (n + 1)
     for r in range(3):
         b[r] = np.dot(pp**r, x) / n
 
@@ -42,11 +129,13 @@ def fit_gev(x):
     shape, loc, scale = rr.x
     return genextreme(shape, loc=loc, scale=scale)
 
-# Calculate the maximum precipitation value for each complete year,
-# and fit a generalized extreme value (GEV) distribution to the
-# data.  Then use the fitted model to calculate returns for a sequence
-# of time horizons, and create a QQ plot to assess goodness-of-fit.
 def block_max(dx):
+    """
+    Calculate the maximum precipitation value for each complete year,
+    and fit a generalized extreme value (GEV) distribution to the
+    data.  Then use the fitted model to calculate returns for a sequence
+    of time horizons, and create a QQ plot to assess goodness-of-fit.
+    """
 
     # Get the annual maximum for all complete years
     dx = dx.query("year > 1958 & year < 2023")
@@ -78,10 +167,12 @@ def block_max(dx):
 
     return gev
 
-# Estimate the parameters of a generalized Pareto distribution
-# using the empirical Bayes method of Zhang and Stephens.
-# https://www.jstor.org/stable/pdf/40586625.pdf
 def gp_estimate(z):
+    """
+    Estimate the parameters of a generalized Pareto distribution
+    using the empirical Bayes method of Zhang and Stephens.
+    https://www.jstor.org/stable/pdf/40586625.pdf
+    """
 
     z = np.sort(z)
     n = len(z)
@@ -106,26 +197,12 @@ def gp_estimate(z):
 
     return genpareto(-k_hat, scale=scale_hat)
 
-# Plot the Hill estimate of the tail index for a range
-# of values of the tuning parameter k.
-def plot_hill(z):
-
-    kv = np.arange(20, 501, 5)
-    ta = np.asarray([hill(z, k=k) for k in kv])
-
-    plt.clf()
-    ax = plt.axes()
-    plt.grid(True)
-    ax.set_title("Hill estimate of the tail index")
-    ax.plot(kv, ta)
-    ax.set_xlabel("k", size=16)
-    ax.set_ylabel("Tail index estimate", size=16)
-    pdf.savefig()
-
-# Fit a generalized Pareto model to the exceedances derived from z,
-# using empirical Bayes estimation, and create a QQ plot to assess
-# the goodness-of-fit.
 def eb_analysis(z):
+    """
+    Fit a generalized Pareto model to the exceedances derived from z,
+    using empirical Bayes estimation, and create a QQ plot to assess
+    the goodness-of-fit.
+    """
 
     # Exceedances
     z = z[z > thresh] - thresh
@@ -134,11 +211,11 @@ def eb_analysis(z):
     eb = gp_estimate(z)
 
     n = len(z)
-    pp = np.arange(1, n + 1) / (n + 1)
+    pp = np.arange(1/2, n - 1/2) / n # plotting positions
     qq = eb.ppf(pp)
     z = np.sort(z)
 
-    # QQ plot
+    # QQ plot to show goodness of fit
     plt.clf()
     ax = plt.axes()
     plt.grid(True)
@@ -149,52 +226,6 @@ def eb_analysis(z):
     pdf.savefig()
 
     return eb
-
-# Returns values x, p such that the slope of p on x
-# estimates the shape parameter (tail index) of
-# a distribution with power-law tails, or the rate parameter
-# of a distribution with exponential tails.
-# The upper p0 fraction of the data in z are used
-# to produce x, p.  The values in x are the order
-# statistics of z in the Exponential case, and the log
-# order statistics of z in the Pareto case. The values in
-# p are derived from probability points.
-def tail_shape(z, p0=0.1, family="powerlaw"):
-    if family not in ["exponential", "powerlaw"]:
-        print("Unknown family $(family)")
-        1/0
-
-    p = 1 - p0
-    z = np.asarray(z)
-    z.sort()
-    n = len(z)
-    m = int(np.around(p*n))
-    x = z[m-1:]
-    if family == "powerlaw":
-        x = np.log(x)
-    p = np.log(1 - np.arange(m, n+1) / (n+1))
-    return x, p
-
-# Use least squares regression in the tail of a quantile plot
-# to estimate the shape parameter.
-def fit_tail_reg(x, ax, p0=0.99, family="powerlaw"):
-
-    x, p = tail_shape(x, p0=p0, family=family)
-
-    ax.plot(x, p, color="orange")
-
-    # Estimate the tail index using a least squares fit to the order
-    # statistics.
-    alpha_hat = -np.cov(p, x)[0, 1] / np.var(x)
-    icept = p.mean() + alpha_hat*x.mean()
-
-    # The coordinates of the best-fit line
-    xx = np.asarray([x.min(), x.max()])
-    yy = icept - alpha_hat*xx
-
-    ax.plot(xx, yy, color="purple")
-
-    return icept, alpha_hat
 
 def plot_tails(z, p0, thresh, family):
 
@@ -220,14 +251,6 @@ def plot_tails(z, p0, thresh, family):
     plt.title(ti)
     pdf.savefig()
 
-# Estimate the tail index using Hill's estimator, based on
-# the upper k order statistics.
-def hill(z, k=200):
-    z = np.sort(z)
-    z = np.log(z)
-    n = len(z)
-    return 1 / (z[-k+1:] - z[-k]).mean()
-
 def check_gp_estimate(shape, scale, thresh, n=100000):
     z = genpareto.rvs(shape, scale=scale, size=n)
     z = z[z > thresh] - thresh
@@ -235,9 +258,11 @@ def check_gp_estimate(shape, scale, thresh, n=100000):
     eb = gp_estimate(z)
     return eb#, shape_hill
 
-# Calculate the m-observation returns for the data in z, using either
-# an exponential or generalized Pareto model.
 def mobs_return(z, mr, thresh, family="exponential", gp=None):
+    """
+    Calculate the m-observation returns for the data in z, using either
+    an exponential or generalized Pareto model.
+    """
 
     z = np.asarray(z)
     n = len(z)
@@ -259,21 +284,28 @@ def mobs_return(z, mr, thresh, family="exponential", gp=None):
         print("Scale=%.2f" % eb.kwds["scale"])
         m0 = thresh + gp.ppf(pr)
     else:
-        error("!!")
+        raise ValueError("!!")
 
     return m0
 
 pdf = PdfPages("extremes_python.pdf")
 
+# Change this to point to the location of the data, matching the path
+# name in get_data.py
 target_dir = "/home/kshedden/data/Teaching/precip"
 
+# Choose a specific location to analyze.
 fname = "USW00094847.csv" # Detroit
 #fname = "USW00012839.csv" # Miami
 
 df = pd.read_csv(os.path.join(target_dir, fname + ".gz"), parse_dates=["DATE"],
                  low_memory=False)
 
+# We only care about these two variables.
 df = df[["DATE", "PRCP"]].dropna()
+
+# Add a year variable for block-maxima (GEV) analyses
+df["year"] = df["DATE"].dt.year
 
 # Convert precipitation to millimeters
 df["PRCP"] /= 10
@@ -281,20 +313,43 @@ df["PRCP"] /= 10
 # Use this threshold for calculating exceedances
 thresh = 5.0
 
-# Median annual maximum
-df["year"] = df["DATE"].dt.year
-annmax = np.median(df.groupby("year")["PRCP"].agg(np.max))
+# Plot the data as a time series
+plt.clf()
+plt.grid(True)
+plt.plot(df["DATE"], df["PRCP"], "-", alpha=0.5)
+plt.xlabel("Date", size=15)
+plt.ylabel("Precipitation (mm)", size=15)
+pdf.savefig()
 
-gev = block_max(df)
+# Plot the data as a histogram
+plt.clf()
+plt.grid(True)
+plt.hist(df["PRCP"])
+pdf.savefig()
+
+# Plot the data as a CDF
+plt.clf()
+plt.grid(True)
+x = np.sort(df["PRCP"])
+p = np.linspace(0, 1, len(x))
+plt.plot(x, p, "-")
+plt.xlabel("Precipitation (mm)", size=15)
+plt.ylabel("Cumulative probability", size=15)
+pdf.savefig()
 
 # Quantile plots
 for family in ["powerlaw", "exponential"]:
     for p0 in [0.5, 0.1, 0.05, 0.01]:
         plot_tails(df["PRCP"], p0, thresh, family)
-
-eb = eb_analysis(df["PRCP"])
+        plt.show()
 
 plot_hill(df["PRCP"])
+
+# Fit generalized extreme value distributions to the block (annual) maxima.
+gev = block_max(df)
+
+# Fit generalized Pareto models to the exceedances
+eb = eb_analysis(df["PRCP"])
 
 # Calculate m-observation returns based on various models fit
 # to the 24 hour rainfall totals.
