@@ -211,7 +211,7 @@ def eb_analysis(z):
     eb = gp_estimate(z)
 
     n = len(z)
-    pp = np.arange(1/2, n - 1/2) / n # plotting positions
+    pp = np.linspace(1/2, n - 1/2, n) / n # plotting positions
     qq = eb.ppf(pp)
     z = np.sort(z)
 
