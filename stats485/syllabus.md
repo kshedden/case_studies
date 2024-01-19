@@ -8,7 +8,7 @@ Office hours: Monday & Thursday from 1:30-2:30, starting 1/22
 
 ## GSIs
 
-* Aaron Abkemeier (aaronabk@umich.edu)
+* Aaron Abkemeier (aaronabk@umich.edu): office hours 2-3:30 on Wednesdays and Fridays
 
 * Samuel Rosenberg (rosesamk@umich.edu): office hours 2-3:30 on Tuesdays and Thursdays
 

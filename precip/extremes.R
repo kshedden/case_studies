@@ -286,6 +286,30 @@ for (family in c("powerlaw", "exponential")) {
     }
 }
 
+# Time series plot of precipitation data
+p = ggplot(aes(x=DATE, y=PRCP), data=df) + geom_line()
+p = p + xlab("Date") + ylab("Precipitation (mm)")
+print(p)
+
+# Histogram of precipitation data
+p = ggplot(aes(y=PRCP), data=df) + geom_histogram()
+p = p + ylab("Frequency") + xlab("Precipitation (mm)")
+print(p)
+
+# Plot the empirical cumulative distribution function (eCDF) of precipitation data
+n = dim(df)[1]
+dp = data.frame(y=(seq(n)-1/2)/n, x=sort(df$PRCP))
+p = ggplot(aes(x=x, y=y), data=dp) + geom_step()
+p = p + ylab("Cumulative probability") + xlab("Precipitation (mm)")
+print(p)
+
+# Plot the complementary cumulative distribution function (eCCDF) of precipitation data
+n = dim(df)[1]
+dp = data.frame(y=1-(seq(n)-1/2)/n, x=sort(df$PRCP))
+p = ggplot(aes(x=x, y=y), data=dp) + geom_step()
+p = p + ylab("Complementary cumulative probability") + xlab("Precipitation (mm)")
+print(p)
+
 # Construct exceedances
 z = df$PRCP - thresh
 z = z[z > 0]
