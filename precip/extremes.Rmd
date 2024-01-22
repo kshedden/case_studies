@@ -1,3 +1,6 @@
+Investigate the tails of a distribution of daily precipitation totals, considering the possibility that the tails may have either a powerlaw or an exponential tail.  Then estimate m-observation returns to quantify the risk for heavy precipitation events.
+
+```{r}
 library(readr)
 library(tidyr)
 library(ggplot2)
@@ -5,11 +8,11 @@ library(lubridate)
 library(stringr)
 library(ROOPSD)
 library(dplyr)
+```
 
-# Estimate the parameters of a generalized Pareto distribution
-# using the empirical Bayes method of Zhang and Stephens.
-#
-# https://www.jstor.org/stable/pdf/40586625.pdf
+Estimate the parameters of a generalized Pareto distribution using the empirical Bayes method of Zhang and Stephens. See https://www.jstor.org/stable/pdf/40586625.pdf
+
+```{r}
 gp_estimate = function(z) {
 
     n = length(z)
@@ -34,10 +37,11 @@ gp_estimate = function(z) {
 
     return(list(scale=sigma_hat, shape=-k_hat))
 }
+```
 
-# Use parameteric bootstrap with a Gaussian copula
-# to assess the sampling performance of the empirical
-# Bayes estimates of the GPD parameters.
+Use parameteric bootstrap with a Gaussian copula to assess the sampling performance of the empirical Bayes estimates of the GPD parameters.
+
+```{r}
 gp_simstudy_copula = function(n, r, eb0, nrep) {
     scales = NULL
     shapes = NULL
@@ -54,9 +58,11 @@ gp_simstudy_copula = function(n, r, eb0, nrep) {
     dp = data.frame(scales=scales, shapes=shapes)
     return(dp)
 }
+```
 
-# Assess the empirical Bayes estimate of the GPD parameters.
-# Use copula to induce serial dependence.
+Assess the empirical Bayes estimate of the GPD parameters. Use copula to induce serial dependence.
+
+```{r}
 gp_simstudy = function(z, nrep=500) {
 
     # Exceedances
@@ -91,12 +97,11 @@ gp_simstudy = function(z, nrep=500) {
     p = p + ggtitle("Sampling distribution of shape parameter")
     print(p)
 }
+```
 
-# Fit a generalized extreme value distribution using maximum likelihood
-# estimation.  Probability weighted moments are used to obtain starting
-# values:
-#
-# https://www.stat.cmu.edu/technometrics/80-89/VOL-27-03/v2703251.pdf
+The function 'fit_gev' fits a generalized extreme value distribution using maximum likelihood estimation.  Probability weighted moments are used to obtain starting values. See https://www.stat.cmu.edu/technometrics/80-89/VOL-27-03/v2703251.pdf
+
+```{r}
 fit_gev = function(x) {
 
     x = sort(x)
@@ -129,16 +134,11 @@ fit_gev = function(x) {
 
     return(list(loc=pa[1], scale=pa[2], shape=pa[3]))
 }
+```
 
-# Returns values x, p such that the slope of p on x
-# estimates the shape parameter (tail index) of
-# a distribution with power-law tails, or the rate parameter
-# of a distribution with exponential tails.
-# The upper p0 fraction of the data in z are used
-# to produce the returned values in (x, p).  The values in x are the order
-# statistics of z in the Exponential case, and the log
-# order statistics of z in the Pareto case. The values in
-# p are derived from probability points.
+The function 'tail_shape' returns values x, p such that the slope of p on x estimates the shape parameter (tail index) of a distribution with power-law tails, or the rate parameter of a distribution with exponential tails. The upper p0 fraction of the data in z are used to produce the returned values in (x, p).  The values in x are the order statistics of z in the Exponential case, and the log order statistics of z in the Pareto case. The values in p are derived from probability points.
+
+```{r}
 tail_shape = function(z, p0=0.1, family="powerlaw") {
     if (!(family %in% c("exponential", "powerlaw"))) {
         error(sprintf("Unknown family %s", family))
@@ -154,9 +154,11 @@ tail_shape = function(z, p0=0.1, family="powerlaw") {
     p = log(1 - seq(m, n) / (n + 1))
     return(list(x=x, p=p))
 }
+```
 
-# Use least squares regression in the tail of a quantile plot
-# to estimate the shape parameter.
+Use least squares regression in the tail of a quantile plot to estimate the shape parameter.
+
+```{r}
 fit_tail_reg = function(x, p0=0.99, family="powerlaw") {
 
     ts = tail_shape(x, p0=p0, family=family)
@@ -168,9 +170,11 @@ fit_tail_reg = function(x, p0=0.99, family="powerlaw") {
 
     return(list(icept=icept, alpha_hat=alpha_hat, x=ts$x, p=ts$p))
 }
+```
 
-# Make a probability plot of the tails toassess goodness of fit toa
-# power law or exponential tailed distribution.
+Make a probability plot of the tails to assess goodness of fit to a power law or exponential tailed distribution.
+
+```{r}
 plot_tails = function(z, p0, thresh, family) {
 
     n = length(z)
@@ -197,11 +201,11 @@ plot_tails = function(z, p0, thresh, family) {
     p = p + ggtitle(title) + xlab(xlabel) + ylab(ylabel)
     print(p)
 }
+```
 
-# Calculate the maximum precipitation value for each complete year,
-# and fit a generalized extreme value (GEV) distribution to the
-# data.  Then use the fitted model to calculate returns for a sequence
-# of time horizons, and create a QQ plot to assess goodness-of-fit.
+Calculate the maximum precipitation value for each complete year, and fit a generalized extreme value (GEV) distribution to the data.  Then use the fitted model to calculate returns for a sequence of time horizons, and create a QQ plot to assess goodness-of-fit.
+
+```{r}
 block_max = function(annmax) {
 
     # Fit a generalized extreme value distribution to the block maxima.
@@ -227,9 +231,11 @@ block_max = function(annmax) {
 
     return(gev)
 }
+```
 
-# Calculate the m-observation returns for the data in z, using either
-# an exponential or generalized Pareto model.
+Calculate the m-observation returns for the data in z, using either an exponential or generalized Pareto model.
+
+```{r}
 mobs_return = function(z, mr, thresh=thresh, family="exponential", gp=NULL) {
 
     n = length(z)
@@ -253,7 +259,9 @@ mobs_return = function(z, mr, thresh=thresh, family="exponential", gp=NULL) {
 
     return(m0)
 }
+```
 
+```{r}
 # Change this to point to the location of the data, matching the path
 # name in get_data.R
 target_dir = "/home/kshedden/data/Teaching/precip"
@@ -261,9 +269,11 @@ target_dir = "/home/kshedden/data/Teaching/precip"
 # Choose a specific location to analyze.
 fname = "USW00094847.csv" # Detroit
 #fname = "USW00012839.csv" # Miami
+```
 
-pdf_out = pdf("extremes_R.pdf")
+Load the data and do some basic processing.
 
+```{r}
 df = read_csv(file.path(target_dir, sprintf("%s.gz", fname)))
 
 df = df %>% select(DATE, PRCP) %>% drop_na
@@ -273,53 +283,79 @@ df = df %>% mutate(PRCP = PRCP / 10)
 
 # Use this threshold for calculating exceedances
 thresh = 5.0
+```
 
-# Annual maxima
+Calculate the annual maxima for GEV analysis.
+
+```{r}
 df = df %>% mutate(year = year(DATE))
 annmax = df %>% group_by(year) %>% summarize(PRCP = max(PRCP), n=n())
 annmax = annmax %>% filter(n > 350)
+```
 
-# Quantile plots of the tail of the distribution of 24 hour rainfall totals
+Make quantile plots of the tail of the distribution of 24 hour rainfall totals
+
+```{r}
 for (family in c("powerlaw", "exponential")) {
     for (p0 in c(0.5, 0.1, 0.05, 0.01)) {
         plot_tails(df$PRCP, p0, thresh, family)
     }
 }
+```
 
-# Time series plot of precipitation data
-p = ggplot(aes(x=DATE, y=PRCP), data=df) + geom_line()
+Make a time series plot of the precipitation data.
+
+```{r}
+p = ggplot(aes(x=DATE, y=PRCP), data=df) + geom_line(alpha=0.3)
 p = p + xlab("Date") + ylab("Precipitation (mm)")
 print(p)
+```
 
-# Histogram of precipitation data
+Make a histogram of the precipitation data.
+
+```{r}
 p = ggplot(aes(y=PRCP), data=df) + geom_histogram()
 p = p + ylab("Frequency") + xlab("Precipitation (mm)")
 print(p)
+```
 
-# Plot the empirical cumulative distribution function (eCDF) of precipitation data
+Plot the empirical cumulative distribution function (eCDF) of precipitation data
+
+```{r}
 n = dim(df)[1]
 dp = data.frame(y=(seq(n)-1/2)/n, x=sort(df$PRCP))
 p = ggplot(aes(x=x, y=y), data=dp) + geom_step()
 p = p + ylab("Cumulative probability") + xlab("Precipitation (mm)")
 print(p)
+```
+Plot the complementary cumulative distribution function (eCCDF) of the precipitation data
 
-# Plot the complementary cumulative distribution function (eCCDF) of precipitation data
+```{r}
 n = dim(df)[1]
 dp = data.frame(y=1-(seq(n)-1/2)/n, x=sort(df$PRCP))
 p = ggplot(aes(x=x, y=y), data=dp) + geom_step()
 p = p + ylab("Complementary cumulative probability") + xlab("Precipitation (mm)")
 print(p)
+```
 
-# Construct exceedances
+Construct exceedances
+
+```{r}
 z = df$PRCP - thresh
 z = z[z > 0]
+```
 
+Estimate the tail parameter (alpha) using empirical Bayes fit to a generalized Pareto distribution.
+
+```{r}
 eb = gp_estimate(z)
 gp_simstudy(df$PRCP)
 gev = block_max(annmax)
+```
 
-# Calculate m-observation returns based on various models fit
-# to the 24 hour rainfall totals.
+Calculate m-observation returns based on various models fit to the 24 hour rainfall totals.
+
+```{r}
 yr = c(1, 10, 100, 500, 1000)
 cfg = list(list(f="exponential", gp=NULL), list(f="generalizedpareto", gp=eb))
 for (rr in cfg) {
@@ -330,5 +366,5 @@ for (rr in cfg) {
     rr = data.frame(Years=yr, MR=mr)
     print(rr)
 }
+```
 
-dev.off()
