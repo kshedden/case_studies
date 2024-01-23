@@ -24,10 +24,10 @@ relying on a linear algebraic factorization of the data matrix.
 ## Embedding
 
 Many methods of factor analysis can be viewed as a way to obtain
-an *embedding*.  Embedding algorithms take input data vectors $X$ and transform them
-into output data vectors $Z$.  Many embedding algorithms take the form
+an *embedding*.  Embedding algorithms take input data vectors $x$ and transform them
+into output data vectors $z$.  Many embedding algorithms take the form
 of a "dimension reduction", so that
-$q \equiv {\rm dim}(Z) < {\rm dim}(X) \equiv p$.
+$q \equiv {\rm dim}(z) < {\rm dim}(x) \equiv p$.
 However some embeddings preserve or even increase the dimension.
 
 Embeddings can be used for exploratory analysis, especially in
@@ -35,8 +35,8 @@ visualizations, and can also be used to construct features for
 prediction, as well as being used in formal statistical inference,
 e.g. in hypothesis testing.
 
-An embedding approach is linear if $Z = BX$ for a fixed
-$q\times p$ matrix $B$.  The matrix $B$ may be based on training
+An embedding approach is linear if $z = B^Tx$ for a fixed
+$p\times q$ matrix $B$.  The matrix $B$ may be based on training
 data, in which case the embedding is *adaptive*.  In other settings
 $B$ is completely independent of any data and the embedding is
 *non-adaptive*.

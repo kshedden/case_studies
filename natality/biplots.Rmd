@@ -1,0 +1,105 @@
+```{r}
+library(ggplot2)
+library(stringr)
+library(purrr)
+library(dplyr)
+```
+
+```{r}
+source("prep.R")
+```
+
+Get the demographics data for the largest counties.
+
+```{r}
+mv = births %>% group_by(FIPS) %>% summarize(births_mean=mean(Births), births_var=var(Births))
+mv = mv %>% mutate(log_births_mean=log(births_mean), log_births_var=log(births_var))
+```
+
+Replace missing values with zero.
+
+```{r}
+demog = demog %>% mutate(across(where(anyNA), ~ replace_na(., 0)))
+```
+
+Square root transform the population counts for variance stabilization.
+
+```{r}
+demog = demog %>% mutate(across(-FIPS, function(x)x^0.25))
+```
+
+Retain only the counties with data
+
+```{r}
+demog = demog %>% filter(FIPS %in% unique(mv$FIPS))
+```
+
+Center the columns
+
+```{r}
+demog = demog %>% mutate(across(-FIPS, scale, scale=FALSE))
+```
+
+Create a data matrix omitting the FIPS index column
+
+```{r}
+demogx = demog %>% select(-FIPS)
+ss = svd(demogx)
+```
+
+Extract the components of the SVD
+
+```{r}
+u = ss$u
+s = ss$d
+v = ss$v
+```
+
+Construct the row and column scores
+
+```{r}
+#alpha = 1 # distance interpretation for rows (counties)
+#alpha = 0 # distance interpretation for columns (demographic categories)
+alpha = 0.5
+uu = u %*% diag(s^alpha)
+vv = v %*% diag(s^(1-alpha))
+```
+
+Remove outlier counties to make the plot easier to read
+
+```{r}
+iqr = function(x){ quantile(x, 0.75) - quantile(x, 0.25) }
+for (j in 1:2) {
+    ii = abs(uu[,j] - median(uu[,j])) < 4*iqr(uu[,j])
+    uu = uu[ii,]
+}
+```
+
+```{r}
+cn = names(demogx)
+cx = str_split(cn, "_")
+```
+
+```{r}
+ud = data.frame(u1=uu[,1], u2=uu[,2])
+
+vd = data.frame(v1=vv[,1], v2=vv[,2], race=cx%>%map(1)%>%list_simplify,   eth=cx%>%map(2)%>%as_vector, sex=cx%>%map(3)%>%as_vector)
+```
+
+To reduce overplotting, plot each sex separately.
+
+```{r}
+for (sx in c("F", "M")) {
+    vd1 = vd %>% filter(sex==sx)
+    
+    # Plot grey points for the counties
+    plt = ggplot(data=ud, aes(x=u1, y=u2)) + geom_point(alpha=0.2)
+
+    # Plot colored points for the demographic variables
+    plt = plt + geom_path(data=vd1, aes(x=v1, y=v2, group=interaction(race, eth), color=interaction(race, eth)))
+
+    plt = plt + ggtitle(ifelse(sx=="F", "Female", "Male"))
+    print(plt)
+}
+```
+
