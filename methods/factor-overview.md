@@ -2,8 +2,11 @@
 
 A large class of powerful statistical methods considers data in which
 many "objects" ("observations") are measured with respect to multiple variables.
-These analyses focus on understanding the relationships
+These analyses often focus on understanding the relationships
 among the variables as well as the relationships among the observations.
+The data in such an analysis naturally takes the form of a rectangular array,
+where by convention the rows correspond to objects and the columns correspond
+to variables.
 
 For example, we may have a sample of people (the "objects") with each
 person measured in terms of their height, weight, age, and sex.  In
@@ -13,9 +16,14 @@ knowing the value of just one of the variables for a particular object
 allows one to predict the value of the other variable for that same
 object.
 
+Matrix factorization is a powerful idea from linear algebra, and underlies
+many of the most important methods in statistics.  We will use the term
+"factor analysis" here to refer in a broad way to any statistical method
+relying on a linear algebraic factorization of the data matrix.
+
 ## Embedding
 
-Many methods of factor analysis can be viewed as a means to obtain
+Many methods of factor analysis can be viewed as a way to obtain
 an *embedding*.  Embedding algorithms take input data vectors $X$ and transform them
 into output data vectors $Z$.  Many embedding algorithms take the form
 of a "dimension reduction", so that
@@ -34,8 +42,8 @@ $B$ is completely independent of any data and the embedding is
 *non-adaptive*.
 Linear embedding algorithms
 are simpler to devise and characterize than nonlinear embeddings.
-Many modern embedding algorithms are nonlinear, exploiting the
-potential to better capture complex structure.
+Many modern embedding algorithms are nonlinear, and use this additional
+flexibility to better capture complex structure.
 
 Some embedding algorithms embed only the objects while other embedding
 algorithms embed both the objects and the variables.  Embedding the
@@ -48,38 +56,35 @@ interpret the results through a [biplot](https://en.wikipedia.org/wiki/Biplot).
 
 ## Centering and standardization
 
-There are many ways to pre-process the data prior to performing
-a factor analysis.  Suppose that $X$ is a $n\times p$ matrix whose rows
+Suppose that $X$ is a $n\times p$ matrix whose rows
 are the observations or objects, and whose columns are the variables.
+There are many ways to pre-process the data in $X$ prior to performing
+a factor analysis.
 
 Some factor-type methods work with the covariance matrix of the variables,
 which is a $p\times p$ positive semidefinite (PSD) matrix.  Since covariances
 by definition are derived from mean centered variables, it is common to
-mean center the variables (columns) of the data matrix $X$ prior to running
-a factor analysis.
+center the variables (columns) of the data matrix $X$ prior to running
+a factor analysis.  Centering usually involves subtracting the mean from
+each column, but in some cases the columnns may be centered with respect
+to another measure of location such as the median.
 
 We may wish for our results to be independent of the
 units in which each variable was measured, and
 remove any influence of differing dispersions of the variables on our results.
 This motivates standardizing the columns of $X$ prior to performing
-a factor analysis, where *standardization* involves first mean
-centering each column and then dividing each column by its standard
-deviation.
+a factor analysis.  This *standardization* involves first
+centering each column as discussed above, then dividing each column by a measure of scale
+such as the standard deviation or inter-quartile range.
 
-While standardization is commonly performed, in some cases it is desirable for the variables
-with more dispersion to have more influence on the results of a factor
-analysis, and in these cases one may choose not to standardize the
-variables.
-
-In some datasets there is no clear distinction between
-an observation and a variable, and it may be desirable to standardize
-both the rows and the columns.  To achieve this, the following three
+In some datasets there is strong heterogeneity among the observations (rows)
+and it is desirable to supress this in the analysis.  In this case we
+may choose to *double center* the data so that every row and every
+column has mean zero.  To achieve this, the following three
 steps can be performed: (i) center the overall matrix around its
 grand mean, (ii) center each row of the matrix with respect to the
 row mean, (iii) center each column of the matrix with respect to
-the column mean.  After these three steps, each row and each column
-of the matrix will have mean zero and we can refer to the matrix as
-having been *double centered*.
+the column mean.
 
 ## Singular Value Decoposition
 
@@ -101,8 +106,8 @@ so that $\tilde{U}$ is the $n\times k$ matrix consisting of the
 leading (left-most) $k$ columns of $U$, $\tilde{S} = (S_1, \ldots, S_k)$,
 and $V$ is the $p\times k$ matrix consisting
 of the leading $k$ columns of $V$.  In this case, the matrix
-$\tilde{X} \equiv \tilde{U}{\rm diag}(\tilde{S})\tilde{V}^T$ is a rank $k$ matrix
-(it has $k$ non-zero singular values).
+$\tilde{X} \equiv \tilde{U}\cdot {\rm diag}(\tilde{S})\cdot \tilde{V}^T$
+is a rank $k$ matrix (it has $k$ non-zero singular values).
 According to the
 [Eckart-Young](https://en.wikipedia.org/wiki/Low-rank_approximation)
 theorem, among all rank $k$ matrices,
@@ -119,6 +124,9 @@ $$
 \tilde{X} = {\rm argmin}_{A: {\rm rank}(A) = k} \\|A - X\\|_F.
 $$
 
+Finding a low rank approximation is a type of least square problem,
+although it is not the linear least squares used in regression analysis.
+
 ### Analyzing a data matrix using the SVD
 
 Suppose we have a data matrix $X$ and wish to understand its structure.  We
@@ -131,7 +139,7 @@ $$
 Here, $m$ is the grand mean of $X$, $r$ contains the row means of $X-m$,
 $c$ contains the column means of $X-m$, and
 $R_{ij} \equiv X_{ij} - m - r_i - c_j$ are residuals.  Next we can
-take the SVD of $R$, yielding $R = U{\rm diag}(S)V^T$, or equivalently
+take the SVD of $R$, yielding $R = U\cdot {\rm diag}(S)\cdot V^T$, or equivalently
 
 $$
 R_{ij} = \sum_{k=1}^p S_k U_{ik}V_{jk}.
@@ -153,19 +161,20 @@ model $m + r_i + c_j$.
 
 ## Principal Components Analysis
 
-Suppose that $X$ is a $p$-dimensional random vector with mean $0$ and
-covariance matrix $\Sigma$ (our focus here is not the mean, so if $X$
-does not have mean zero we can replace it with $X-\mu$, where
-$\mu=EX$).  Principal Components Analysis (PCA) seeks a linear
-embedding of $X$ into a lower dimensional space of dimension $q < p$.
-The standard PCA approach gives us an orthogonal matrix $B$ of
-*loadings*, which can be used to produce *scores* denoted $Q$.
+Suppose that $x$ is a $p$-dimensional random vector with mean $0$ and
+covariance matrix $\Sigma$ (our focus here is not the mean, so if $x$
+does not have mean zero we can replace it with $x-\mu$, where
+$\mu=E[x]$).  Principal Components Analysis (PCA) seeks a linear
+embedding of $x$ into a lower dimensional space of dimension $q < p$.
+The standard approach to PCA gives us a $p\times q$ orthogonal matrix $B$ of
+*loadings*, which can be used to produce *scores* $Q = B^Tx$, which
+are $q-$dimensional vectors.
 
-For a single vector $X$, the scores are obtained via the mapping
-$Q(X) = B^TX$.  For a data matrix $Z$ whose rows are independent and
-identically distributed (IID) copies of the random vector $X$, the
-scores can be obtained via the mapping $Q = ZB$, where each row of $Q$
-contains the scores for the corresponding row of $Z$.
+For a single vector $x$, the scores are obtained via the mapping
+$Q(x) = B^Tx$.  For a data matrix $X$ whose rows are independent and
+identically distributed (IID) copies of the random vector $x$, the
+scores can be obtained via the mapping $Q = XB$, where each row of $Q$
+contains the scores for the corresponding row of $X$.
 
 PCA can be viewed in terms of linear compression and decompression of
 the variables in $X$.  Let
@@ -188,7 +197,7 @@ information in that it minimizes the expected value of
 $\\|X - \hat{X}\\|$.
 
 The loading matrix $B$ used in PCA is a truncated eigenvector matrix of
-$\Sigma$.  Specifically, we can write $\Sigma = B\Lambda B^T$, where
+$\Sigma = {\rm cov}(x)$.  Specifically, we can write $\Sigma = B\Lambda B^T$, where
 $B$ is an orthogonal matrix and $\Lambda$ is a diagonal matrix with
 $\Lambda_{11} \ge \Lambda_{22} \ge \cdots \ge \Lambda_{pp} > 0$.  This
 is the spectral decomposition of $\Sigma$.  The columns of $B$ are
@@ -197,25 +206,26 @@ that is, $B^TB = I_p$ and $B^T\Sigma B = I_p$.  As a result, the
 scores $Q \equiv B^TX$ are uncorrelated, ${\rm cov}(Q) = I_q$.
 
 Next we consider how PCA can be carried out with a sample of data,
-rather than in a population.  Given a $n\times p$ matrix of data $Z$
-whose rows are iid copies of the random vector $X$, we can estimate
-the covariance matrix $\Sigma$ by column centering $Z$ to produce
-$Z_c \equiv X - 1_n\bar{X}^T$, where $\bar{X} \in {\cal R}^p$ is the vector
+rather than in a population.  Given a $n\times p$ matrix of data $X$
+whose rows are iid copies of the random vector $x$, we can estimate
+the covariance matrix $\Sigma$ by column centering $X$ to produce
+$X_c \equiv X - 1_n\bar{x}^T$, where $\bar{x} \in {\cal R}^p$ is the vector
 of column-wise means of $X$, Then set
-$\hat{\Sigma} = Z_c^TZ_c/n$. Letting $B$ denote the eigenvectors of $\hat{\Sigma}$,
-the scores have the form $Q = Z_cB$.
+$\hat{\Sigma} = X_c^TX_c/n$. Letting $B$ denote the eigenvectors of $\hat{\Sigma}$,
+the scores have the form $Q = X_cB$.
 
 Since the eigenvalues $\Lambda_{ii}$ are non-increasing, the leading
-columns of $Q$ contain the greatest fraction of information about $Z$.
+columns of $Q$ contain the greatest fraction of information about the
+distributiuon of $x$.
 Thus, visualizations (e.g. scatterplots) of the first two columns of
-$Z$ best reflect the relationships among the rows of $Z$ (compared to
+$Q$ best reflect the relationships in $X$ (compared to
 any other scatterplot formed from linear scores).
 
 PCA can also be carried out using the SVD of the column-centered data
-matrix $Z_c$.  Write $Z_c = USV^T$ as discussed above and note that
+matrix $X_c$.  Write $X_c = USV^T$ as discussed above and note that
 
 $$
-\hat{\Sigma} = Z_c^T Z_c/n = VS^2V^T/n.
+\hat{\Sigma} = X_c^T X_c/n = VS^2V^T/n.
 $$
 
 Thus, $\hat{\Sigma}V = VS^2/n$, so $V$ contains the eigenvectors of
@@ -224,8 +234,9 @@ ${\rm diag}(S^2)/n$.
 
 ### Biplots
 
-Suppose that $Z_c$ is the column-centered data (where the rows are
-observations and the columns are variables).  Let $Z_c = USV^T$
+Suppose that $X_c$ is the column-centered or double-centered
+data (where the rows are
+observations and the columns are variables).  Let $X_c = USV^T$
 denote the SVD.  A *biplot* is a plot that displays both the
 variables and the observations in a way that conveys (i) how
 the variables are related to each other, (ii) how the observations
@@ -253,21 +264,21 @@ Euclidean distances in the data.  For example, let
 $d = (1, -1, 0, 0, \ldots)^\prime$, and note that
 
 $$
-\\|d^\prime Z_c\\|^2 = d^\prime Z_cZ_c^\prime d =
+\\|d^\prime X_c\\|^2 = d^\prime X_cX_c^\prime d =
 d^\prime US^2U^\prime d = \\|d^\prime US\\|^2.
 $$
 
 This shows that the Euclidean distance between
-two rows of $Z_c$ is equal to the Euclidean
+two rows of $X_c$ is equal to the Euclidean
 distance between two rows of $US$ (which are
 the object scores if $\alpha=1$).
 
-If we set $\alpha=0$, then $n^{-1}Z_c^\prime Z_c$, which
+If we set $\alpha=0$, then $n^{-1}X_c^\prime X_c$, which
 is the covariance matrix among the variables, can be
 written (up to a proportionality constant) as
 
 $$
-Z_c^\prime Z_c = VS^2V^\prime.
+X_c^\prime X_c = VS^2V^\prime.
 $$
 
 This shows that the magnitudes of the variable scores
