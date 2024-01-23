@@ -1,110 +1,175 @@
-# Examine factors associated with birth count variation among US
-# counties using Principal Components Regression and Poisson GLM/GEE.
+Examine factors associated with birth count variation among US counties using Principal Components Regression and Poisson GLM/GEE.
 
+```{r}
 library(geepack)
 library(ggplot2)
+```
 
+```{r}
 source("prep.R")
+```
 
-# Write all plots to this file.
-pdf("pcr_r.pdf")
+Calculate the mean and variance within each county to assess the mean/variance relationship.
 
-# Calculate the mean and variance within each county to
-# assess the mean/variance relationship.
+```{r}
 mv = births %>% group_by(FIPS) %>% summarize(births_mean=mean(Births), births_var=var(Births))
 mv = mv %>% mutate(log_births_mean=log(births_mean), log_births_var=log(births_var))
+```
 
-# Plot the variance against the mean on the log/log scale to assess the mean/variance
-# relationship.
+Plot the variance against the mean on the log/log scale to assess the mean/variance relationship.
+
+```{r}
 plt = ggplot(mv, aes(x=log_births_mean, y=log_births_var)) + geom_point()
+print(plt)
+```
 
-# Use a linear model to assess the mean variance relationsip within the
-# family of relationships representable as Var[E[Y|X]] = a*E[Y|X]^b.
+Use a linear model to assess the mean variance relationsip within the family of relationships representable as Var[E[Y|X]] = a*E[Y|X]^b.
+
+```{r}
 mmv = lm(log_births_var ~ log_births_mean, data=mv)
+summary(mmv)
+```
 
-# Merge the birth data with population and RUCC data
+Merge the birth data with population and RUCC data
+
+```{r}
 da = merge(births, pop, on="FIPS", how="left")
 da = merge(da, rucc, on="FIPS", how="left")
 da = da %>% mutate(logPop = log(da$Population))
 da = da %>% mutate(yearc = year - mean(year))
 da = da %>% mutate(RUCC_2013c = RUCC_2013 - mean(RUCC_2013))
+head(da)
+```
 
-# Basic GLM looking at births in terms of population and urbanicity.
-# This model does not account for correlations between repeated
-# observations on the same county.
+Basic GLM looking at births in terms of population and urbanicity. This model does not account for correlations between repeated observations on the same county.
+
+```{r}
 r0 = glm(Births ~ logPop + RUCC_2013, quasipoisson(), da)
+summary(r0)
+```
 
-# GEE accounts for the correlated data, no need to use quasipoisson here
-# since GEE is already robust to this form of heteroscedasticity.
+GEE accounts for the correlated data, no need to use quasipoisson here since GEE is already robust to this form of heteroscedasticity.
+
+```{r}
 r1 = geeglm(Births ~ logPop + RUCC_2013, data=da, id=FIPS, family=poisson())
+summary(r1)
+```
 
-# GEE with log population as an offset instead of being a covariate.
+GEE with log population as an offset instead of being a covariate.
+
+```{r}
 r2 = geeglm(Births ~ RUCC_2013, data=da, id=FIPS, family=poisson(), offset=logPop)
+summary(r2)
+```
 
-# GEE with log population as an offset instead of being a covariate.
+GEE with log population as an offset instead of being a covariate.
+
+```{r}
 r3 = geeglm(Births ~ RUCC_2013, data=da, id=FIPS, family=Gamma(link="log"), offset=logPop)
+summary(r3)
+```
 
-# GEE with log population as an offset instead of being a covariate.
+GEE with log population as an offset instead of being a covariate.
+
+```{r}
 r4 = geeglm(Births ~ RUCC_2013, data=da, id=FIPS, family=Gamma(link="log"),
             corstr="exchangeable", offset=logPop)
+summary(r4)
+```
 
-# Add year as a main effect
+Add year as a main effect
+
+```{r}
 r5 = geeglm(Births ~ RUCC_2013 + year, data=da, id=FIPS, family=Gamma(link="log"),
             corstr="exchangeable", offset=logPop)
+summary(r5)
+```
 
-# Add an interaction between year and RUCC
+Add an interaction between year and RUCC
+
+```{r}
 r6 = geeglm(Births ~ RUCC_2013c * yearc, data=da, id=FIPS, family=Gamma(link="log"),
             corstr="exchangeable", offset=logPop)
+summary(r6)
+```
 
-# Next we prepare to fit a Poisson model using principal components regression (PCR).
-# The principal components (PC's) will be based on demographic characteristics of
-# each county.
+Next we prepare to fit a Poisson model using principal components regression (PCR). The principal components (PC's) will be based on demographic characteristics of each county.
 
-# First replace missing demographic values with 0.
+First replace missing demographic values with 0.
+
+```{r}
 demog = demog %>% mutate(across(where(anyNA), ~ replace_na(., 0)))
+```
 
-# Use a square root transformation to variance-stabilize the counts.
+Use a square root transformation to variance-stabilize the counts.
+
+```{r}
 demog[,2:dim(demog)[2]] = sqrt(demog[,2:dim(demog)[2]])
+```
 
-# Get factors from the demographic data
+Get factors from the demographic data
+
+```{r}
 va = colnames(demog)[2:dim(demog)[2]]
 demog = demog %>% mutate_at(va, scale, scale=FALSE)
 sv = svd(demog[,2:dim(demog)[2]])
+```
 
-# The proportion of variance explained by each factor.
+Calculate the proportion of variance explained by each factor.
+
+```{r}
 pve = sv$d^2
 pve = pve / sum(pve)
+```
 
-# Put the demographic factors into a dataframe
+Put the demographic factors into a dataframe
+
+```{r}
 demog_f = data.frame(FIPS=demog$FIPS)
 for (k in 1:100) {
     demog_f[,sprintf("pc%d", k)] = sv$u[, k]
 }
+```
 
-# Merge the birth data with demographic data
+Merge the birth data with demographic data
+
+```{r}
 da = merge(da, demog_f, on="FIPS", how="left")
+```
 
-# Include this number of factors in the next few models
+Include this number of factors in the next few models
+
+```{r}
 npc = 10
+```
 
-# GLM, not appropriate since we have repeated measures on counties
+GLM, not appropriate since we have repeated measures on counties
+
+```{r}
 fml = paste("pc", seq(npc), sep="")
 fml = paste(fml, collapse=" + ")
 fml = sprintf("Births ~ (logPop + RUCC_2013c) * yearc + %s", fml)
 fml = as.formula(fml)
 r7 = glm(fml, quasipoisson(), da)
+summary(r7)
+```
 
-# GEE accounts for the correlated data, use logPop as offset
+GEE accounts for the correlated data, use logPop as offset
+
+```{r}
 r8 = geeglm(fml, data=da, id=FIPS, offset=da$logPop, family=poisson())
+summary(r8)
+```
 
-# Get the fitted values on the log scale, without including the offset.
-# These values can be used to compare two counties as if they had the
-# same population.  Note that the results depend on the number of PCs
-# (npc).
+Get the fitted values on the log scale, without including the offset. These values can be used to compare two counties as if they had the same population.  Note that the results depend on the number of PCs (npc).
+
+```{r}
 adjfit = model.matrix(r5) %*% coef(r5)
+```
 
-# This function fits a Poisson GLM to the data using 'npc' principal components
-# as explanatory variables.
+This function fits a Poisson GLM to the data using 'npc' principal components as explanatory variables.
+
+```{r}
 fitmodel = function(npc) {
 
     # Construct a model formula
@@ -139,10 +204,15 @@ fitmodel = function(npc) {
     }
     return(list(coef=cf, model=r))
 }
+```
 
-# Fit models with these numbers of PCs.
+Fit models with these numbers of PCs.
+
+```{r}
 pcs = c(5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+```
 
+```{r}
 models = list()
 for (npc in pcs) {
 
@@ -153,14 +223,16 @@ for (npc in pcs) {
     plt = ggplot(cf, aes(x=Age, y=coef, group=interaction(Race, Origin, Sex), color=Race, lty=Sex, shape=Origin))
     plt = plt + geom_line() + geom_point() + ggtitle(sprintf("%d factors", npc))
     plt = plt + ggtitle(sprintf("%d PCs, cumulative PVE=%.4f", npc, sum(pve[1:npc])))
-    print(plt) # prints to the pdf
+    print(plt)
 }
+```
 
-# These score tests should use glmtoolbox but
+These score tests should use glmtoolbox but
+
+```{r}
 for (j in 2:(length(models)-1)) {
     st = anova(models[[j-1]], models[[j]], test="score")
     p = st[[3]]
     cat(sprintf("%d vs. %d: p=%f\n", pcs[j+1], pcs[j], p))
 }
-
-dev.off()
+```
