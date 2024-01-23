@@ -247,6 +247,7 @@ for npc in pcs:
     plt.ylabel("Coefficient", size=17)
     plt.title("%d factors" % npc)
     pdf.savefig()
+    plt.show()
 
 pdf.close()
 
