@@ -383,7 +383,7 @@ are the cross-correlation and correlation matrices.
 
 Once we have found the leading canonical loadings, say $a^{(1)}$ and $b^{(1)}$, we can maximize
 the same objective function subject to the constraints $a^\prime S_{xx}a^{(1)} = 0$ and
-$b^\prime S_{yy}b^{(1)} = 0$.  This can be repeated up to ${\rm min}(p, q}$ times to
+$b^\prime S_{yy}b^{(1)} = 0$.  This can be repeated up to ${\rm min}(p, q)$ times to
 produce a series of canonical variate loading pairs
 
 If the dimension is high, CCA can overfit the data.  A procedure analogous to
