@@ -9,41 +9,45 @@ library(dplyr)
 source("prep.R")
 ```
 
-Get the demographics data for the largest counties.
+Only consider counties for which we have natality data.
 
 ```{r}
-mv = births %>% group_by(FIPS) %>% summarize(births_mean=mean(Births), births_var=var(Births))
-mv = mv %>% mutate(log_births_mean=log(births_mean), log_births_var=log(births_var))
+fips = unique(births$FIPS)
+demog = demog %>% filter(FIPS %in% fips)
 ```
 
-Replace missing values with zero.
-
 ```{r}
-demog = demog %>% mutate(across(where(anyNA), ~ replace_na(., 0)))
+dl = pivot_longer(select(demog, -FIPS), cols=everything(), names_to="group", values_to="population")
+dl = separate(dl, group, c("race", "ethnicity", "sex", "age"), sep="_")
+ds = group_by(dl, race, ethnicity, sex) %>% summarize(population=sum(population))
+print(ds, n=Inf)
+print(sum(ds$population))
 ```
 
-Square root transform the population counts for variance stabilization.
+Fourth root transform the population counts for variance stabilization and symmetry.
 
 ```{r}
-demog = demog %>% mutate(across(-FIPS, function(x)x^0.25))
-```
-
-Retain only the counties with data
-
-```{r}
-demog = demog %>% filter(FIPS %in% unique(mv$FIPS))
-```
-
-Center the columns
-
-```{r}
-demog = demog %>% mutate(across(-FIPS, scale, scale=FALSE))
+demogx = demog %>% mutate(across(-FIPS, function(x)x^0.25))
 ```
 
 Create a data matrix omitting the FIPS index column
 
 ```{r}
-demogx = demog %>% select(-FIPS)
+demogx = demogx %>% select(-FIPS)
+demogx = as.matrix(demogx)
+```
+
+Double center the data
+
+```{r}
+demogx = demogx - mean(demogx)
+demogx = scale(demogx, scale=F)
+demogx = t(scale(t(demogx), scale=F))
+```
+
+Factor the matrix
+
+```{r}
 ss = svd(demogx)
 ```
 
@@ -53,6 +57,31 @@ Extract the components of the SVD
 u = ss$u
 s = ss$d
 v = ss$v
+```
+
+Plot the singular values to assess the dimensionality:
+
+```{r}
+dp = data.frame(x=seq(length(s)), y=s)
+plt = ggplot(data=dp, aes(x=x, y=y)) + geom_line() + geom_point()
+plt = plt + xlab("Position") + ylab("Singular value")
+print(plt)
+```
+Consider exponential and power law models for the singular values, by making scree plots in semi-log space and log space.  One reasonable interpretation of these plots is that there are around 10-12 relatively larger singular values, and the remainder follow an exponential pattern.
+
+```{r}
+ss = s[1:(length(s)-1)]
+dp = data.frame(x=seq(length(ss)), y=ss)
+plt = ggplot(data=dp, aes(x=x, y=log(y))) + geom_line() + geom_point()
+plt = plt + xlab("Position") + ylab("Log singular value")
+plt = plt + ggtitle("Assess fit for exponential model ")
+print(plt)
+```
+```{r}
+plt = ggplot(data=dp, aes(x=log(x), y=log(y))) + geom_line() + geom_point()
+plt = plt + xlab("Log position") + ylab("Log singular value")
+plt = plt + ggtitle("Assess fit for powerlaw model ")
+print(plt)
 ```
 
 Construct the row and column scores
@@ -76,30 +105,39 @@ for (j in 1:2) {
 ```
 
 ```{r}
-cn = names(demogx)
-cx = str_split(cn, "_")
-```
+generate_biplots = function(uu, vv, sx, j1, j2) {
+  cn = names(demog)
+  cx = str_split(cn, "_")
+  cx = cx[2:length(cx)]
 
-```{r}
-ud = data.frame(u1=uu[,1], u2=uu[,2])
+  ud = data.frame(u1=uu[,j1], u2=uu[,j2])
+  vd = data.frame(v1=vv[,j1], v2=vv[,j2], race=cx%>%map(1)%>%list_simplify, eth=cx%>%map(2)%>%as_vector, sex=cx%>%map(3)%>%as_vector)
+  vd1 = vd %>% filter(sex==sx)
 
-vd = data.frame(v1=vv[,1], v2=vv[,2], race=cx%>%map(1)%>%list_simplify,   eth=cx%>%map(2)%>%as_vector, sex=cx%>%map(3)%>%as_vector)
-```
+  # Plot grey points for the counties
+  plt = ggplot(data=ud, aes(x=u1, y=u2)) + geom_point(alpha=0.2)
 
-To reduce overplotting, plot each sex separately.
+  # Plot colored points for the demographic variables
+  plt = plt + geom_path(data=vd1, aes(x=v1, y=v2, group=interaction(race, eth), color=interaction(race, eth)))
 
-```{r}
-for (sx in c("F", "M")) {
-    vd1 = vd %>% filter(sex==sx)
-    
-    # Plot grey points for the counties
-    plt = ggplot(data=ud, aes(x=u1, y=u2)) + geom_point(alpha=0.2)
-
-    # Plot colored points for the demographic variables
-    plt = plt + geom_path(data=vd1, aes(x=v1, y=v2, group=interaction(race, eth), color=interaction(race, eth)))
-
-    plt = plt + ggtitle(ifelse(sx=="F", "Female", "Male"))
-    print(plt)
+  plt = plt + xlab(sprintf("Component %d", j1)) + ylab(sprintf("Component %d", j2))
+  plt = plt + ggtitle(ifelse(sx=="F", "Female", "Male"))
+  print(plt)
 }
 ```
 
+```{r}
+generate_biplots(uu, vv, "F", 1, 2)
+```
+
+```{r}
+generate_biplots(uu, vv, "M", 1, 2)
+```
+
+```{r}
+generate_biplots(uu, vv, "F", 3, 4)
+```
+
+```{r}
+generate_biplots(uu, vv, "M", 3, 4)
+```

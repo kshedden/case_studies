@@ -70,6 +70,9 @@ pop = demog %>% group_by(FIPS) %>% summarize(Population=sum(Population))
 # Pivot to put the age bands in the columns
 demog = demog %>% pivot_wider(id_cols="FIPS", names_from=c("Race","Origin","Sex","Age"), values_from="Population")
 
+# Replace missing values with zero
+demog = demog %>% mutate_at(vars(-"FIPS"), ~ replace_na(., 0))
+
 # Get the Rural/Urban Continuity Codes (RUCC)
 rucc = read_excel(file.path(pa, "ruralurbancodes2013.xls"), sheet="Rural-urban Continuum Code 2013")
 rucc = rucc %>% select(FIPS, RUCC_2013)

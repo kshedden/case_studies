@@ -66,10 +66,8 @@ age_groups = ["0", "1-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "3
 na = demog.columns.tolist()
 demog.columns = ["%s_%s_%s_%d" % tuple(x) for x in na]
 
-# Replace missing demographic values with 0 and transform
-# with square root to stabilize the variance.
+# Replace missing demographic values with 0.
 demog = demog.fillna(0)
-demog = np.sqrt(demog)
 
 # Get the Rural/Urban Continuity Codes (RUCC)
 rucc = pd.read_excel(os.path.join(pa, "ruralurbancodes2013.xls"), sheet_name=None)
