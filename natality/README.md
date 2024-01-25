@@ -12,7 +12,7 @@ click "Send" to get the data, and on the next page click "Export" to
 download, and rename the downloaded file to "2011.txt".
 
 Repeat the above steps for 2012, 2013, ..., 2020, to get 10 years of
-data.
+data.  Then compress all the files using gzip.
 
 Next visit
 [https://seer.cancer.gov/popdata/download.html](https://seer.cancer.gov/popdata/download.html)

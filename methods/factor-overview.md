@@ -209,7 +209,7 @@ Next we consider how PCA can be carried out with a sample of data,
 rather than in a population.  Given a $n\times p$ matrix of data $X$
 whose rows are iid copies of the random vector $x$, we can estimate
 the covariance matrix $\Sigma$ by column centering $X$ to produce
-$X_c \equiv X - 1_n\bar{x}^T$, where $\bar{x} \in {\cal R}^p$ is the vector
+$X_c \equiv X - 1_n\bar{x}^T$, where $\bar{x} \in {\mathbb R}^p$ is the vector
 of column-wise means of $X$, Then set
 $\hat{\Sigma} = X_c^TX_c/n$. Letting $B$ denote the eigenvectors of $\hat{\Sigma}$,
 the scores have the form $Q = X_cB$.
