@@ -12,37 +12,46 @@ source("prep.R")
 Only consider counties for which we have natality data.
 
 ```{r}
-fips = unique(births$FIPS)
+fips = sort(unique(births$FIPS))
 demog = demog %>% filter(FIPS %in% fips)
+demog = demog %>% arrange(demog, FIPS)
 ```
 
 ```{r}
 dl = pivot_longer(select(demog, -FIPS), cols=everything(), names_to="group", values_to="population")
 dl = separate(dl, group, c("race", "ethnicity", "sex", "age"), sep="_")
 ds = group_by(dl, race, ethnicity, sex) %>% summarize(population=sum(population))
-print(ds, n=Inf)
-print(sum(ds$population))
-```
-
-Fourth root transform the population counts for variance stabilization and symmetry.
-
-```{r}
-demogx = demog %>% mutate(across(-FIPS, function(x)x^0.25))
+ds
 ```
 
 Create a data matrix omitting the FIPS index column
 
 ```{r}
-demogx = demogx %>% select(-FIPS)
+demogx = demog %>% select(-FIPS)
 demogx = as.matrix(demogx)
+```
+
+The total population per county, transformed like the county-level data.
+
+```{r}
+totpop = apply(demogx, 1, sum)^0.25
+```
+
+Fourth root transform the population counts for variance stabilization and symmetry.
+
+```{r}
+demogx = demogx^0.25
 ```
 
 Double center the data
 
 ```{r}
-demogx = demogx - mean(demogx)
-demogx = scale(demogx, scale=F)
-demogx = t(scale(t(demogx), scale=F))
+gmn = mean(demogx)
+demogx = demogx - gmn
+colmn = apply(demogx, 2, mean)
+demogx = t(t(demogx) - colmn)
+rowmn = apply(demogx, 1, mean)
+demogx = demogx - rowmn
 ```
 
 Factor the matrix
@@ -67,7 +76,7 @@ plt = ggplot(data=dp, aes(x=x, y=y)) + geom_line() + geom_point()
 plt = plt + xlab("Position") + ylab("Singular value")
 print(plt)
 ```
-Consider exponential and power law models for the singular values, by making scree plots in semi-log space and log space.  One reasonable interpretation of these plots is that there are around 10-12 relatively larger singular values, and the remainder follow an exponential pattern.
+Consider exponential and power law models for the singular values, by making scree plots in semi-log space and log space.  One reasonable interpretation of these plots is that there are around 10-12 relatively larger singular values, and the remainder follow an exponentially decaying pattern.
 
 ```{r}
 ss = s[1:(length(s)-1)]
@@ -94,29 +103,32 @@ uu = u %*% diag(s^alpha)
 vv = v %*% diag(s^(1-alpha))
 ```
 
-Remove outlier counties to make the plot easier to read
-
 ```{r}
-iqr = function(x){ quantile(x, 0.75) - quantile(x, 0.25) }
-for (j in 1:2) {
-    ii = abs(uu[,j] - median(uu[,j])) < 4*iqr(uu[,j])
-    uu = uu[ii,]
-}
-```
-
-```{r}
-generate_biplots = function(uu, vv, sx, j1, j2) {
+generate_biplots = function(uu, vv, sx, j1, j2, highlight=NULL) {
   cn = names(demog)
   cx = str_split(cn, "_")
   cx = cx[2:length(cx)]
 
-  ud = data.frame(u1=uu[,j1], u2=uu[,j2])
+  ud = data.frame(u1=uu[,j1], u2=uu[,j2], fips=fips)
   vd = data.frame(v1=vv[,j1], v2=vv[,j2], race=cx%>%map(1)%>%list_simplify, eth=cx%>%map(2)%>%as_vector, sex=cx%>%map(3)%>%as_vector)
   vd1 = vd %>% filter(sex==sx)
 
   # Plot grey points for the counties
   plt = ggplot(data=ud, aes(x=u1, y=u2)) + geom_point(alpha=0.2)
 
+  # Plot the total county population as a passive variable
+  ux = cbind(uu[,j1], uu[,j2])
+  pt = solve(t(ux) %*% ux, t(ux) %*% totpop)
+  pt = 2 * pt / norm(pt)
+  dp = data.frame(x=c(0, pt[1]), y=c(0, pt[2]))
+  plt = plt + geom_segment(x=0, y=0, xend=pt[1], yend=pt[2], 
+                           arrow=arrow(length=unit(0.5, "cm")))
+
+  if (!is.null(highlight)) {
+     uf = left_join(highlight, ud, "fips")
+     plt = plt + geom_label(data=uf, aes(x=u1, y=u2, label=label))
+  }
+    
   # Plot colored points for the demographic variables
   plt = plt + geom_path(data=vd1, aes(x=v1, y=v2, group=interaction(race, eth), color=interaction(race, eth)))
 
@@ -127,17 +139,24 @@ generate_biplots = function(uu, vv, sx, j1, j2) {
 ```
 
 ```{r}
-generate_biplots(uu, vv, "F", 1, 2)
+# Wayne county MI, Santa Clara CA, Bristol MA, Cook IL, Pennington SD, Los Angeles CA
+f = c("26163", "06085", "25005", "17031", "46103", "06037")
+b = c("W", "S", "B", "C", "P", "L")
+highlight = data.frame(fips=f, label=b)
 ```
 
 ```{r}
-generate_biplots(uu, vv, "M", 1, 2)
+generate_biplots(uu, vv, "F", 1, 2, highlight=highlight)
 ```
 
 ```{r}
-generate_biplots(uu, vv, "F", 3, 4)
+generate_biplots(uu, vv, "M", 1, 2, highlight=highlight)
 ```
 
 ```{r}
-generate_biplots(uu, vv, "M", 3, 4)
+generate_biplots(uu, vv, "F", 3, 4, highlight=highlight)
+```
+
+```{r}
+generate_biplots(uu, vv, "M", 3, 4, highlight=highlight)
 ```
