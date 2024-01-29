@@ -261,8 +261,9 @@ may follow a large range of distributions.
 ## Block maxima and the generalized extreme value distribution
 
 Another way to approach extremes is to partition the data into blocks,
-and calculate the maximum observed value within each block.  The distribution of these values should be
-well approximated by a
+and calculate the maximum observed value within each block.
+According to the [Fisher-Tippett-Gnedenko theorem](https://en.wikipedia.org/wiki/Fisher%E2%80%93Tippett%E2%80%93Gnedenko_theorem),
+the distribution of these values should be well approximated by a
 [generalized extreme value distribution](https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution),
 (GEV), which is a three-parameter distribution.  This is another example of a central limit theorem-like
 result for extremes, since a wide variety of populations have block maxima that are well-approximated

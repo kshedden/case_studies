@@ -101,7 +101,14 @@ unique except when there are ties among the singular values or if
 one or more of the singular values are zero.
 
 One use of the SVD is to obtain a low rank approximation to a matrix
-$X$.  Suppose we truncate the SVD using only the first $k$ components,
+$X$.  The extreme example of a low rank matrix is a matrix with rank 1,
+which means that we can write $X_{ij} = r_i\cdot c_j$ for vectors
+$r\in {\mathbb R}^n$ and $c\in {\mathbb c}^p$.  Our goal will
+be to decompose $X$ as the (approximate) sum of $k$ rank-1 matrices,
+and these matrices are ordered by their importance in describing
+the variation in $X$.
+
+Suppose we truncate the SVD using only the first $k$ components,
 so that $\tilde{U}$ is the $n\times k$ matrix consisting of the
 leading (left-most) $k$ columns of $U$, $\tilde{S} = (S_1, \ldots, S_k)$,
 and $V$ is the $p\times k$ matrix consisting
@@ -158,6 +165,17 @@ the SVD for a double-centered matrix is that $U_{\cdot k} = 0$ and $V_{\cdot k} 
 That is, the columns of $U$ and $V$ are centered.  This column centering means
 that the SVD captures "deviations from the mean" represented by the additive
 model $m + r_i + c_j$.
+
+#### Assessing dimensionality
+
+The rate at which the singular values decay contains important information about the
+intrinsic dimensionality of the population under study.  Let $s_j$ denote the
+$j^{\rm th}$ singular value, where $s_1 \ge s_2 \cdots$.  Two canonical patterns
+of decay that may be found are an exponential decay $s_j \approx a\cdot \exp(-b\cdot j)$
+and a power-law decay $s_j \approx a/j^b$.  To assess the decay of the eigenvalues,
+we can consider plots of $\log s_j$ against $j$, which is linear in the case of exponential
+decay, and plots of $\log s_j$ against $\log j$, which is linear in the case of power-law
+decay.
 
 ## Principal Components Analysis
 
@@ -316,13 +334,13 @@ reduce the variables to a smaller vector of scores that capture most
 of the variation in the original variables, and then use the
 reduced variables (scores) as covariates in our regression.
 
-More formally, suppose that $X \in {\cal R}^{n\times p}$ is our
+More formally, suppose that $X \in {\mathbb R}^{n\times p}$ is our
 regression design matrix, for a regression with $n$ observations
 (cases) and $p$ covariates.  The response variable for this
-regression is a vector $Y \in {\cal R}^n$, but this is not used
+regression is a vector $Y \in {\mathbb R}^n$, but this is not used
 in the first few steps of PCR.  First, the mean should be subtracted
 from each column of $X$, and we write $X = USV^T$ using the SVD.
-Next we truncate this representation so that $\tilde{U} \in {\cal R}^{n\times q}$,
+Next we truncate this representation so that $\tilde{U} \in {\mathbb R}^{n\times q}$,
 contains the first $q$ columns of $U$.  As discussed above, these
 are the most important columns of $U$ for explaining the variation
 in $X$.
@@ -353,7 +371,7 @@ linear predictor.
 PCR can be very effective, but may or may not peform well
 depending on the circumstances.  In PCR, instead
 of allowing the coefficients $\gamma$ to take on any
-value in ${\cal R}^p$, we are constraining $\gamma$
+value in ${\mathbb R}^p$, we are constraining $\gamma$
 to lie in the columnspace of $(VS^{-1})_{:,1:q}$. PCR
 works well if the projections of $X$ that explain the
 most variation in $X$ also explain the most variation
@@ -406,8 +424,8 @@ from the reduced PCA can then be re-expressed in the original coordinates for in
 
 Dimension reduction regression (DR) is a flexible approach to regression analysis that
 can be seen as extending PCA to the setting of regression.  In a DR analysis, we have
-a matrix $X \in {\cal R}^{n\times p}$ containing data on the explanatory (independent)
-variables, and we also have a vector $Y \in {\cal R}^n$
+a matrix $X \in {\mathbb R}^{n\times p}$ containing data on the explanatory (independent)
+variables, and we also have a vector $Y \in {\mathbb R}^n$
 containing values of a response (dependent) variable.
 Like PCA, the goal is to find *factors*, *components*, or *variates*
 among the $X$ variables, but in the case of DR the goal is for these factors to predict $Y$,
@@ -427,7 +445,7 @@ $$
 E[Y|X=x] = f(b_1^\prime x, \ldots, b_q^\prime x) + \epsilon,
 $$
 
-where the $b_j \in {\cal R}^p$ are coefficient vectors defining the "indices" in
+where the $b_j \in {\mathbb R}^p$ are coefficient vectors defining the "indices" in
 $X$ that predict $Y$.  The span of $b_1, \ldots, b_q$ is known as the "dimension reduction"
 subpsace for the regression function $E[Y|X=x]$.
 
@@ -456,7 +474,7 @@ by replacing $X$ in ${\rm cov}(X)$ with $E[X|Y]$, which suppresses the variation
 in $X$ that occurs when $Y$ is fixed. The matrix $M_{xy}$ is estimated by sorting
 the data $\{(x_i, y_i)\}$ by increasing values of $y$, dividing this sorted sequence
 into "slices" (blocks), and averaging the values of $x_i$ within each slice.  Let
-$u_k \in {\cal R}^d$
+$u_k \in {\mathbb R}^d$
 denote the mean of slice $k$.  We then estimate $M_{xy}$ as the covariance matrix of the
 $u_k$.
 
@@ -476,7 +494,7 @@ Correspondence analysis (CA) is an embedding approach that aims to
 represent *chi-square distances* in the data space as Euclidean
 distances for visualization.  The chi-square metric is defined
 as follows:
-if $X, Y \in {\cal R}^p$ are random vectors with mean
+if $X, Y \in {\mathbb R}^p$ are random vectors with mean
 $EX = EY = \mu$ and covariance
 ${\rm cov}(X) = {\rm cov}(Y) = {\rm diag}(\mu)$, then the (squared)
 chi-square distance from $X$ to the mean is
@@ -500,7 +518,7 @@ draws from a multivariate distribution.
 ### Mean/variance relationships
 
 To better understand the motivation for using chi-square distances
-to measure distances in the data space, let $X \in {\cal R}^p$ be
+to measure distances in the data space, let $X \in {\mathbb R}^p$ be
 a random vector with mean $\mu \ge 0$ and
 covariance matrix $\Sigma$.  In some cases,
 $\mu$ and $\Sigma$ are unrelated (i.e. knowing $\mu$ places no
@@ -538,8 +556,8 @@ We introduce the following notation: let $P_{i,:}$
 denote row $i$ of $P$,
 let $r \equiv P\cdot 1_p$ denote the row sums of $P$, and let $c = P^T\cdot 1_n$
 denote the column sums of $P$.  Also, let
-$W_r = {\rm diag}(r)\in {\cal R}^{n\times n}$ and
-$W_c = {\rm diag}(c) \in {\cal R}^{p\times p}$.
+$W_r = {\rm diag}(r)\in {\mathbb R}^{n\times n}$ and
+$W_c = {\rm diag}(c) \in {\mathbb R}^{p\times p}$.
 Then $P^r \equiv W_r^{-1}\cdot P$ are the *row profiles* of
 $P$, which are simply the rows of $P$ (or of $X$) normalized by their
 sum.  Analogously, $P^c \equiv P\cdot W_c^{-1}$ are the *column
