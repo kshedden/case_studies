@@ -97,7 +97,7 @@ and in general will not fit many datasets well.  When focusing on extreme
 values we usually don't want to become distracted by the structure of the
 center of the distribution.  One way to focus on the tail is to convert
 the data to *exceedances*.  This means that we find a parameter $T$ and replace
-the dataset $\{X_i\}$ with the dataset $\\{X_i-T | X_i \ge T\\}$.
+the dataset $\\{X_i\\}$ with the dataset $\\{X_i-T | X_i \ge T\\}$.
 
 If $T$ is appropriately selected then the exceedances may follow a
 Pareto or exponential distribution, even though these models are a
