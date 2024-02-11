@@ -11,13 +11,18 @@ function](https://en.wikipedia.org/wiki/Moment-generating_function)
 (mgf).  The space of probability distributions is infinite-dimensional,
 so in practice we often work with finite dimensional numerical summaries such as the mean and variance.
 The field of statistics (as opposed to the field of probability)
-focuses on estimating either the full distribution or a summary quantity from data.  The full distribution
+focuses on estimating either the full distribution or a summary quantity describing one aspect of
+a distribution from data.  The full distribution
 can be estimated using the
 [empirical cdf](https://en.wikipedia.org/wiki/Empirical_distribution_function) (an estimator of the cdf),
 or the [histogram](https://en.wikipedia.org/wiki/Histogram) (an estimator
 of the pdf), among other tools not discussed here.
 Summary measures often have a natural estimator, such as the sample mean (an estimator of the population mean),
 and the sample median (an estimator of the population median).
+
+The discussion here focuses on univariate distributions of a quantitative random variable.
+The setting of categorical (non-quantitative) and multivariate data involve different
+methods not discussed here.
 
 The two most common characteristics used to summarize univariate
 distributions of a quantitative value (i.e. probability distributions
@@ -53,6 +58,15 @@ extremes naturally leads us to focus on the right tail of a probability
 distribution.  In some cases the extremes of interest may involve the left
 tail, but in that case we can flip the distribution, so by convention,
 methods for studying extremes focus on the right tail.
+
+In the statistical study of extremes, we do not attempt to define individual
+data points as "extreme" or "non-extreme".  In some cases there may be non-statistical
+reasons to define a threshold beyond which an observation is extreme (for example,
+we may describe a hurricane as extreme if the wind speed exceeds 160 miles per hour).
+However, there is no objective statistical basis for defining a single observation in
+the abstract as being extreme.  Instead, we study extremes
+by characterizing the tail of the probability distribution according to its asymptotic
+rate of decay.
 
 Recall that the cumulative distribution funtion (cdf) of a random variable $X$ is the
 function $F(t) = P(X \le t)$, viewed as a function of $t \in {\mathbb R}^+$.

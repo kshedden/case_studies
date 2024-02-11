@@ -308,6 +308,24 @@ and only
   plots/tables in the body of your report.  Do not refer to graphs as being
   "above" or "below" a particular location in the text.
 
+* Refer to plots using proper and specific terminology.  For example, is the
+  plot a scatterplot, a histogram, a time-series plot, a quantile-quantile plot,
+  a graph of a function, etc. The horizontal and vertical axes should be labeled
+  using terms that connect the graph to the data being analyzed.
+
+* In a statistical analysis, graphs typically are used to reinforce specific
+  statistical claims.  For example, histograms reflect "probability density",
+  and scatterplots often reflect "conditional mean", "heteroscedasticity", or
+  "conditional variance".  Usually it is appropriate to make these connections
+  explicit when writing about a graph.
+
+* Just as with other forms of statistical analysis, graphs are most effective
+  when used comparatively.  Thus, it is often effective to overlay or juxtapose
+  graphs corresponding to comparisons in your analysis.  For example, you can
+  usually overaly 2-3 histograms or density estimates, or you can capture
+  multiple conditional mean relationships by coloring the points in a scatterplot
+  corresponding to different subgroups.
+
 * Avoid pie charts in almost all situations
 
 * Bar graphs are a very elementary and limited form of statistical

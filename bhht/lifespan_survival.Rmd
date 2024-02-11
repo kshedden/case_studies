@@ -1,0 +1,238 @@
+# Understanding variation in lifespans of notable people using the BHHT data
+
+The BHHT (Brief History of Human Time) project provides a dataset about "notable people" based mainly on wikipedia biography articles.
+
+The analyses below focus on lifespans of the people in the BHHT dataset, aiming to understand how lifespans vary based on factors including era of birth, the geographic region where the person lived, and the person's sex and occupation.
+
+This analysis uses survival analysis methods, allowing us to use information from still-living people.
+
+```{r}
+library(dplyr)
+library(survival)
+library(readr)
+library(splines)
+library(ggplot2)
+```
+
+Change the path below as needed to point to the directory holding the data file.
+
+```{r}
+pa = "/home/kshedden/mynfs/data/Teaching/bhht"
+```
+
+Load the dataset.  Use the latin-1 encoding since there is some non-UTF data in the file.  Add "nrows=####" when developing to reduce the run time, but use the complete data to get final results.
+
+```{r}
+df = read_csv(file.path(pa, "cross-verified-database.csv.gz"),
+              locale=readr::locale(encoding="latin1"), n_max=200000)
+```
+
+Create a lifespan variable (years of life).  It will be missing for people who are currently living.
+
+```{r}
+df = df %>% mutate(lifespan = death - birth)
+```
+
+Exclude people born before 1500, there is too little data to gain a meaningful understanding of the trends in lifespan prior to this year.
+
+```{r}
+dx = df %>% filter(birth >= 1500)
+```
+
+Retain only the variables needed below.
+
+```{r}
+dx = dx %>% select(birth, lifespan, gender, un_region, level1_main_occ)
+```
+
+There are a small number of people with missing or "Other" gender but it is too small of a sample to draw conclusions.
+
+```{r}
+print(table(dx$gender))
+dx = dx %>% filter(gender %in% c("Female", "Male"))
+```
+
+Drop uninformative occupation codes.
+
+```{r}
+dx = dx %>% filter(!(level1_main_occ %in% c("Missing", "Other")))
+```
+
+Censor lifespans at the calendar year 2022.
+
+```{r}
+censor_year = 2022
+dx = dx %>% mutate(clifespan = ifelse(is.na(lifespan), censor_year - birth, lifespan))
+dx = dx %>% mutate(died = is.finite(lifespan))
+```
+
+Now we can drop all rows with missing data
+
+```{r}
+dx = dx %>% select(-lifespan) %>% drop_na()
+```
+
+Create a categorical variable indicating the century in which a person was born.
+
+```{r}
+dx = dx %>% mutate(era = floor((birth - 1500) / 100))
+```
+
+Plot the marginal survival functions for people born in each century. These survival functions are estimated using the product limit (Kaplan-Meier) method.
+
+```{r}
+sf = survfit(Surv(clifespan, died) ~ era, dx)
+plot(sf, xlab="Age", ylab="Proportion alive", col=1:6, xlim=c(0, 100))
+legend(x="topright", c("1500s", "1600s", "1700s", "1800s", "1900s", "2000s"),
+       col=1:6, lty=1)
+```
+Create a time variable that has year 1500 as the origin.  Use this as a predictor in regression models below so that year 1500 becomes the reference year (i.e. all effects are relative to 1500).
+
+```{r}
+dx = dx %>% mutate(time1500 = birth - 1500)
+```
+
+Fit a proportional hazards regression model with main effects for year of birth, gender, occupation, and region.
+
+```{r}
+fml = "Surv(clifespan, died) ~ time1500 + gender + level1_main_occ + un_region"
+m0 = coxph(as.formula(fml), dx)
+m0
+```
+
+```{r}
+plot_birthyear_partial = function(dx, rr) {
+  dp = dx[1:100,]
+  dp = dp %>% mutate(gender = "Female", level1_main_occ = "Leadership", un_region = "Asia")
+  b = seq(1500, 2000, length.out=100)
+  dp = dp %>% mutate(time = b)
+  dp = dp %>% mutate(time1500 = b - 1500)
+  dp$lhr = predict(rr, dp)
+  print(head(dp))
+    
+  plt = ggplot(dp, aes(x=time, y=lhr)) + geom_line()
+  print(plt)
+}
+```
+
+```{r}
+plot_birthyear_partial(dx, m0)
+```
+
+To assess for curvature, consider a quadratic model for year of birth:
+
+```{r}
+fml = "Surv(clifespan, died) ~ poly(time1500, 2) + gender + level1_main_occ + un_region"
+m1 = coxph(as.formula(fml), dx)
+m1
+```
+
+```{r}
+plot_birthyear_partial(dx, m1)
+```
+
+Now consider a cubic model for year of birth.
+
+```{r}
+fml = "Surv(clifespan, died) ~ poly(time1500, 3) + gender + level1_main_occ + un_region"
+m2 = coxph(as.formula(fml), dx)
+m2
+```
+
+```{r}
+plot_birthyear_partial(dx, m2)
+```
+
+Based on AIC there is strong evidence for curvature in the year of birth effect:
+
+```{r}
+aic = c(AIC(m0), AIC(m1), AIC(m2))
+aic = aic - min(aic)
+aic
+```
+
+High degree polynomials make poor basis functions so next we use polynomial splines, which are piecewise polynomials.
+
+```{r}
+fml = "Surv(clifespan, died) ~ bs(time1500, 4) + gender + level1_main_occ + un_region"
+m4 = coxph(as.formula(fml), dx)
+m4
+```
+
+```{r}
+plot_birthyear_partial(dx, m4)
+```
+
+```{r}
+plot_birthyear_partial_sexdiff = function(dx, rr) {
+  dp = dx[1:200,]
+  g = c(rep("Female", 100), rep("Male", 100))
+  dp = dp %>% mutate(gender = g, level1_main_occ = "Leadership", un_region = "Asia")
+  b = seq(1500, 2000, length.out=100)
+  dp = dp %>% mutate(time = c(b, b))
+  dp = dp %>% mutate(time1500 = time - 1500)
+  dp$lhr = predict(rr, dp)
+  print(head(dp))
+    
+  plt = ggplot(dp, aes(x=time, y=lhr, by=gender, color=gender)) + geom_line()
+  print(plt)
+}
+```
+
+```{r}
+dx = dx %>% mutate(time = sqrt(birth - 1500))
+fml = "Surv(clifespan, died) ~ bs(time1500, 4)*gender + level1_main_occ + un_region"
+m5 = coxph(as.formula(fml), dx)
+summary(m5)
+```
+
+```{r}
+plot_birthyear_partial_sexdiff(dx, m5)
+```
+Fit a sex-stratified proportional hazards regression model, which gives each sex its own baseline hazard function.
+
+```{r}
+dx = dx %>% mutate(time = sqrt(birth - 1500))
+fml = "Surv(clifespan, died) ~ bs(time, 4) + level1_main_occ + un_region + strata(gender)"
+m6 = coxph(as.formula(fml), dx)
+summary(m6)
+```
+
+## Baseline hazard functions
+
+Estimate and plot the baseline cumulative hazard function.  Cumulative hazard functions are easy to estimate but somewhat difficult to interpret.
+
+```{r}
+bh = basehaz(m4)
+plt = ggplot(bh, aes(x=time, y=hazard)) + geom_line() + xlim(0, 100) +
+             xlab("Age") + ylab("Cumulative hazard")
+print(plt)
+```
+
+Plot the estimated baseline cumulative hazard function on the log scale
+
+```{r}
+plt = ggplot(bh, aes(x=time, y=log(hazard))) + geom_line() + xlim(0, 100) +
+             xlab("Age") + ylab("Log cumulative hazard")
+print(plt)
+```
+
+Estimate the baseline hazard function using numerical differentiation and plot it.
+
+```{r}
+haz = diff(bh$hazard) / diff(bh$time)
+haz = data.frame(hazard=haz, time=bh$time[1:(length(bh$time)-1)])
+plt = ggplot(haz, aes(x=time, y=hazard)) + geom_line() + xlim(0, 100) +
+             xlab("Age") + ylab("Hazard")
+print(plt)
+```
+
+Plot the baseline hazard function for each sex.  Note that the basehaz function in R returns the cumulative hazard but the column is labeled 'hazard'.
+
+```{r}
+bh = basehaz(m6)
+print(bh)
+plt = ggplot(bh, aes(x=time, y=log(hazard), color=strata)) + geom_line() + xlim(0, 100) +
+             xlab("Age") + ylab("Log cumulative hazard")
+print(plt)
+```

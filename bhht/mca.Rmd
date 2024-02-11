@@ -1,0 +1,79 @@
+# Using Multiple Correspondence Analysis to understand the relationships among characteristics of notable people
+
+Multiple Correspondence Analysis (MCA) is a type of biplot for multivariate data.  Here we use it to understand the relationships among nominal (categorical) characteristics of notable people.  These data can be thought of as a 4-way contingency table (sex x occupation x birth era x region).  The goal of MCA is to visualize the structure of this contingency table as a graph.
+
+```{r}
+library(dplyr)
+library(FactoMineR)
+library(tidyr)
+library(readr)
+```
+
+Change this path as needed to point to the directory holding the data file.
+
+```{r}
+pa = "/home/kshedden/mynfs/data/Teaching/bhht"
+```
+
+Read the data.  The overall dataset has around 2.4 million rows.  During exploration you might want to limit the analysis to the first million rows, then re-run to get final results with the full data.
+
+```{r}
+da = read_csv(file.path(pa, "cross-verified-database.csv.gz"), n_max=1000000)
+da = da %>% rename(occ=level1_main_occ, reg=un_region, sex=gender)
+```
+
+Retain only the variables used in the analysis.
+
+```{r}
+dx = da %>% select(birth, occ, sex, reg)
+dx = dx %>% drop_na()
+```
+
+Few people in the dataset lived before 1500, so for simplicity we exclude them here.
+
+```{r}
+dx = dx %>% filter(birth >= 1500)
+```
+
+Create a "century of birth" variable
+
+```{r}
+dx = dx %>% mutate(bcen = round(birth, -2))
+dx = dx %>% select(bcen, occ, sex, reg)
+dx = dx %>% mutate(bcen = as.factor(bcen))
+```
+
+Remove small groups that are difficult to interpret due to low precision or high confounding.
+
+```{r}
+dx = dx %>% filter(occ != "Other" & occ != "Missing" & sex != "Other")
+```
+
+Fit the MCA.
+
+```{r}
+mm = MCA(dx, ncp=4, graph=FALSE)
+```
+
+Plot the first two components of the fitted MCA:
+
+```{r}
+plt = plot(mm, axes=c(1, 2), invisible="ind")
+print(plt)
+```
+
+Plot components 3-4 of the fitted MCA:
+
+```{r}
+plt = plot(mm, axes=c(3, 4), invisible="ind")
+print(plt)
+```
+In an MCA plot, information about the variables is encoded both in the angles between the variable scores, and in the magnitudes of the variable scores.  A variable that is independent of the other variables will not contribute to the MCA and will have very short magnitude.  We can see this in the example below, where we simulate a variable that is independent of the others and include it in the MCA.
+
+```{r}
+f = as.factor(sample(c("1", "2"), dim(dx)[1], replace=T))
+dx = dx %>% mutate(fake=f)
+mm1 = MCA(dx, ncp=4, graph=FALSE)
+plt = plot(mm1, axes=c(1, 2), invisible="ind")
+print(plt)
+```
