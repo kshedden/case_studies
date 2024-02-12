@@ -2,9 +2,10 @@
 
 Survival analysis is a set of techniques for characterizing distributions
 and building models.  Most commonly, survival analysis methods are used
-with *time to event* data, such as assessing the distribution of *failure
-times* (e.g. the duration of time from when a person is diagnosed with
-a disease until they progress to a more advanced stage of the disease).
+with *time to event* data, where "time to event" refers to the duration of time from an origin
+until some event of interest occurs.  Many such examples consider
+*failure times*, such as the duration of time from when a person is diagnosed with
+a disease until they progress to a more advanced stage of the disease.
 There are many other applications of survival analysis methods that
 have nothing to do with "survival" or "failure", and these methods can
 even be applied in settings where time does not play a central role
@@ -33,7 +34,7 @@ analysis, the event will always occur if we wait long enough, so
 $P(T < \infty) = 1$.  We note that in some situations this may not be completely
 realistic and there is a subdomain of survival analysis called "cure modeling"
 in which this assumption is not made.  However this document deals
-exclusively with the conventional setting where $P(T<\infty) = 1$
+exclusively with the conventional setting where $P(T < \infty) = 1$
 is assumed.
 
 ## Truncation
@@ -54,12 +55,11 @@ truncation we are studying $P(T | T\ge Q, X)$ and with no such truncation
 we are studying $P(T | X)$.
 
 An example of left truncation would be a medical study where we are
-studying the incidence of stroke.  Suppose we use age as our time scale
-(so the time origin is a person's date of birth), and we wish to focus on
-the incidence of stroke after age 65.  Further, we exclude people who
-had a stroke before age 65.  Thus we are selecting subjects conditionally
-on the event $T> 65$, and $65$ is the subject's left truncation time.
-All our analysis is focused on the conditional distribution $P(T | T > 65, X)$.
+studying the incidence of stroke following implantation of a cardiac
+stent.  Suppose we use age as our time scale, let $T$ denote a subject's current age, and
+let $W$ denote the age at which the person had a stent placed ($W=\infty$ if the person
+never received a stent). We are selecting subjects conditionally
+on the event $T> W$, and $W$ is a left truncation time.
 
 ## Censoring
 
@@ -67,8 +67,9 @@ Data in a survival analysis are often subject to "censoring", which
 means that we only have partial information about the value of $T$ for
 many subjects.  Continuing with the example where stroke is the event
 of interest, only a subset of the subjects will have a stroke during
-our study.  Suppose a person is recruited into the study at age 65 (their
-left truncation time), and presently they are 75 years old and have not
+our study.  Suppose a person is recruited into the study at age 65
+immediately after receiving a stent (so $W=65$) and presently they are
+75 years old and have not
 yet had a stroke. This imaginary subject will have
 a stroke at some age $T<\infty$, but since that event occurs in the
 future we only know that $T > 75$.  This is called *right censoring* --
@@ -85,7 +86,8 @@ at which the stroke occurred.
 A common assumption in survival analysis is that of *independent
 censoring*.  We will define this here in the context of right censoring.
 Let $T$ be the event time and $R$ be the right censoring time.
-Note that only ${\rm min}(T, R)$ is observed, but we can
+We never observe both $T$ and $R$, and instead only observe
+${\rm min}(T, R)$.  But we can
 imagine that both values exist, one being a "latent" value.
 Independent censoring simply means that $T$ and $R$ are independent
 random variables. Concretely, this means, for example, that people who
@@ -169,7 +171,8 @@ $S(t) \equiv P(T>t)$.  It is closely related to the cumulative distribution
 function (CDF) $F(t) = P(T\le t)$ since $S(t) = 1 - F(t)$.  In words,
 the survival function at time $t$ is the probability that the event has
 not occurred by time $t$.  It is the same function as the complementary
-CDF.
+CDF.  We may also refer to this as the *marginal survival function*
+to emphasize that it is not conditioned on any covariates.
 
 The empirical CDF (eCDF) is one of the fundamental objects in statistics.
 Based on an independent and identically distributed (IID) sample from
@@ -183,7 +186,7 @@ truncation.  We will consider here only the important subcase where there
 is right censoring and no truncation.  In this setting there is a simple
 estimator of the survival function $S(t)$ known as the *product limit*
 estimator or the [Kaplan-Meier](https://en.wikipedia.org/wiki/Kaplan%E2%80%93Meier_estimator)
-estimator.  It is worth understanding how this estimator is constructed.
+estimator.
 
 Let $t_1 < t_2 < \cdots < t_m$ denote the distinct times at which events
 are observed to occur, let $d_i$ denote the number of events that occur
@@ -249,9 +252,7 @@ In many applications, the hazard function has a natural interpretation
 and may be easier to interpret than the survival function.  A common
 consideration is whether the hazard function is increasing, decreasing,
 approximately constant, or has some other shape like a "U" ("bathtub")
-shape.
-
-In terms of parametric distributions, the exponential distribution has a constant
+shape. In terms of parametric distributions, the exponential distribution has a constant
 hazard function, whereas the Weibull distribution can have either an increasing
 or decreasing hazard function depending on its parameters.
 
