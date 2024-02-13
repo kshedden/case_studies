@@ -37,6 +37,7 @@ da = merge(births, pop, on="FIPS", how="left")
 da = merge(da, rucc, on="FIPS", how="left")
 da = da %>% mutate(logPop = log(da$Population))
 da = da %>% mutate(yearc = year - mean(year))
+da = da %>% mutate(logPopc = logPop - mean(logPop))
 da = da %>% mutate(RUCC_2013c = RUCC_2013 - mean(RUCC_2013))
 head(da)
 ```
@@ -98,15 +99,26 @@ Next we prepare to fit a Poisson model using principal components regression (PC
 Use a power transformation to variance-stabilize the counts.
 
 ```{r}
-demog[,2:dim(demog)[2]] = demog[,2:dim(demog)[2]]^0.25
+demogx = as.matrix(demog[,2:dim(demog)[2]])
+demogx = demogx^0.25
+```
+
+Double center the data
+
+```{r}
+gmn = mean(demogx)
+demogx = demogx - gmn
+colmn = apply(demogx, 2, mean)
+demogx = t(t(demogx) - colmn)
+rowmn = apply(demogx, 1, mean)
+demogx = demogx - rowmn
 ```
 
 Get factors from the demographic data
 
 ```{r}
 va = colnames(demog)[2:dim(demog)[2]]
-demog = demog %>% mutate_at(va, scale, scale=FALSE)
-sv = svd(demog[,2:dim(demog)[2]])
+sv = svd(demogx)
 ```
 
 Calculate the proportion of variance explained by each factor.
@@ -142,7 +154,7 @@ GLM, not appropriate since we have repeated measures on counties
 ```{r}
 fml = paste("pc", seq(npc), sep="")
 fml = paste(fml, collapse=" + ")
-fml = sprintf("Births ~ (logPop + RUCC_2013c) * yearc + %s", fml)
+fml = sprintf("Births ~ (logPopc + RUCC_2013c) * yearc + %s", fml)
 fml = as.formula(fml)
 r7 = glm(fml, quasipoisson(), da)
 summary(r7)
@@ -151,7 +163,7 @@ summary(r7)
 GEE accounts for the correlated data, use logPop as offset
 
 ```{r}
-r8 = geeglm(fml, data=da, id=FIPS, offset=da$logPop, family=poisson())
+r8 = geeglm(fml, data=da, id=FIPS, family=Gamma(link="log"))
 summary(r8)
 ```
 
@@ -169,15 +181,16 @@ fitmodel = function(npc) {
     # Construct a model formula
     fml = paste("pc", seq(npc), sep="")
     fml = paste(fml, collapse=" + ")
-    fml = sprintf("Births ~ %s", fml)
+    fml = sprintf("Births ~ RUCC_2013c * yearc + %s", fml)
     fml = as.formula(fml)
 
-    # A GEE using log population as an offset
-    r = geeglm(fml, data=da, id=FIPS, family=poisson(), offset=da$logPop)
+    # A GEE using log population as an offset.
+    r = geeglm(fml, data=da, id=FIPS, family=Gamma(link="log"), offset=da$logPop)
 
     # Convert the coefficients back to the original coordinates
     cf = coef(r)
-    cf = cf[2:length(cf)]
+    ii = grep("pc", names(cf))
+    cf = cf[ii]
     cf = sv$v[,1:npc] %*% (cf / sv$d[1:npc])
     cf = data.frame(coef=cf)
     cf$Race = ""
@@ -200,16 +213,15 @@ fitmodel = function(npc) {
 }
 ```
 
-Fit models with these numbers of PCs.
+Fit models with these numbers of PCs.  Compared to Python we need to consider smaller models since GEEPack seems to hang on big models with Gamma families.
 
 ```{r}
-pcs = c(5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+pcs = c(5, 10, 20, 30) #, 40, 50, 60, 70, 80, 90, 100)
 ```
 
 ```{r}
 models = list()
 for (npc in pcs) {
-
     r = fitmodel(npc)
     models[[length(models)+1]] = r$model
     cf = r$coef
