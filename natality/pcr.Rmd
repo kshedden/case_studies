@@ -176,7 +176,7 @@ adjfit = model.matrix(r5) %*% coef(r5)
 This function fits a Poisson GLM to the data using 'npc' principal components as explanatory variables.
 
 ```{r}
-fitmodel = function(npc) {
+fitmodel = function(npc, use_gee=TRUE) {
 
     # Construct a model formula
     fml = paste("pc", seq(npc), sep="")
@@ -185,8 +185,12 @@ fitmodel = function(npc) {
     fml = as.formula(fml)
 
     # A GEE using log population as an offset.
-    r = geeglm(fml, data=da, id=FIPS, family=Gamma(link="log"), offset=da$logPop)
-
+    if (use_gee) {
+        r = geeglm(fml, data=da, id=FIPS, family=Gamma(link="log"), offset=da$logPop)
+    } else {
+        r = glm(fml, data=da, family=Gamma(link="log"), offset=da$logPop)
+    }
+        
     # Convert the coefficients back to the original coordinates
     cf = coef(r)
     ii = grep("pc", names(cf))
@@ -213,29 +217,38 @@ fitmodel = function(npc) {
 }
 ```
 
-Fit models with these numbers of PCs.  Compared to Python we need to consider smaller models since GEEPack seems to hang on big models with Gamma families.
+Fit models with these various numbers of PCs and plot the coefficients.  Use GLM to get the coefficient estimates for plotting since GEEPack seems to hang on big models with Gamma families.
+
+
+```{r}
+fit_models = function(pcs, use_gee, do_plot) {
+    models = list()
+    for (npc in pcs) {
+        print(npc)
+        r = fitmodel(npc, use_gee)
+        models[[length(models)+1]] = r$model
+        cf = r$coef
+
+        if (do_plot) {
+          plt = ggplot(cf, aes(x=Age, y=coef, group=interaction(Race, Origin, Sex), color=Race, lty=Sex, shape=Origin))
+          plt = plt + geom_line() + geom_point() + ggtitle(sprintf("%d factors", npc))
+          plt = plt + ggtitle(sprintf("%d PCs, cumulative PVE=%.4f", npc, sum(pve[1:npc])))
+          print(plt)
+        }
+    }
+    return(models)
+}
+
+pcs = c(5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+models = fit_models(pcs, FALSE, TRUE)
+```
+
+These score tests should use glmtoolbox but currently that doesn't work.
 
 ```{r}
 pcs = c(5, 10, 20, 30)
-```
+models = fit_models(pcs, TRUE, FALSE)
 
-```{r}
-models = list()
-for (npc in pcs) {
-    r = fitmodel(npc)
-    models[[length(models)+1]] = r$model
-    cf = r$coef
-
-    plt = ggplot(cf, aes(x=Age, y=coef, group=interaction(Race, Origin, Sex), color=Race, lty=Sex, shape=Origin))
-    plt = plt + geom_line() + geom_point() + ggtitle(sprintf("%d factors", npc))
-    plt = plt + ggtitle(sprintf("%d PCs, cumulative PVE=%.4f", npc, sum(pve[1:npc])))
-    print(plt)
-}
-```
-
-These score tests should use glmtoolbox but
-
-```{r}
 for (j in 2:(length(models)-1)) {
     st = anova(models[[j-1]], models[[j]], test="score")
     p = st[[3]]
