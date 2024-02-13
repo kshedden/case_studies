@@ -216,7 +216,7 @@ fitmodel = function(npc) {
 Fit models with these numbers of PCs.  Compared to Python we need to consider smaller models since GEEPack seems to hang on big models with Gamma families.
 
 ```{r}
-pcs = c(5, 10, 20, 30) #, 40, 50, 60, 70, 80, 90, 100)
+pcs = c(5, 10, 20, 30)
 ```
 
 ```{r}
