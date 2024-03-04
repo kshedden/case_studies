@@ -14,3 +14,7 @@ This is a compressed text file in CSV format. Do not decompress the file, the
 scripts will read the file directly in its compressed format.  The contents
 of this file seem to have a non-standard (non-UTF) encoding.  See the scripts
 to see how to handle this in different packages.
+
+A paper describing the variables is linked below:
+
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9184645/

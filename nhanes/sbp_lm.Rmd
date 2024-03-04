@@ -1,0 +1,327 @@
+# Predictors of blood pressure in US adults
+
+This case study uses data from the National Health and Nutrition Examination Survey (NHANES) to identify predictors of blood pressure in US adults. NHANES is a cross-sectional study so we have a single blood pressure measurement for each subject, along with many potential predictors that are acquired at the same point in time as the blood pressure is measured. It is important to keep in mind that NHANES is an observational study, so relationships between variables identified using regression analysis may not be causal (e.g. they may reflect an unmeasured common cause).
+
+Blood pressure is a highly volatile trait, so a single measurement may reflect transient factors that are not reflected in the covariates. However some fraction of blood pressure variation is explained by covariates. For example, we will see strong differences in blood pressure related to age, sex, body dimensions (height, weight, BMI), and race. The roles of these explanatory variables will turn out to be nonlinear and non-additive.
+
+All analyses below employ linear least squares (OLS). Models fit using OLS are ideal in homoscedastic settings (where the variance is constant in the mean). This is not strictly true, as demonstrated below, but holds in good approximation. OLS can be employed in the presence of mild heteroscedasticity, but there may be a mild loss of precision (statistical power).
+
+```{r}
+library(splines)
+library(ggplot2)
+library(readr)
+source("read.R")
+```
+
+First we construct some functions that help us plot estimated conditional mean blood pressure as a function of age or BMI, for fixed values of the other variables of interest.
+
+```{r}
+dp = df[1:100,]
+dp$RIDAGEYR = seq(18, 80, length.out=100)
+dp$BPXSY1 = 0
+dp$RIDRETH1 = "MA"
+
+db = df[1:100,]
+db$BMXBMI = seq(20, 50, length.out=100)
+db$BPXSY1 = 0
+db$RIDRETH1 = "MA"
+```
+
+This function plots the conditional mean of SBP as a function of age, for each sex.  If requested, broken lines are included to reflect plus or minus one estimated standard deviation from the conditional mean.
+
+```{r}
+plot1 = function(mm, ii, dbands=FALSE) {
+    df = data.frame()
+    sig = summary(mm)$sigma
+    for (sex in c("F", "M")) {
+        dp[,"RIAGENDR"] = sex
+        dp[,"BMXBMI"] = 25
+        yh = predict(mm, dp)
+        dx = data.frame(SBP=yh, sex=sex, age=dp[,"RIDAGEYR"])
+        dx[,"SBP1"] = dx[,"SBP"] - sig
+        dx[,"SBP2"] = dx[,"SBP"] + sig
+        df = rbind(df, dx)
+    }
+    plt = ggplot(aes(x=RIDAGEYR, y=SBP, color=sex, by=sex), data=df) + geom_line()
+    if (dbands) {
+        for (sex in c("F", "M")) {
+            plt = plt + geom_line(aes(y=SBP1), linetype="dotted")
+            plt = plt + geom_line(aes(y=SBP2), linetype="dotted")
+        }
+    }
+    print(plt)
+}
+```
+
+This function plots the estimated conditional mean SBP for each sex and for fixed levels of BMI (25 versus 30).
+
+```{r}
+plot2 = function(mm, ii) {
+    df = data.frame()
+    for (sex in c("F", "M")) {
+        for (bmi in c(25, 30)) {
+            dp[,"RIAGENDR"] = sex
+            dp[,"BMXBMI"] = bmi
+            yh = predict(mm, dp)
+            dx = data.frame(SBP=yh, bmi=bmi, sex=sex, age=dp[,"RIDAGEYR"])
+            df = rbind(df, dx)
+        }
+    }
+    plt = ggplot(aes(x=RIDAGEYR, y=SBP, color=interaction(sex, bmi), by=interaction(sex, bmi)), data=df) + geom_line()
+    print(plt)
+}
+```
+
+This function compares females to males at each fixed age, at a fixed BMI, with confidence bands.
+
+```{r}
+plot3 = function(mm, ii) {
+    dp[,"BMXBMI"] = 25
+    yy = list()
+    xm = list()
+    for (sex in c("F", "M")) {
+        dp[,"RIAGENDR"] = sex
+        yy[[length(yy)+1]] = predict(mm, dp)
+        xm[[length(xm)+1]] = model.matrix(mm, data=dp)
+    }
+    vc = vcov(mm)
+    xd = xm[[1]] - xm[[2]]
+    yd = yy[[1]] - yy[[2]]
+    se = sqrt(diag(xd %*% vc %*% t(xd)))
+    df = data.frame(yd=yd, se=se, age=dp[,"RIDAGEYR"])
+    df[,"y1"] = df[,"yd"] + 2*df[,"se"]
+    df[,"y2"] = df[,"yd"] - 2*df[,"se"]
+    plt = ggplot(aes(x=RIDAGEYR, y=yd), data=df)
+    plt = plt + geom_ribbon(aes(x=RIDAGEYR, ymin=y1, ymax=y2), fill="grey70")
+    plt = plt + geom_line()
+    plt = plt + labs(x="Age", y="Female SBP minus male SBP")
+    print(plt)
+}
+```
+
+This function compares people with BMI 25 to BMI 30 at each age, for females only.
+
+```{r}
+plot4 = function(mm, ii) {
+    dp[,"RIAGENDR"] = "F"
+    yy = list()
+    xm = list()
+    for (bmi in c(30, 25)) {
+        dp[,"BMXBMI"] = bmi
+        yy[[length(yy)+1]] = predict(mm, dp)
+        xm[[length(xm)+1]] = model.matrix(mm, data=dp)
+    }
+    vc = vcov(mm)
+    xd = xm[[1]] - xm[[2]]
+    yd = yy[[1]] - yy[[2]]
+    se = sqrt(diag(xd %*% vc %*% t(xd)))
+    df = data.frame(yd=yd, se=se, age=dp[,"RIDAGEYR"])
+    df[,"y1"] = df[,"yd"] + 2*df[,"se"]
+    df[,"y2"] = df[,"yd"] - 2*df[,"se"]
+    plt = ggplot(aes(x=RIDAGEYR, y=yd), data=df)
+    plt = plt + geom_ribbon(aes(x=RIDAGEYR, ymin=y1, ymax=y2), fill="grey70")
+    plt = plt + geom_line()
+    plt = plt + labs(x="Age", y="SBP at BMI 30 vs. 25")
+    print(plt)
+}
+```
+
+This function plots predicted SBP by BMI at two different age levels (40 and 60).
+
+```{r}
+plot5 = function(mm, ii, ages=c(40, 60)) {
+    df = data.frame()
+    for (sex in c("F", "M")) {
+        for (age in ages) {
+            db[,"RIAGENDR"] = sex
+            db[,"RIDAGEYR"] = age
+            yh = predict(mm, db)
+            dx = data.frame(SBP=yh, BMXBMI=db[,"BMXBMI"], sex=sex, age=age)
+            df = rbind(df, dx)
+        }
+    }
+    plt = ggplot(aes(x=BMXBMI, y=SBP, color=interaction(sex, age), by=interaction(sex, age)), data=df) + geom_line()
+    print(plt)
+}
+```
+
+
+```{r}
+all_plots = function(mm, ii) {
+    plot1(mm, ii)
+    plot1(mm, ii, dbands=TRUE)
+    plot2(mm, ii)
+    plot3(mm, ii)
+    plot4(mm, ii)
+    plot5(mm, ii)
+}
+```
+
+The first model is a very basic additive model expressing expected blood pressure as a linear function of age, sex, and BMI. This is a "linear mean structure model" in the sense that blood pressure is modeled as a linear function of age for fixed values of sex and BMI. It is also modeled as a linear function of BMI for fixed values of sex and age.
+
+```{r}
+f0 = as.formula("BPXSY1 ~ RIDAGEYR + RIAGENDR + BMXBMI")
+m0 = lm(f0, df)
+all_plots(m0, 0)
+```
+
+Model 1 allows the age slopes to differ by sex, while additively controlling for BMI.
+
+```{r}
+f1 = as.formula("BPXSY1 ~ RIDAGEYR * RIAGENDR + BMXBMI")
+m1 = lm(f1, df)
+all_plots(m1, 1)
+```
+
+Model 2 allows BMI slopes to differ by sex.
+
+```{r}
+f2 = as.formula("BPXSY1 ~ RIDAGEYR + RIAGENDR * BMXBMI")
+m2 = lm(f2, df)
+all_plots(m2, 2)
+```
+
+Model 3 allows both age and BMI slopes to differ by sex.
+
+```{r}
+f3 = as.formula("BPXSY1 ~ (RIDAGEYR + BMXBMI) * RIAGENDR")
+m3 = lm(f3, df)
+all_plots(m3, 3)
+```
+
+Model 4 has full interactions among age, BMI, and sex.
+
+```{r}
+f4 = as.formula("BPXSY1 ~ RIDAGEYR * BMXBMI * RIAGENDR")
+m4 = lm(f4, df)
+all_plots(m4, 4)
+```
+```{r}
+aic = sapply(list(m0, m1, m2, m3, m4), AIC)
+aic = aic - min(aic)
+aic
+```
+
+All models above treated quantitative variables (age and BMI) linearly. Now we turn to the use of basis functions to capture nonlinear roles for these quantitative variables. 
+
+Model 5 allows for a nonlinear relationship between age and expected blood pressure, with additive control for sex and BMI.
+
+```{r}
+f5 = as.formula("BPXSY1 ~ bs(RIDAGEYR, 5) + RIAGENDR + BMXBMI")
+m5 = lm(f5, df)
+all_plots(m5, 5)
+```
+
+Model 6 allows nonlinear age trends to differ by sex, correcting for additive BMI effects.
+
+```{r}
+f6 = as.formula("BPXSY1 ~ bs(RIDAGEYR, 5) * RIAGENDR + BMXBMI")
+m6 = lm(f6, df)
+all_plots(m6, 6)
+```
+
+Model 7 has nonlinear age effects and allows linear BMI trends to differ by sex.
+
+```{r}
+f7 = as.formula("BPXSY1 ~ bs(RIDAGEYR, 5) + RIAGENDR * BMXBMI")
+m7 = lm(f7, df)
+all_plots(m7, 7)
+```
+
+Model 8 allows both nonlinear age trends and BMI trends to differ by sex.
+
+```{r}
+f8 = as.formula("BPXSY1 ~ (bs(RIDAGEYR, 5) + BMXBMI) * RIAGENDR")
+m8 = lm(f8, df)
+all_plots(m8, 8)
+```
+
+Full interactions among nonlinear age, BMI, and sex
+
+```{r}
+f9 = as.formula("BPXSY1 ~ bs(RIDAGEYR, 5) * BMXBMI * RIAGENDR")
+m9 = lm(f9, df)
+all_plots(m9, 9)
+```
+
+Full interactions among nonlinear age, BMI, and sex with additive control for ethnicity
+
+```{r}
+f10 = as.formula("BPXSY1 ~ bs(RIDAGEYR, 5) * BMXBMI * RIAGENDR + RIDRETH1")
+m10 = lm(f10, df)
+all_plots(m10, 10)
+```
+
+Full interactions among nonlinear age, BMI, and sex with ethnicity x sex interactions
+
+```{r}
+f11 = as.formula("BPXSY1 ~ (bs(RIDAGEYR, 5) * BMXBMI + RIDRETH1) * RIAGENDR")
+m11 = lm(f11, df)
+all_plots(m11, 11)
+```
+
+Full interactions among nonlinear age, BMI, and sex, and between sex and ethnicity, and between linear age and ethnicity.
+
+```{r}
+f12 = as.formula("BPXSY1 ~ bs(RIDAGEYR, 5) * BMXBMI * RIAGENDR + (RIAGENDR + RIDAGEYR) * RIDRETH1")
+m12 = lm(f12, df)
+all_plots(m12, 12)
+```
+
+Full interactions among nonlinear age, BMI, and sex, and between sex and ethnicity, and between nonlinear age and ethnicity.
+
+```{r}
+f13 = as.formula("BPXSY1 ~ bs(RIDAGEYR, 5) * BMXBMI * RIAGENDR + (RIAGENDR + bs(RIDAGEYR, 5)) * RIDRETH1")
+m13 = lm(f13, df)
+all_plots(m13, 13)
+```
+
+Full interactions among nonlinear age, BMI, sex, and ethnicity.
+
+```{r}
+f14 = as.formula("BPXSY1 ~ bs(RIDAGEYR, 5) * BMXBMI * RIAGENDR * RIDRETH1")
+m14 = lm(f14, df)
+all_plots(m14, 14)
+```
+
+Calculate AIC for all models
+
+```{r}
+mm = list(m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14)
+maic = sapply(mm, AIC)
+maic = maic - min(maic)
+```
+
+All models above were fit using ordinary least squares (OLS), which works best under homoscedasticity (no relationship between the conditional variance and conditional mean). We can assess this using the plot below, which reveals an increasing mean/variance relationship. Since the mean/variance relationship is not strong, especially up to 140 mm Hg where most of the data lie, we have decided to ignore this above.
+
+```{r}
+dg = data.frame(resid=resid(m12), fit=fitted.values(m12))
+plt = ggplot(aes(x=fit, y=resid, alpha=0.2), data=dg) + geom_point()
+print(plt)
+```
+
+```{r}
+dg = data.frame(resid=abs(resid(m12)), fit=fitted.values(m12))
+plt = ggplot(aes(x=fit, y=resid, alpha=0.2), data=dg) + geom_point(show.legend=FALSE) 
+plt = plt + geom_smooth(se=FALSE, show.legend=FALSE)
+print(plt)
+```
+Many of the models above employed B-spline basis functions to capture the nonlinear relationships between quantitative predictors and expected blood pressure. Below we plot the basis functions for different degrees of freedom. This is a didactic plot intended to help us understand how the models work.
+
+```{r}
+for (d in c(3, 5, 10)) {
+  df = arrange(df, by=RIDAGEYR)
+  mm = lm(BPXSY1 ~ 0 + RIDAGEYR + bs(RIDAGEYR, d), df)
+  X = model.matrix(mm)
+  dd = data.frame()
+  for (j in 1:d) {
+    aa = data.frame(age=X[,1])
+    aa$g = j
+    aa[,"B"] = X[,j+1]
+    dd = rbind(dd, aa)
+  }
+  dd$g = as.factor(dd$g)
+  plt = ggplot(dd, aes(x=age, y=B, by=g, color=g)) + geom_line()
+  print(plt)
+}
+```
