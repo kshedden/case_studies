@@ -15,7 +15,7 @@ a very specific and thoughtful way to integrate the two.
 
 4. (March 18). Write a revision of either your first or second memo (the precipitation/extremes memo or the natality/biplots/GLM memo).  You
 should choose whichever memo recieved more critical feedback.  You can use your previous memo as a starting point and there is no concern
-about "self plagiarism" in this case, but your revision should contain substantial changes to your previous submission, even if the gradetrs
+about "self plagiarism" in this case, but your revision should contain substantial changes to your previous submission, even if the graders
 identified few issues with your previous submission.
 
-5. (March 25). TBA
+5. (March 25). Write a memo discussing a specific finding related to blood pressure variation in US adults, based on the NHANES data.
