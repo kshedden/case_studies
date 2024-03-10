@@ -1,0 +1,136 @@
+```{r}
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(dr)
+```
+
+# Blood pressure in US adults - understanding the relationship between anthropometry, demography, and blood pressure using dimension reduction regression
+
+```{r}
+source("read.R")
+
+dx = df %>% dplyr::select(BPXSY1, RIAGENDR, RIDAGEYR, BMXWT, BMXHT, BMXBMI, BMXLEG, BMXARML, BMXARMC, BMXWAIST, BMXHIP)
+dx = dx[complete.cases(dx),]
+```
+
+All variables in the DR analysis must be numeric, so we recode the gender variable.
+
+```{r}
+dx$RIAGENDRx = recode(dx$RIAGENDR, "F"=1, "M"=-1)
+```
+
+Dimension reduction regression focuses on deviations from the mean, so we center all variables here.
+
+```{r}
+for (m in names(dx)) {
+    if (is.numeric(dx[[m]])) {
+        dx[[m]] = scale(dx[[m]], scale=F)
+    }
+}
+```
+
+Below we fit a dimension reduction regression model using sliced inverse regression.
+
+```{r}
+m = dr(BPXSY1 ~ RIAGENDRx + RIDAGEYR + BMXWT + BMXHT + BMXBMI + BMXLEG + BMXARML + BMXARMC + BMXWAIST + BMXHIP, dx)
+```
+
+Based on these tests we focus on the first two directions
+
+```{r}
+print(dr.test(m))
+```
+
+These are the scores, which capture the state of each observation (each person) with respect to the variables.
+
+```{r}
+scores = m$x %*% m$evectors
+```
+
+The function below stratifies on the j'th score, the plots the mean of SBP with respect to the
+k'th score.
+
+```{r}
+plotstrat = function(j, k) {
+    dp = data.frame(strat=scores[,j], x=scores[,k], y=dx$BPXSY1)
+    dp[,"stratq"] = ntile(dp[,"strat"], 5)
+    xx = seq(min(scores[,k]), max(scores[,k]), length.out=100)
+    dg = dp %>% group_by(stratq) %>% group_modify(~ {
+        m = lowess(.x$x, .x$y)
+        f = approxfun(m)
+        data.frame(score=xx, sbp=f(xx))
+    })
+    dg$stratq = as.factor(dg$stratq)
+    plt = ggplot(aes(x=score, y=sbp, color=stratq), data=dg)
+    plt = plt + geom_line()
+    plt = plt + labs(x=sprintf("Score %d", k), y="SBP (centered)")
+    print(plt)
+}
+```
+
+```{r}
+plotstrat(2, 1)
+plotstrat(1, 2)
+```
+
+Make a contour plot showing the mean SBP for each combination of score values (for the first two factors).
+
+```{r}
+dp = data.frame(s1=scores[,1], s2=scores[,2], y=dx$BPXSY1)
+rr = loess(y ~ s1 + s2, dp)
+s1 = seq(min(scores[,1]), max(scores[,1]), length.out=100)
+s2 = seq(min(scores[,2]), max(scores[,2]), length.out=100)
+x1 = kronecker(s1, array(1, 100))
+x2 = kronecker(array(1, 100), s2)
+xx = data.frame(s1=x1, s2=x2)
+xx$yy = predict(rr, xx)
+plt = ggplot(aes(s1, s2, z=yy), data=xx) + geom_contour_filled()
+print(plt)
+```
+
+Plot the DV (SBP) against each score, or plot each score against every covariate.
+
+```{r}
+dx$sex2 = recode(dx$RIAGENDR, "F"="EF", "M"="EM")
+for (j in 1:2) {
+    for (x in names(dx)) {
+        if (x != "BPXSY1") {
+            dp = data.frame(x=dx[[x]], y=scores[,j], sex=as.factor(dx$RIAGENDR),
+                            sex2=as.factor(dx$sex2))
+            plt = ggplot(aes(x=x, y=y, color=sex), data=dp)
+            plt = plt + geom_point(alpha=0.2, fill=NA)
+            plt = plt + geom_smooth(se=FALSE)
+            plt = plt + labs(x=x, y=sprintf("Score %d", j))
+        } else {
+            dp = data.frame(x=scores[,j], y=dx[[x]])
+            plt = ggplot(aes(x=x, y=y), data=dp) + geom_point(alpha=0.2, fill=NA)
+            plt = plt + geom_smooth(se=FALSE)
+            plt = plt + labs(y=x, x=sprintf("Score %d", j))
+        }
+        print(plt)
+    }
+}
+```
+
+Here is one way of understanding the results above:
+
+Score 1 appears to be "sex adjusted age". The relationship between score 1 and age is nearly perfectly linear, and there is a difference in intercept but not in the slope based on sex. Score 1 increases linearly in age, at around 0.5 points per decade of life, and males are about 0.5 units greater than females at the same age.
+
+Score 1 also has associations with other variables, but the interpretation of score 1 as "sex adjusted age" seems most straightforward, as there is much more scatter in the other relationships. Score 1 associates positively with SBP, so arguably score 1 capture much of the role of sex and age in relation to blood pressure.
+
+Score 2 also plays an important role, in that it moderates the relationship between SBP and score 1. People with a greater positive value of score 2 will have a steeper slope between SBP and score 1, while people with a negative value of score 2 will have a weaker (but still positive) relationship between SBP and score 1.
+
+Score 2 is related to several of the anthropometric measures, but is most strongly related to BMI and arm circumference. People with greater BMI and arm circumference have lower values of score 2, which as noted above moderates the relationship between SBP and score 1 (age/sex). People with greater body fat have greater SBP at earlier ages, but their SBP increases more slowly with age.
+
+Also of note is that score 2 on its own has minimal association with SBP and only a modest association with age.Here is one way of understanding the results above:
+
+Score 1 appears to be "sex adjusted age". The relationship between score 1 and age is nearly perfectly linear, and there is a difference in intercept but not in the slope based on sex. Score 1 increases linearly in age, at around 0.5 points per decade of life, and males are about 0.5 units greater than females at the same age.
+
+Score 1 also has associations with other variables, but the interpretation of score 1 as "sex adjusted age" seems most straightforward, as there is much more scatter in the other relationships. Score 1 associates positively with SBP, so arguably score 1 capture much of the role of sex and age in relation to blood pressure.
+
+Score 2 also plays an important role, in that it moderates the relationship between SBP and score 1. People with a greater positive value of score 2 will have a steeper slope between SBP and score 1, while people with a negative value of score 2 will have a weaker (but still positive) relationship between SBP and score 1.
+
+Score 2 is related to several of the anthropometric measures, but is most strongly related to BMI and arm circumference. People with greater BMI and arm circumference have lower values of score 2, which as noted above moderates the relationship between SBP and score 1 (age/sex). People with greater body fat have greater SBP at earlier ages, but their SBP increases more slowly with age.
+
+Also of note is that score 2 on its own has minimal association with SBP and only a modest association with age.
