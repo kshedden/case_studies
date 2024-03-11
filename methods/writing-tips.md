@@ -22,19 +22,19 @@ is appropriate to do so.
   research question.  Little-to-no space should be devoted to broader discussion of
   the scientific domain or statistical issues not directly related
   to your analysis and findings.  Since the length of your memo is strictly limited, any such
-  broad discussion will take away from the qaulity and quantity of your specific
+  discussion will take away from the quality and quantity of your specific
   findings and will lead to the ideas presented in your memo being underdeveloped.
 
 * Write in complete sentences, with the content organized logically into
-  paragraphs that are usually 3-5 sentences long.  Do not submit an outline or bulleted list of points.  You
+  paragraphs that are usually 3-5 sentences long.  Do not submit an outline or list of points.  You
   do not need to include section headers but may do so if you wish.
 
 * Most memos will include a brief introductory paragraph
-  containing an explicit statement of the research question along with
+  containing an explicit statement of the research aim along with
   essential background information, one or two paragraphs discussing the
   methods used in your analysis, one or two paragraphs of results, and
   one or two paragraphs of discussion.  In the discussion paragraphs you
-  can be a bit more interprative than the results paragraphs, which should
+  can be a bit more interpretive than the results paragraphs, which should
   be more "matter of fact".
 
 *  Do not discuss
@@ -43,16 +43,17 @@ is appropriate to do so.
   be very specific to your analysis and conclusions, not a generic list of limitations
   that would apply in almost any setting.
 
-* Aim for an academic tone. Avoid the excessive use of vague adjectives like
-  "comprehensive", "nuanced", and "intricate" unless you can specifically
+* Aim for an academic tone. Avoid the excessive use of self-congratulatory adjectives like
+  "comprehensive", "nuanced", and "intricate" to describe your analysis unless you can specifically
   state why these terms are relevant.
 
-* You can write in the first person "I found..."" or using the "majestic we"
+* You can write in the first person "I found..." or using the "majestic we"
   (presenting your results using the pronoun "we" even though the analysis
   was done by one person).
 
 * Make specific claims and assertions, then back them up with specific
-  evidence and arguments.
+  evidence and arguments.  The evidence and arguments should be specifically
+  grounded in the data that you have analyzed.
 
 * Focus on findings that follow directly from your analysis of the
   data.  For this class, you do not need to provide independent
@@ -66,8 +67,8 @@ is appropriate to do so.
   implications.  Be realistic about what can be accomplished when addressing
   a complex and challenging question with a single limited data set.
   Avoid making sweeping conclusions or suggesting without qualification that
-  your findings support specific actions to be made in the "real world".
-  One analysis of one data set will only very rarely allow definitive or
+  your findings support specific policy actions to be made in the "real world".
+  Remember that one brief analysis of one data set will only very rarely allow definitive or
   deeply novel insights to be gained.
 
 * Avoid "straw man" arguments, for example, spending a lot of time
@@ -84,15 +85,17 @@ should follow the logic of the question you are aiming to address, and the
 evidence and interpretation that you use to support your claims.
 
 * Discussion of how you "cleaned" the data is only relevant if it is needed
-for the reader to understand your question, approach, and conclusions.  Avoid
-use of programming language syntax.  There is no need to document menial data
-processing tasks that involve no statistical judgement.
+for the reader to understand your question, approach, and conclusions.
+There is no need to document menial data processing tasks that involve no statistical judgment.
+Avoid use of programming language syntax in your writing, including variable names -- refer to variables
+using plain language.
 
 * Try to make your writing as self-contained as reasonably possible.  For this
 course, you can assume that the reader is familiar with the statistical
-methodology that you use.  Nevertheless, it helps to reinforce certain key
+methodology that you use -- you do not need to teach the reader about statistics
+from the ground up.  Nevertheless, it is good to reinforce certain key
 points by explaining the strengths and weaknesses of the methods that you
-employ, and the statistical reasoning behind your conclusions.
+employ, and presenting the statistical reasoning behind your conclusions.
 
 * To make the writing more realistic, do not refer to our class as such,
 or to prior assignments.
@@ -132,7 +135,7 @@ or to prior assignments.
 * Don't overstate or misstate the role of Gaussianity in statistical
   analyses.  Often it is a minor consideration.  It is almost never important
   that the data are Gaussian.  To the extent that Gaussianity matters,
-  it is usually because in some cases aggregated summary values should be Guassian in
+  it is usually because in some cases aggregated summary values should be Gaussian in
   order to calibrate tests and confidence intervals.
 
 ## Organization and structure
@@ -216,7 +219,7 @@ and only
   it), but nearly always will have limitations.  It is neither fully valid
   nor fully invalid.
 
-* "Assumption" is very commonly used when describing statistical
+* The term "assumption" is very commonly used when describing statistical
   methods, but is arguably over-used.  A good alternative term is "condition".
   Your findings will be more meaningful if the conditions approximately hold,
   and less meaningful if they are strongly violated.  If you do choose to
@@ -234,10 +237,10 @@ and only
   A "model" is a specific mathematical or computational formalism that aims
   to describe how a system works.  For any given class of models, there is a
   corresponding class of methods that can be used to fit those models to data.
-  For example, we have "linear models" and "least squares regression" --
+  For example, we have "linear models" and "ordinary least squares" --
   the former is a class of models, the latter is a class of techniques for
-  fitting models to data.  It is usually not appropriate to write "least
-  squares models", since it confuses these two distinct ideas.
+  fitting models to data.  It is usually not appropriate to write "OLS models",
+  since it confuses these two distinct ideas.
 
 * The term "estimation" is used in statistics to refer to the setting where
   we sample data from a population and use the sample to estimate population
@@ -322,7 +325,7 @@ and only
 * Just as with other forms of statistical analysis, graphs are most effective
   when used comparatively.  Thus, it is often effective to overlay or juxtapose
   graphs corresponding to comparisons in your analysis.  For example, you can
-  usually overaly 2-3 histograms or density estimates, or you can capture
+  usually overlay 2-3 histograms or density estimates, or you can capture
   multiple conditional mean relationships by coloring the points in a scatterplot
   corresponding to different subgroups.
 
@@ -370,7 +373,7 @@ and only
 
 * A correlation is a specific type of statistical measure describing the relationship
 between two variables. In most cases, if you are not talking about one of the standard
-correlation measures (Pearson, Spearment, Kendall) it is best to refer to the
+correlation measures (Pearson, Spearman, Kendall) it is best to refer to the
 statistic as an "association".
 
 * Be explicit when discussing percentage changes in variables that are
