@@ -1,0 +1,154 @@
+# Blood pressure in US adults - understanding the relationship between anthropometry, demography, and blood pressure using kernel regression.  
+
+Kernel ridge regression (KRR) is a nonparametric regression technique. KRR has the potential to identify non-additive and non-linear conditional mean structures automatically, without needing to specify a regression formula or test a large set of models to identify the one that fits best. To use KRR we specify a positive semidefinite kernel function, and a regularization parameter.
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(readr)
+library(kernlab)
+```
+
+```{r}
+source("read.R")
+
+vx = c("RIAGENDR", "RIDAGEYR", "BMXWT", "BMXHT", "BMXBMI", "BMXLEG", "BMXARML", "BMXARMC", "BMXWAIST", "BMXHIP")
+va = c("BPXSY1", vx)
+dx = df %>% dplyr::select(all_of(va))
+dx = dx %>% drop_na()
+```
+
+All variables in the KRR analysis must be numeric, so we recode the gender variable.
+
+```{r}
+dx$RIAGENDRx = recode(dx$RIAGENDR, "F"=1, "M"=-1)
+va[va == "RIAGENDR"] = "RIAGENDRx"
+vx[vx == "RIAGENDR"] = "RIAGENDRx"
+```
+
+```{r}
+dx = dx[1:3000,]
+```
+
+Standardize all variables.
+
+```{r}
+age_mean = mean(dx$RIDAGEYR)
+age_sd = sd(dx$RIDAGEYR)
+sbp_mean = mean(dx$BPXSY1)
+sbp_sd = sd(dx$BPXSY1)
+dx = dx %>% mutate(across(all_of(va), ~ (.x - mean(.x)) / sd(.x)))
+```
+
+Plot the RMSE for various regularization parameters and kernels, using independent subsets of data for training and validation.
+
+```{r}
+goodness_of_fit = function(kers, lams, labels, title) {
+
+  # Split into training and testing sets
+  n = nrow(dx)
+  ii = order(runif(n))
+  dx1 = dx[ii[1:1500],]
+  dx2 = dx[ii[1501:n],]
+  X1 = as.matrix(dx1[,vx])
+  y1 = dx1$BPXSY1
+  X2 = as.matrix(dx2[,vx])
+  y2 = dx2$BPXSY1
+  
+  rmse = NULL
+  slam = NULL
+  sker = NULL
+  jj = 1
+  for (ker in kers) {
+     K1 = kernelMatrix(ker, X1)
+     ee = eigen(K1, symmetric=TRUE)
+     a = ee$values
+     b = ee$vectors
+     for (lam in lams) {
+       ahat = t(t(b) * (a / (a^2 + lam))) %*% (t(b) %*% y1)
+       K2 = kernelMatrix(ker, X2, X1)
+       yhat = K2 %*% ahat
+       rmse = c(rmse, sqrt(mean((yhat - y2)^2)))
+       slam = c(slam, lam)
+       sker = c(sker, labels[jj])
+     }
+     jj = jj + 1
+  }
+  
+  dp = data.frame(rmse=rmse, lam=slam, label=sker)
+  plt = ggplot(dp, aes(x=lam, y=rmse, by=label, color=label)) + geom_line()
+  print(plt)
+}
+```
+
+Assess goodness of fit for radial basis function kernels.
+
+```{r}
+scales = c(1, 1/2, 1/4, 1/10, 1/20)
+kers = sapply(scales, rbfdot)
+lams = c(1, 4, 8, 12, 15, 20, 40, 80)
+labels = sprintf("scale=%.2f", scales)
+goodness_of_fit(kers, lams, labels, "Squared exponential kernel")
+```
+
+Assess goodness of fit for polynomial kernels.
+
+```{r}
+powers = c(1, 2, 3, 4)
+kers = sapply(powers, polydot)
+lams = c(1, 4, 8, 12, 15, 20, 40, 80)
+labels = sprintf("power=%d", powers)
+goodness_of_fit(kers, lams, labels, "Polynomial kernel")
+```
+Generate plots of fitted values.
+
+```{r}
+plot_fit = function(ker, lam) {
+
+    ii = order(runif(nrow(dx)))
+    dx1 = dx[ii[1:2000],]
+    X1 = as.matrix(dx1[,vx])
+    y1 = dx1$BPXSY1
+
+    K = kernelMatrix(ker, X1)
+    ee = eigen(K)
+    a = ee$values
+    b = ee$vectors
+    ahat = t(t(b) * (a / (a^2 + lam))) %*% (t(b) %*% y1)
+
+    females = which(X1[, 1] > 0)
+    males = which(X1[, 1] < 0)
+
+    ages = seq(18, 80, length.out=50)
+    ages_std = (ages - age_mean) / age_sd
+    Xp = array(0, c(100, ncol(X1)))
+    Xp[1:50, 1] = X1[females[1], 1]
+    Xp[51:100, 1] = X1[males[1], 1]
+    Xp[1:50, 2] = ages_std
+    Xp[51:100, 2] = ages_std
+
+    Kp = kernelMatrix(ker, Xp, X1)
+    yhat = Kp %*% ahat
+    yhat = sbp_mean + sbp_sd * yhat
+
+    sex = c(rep("Female", 50), rep("Male", 50))
+    dp = data.frame(BPXSY1=yhat, RIDAGEYR=ages, RIAGENDR=sex)
+
+    plt = ggplot(dp, aes(x=RIDAGEYR, y=BPXSY1, group=RIAGENDR, color=RIAGENDR)) + geom_line()
+    print(plt)
+}
+```
+
+Plot the estimated conditional mean blood pressure given age and sex, with all other variables fixed at their mean values.
+
+```{r}
+plot_fit(rbfdot(0.05), 10)
+```
+Plot the estimated conditional mean blood pressure given age and sex, with all other variables fixed at their mean values, using polynomial kernels.
+
+```{r}
+for (d in c(1, 2, 3)) {
+  plot_fit(polydot(degree=d), 10)
+}
+```
