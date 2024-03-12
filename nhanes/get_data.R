@@ -21,6 +21,7 @@ for (file in list.files(pa)) {
         next
     }
     f = file.path(pa, file)
+    print(file.info(f))
     da = read_xpt(f)
     write_csv(da, gsub(".XPT", ".csv.gz", f))
 }
