@@ -442,7 +442,7 @@ to coincide with the PCs.
 DR can be viewed as fitting the multi-index regression model
 
 $$
-E[Y|X=x] = f(b_1^\prime x, \ldots, b_q^\prime x) + \epsilon,
+E[Y | X=x] = f(b_1^\prime x, \ldots, b_q^\prime x),
 $$
 
 where the $b_j \in {\mathbb R}^p$ are coefficient vectors defining the "indices" in

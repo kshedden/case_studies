@@ -218,16 +218,17 @@ summary(m7)
 
 ## Baseline hazard functions
 
-Estimate and plot the baseline cumulative hazard function.  Cumulative hazard functions are easy to estimate but somewhat difficult to interpret.
+Estimate and plot the baseline cumulative hazard function.  Cumulative hazard functions are easy to estimate but somewhat difficult to interpret.  Note that the basehaz function in R returns the cumulative hazard but the column is labeled 'hazard'.
 
 ```{r}
-bh = basehaz(m4)
+bh = basehaz(m0, center=FALSE)
+bh = bh %>% filter(time < 100)
 plt = ggplot(bh, aes(x=time, y=hazard)) + geom_line() + xlim(0, 100) +
              xlab("Age") + ylab("Cumulative hazard")
 print(plt)
 ```
 
-Plot the estimated baseline cumulative hazard function on the log scale
+Plot the estimated baseline cumulative hazard function on the log scale.
 
 ```{r}
 plt = ggplot(bh, aes(x=time, y=log(hazard))) + geom_line() + xlim(0, 100) +
@@ -239,17 +240,17 @@ Estimate the baseline hazard function using numerical differentiation and plot i
 
 ```{r}
 haz = diff(bh$hazard) / diff(bh$time)
-haz = data.frame(hazard=haz, time=bh$time[1:(length(bh$time)-1)])
-plt = ggplot(haz, aes(x=time, y=hazard)) + geom_line() + xlim(0, 100) +
-             xlab("Age") + ylab("Hazard")
+haz = data.frame(hazard=log(haz), time=bh$time[1:(length(bh$time)-1)])
+plt = ggplot(haz, aes(x=time, y=hazard)) + geom_smooth(se=F) + xlim(0, 100) +
+             xlab("Age") + ylab("log Hazard")
 print(plt)
 ```
 
-Plot the baseline hazard function for each sex.  Note that the basehaz function in R returns the cumulative hazard but the column is labeled 'hazard'.
+Plot the baseline hazard function for each sex.  
 
 ```{r}
-bh = basehaz(m7)
-print(bh)
-plt = ggplot(bh, aes(x=time, y=log(hazard), color=strata)) + geom_line() + xlim(0, 100) + xlab("Age") + ylab("Log cumulative hazard")
+bh = basehaz(m7, center=F)
+bhx = bh %>% group_by(strata) %>% transform(hh=c(diff(hazard) / diff(time), NA))
+plt = ggplot(bhx, aes(x=time, y=log(hh), color=strata)) + geom_smooth(se=F) + xlim(0, 100) + xlab("Age") + ylab("Log hazard")
 print(plt)
 ```
