@@ -490,7 +490,7 @@ using EARTH-like methods.
 
 Since the 1990's new approaches to regression based on *kernels* have
 become increasingly widely used.  These approaches automatically incorporate
-non-additivity and non-linearity into the fit, and use regularization
+non-additivity and non-linearity into the fitted regression function, and use regularization
 to optimize the fitted values based on the bias/variance tradeoff.  They
 share some properties with regression splines, but do not require specification
 of an explicit model formula and may perform better in higher dimensions due
@@ -552,8 +552,8 @@ $$
 $$
 
 It turns out that $\alpha^\prime K \alpha$ is a form of regularization in that
-it shrinks the fitted values toward the kernel of the Reproducing Kernel Hilbert
-Space (RKHS) correspondint to the kernel K.  More concretely,
+it shrinks the fitted values toward the nullspace of the Reproducing Kernel Hilbert
+Space (RKHS) corresponding to the kernel K.  More concretely,
 $\alpha^\prime K\alpha$ measures and penalizes the non-smoothness of the function
 $x\rightarrow \sum_i\alpha_i K(x,x_i)$.
 
