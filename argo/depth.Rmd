@@ -2,6 +2,8 @@
 
 This notebook demonstrates how we can use the concept of "data depth" to identify central and outlying points in the ARGO data.
 
+Quite a bit of processing is needed to prepare the data for these analyses.  You should review the get_data.R, prep.py, and read.R scripts to understand how this is done.  Note that there is no R version of the prep.py script.
+
 ```{r}
 library(dplyr)
 library(ggplot2)
@@ -11,10 +13,10 @@ library(ggplot2)
 source("read.R")
 ```
 
-The code below takes a while to run so subsample the columns.  You may need to subsample further (reduce m) if your computer is slow.
+The code below takes a while to run so subsample the columns.  You may need to subsample further (reduce m) if your computer is very slow.
 
 ```{r}
-m = 10000
+m = 5000
 ii = sample(1:dim(temp)[2], m, replace=F)
 tempx = temp[,ii]
 psalx = psal[,ii]
@@ -90,45 +92,54 @@ plot_mean(temp, pressure, "Mean temperature")
 plot_mean(psal, pressure, "Mean salinity")
 ```
 
-Partition the depths into q equal-sized bins.  Within each bin plot the response variable (temperature or salinity) against pressure for 10 randomly selected profiles.
+```{r}
+dp_temp = depths(tempx, sdepth, progress=T)
+```
 
 ```{r}
-depth_cut = function(x, q, pressure, ylab) {
-    dp = depths(x, l2depth, progress=T)
+dp_psal = depths(psalx, sdepth, progress=T)
+```
+Partition the depths into q equal-sized bins.  Within each bin plot the response variable (temperature or salinity) against pressure for 10 randomly selected profiles.  The purpose of these plots is to show how the data depth measure organizes the profiles based on their statistical depth (centrality or outlyingness).
+
+```{r}
+depth_cut = function(dp, x, q, pressure, ylab) {
     dq = ntile(dp, q)
 
-    for (i in seq(1, q, 2)) {
-
+    for (k in 1:q) {
         da = data.frame()
-        for (k in c(i, i+1)) {
-            ii = which(dq == k)
-            jj = sample(ii, 10)
-            for (j in jj) {
-                dd = data.frame(pressure=pressure, y=x[,j], j=j, k=k)
-                da = rbind(da, dd)
-            }
+        ii = which(dq == k)
+        jj = sample(ii, 10)
+        for (j in jj) {
+            dd = data.frame(pressure=pressure, y=x[,j], j=j)
+            da = rbind(da, dd)
         }
         da$j = as.factor(da$j)
-        da$k = as.factor(da$k)
 
-        plt = ggplot(aes(x=pressure, y=y, color=k, group=j), data=da) + geom_line()
-        plt = plt + ggtitle(sprintf("Depth band %d-%d", i, i+1))
+        plt = ggplot(aes(x=pressure, y=y, color="grey", by=j), data=da) + geom_line()
+        plt = plt + ggtitle(sprintf("Depth band %d", k))
         plt = plt + ylab(ylab) + xlab("Pressure")
+        if (ylab == "Temperature") {
+          plt = plt + ylim(-5, 37)
+        } else {
+          plt = plt + ylim(32, 37)
+        }
+        plt = plt + guides(color=FALSE, size="NONE")
         print(plt)
     }
     return(dp)
 }
 ```
 
-Plot a small random selection of profiles from each depth interval.
+Plot a small random selection of temperature profiles from each data depth interval.
 
 ```{r}
-q = 20
-dp_temp = depth_cut(tempx, q, pressure, "Temperature")
+q = 10 # number of bins
+dp_temp = depth_cut(dp_temp, tempx, q, pressure, "Temperature")
 ```
+Plot a small random selection of salinity profiles from each data depth interval.
 
 ```{r}
-dp_psal = depth_cut(psalx, q, pressure, "Salinity")
+dp_psal = depth_cut(dp_psal, psalx, q, pressure, "Salinity")
 ```
 
 Plot the estimated conditional mean depth relative to each explanatory variable.
@@ -162,4 +173,28 @@ depth_correlates(dp_temp, "Temperature")
 
 ```{r}
 depth_correlates(dp_psal, "Salinity")
+```
+The plot below shows the spatial positions for all profiles. For this and all subsequent spatial graphs we rotate longitude so that the Pacific ocean is not split down the middle. 
+
+```{r}
+lonz = lonx %% 360
+dp = data.frame(lat=latx, lon=lonz, depth=dp_temp)
+
+plt = ggplot(dp, aes(x=lon, y=lat)) + geom_point(alpha=0.2)
+print(plt)
+```
+```{r}
+
+plot_depth_map = function(dpt, ti, nq=10) {
+  lonz = lonx %% 360
+  qt = seq(0, nq) / nq
+  dp = data.frame(lat=latx, lon=lonz, depth=dpt, dd=dpt)
+  dp = dp %>% mutate(depthx=cut(depth, quantile(depth, qt)))
+  plt = ggplot(dp, aes(x=lon, y=lat, by=depthx, color=depthx)) + geom_point()
+  plt = plt + ggtitle(ti)
+  print(plt)
+}
+
+plot_depth_map(dp_temp, "Temperature", nq=5)
+plot_depth_map(dp_psal, "Salinity", nq=5)
 ```

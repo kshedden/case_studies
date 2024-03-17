@@ -1,3 +1,7 @@
+"""
+Download ARGO data
+"""
+
 import os, requests
 
 # Store the raw files in this location.  These files

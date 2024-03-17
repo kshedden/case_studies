@@ -36,7 +36,7 @@ surface or exterior of the point set.  Deep points are often referred to as
 having high "centrality" while
 shallow points have low centrality or high "outlyingness".
 Data depth can be viewed as a multivariate generalization of the
-notion of a quantile, with the deepest point in a set being a
+notion of a quantile, with the deepest point of a distribution being a
 type of multivariate median.
 
 Below are several examples of depths.
@@ -47,9 +47,9 @@ The original definition of depth was the *halfspace depth* introduced
 by John Tukey in 1975.  The definition of the halfspace depth is
 simple to describe graphically and a bit more difficult to define
 formally.  To calculate the halfspace depth of a single point
-$z\in {\cal R}^d$ with respect to a collection of points
-$\{x_i; i=1, \ldots, n\}$, with each $x_i \in {\cal R}^d$, let $U$ denote the set
-of all unit vectors in ${\cal R}^d$ and define the halfspace depth as
+$z\in {\mathbb R}^d$ with respect to a collection of points
+$\{x_i; i=1, \ldots, n\}$, with each $x_i \in {\mathbb R}^d$, let $U$ denote the set
+of all unit vectors in ${\mathbb R}^d$ and define the halfspace depth as
 
 $$
 D_{HS}(z; \\{x_i\\}) = {\rm min}_{u\in U} \\,n^{-1}\\,\sum_i {\cal I}(u^\prime (x_i - z) > 0)
@@ -125,7 +125,7 @@ exhibit that do not depend on any probability framework.  Four basic
 such properties are
 
 * *Affine invariance* -- If the data are transformed by the affine
-orthogonal mapping $x\longrightarrow c + Qx$, where $c\in {\cal R}^d$
+orthogonal mapping $x\longrightarrow c + Qx$, where $c\in {\mathbb R}^d$
 is a fixed vector and $Q$ is an orthogonal matrix, then the depths do
 not change.
 
@@ -136,7 +136,7 @@ the vector $0_d$ achieves the maximum depth.
 * *Monotonicity relative to the deepest point* -- Let $\tilde{x}$ be
 the deepest point and we consider any unit vector $u$, and we then
 evaluate the depth at $\tilde{x} + \lambda u$ for
-$\lambda \in {\cal R}^+$, then the depth is a decreasing function of $\lambda$.
+$\lambda \in {\mathbb R}^+$, then the depth is a decreasing function of $\lambda$.
 
 * *Vanishing at infinity* -- for any sequence $z_i$ with $\\|z_i\\|$
 tending to infinity, the depths of the $z_i$ tend to zero.
@@ -175,7 +175,7 @@ A recently developed algorithm constructs
 effective form of quantization.  To understand the support point
 algorithm, suppose that we are given a distribution function $G$ that
 we wish to approximate with a finite set of points.  The sample
-space is ${\cal R}^d$, and let $Y$ denote a random draw
+space is ${\mathbb R}^d$, and let $Y$ denote a random draw
 from $G$.  Now consider an approximating distribution $F$ with
 random draw $X$.
 

@@ -1,3 +1,5 @@
+# Download ARGO data.
+
 library(stringr)
 
 # Store the raw files in this location.  These files
@@ -31,7 +33,7 @@ getdata = function(ocean, year, month, day) {
 }
 
 get_year = function(ocean, year) {
-    for (month in 1:2) {
+    for (month in 1:12) {
         cat(sprintf("%s...\n", month))
         if (month %in% c(4, 6, 9, 11)) {
             days = 30

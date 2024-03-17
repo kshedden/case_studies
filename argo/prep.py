@@ -1,3 +1,10 @@
+"""
+This script takes the raw ARGO data and interpolates it onto a
+uniform grid of depths.  Profiles are excluded if they do not
+cover the range (minpress, maxpress), or if there are fewer than
+100 measured points in the raw profile.
+"""
+
 from pathlib import Path
 import os, datetime
 from scipy.interpolate import interp1d
@@ -5,7 +12,7 @@ from netCDF4 import Dataset
 import numpy as np
 
 # Path to the NetCDF files here, this path must be the same
-# as 'tpath' in the get_data.py script.  After running
+# as 'tpath' in the get_data.py or get_data.R script.  After running
 # prep.py, the contents of tpath can be deleted.
 tpath = Path("/scratch/stats_dept_root/stats_dept1/kshedden/argo/python")
 dpath = tpath / Path("argo/raw")
@@ -15,12 +22,16 @@ dpath = tpath / Path("argo/raw")
 qpath = Path("/home/kshedden/data/Teaching/argo/python")
 os.makedirs(qpath, exist_ok=True)
 
-# Retain only profiles that span this range of pressures
+# Retain only profiles that span this range of pressures (these are dbar
+# values and 1dbar is close to 1 meter).
 minpress = 20
 maxpress = 1500
 
+# Use a grid of this size
+ngrid = 100
+
 # Interpolate all data onto this pressure grid
-pressure = np.linspace(minpress, maxpress, 100)
+pressure = np.linspace(minpress, maxpress, ngrid)
 
 def clean_range(x):
     mn = x.getncattr("valid_min")
@@ -47,12 +58,14 @@ def get_raw(fn):
 def interp_profile(pres, temp, psal):
     ii = (pres != 9999) & (temp != 9999) & (psal != 9999)
     if sum(ii) < 100:
+        # Exclude profiles with fewer than 100 measured values
         return None, None
 
     pres = pres[ii]
     temp = temp[ii]
     psal = psal[ii]
     if pres.min() >= minpress or pres.max() <= maxpress:
+        # Exclude profiles that do not cover the specified pressure range
         return None, None
 
     ii = np.argsort(pres)

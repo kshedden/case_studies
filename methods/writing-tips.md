@@ -45,7 +45,7 @@ is appropriate to do so.
 
 * Aim for an academic tone. Avoid the excessive use of self-congratulatory adjectives like
   "comprehensive", "nuanced", and "intricate" to describe your analysis unless you can specifically
-  state why these terms are relevant.
+  state why these terms are relevant.  Let the reader be the judge of whether these terms are applicable.
 
 * You can write in the first person "I found..." or using the "majestic we"
   (presenting your results using the pronoun "we" even though the analysis
@@ -53,7 +53,8 @@ is appropriate to do so.
 
 * Make specific claims and assertions, then back them up with specific
   evidence and arguments.  The evidence and arguments should be specifically
-  grounded in the data that you have analyzed.
+  grounded in the data that you have analyzed and the statistical methods
+  that you employ.
 
 * Focus on findings that follow directly from your analysis of the
   data.  For this class, you do not need to provide independent
@@ -67,7 +68,8 @@ is appropriate to do so.
   implications.  Be realistic about what can be accomplished when addressing
   a complex and challenging question with a single limited data set.
   Avoid making sweeping conclusions or suggesting without qualification that
-  your findings support specific policy actions to be made in the "real world".
+  your findings support specific policy actions to be made in the "real world"
+  or major unexpected scientific insights.
   Remember that one brief analysis of one data set will only very rarely allow definitive or
   deeply novel insights to be gained.
 
@@ -87,14 +89,14 @@ evidence and interpretation that you use to support your claims.
 * Discussion of how you "cleaned" the data is only relevant if it is needed
 for the reader to understand your question, approach, and conclusions.
 There is no need to document menial data processing tasks that involve no statistical judgment.
-Avoid use of programming language syntax in your writing, including variable names -- refer to variables
+Avoid use of programming language syntax in your writing.  This includes variable names -- refer to variables
 using plain language.
 
 * Try to make your writing as self-contained as reasonably possible.  For this
 course, you can assume that the reader is familiar with the statistical
 methodology that you use -- you do not need to teach the reader about statistics
-from the ground up.  Nevertheless, it is good to reinforce certain key
-points by explaining the strengths and weaknesses of the methods that you
+from the ground up.  Nevertheless, it is important to reinforce key
+aspects of your approach, by explaining the strengths and weaknesses of the methods that you
 employ, and presenting the statistical reasoning behind your conclusions.
 
 * To make the writing more realistic, do not refer to our class as such,
@@ -252,6 +254,16 @@ and only
   statistical methods involve approximation (in addition to estimation), but
   it is usually much more correct to describe the result of a statistical
   procedure as being an estimate not an approximation.
+
+* You will frequently need to discuss interactions in regression models.  If
+  the response variable is $y$ and covariates $x$ and $z$ interact, you could simply
+  write that "there is an interaction between $x$ and $z$".  However this assumes
+  that the reader has a lot of experience interpreting interactions.  It is
+  more intuitive to write that "the role of $x$ differs based on the value of $z$",
+  or equivalently that "the role of $z$ differs based on the value of $x$".  If,
+  for example, $z$ is categorical, you could write that "the fitted slope of
+  $E[y | x, z]$ on $x$ differs between the groups defined by $z$".  You would need
+  to adjust this language if, for example, there is a link function.
 
 ## Causality
 
