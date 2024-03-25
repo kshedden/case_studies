@@ -19,3 +19,6 @@ about "self plagiarism" in this case, but your revision should contain substanti
 identified few issues with your previous submission.
 
 5. (March 25). Write a memo discussing a specific finding related to blood pressure variation in US adults, based on the NHANES data.
+
+6. (April 10). Write a memo discussing a specific finding relating to variation and covariation of temperature and salinity, based on the Argo data.
+Your memo should include some analysis and findings that go beyond what we covered in class.

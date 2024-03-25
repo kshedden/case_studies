@@ -1,0 +1,309 @@
+# Dimension reduction analysis of Argo data
+
+The Argo data consist of paired multivariate observations for temperature and salinity, measured at the same location at the same time.  Each observation is a 100-dimensional vector of either temperature or salinity as a function of pressure.  Here we use dimension reduction methods including Principal Components Analysis (PCA) and Canonical Correlation Analysis (CCA) to better understand these profiles.
+
+```{r}
+source("read.R")
+
+library(ggplot2)
+library(dplyr)
+#library(ggrastr)
+library(dr)
+```
+
+```{r}
+m = dim(temp)[1] # Number of pressure points
+n = dim(temp)[2] # Number of profiles
+```
+
+Convert latitude so that the Pacific ocean doesn't wrap around the origin.
+
+```{r}
+lonx = (lon + 60) %% 360
+```
+
+The mean profiles for temperature and salinity.
+
+```{r}
+tempmean = apply(temp, 1, mean)
+psalmean = apply(psal, 1, mean)
+```
+
+Plot the mean profiles.
+
+```{r}
+dp = data.frame(pressure=pressure, temp=tempmean, psal=psalmean)
+plt = ggplot(dp, aes(x=pressure, y=temp)) + geom_line()
+print(plt)
+
+plt = ggplot(dp, aes(x=pressure, y=psal)) + geom_line()
+print(plt)
+```
+
+Center the profiles
+
+```{r}
+tempc = temp - outer(tempmean, array(1, n))
+psalc = psal - outer(psalmean, array(1, n))
+```
+
+Get the principal components
+
+```{r}
+cc = cov(t(tempc))
+temp_ee = eigen(cc, symmetric=T)
+temp_eigval = temp_ee$values
+temp_eigvec = temp_ee$vectors
+
+cc = cov(t(psalc))
+psal_ee = eigen(cc, symmetric=T)
+psal_eigval = psal_ee$values
+psal_eigvec = psal_ee$vectors
+```
+
+Flip each PC loading vector if it is mostly negative.
+
+```{r}
+flip = function(eigvec) {
+  for (j in 1:dim(eigvec)[2]) {
+      if (sum(eigvec[,j] < 0) > sum(eigvec[,j] > 0)) {
+        eigvec[,j] = -eigvec[,j]
+      }
+  }
+  return(eigvec)
+}
+
+temp_eigvec = flip(temp_eigvec)
+psal_eigvec = flip(psal_eigvec)
+```
+
+Scores for the dominant PC's
+
+```{r}
+tscores = t(tempc) %*% temp_eigvec[,1:10]
+pscores = t(psalc) %*% psal_eigvec[,1:10]
+```
+
+Plot the loadings and means plus/minus multiples of the loadings.
+
+```{r}
+plot_loadings = function(ymean, scores, eigvec, ti) {
+
+  da = data.frame(pressure=pressure, ymean=ymean)
+
+  # Make several plots depicting the loading patterns.
+  for (j in 1:5) {
+      # Plot the loadings
+      da = data.frame(pressure=pressure, loading=eigvec[,j])
+      plt = ggplot(aes(x=pressure, y=loading), data=da) + geom_line()
+      plt = plt + labs(x="Pressure", y=sprintf("%s loading", ti))
+      plt = plt + ggtitle(sprintf("PC %d", j))
+      print(plt)
+
+      # Plot the mean profile +/- multiples of the loadings
+      da = data.frame()
+      s = sd(scores[,j])
+      for (f in c(-1, 0, 1)) {
+        dx = data.frame(pressure=pressure, profile=ymean+f*s*eigvec[,j], f=f)
+        da = rbind(da, dx)
+      }
+      da$f = as.factor(da$f)
+      plt = ggplot(aes(x=pressure, y=profile, color=f, group=f), data=da) + geom_line()
+      plt = plt + labs(x="Pressure", y=ti)
+      plt = plt + ggtitle(sprintf("PC %d", j))
+      print(plt)
+  }
+}
+```
+
+```{r}
+plot_loadings(tempmean, tscores, temp_eigvec, "Temperature")
+```
+
+```{r}
+plot_loadings(psalmean, pscores, psal_eigvec, "Salinity")
+```
+
+Plot the j^th PC score against the k^th feature.
+
+```{r}
+plot_pcscores = function(j, k) {
+
+    xx = seq(min(Y[,k]), max(Y[,k]), length=100)
+    m = lowess(Y[,k], tscores[,j])
+    mf = approxfun(m$x, m$y)
+    f = abs(m$y - tscores[,j])
+    r = lowess(Y[,k], f)
+    rf = approxfun(r$x, r$y)
+    da = data.frame(x=xx, y=mf(xx), r=rf(xx))
+
+    f = 2
+    da$y1 = da$y - f*da$r
+    da$y2 = da$y + f*da$r
+    plt = ggplot(aes(x=x, y=y), data=da)
+    plt = plt + labs(x=fn[k], y=sprintf("PC %d score", j))
+    plt = plt + geom_ribbon(aes(x=x, ymin=y1, ymax=y2), fill="grey70")
+    plt = plt + geom_line()
+    print(plt)
+}
+```
+
+```{r}
+fn = c("Latitude", "Longitude", "Day")
+Y = cbind(lat, lon, day)
+```
+
+```{r}
+for (j in 1:3) {
+    for (k in 1:3) {
+        plot_pcscores(j, k)
+    }
+}
+```
+
+Flip signs in two sets of CCA loadings to make them easier to understand in a plot.
+
+```{r}
+flip_cca = function(xcoef, ycoef) {
+    for (j in 1:dim(xcoef)[2]) {
+        if (mean(xcoef[,j] > 0) + mean(ycoef[,j] > 0) < 1) {
+            xcoef[,j] = -xcoef[,j]
+            ycoef[,j] = -ycoef[,j]
+        }
+    }
+    return(list(xcoef=xcoef, ycoef=ycoef))
+}
+```
+
+Use a combined PCA/CCA approach to relate temperature and salinity. Produce plots for a sequence of dimensions for the PCA dimension reduction.
+
+```{r}
+plot_cca = function() {
+    X = t(tempc)
+    Y = t(psalc)
+    svx = svd(X)
+    svy = svd(Y)
+
+    for (q in c(1, 2, 5, 10)) {
+        cc = cancor(svx$u[,1:q], svy$u[,1:q])
+        rr = cc$cor
+        print("Canonical correlations: ")
+        print(rr)
+
+        # Passing nrow and ncol is needed to avoid
+        # incorrect behavior when q=1.
+        ddx = diag(svx$d[1:q], q, q)
+        ddy = diag(svy$d[1:q], q, q)
+
+        # Map the loadings back to the original coordinates
+        xcoef = svx$v[,1:q] %*% solve(ddx, cc$xcoef)
+        ycoef = svy$v[,1:q] %*% solve(ddy, cc$ycoef)
+        ll = flip_cca(xcoef, ycoef)
+        xcoef = ll$xcoef
+        ycoef = ll$ycoef
+        
+        da = data.frame(temp_weights=xcoef[,1], psal_weights=ycoef[,1], pressure=pressure)
+        plt = ggplot(aes(x=pressure, y=temp_weights), data=da) + geom_line()
+        plt = plt + labs(x="Pressure", y="Temperature coefficient")
+        plt = plt + ggtitle(sprintf("CCA with q=%d components, r=%.2f", q, rr[1]))
+        if (min(ycoef[,1]) > 0) {
+            plt = plt + ylim(0, NA)
+        }
+        print(plt)
+        plt = ggplot(aes(x=pressure, y=psal_weights), data=da) + geom_line()
+        plt = plt + labs(x="Pressure", y="Salinity coefficient")
+        plt = plt + ggtitle(sprintf("CCA with q=%d components, r=%.2f", q, rr[1]))
+        if (min(ycoef[,1]) > 0) {
+            plt = plt + ylim(0, NA)
+        }
+        print(plt)
+    }
+}
+```
+
+```{r}
+plot_cca()
+```
+
+```{r}
+plot_cc_map = function(q=2) {
+    X = t(tempc)
+    Y = t(psalc)
+    svx = svd(X)
+    svy = svd(Y)
+    cc = cancor(svx$u[,1:q], svy$u[,1:q])
+
+    # Passing nrow and ncol is needed to avoid
+    # incorrect behavior when q=1.
+    ddx = diag(svx$d[1:q], q, q)
+    ddy = diag(svy$d[1:q], q, q)
+
+    xx = svx$u[,1:q] %*% cc$xcoef
+    yy = svy$u[,1:q] %*% cc$ycoef
+
+    grp = array(0, dim(xx)[1])
+    j1 = xx[,1] >= quantile(xx[,1], 0.9)
+    j2 = yy[,1] >= quantile(yy[,1], 0.9)
+    grp[j1 & j2] = 1
+    
+    k1 = xx[,1] <= quantile(xx[,1], 0.1)
+    k2 = yy[,1] <= quantile(yy[,1], 0.1)
+    grp[k1 & k2] = 2
+
+    dp = data.frame(lat=lat, lon=lonx, grp=grp)
+    dp = dp %>% filter(grp > 0)
+    dp$grp = as.factor(dp$grp)
+    plt = ggplot(dp, aes(x=lon, y=lat, by=grp, color=grp)) + geom_point(alpha=0.2)
+    print(plt)
+    
+    # TODO plot loadings
+}
+
+plot_cc_map()
+```
+
+# Dimension reduction regression
+
+SIR is a dimension reduction regression (DR) method.  Here we will use it doidentify factors within the temperature data that predict latitude.
+
+```{r}
+plot_sir = function() {
+
+    X = t(tempc)
+
+    # Due to high-dimensionality, we project the temperature data to
+    # a limited number of PC's before using SIR to estimate the coefficients.
+    q = 5
+    svx = svd(X)
+    dd = dr.compute(svx$u[,1:q], lat, array(1, length(lat)))
+    ddx = diag(svx$d[1:q], q, q)
+    b = svx$v[,1:q] %*% solve(ddx, dd$evectors)
+
+    # Plot the loadings
+    da = data.frame(pressure=c(pressure, pressure, pressure))
+    da$dir = c(b[,1], b[,2], b[,3])
+    oo = array(1, length(pressure))
+    da$group = c(1*oo, 2*oo, 3*oo)
+    da$group = as.factor(da$group)
+    plt = ggplot(aes(x=pressure, y=dir, by=group, color=group), data=da) + geom_line()
+    plt = plt + labs(x="Pressure", y="Temperature loading")
+    plt = plt + ggtitle(sprintf("SIR with q=%d PC components", q))
+    print(plt)
+
+    # Plot the scores against latitude, longitude, and day.
+    scores = X %*% b[,1:3]
+    for (v in c("lat", "lon", "day")) {
+        for (j in 1:3) {
+            da = data.frame(lat=lat, lon=lon, day=day, s=scores[,j])
+            plt = ggplot(aes(x=!!sym(v), y=s), data=da) + geom_point()
+            plt = plt + labs(x=v, y=sprintf("SIR component %d", j))
+            rasterize(plt, layers="Point")
+            print(plt)
+        }
+    }
+}
+```
+
+```{r}
+da = plot_sir()
+```
