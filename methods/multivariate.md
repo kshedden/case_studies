@@ -247,7 +247,8 @@ of a collection of variables.  The most common way to
 estimate this matrix is the
 [sample covariance matrix](https://en.wikipedia.org/wiki/Estimation_of_covariance_matrices),
 which (but for a minor scaling difference) coincides with the maximum likelihood
-estimate for Gaussian data.  The sample covariance matrix has some
+estimate for Gaussian data.  However, the data do not need to follow a Gaussian
+distribution for the covariance matrix to be informative.  The sample covariance matrix has some
 desirable properties including being unbiased and elementwise
 consistent.  However for larger dimensions or smaller sample sizes, the sample
 covariance matrix can perform poorly.  Also, the sample covariance
@@ -258,7 +259,7 @@ covariance matrix have been devised.  Here we describe one of them,
 the [minimum covariance determinant](https://arxiv.org/abs/1709.07045), or MCD.
 We will not give full details here, but the main idea is to select a
 constant $m \ge n/2$, where $n$ is the sample size, and define the MCD
-estimate $\tilde{S}$ to be the sample covariance matrix
+estimate to be the sample covariance matrix
 of $m$ observations that has the smallest determinant among all such
 subsets.  The determinant of a covariance matrix is a measure of its dispersion.  If a
 few observations greatly increase the determinant, they may be distorting the
