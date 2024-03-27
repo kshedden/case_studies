@@ -1,4 +1,4 @@
-# Various methods of multivariate analysis
+# Additional methods for multivariate analysis
 
 This document discusses several useful methods for analyzing
 multivariate data that are less widely known than the classical
@@ -282,7 +282,8 @@ another robust estimate of the covariance matrix (and of the mean) can
 sometimes reveal more interesting sets of outliers than those that are identified
 by the sample covariance matrix.
 
-There is a connection between the MCD and data depth using the "Mahalanobis depth" (MD):
+There is a connection between the MCD and data depth using the "Mahalanobis depth" (MD),
+which is defined to be
 $1 / (1 + (x-\mu)^\prime \Sigma^{-1}(x-\mu))$.  The conventional MD uses the sample
 covariance to estimate $\Sigma$, but this opens the possibility of "masking", where
 a small group of outliers distorts the covariance matrix so as to mask their
