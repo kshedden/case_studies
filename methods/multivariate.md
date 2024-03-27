@@ -249,9 +249,7 @@ estimate this matrix is the
 which (but for a minor scaling difference) coincides with the maximum likelihood
 estimate for Gaussian data.  The sample covariance matrix has some
 desirable properties including being unbiased and elementwise
-consistent.  It also is guaranteed to concentrate around the true
-covariance matrix as long as the dimension is well-controlled.
-However for larger dimensions or smaller sample sizes, the sample
+consistent.  However for larger dimensions or smaller sample sizes, the sample
 covariance matrix can perform poorly.  Also, the sample covariance
 matrix is not robust to outliers.
 
@@ -269,9 +267,15 @@ One use for the covariance matrix is to quantify the "ouytlying-ness"
 of individual observations.  Specifically, let $x\in{\mathbb R}^d$ denote an observation,
 $\mu$ denote the mean, and $\Sigma$ denote the covariance matrix.  The
 squared [Mahalanobis distance](https://en.wikipedia.org/wiki/Mahalanobis_distance)
-is defined to be $(x-\mu)^\prime \Sigma^{-1}(x-\mu)$.  Points with larger
-Mahalanobis distance to the center are *less central" or "more outlying".
+is defined to be $(x-\mu)^\prime \Sigma^{-1}(x-\mu)$.  Points $x$ with larger
+Mahalanobis distance to the center are "less central" or "more outlying".
 Using the MCD or
 another robust estimate of the covariance matrix (and of the mean) can
 sometimes reveal more interesting sets of outliers than those that are identified
 by the sample covariance matrix.
+
+There is a connection between the MCD and data depth using the "Mahalanobis depth" (MD):
+$1 / (1 + (x-\mu)^\prime \Sigma^{-1}(x-\mu))$.  The conventional MD uses the sample
+covariance to estimate $\Sigma$, but this opens the possibility of "masking", where
+a small group of outliers distorts the covariance matrix so as to mask their
+outlyingness.  Using the MCD to estimate $\Sigma$ circumvents this issue.
