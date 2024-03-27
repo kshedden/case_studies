@@ -255,13 +255,18 @@ matrix is not robust to outliers.
 
 To address these limitations, many alternative estimators of the
 covariance matrix have been devised.  Here we describe one of them,
-the [minimum determinant covariance](https://arxiv.org/abs/1709.07045).
+the [minimum covariance determinant](https://arxiv.org/abs/1709.07045), or MCD.
 We will not give full details here, but the main idea is to select a
-constant $m \ge n/2$, where $n$ is the sample size, and define the
+constant $m \ge n/2$, where $n$ is the sample size, and define the MCD
 estimate $\tilde{S}$ to be the sample covariance matrix
 of $m$ observations that has the smallest determinant among all such
-subsets.  To avoid the impossible "all subsets" optimization, a greedy
-approach is used in practice.
+subsets.  The determinant of a covariance matrix is a measure of its dispersion.  If a
+few observations greatly increase the determinant, they may be distorting the
+covariance estimate.
+
+Calculation of the MCD estimator of the covariance matrix is challenging.  Enumerating all
+possible subsets of $m$ out of $n$ observations is impossible in practice.  Therefore a greedy
+approach called ``fast MCD'' is used in practice.
 
 One use for the covariance matrix is to quantify the "ouytlying-ness"
 of individual observations.  Specifically, let $x\in{\mathbb R}^d$ denote an observation,
