@@ -18,6 +18,7 @@ date = pd.to_datetime(date)
 day = date - date.min()
 day = np.asarray([x.days for x in day])
 
-temp = np.loadtxt(qpath / "temp.csv.gz", skiprows=1, delimiter=",")
 pressure = np.loadtxt(qpath / "pressure.csv.gz", skiprows=1)
-psal = np.loadtxt(qpath / "psal.csv.gz", skiprows=1, delimiter=",")
+
+temp = np.loadtxt(qpath / "temp.csv.gz", delimiter=",").T
+psal = np.loadtxt(qpath / "psal.csv.gz", delimiter=",").T

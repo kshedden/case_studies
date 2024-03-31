@@ -7,7 +7,6 @@ source("read.R")
 
 library(ggplot2)
 library(dplyr)
-#library(ggrastr)
 library(dr)
 ```
 
@@ -295,9 +294,8 @@ plot_sir = function() {
     for (v in c("lat", "lon", "day")) {
         for (j in 1:3) {
             da = data.frame(lat=lat, lon=lon, day=day, s=scores[,j])
-            plt = ggplot(aes(x=!!sym(v), y=s), data=da) + geom_point()
+            plt = ggplot(aes(x=!!sym(v), y=s), data=da) + geom_point(alpha=0.1)
             plt = plt + labs(x=v, y=sprintf("SIR component %d", j))
-            rasterize(plt, layers="Point")
             print(plt)
         }
     }

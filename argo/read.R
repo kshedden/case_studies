@@ -1,12 +1,11 @@
 library(readr)
+library(dplyr)
 
 # There is no R version of prep.py, you must run the
 # Python or julia prep script before using read.R.
 
 # This path must match the path in prep.py.
 qpath = "/home/kshedden/data/Teaching/argo/python"
-
-Sys.setenv(VROOM_CONNECTION_SIZE=1000000)
 
 lat = read_csv(file.path(qpath, "lat.csv.gz"))
 lat = as.vector(lat[,1])$Column1
@@ -21,8 +20,8 @@ day = date - min(date)
 pressure = read_csv(file.path(qpath, "pressure.csv.gz"))
 pressure = as.vector(pressure[,1])$Column1
 
-temp = read_csv(file.path(qpath, "temp.csv.gz"))
-temp = as.matrix(temp)
+temp = read_csv(file.path(qpath, "temp.csv.gz"), col_names=F)
+temp = as.matrix(temp) %>% t
 
-psal = read_csv(file.path(qpath, "psal.csv.gz"))
-psal = as.matrix(psal)
+psal = read_csv(file.path(qpath, "psal.csv.gz"), col_names=F)
+psal = as.matrix(psal) %>% t

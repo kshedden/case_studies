@@ -124,7 +124,7 @@ np.savetxt(qpath / "lat.csv.gz", lat, header="Column1", comments="")
 np.savetxt(qpath / "lon.csv.gz", lon, header="Column1", comments="")
 np.savetxt(qpath / "date.csv.gz", date, fmt="%s", header="Column1", comments="")
 np.savetxt(qpath / "pressure.csv.gz", pressure, header="Column1", comments="")
-header = ["Column%d" % j for j in range(temp.shape[1])]
-header = ",".join(header)
-np.savetxt(qpath / "temp.csv.gz", temp, delimiter=",", header=header, comments="")
-np.savetxt(qpath / "psal.csv.gz", psal, delimiter=",", header=header, comments="")
+#header = ["Column%d" % j for j in range(temp.shape[1])]
+#header = ",".join(header)
+np.savetxt(qpath / "temp.csv.gz", temp.T, delimiter=",", comments="", fmt="%.3f")
+np.savetxt(qpath / "psal.csv.gz", psal.T, delimiter=",", comments="", fmt="%.3f")

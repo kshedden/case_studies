@@ -10,6 +10,14 @@ is appropriate to do so.
 
 ## Content/overall approach
 
+* Writing for this course should narrowly focus on data analysis, which usually includes
+  (i) motivating your analysis, (ii) describing the relevant structure of the data that
+  you are analyzing, (iii) describing the precise methods that you are using, including
+  their relevant theoretical properties, and (iv) interpreting the results of your analysis
+  and stating your findings.  Part (i) provides some room for broader discussion, but this
+  should be extremely brief.  Nearly every sentence of your writing should pertain to your
+  data analysis and the interpretation of your findings.
+
 * Scientific writing follows a constrained style, yet there is plenty of opportunity to develop
   your own voice.  This is the reason that we do not provide templates or example memos for
   this course.  However, it will be impossible for you to write well in an appropriate
