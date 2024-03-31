@@ -261,10 +261,32 @@ We will not give full details here, but the main idea is to select a
 constant $m \ge n/2$, where $n$ is the sample size, and define the MCD
 estimate to be the sample covariance matrix
 of $m$ observations that has the smallest determinant among all such
-subsets.  The determinant of a covariance matrix is a measure of its dispersion.
-The rationale for this estimator is that if a
+subsets.
+
+The determinant of a covariance matrix is a measure of its dispersion.
+Since the squared Mahalanobis distance $(x-\mu)^\prime \Sigma^{-1}(x-\mu)$
+has a $\chi^2_p$ distribution,
+where $x \in {\mathbb R}^p$, it follows that the ellipsoid
+
+$$
+\{(x-\mu)^\prime \Sigma^{-1}(x-\mu) \le t\}
+$$
+
+covers $F_d(t)$ probability mass of the multivariate Gaussian distribution
+$N_p(\mu, \Sigma)$, where $F_d$ is the CDF of the $\chi^2_p$ distribution.
+Setting $t = F_p^{-1}(0.95)$, for example, gives an ellipsoid that covers
+95\% of the probability.  The volume of this ellipsoid is $\sqrt{|\Sigma|}$
+times the volume of the unit ball, which is $\pi^{p/2}/\Gamma(p/2+1)$.
+
+The rationale for the MCD estimator is that if a
 few observations greatly increase the determinant, they may be distorting the
-covariance estimate.
+covariance estimate.  As with any "robust" estimator, there is an implicit
+assertion that certain points may be outliers and should be discounted or
+excluded from the analysis.  However there is no guarantee that any
+particular definition of an outlier is correct.  In the case of the MCD,
+we are asserting that points that inflate the volume of the estimated
+ellipsoid encompassing a fixed fraction of the distribution's mass
+may be outliers.
 
 Calculation of the MCD estimator of the covariance matrix is challenging.  Enumerating all
 possible subsets of $m$ out of $n$ observations is impossible in practice.  Therefore a greedy
