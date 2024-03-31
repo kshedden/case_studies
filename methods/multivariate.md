@@ -243,12 +243,12 @@ the paper linked above for computational details).
 
 Much of classical multivariate analysis is based on the
 [covariance matrix](https://en.wikipedia.org/wiki/Covariance_matrix)
-of a collection of variables.  The most common way to
+of several variables.  The most common way to
 estimate this matrix is the
 [sample covariance matrix](https://en.wikipedia.org/wiki/Estimation_of_covariance_matrices),
 which (but for a minor scaling difference) coincides with the maximum likelihood
 estimate for Gaussian data (note however that the data do not need to follow a Gaussian
-distribution for the covariance matrix to be informative).  The sample covariance matrix has some
+distribution for the sample covariance matrix to be informative).  The sample covariance matrix has some
 desirable properties including being unbiased and elementwise
 consistent.  However for larger dimensions or smaller sample sizes, the sample
 covariance matrix can perform poorly.  Also, the sample covariance
@@ -264,7 +264,8 @@ of $m$ observations that has the smallest determinant among all such
 subsets.
 
 The determinant of a covariance matrix is a measure of its dispersion.
-Since the squared Mahalanobis distance $(x-\mu)^\prime \Sigma^{-1}(x-\mu)$
+If $x$ follows the multivariate normal distribution $N_p(\mu, \Sigma)$,
+the squared Mahalanobis distance $(x-\mu)^\prime \Sigma^{-1}(x-\mu)$
 has a $\chi^2_p$ distribution,
 where $x \in {\mathbb R}^p$, it follows that the ellipsoid
 
