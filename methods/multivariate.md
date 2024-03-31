@@ -276,7 +276,7 @@ $$
 covers $F_p(t)$ probability mass of the $N_p(\mu, \Sigma)$ distribution,
 where $F_p$ is the CDF of the $\chi^2_p$ distribution.
 Setting $t = F_p^{-1}(0.95)$, for example, gives an ellipsoid that covers
-95\% of the probability.  The volume of this ellipsoid is $t^p\cdot\sqrt{|\Sigma|}$
+95\% of the probability.  The volume of this ellipsoid is $t^p\cdot|\Sigma|^{1/2}$
 times the volume of the unit ball, which is $\pi^{p/2}/\Gamma(p/2+1)$.
 
 The rationale for the MCD estimator is that if a
