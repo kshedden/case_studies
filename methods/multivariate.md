@@ -285,21 +285,20 @@ covariance estimate.  As with any "robust" estimator, there is an implicit
 assertion that certain points may be outliers and should be discounted or
 excluded from the analysis.  However there is no guarantee that any
 particular definition of an outlier is correct.  In the case of the MCD,
-we are asserting that points that inflate the volume of the estimated
-ellipsoid encompassing a fixed fraction of the distribution's mass
-may be outliers.
+we are asserting that points that inflate the volume of an estimated
+``high probability ellipsoid'' may be outliers.
 
-Calculation of the MCD estimator of the covariance matrix is challenging.  Enumerating all
+Exact calculation of the MCD estimator of the covariance matrix is challenging.  Enumerating all
 possible subsets of $m$ out of $n$ observations is impossible in practice.  Therefore a greedy
 approach called ``fast MCD'' is used in practice.
 
-One use for the covariance matrix is to quantify the "ouytlyingness"
+One use for the covariance matrix is to quantify the "outlyingness"
 of individual observations.  Specifically, let $x\in{\mathbb R}^d$ denote an observation,
 $\mu\in{\mathbb R}^d$ denote the mean, and $\Sigma\in{\mathbb R}^{d\times d}$ denote the
 covariance matrix.  The
 squared [Mahalanobis distance](https://en.wikipedia.org/wiki/Mahalanobis_distance)
-is defined to be $(x-\mu)^\prime \Sigma^{-1}(x-\mu)$.  Points $x$ with larger
-Mahalanobis distance to the center are "less central" or "more outlying".
+is defined to be $(x-\mu)^\prime \Sigma^{-1}(x-\mu)$.  Points with larger
+Mahalanobis distance to the center are ``less central'' or ``more outlying''.
 Using the MCD or
 another robust estimate of the covariance matrix (and of the mean) can
 sometimes reveal more interesting sets of outliers than those that are identified
