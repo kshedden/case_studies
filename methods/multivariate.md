@@ -266,11 +266,11 @@ subsets.
 The determinant of a covariance matrix is a measure of its dispersion.
 If $x$ follows the multivariate normal distribution $N_p(\mu, \Sigma)$,
 the squared Mahalanobis distance $(x-\mu)^\prime \Sigma^{-1}(x-\mu)$
-has a $\chi^2_p$ distribution,
-where $x \in {\mathbb R}^p$, it follows that the ellipsoid
+follows the $\chi^2_p$ distribution,
+where $x \in {\mathbb R}^p$.  It follows that the ellipsoid
 
 $$
-\{(x-\mu)^\prime \Sigma^{-1}(x-\mu) \le t\}
+\\{(x-\mu)^\prime \Sigma^{-1}(x-\mu) \le t\\}
 $$
 
 covers $F_d(t)$ probability mass of the multivariate Gaussian distribution
