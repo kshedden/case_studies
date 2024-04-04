@@ -1,10 +1,15 @@
+Support points and quantization
+
+
+```{r}
 library(ggplot2)
 source("read.R")
+```
 
-# See this reference for more information about the
-# support point algorithm:
-# https://arxiv.org/pdf/1609.01811.pdf
+See this reference for more information about the support point algorithm:
+https://arxiv.org/pdf/1609.01811.pdf
 
+```{r}
 # Equation 22 in Mak et al.
 update_support = function(X, Y) {
     p = dim(Y)[1]
@@ -26,7 +31,9 @@ update_support = function(X, Y) {
 
     return(XX)
 }
+```
 
+```{r}
 # Calculate N support points for the data in Y.  The points
 # are stored in the columns of Y.
 support = function(Y, N, maxiter=1000) {
@@ -46,10 +53,11 @@ support = function(Y, N, maxiter=1000) {
 
     return(X)
 }
+```
 
-pdf("support_R.pdf")
+Plot support points for temperature and salinity separately.
 
-# Plot support points for temperature and salinity separately.
+```{r}
 for (j in 1:2) {
 
     if (j == 1) {
@@ -61,9 +69,9 @@ for (j in 1:2) {
     }
 
     # Make plots with different numbers of support points.
-    for (npt in c(1, 2, 5, 10, 20)) {
+    for (npt in c(1, 2, 5)) {
         cat(sprintf("npt=%d\n", npt))
-        X = support(x, npt, maxiter=200)
+        X = support(x, npt, maxiter=50)
 
         # Put the support points in long form for plotting
         da = data.frame(x=array(X), g=kronecker(1:npt, array(1, 100)),
@@ -74,5 +82,26 @@ for (j in 1:2) {
         print(plt)
     }
 }
+```
+To understand the joint variation of temperature and salinity, concatenate these two measures and calculate support points.
 
-dev.off()
+```{r}
+tempz = (temp - mean(temp)) / sd(temp)
+psalz = (psal - mean(psal)) / sd(psal)
+tp = rbind(tempz, psalz)
+for (npt in c(3, 5)) {
+    S = support(tp, npt, maxiter=50)
+
+    # Put the support points in long form for plotting
+    ix = kronecker(1:(2*npt), array(1, 100))
+    spt = as.factor(1 + (ix %% npt))
+    mea = c("Temp", "Psal")[1 + floor((ix - 1) / npt)]
+    grp = c(sprintf("Temp%d", 1:npt), sprintf("Psal%d", 1:npt))[ix]
+    da = data.frame(x=array(S), grp=grp, spt=spt, mea=mea,
+                    pressure=kronecker(array(1, 2*npt), pressure))
+
+    plt = ggplot(aes(x=pressure, y=x, group=grp, color=spt, lty=mea), data=da) + geom_line()
+    plt = plt + labs(x="Pressure", y=ylab) + ggtitle(sprintf("%d support points", npt))
+    print(plt)
+}
+```
