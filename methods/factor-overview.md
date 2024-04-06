@@ -250,6 +250,28 @@ Thus, $\hat{\Sigma}V = VS^2/n$, so $V$ contains the eigenvectors of
 $\hat{\Sigma}$ and the corresponding eigenvalues are in
 ${\rm diag}(S^2)/n$.
 
+### Karhunen-Loeve decomposition
+
+PCA can be seen as a way to estimate the terms of the Karhunen-Loeve (K-L) decomposition
+of a multivariate distribution (a random vector). If $Y$ is a $p$-dimensional random vector, then
+the K-L decomposition expresses $Y$ in the form
+
+$$
+Y = \mu + \sum_{j=1}^p \eta_j V_j,
+$$
+
+where $\mu = E[Y]$ is a fixed $p$-dimensional vector containing the element-wise mean
+of $Y$, the $\eta_j$ are a collection of mutually uncorrelated random scalars, and
+the $V_j$ are a collection of mutually orthogonal fixed vectors of dimension $p$.
+The means of the $\eta_j$ are all zero and the variances of the $\eta_j$ are decreasing in $j$.
+
+Each component $\eta_j V_j$ represents random variation in the direction of $V_j$.  The
+leading term $\eta_1 V_1$ captures the greatest variation of any one-dimensional
+component and the subsequent components $\eta_j V_j$ ($j=2, 3, \ldots$)
+capture progressively less of the
+variance.  Since the $\eta_j$ are uncorrelated, these "axes of variation" capture
+distinct and unrelated contributions to the overall variance of $Y$.
+
 ### Biplots
 
 Suppose that $X_c$ is the column-centered or double-centered
