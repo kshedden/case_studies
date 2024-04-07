@@ -47,7 +47,8 @@ then we typically proceed by choosing $0 < \alpha < 1$, and then reject the test
 
 If $k > 1$ and we reject the j'th hypothesis
 whenever $p_j < \alpha$, then each individual test has false positive rate equal to $\alpha$, but the probability
-of rejecting at least one of the hypotheses incorrectly, known as the *family-wise error rate*, is greater than $\alpha$.
+of rejecting at least one of the hypotheses incorrectly, known as the
+[family-wise error rate](https://en.wikipedia.org/wiki/Family-wise_error_rate), is greater than $\alpha$.
 Thus, if people conduct multiple tests in the same research project and only report the tests that have small
 p-values, the evidence underlying the reported claims is exaggerated.  This issue has been known for a very long
 time, and recently has sometimes been termed *p-hacking*.
@@ -83,7 +84,9 @@ appropriate to control the expected proportion of drug candidates identified in 
 go on to fail in human or animal trials, say at 10%.  Note that it is very different to identify a list of drug candidates
 of which 10% are expected to be false positives, than to identify a list of drug candidates such that there is a
 0.1 probability of even one of them being a false positive.  The former perspective, discussed
-further below, is known as _false discovery rates_ (FDR), while the latter is the family-wise error rate (FWER).
+further below, is known as
+[false discovery rates](https://en.wikipedia.org/wiki/False_discovery_rate) (FDR),
+while the latter is the family-wise error rate (FWER).
 
 To formally define the FDR, suppose that we are interested in many hypotheses.  Let $H_j=1$ if the null hypothesis for the
 j'th hypothesis is true, and let $R_j=1$ if we decide to reject the j'th hypothesis.  The
