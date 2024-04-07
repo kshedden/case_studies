@@ -261,9 +261,11 @@ Y = \mu + \sum_{j=1}^p \eta_j V_j,
 $$
 
 where $\mu = E[Y]$ is a fixed $p$-dimensional vector containing the element-wise mean
-of $Y$, the $\eta_j$ are a collection of mutually uncorrelated random scalars, and
+of $Y$, the $\eta_j$ are a collection of mutually uncorrelated random scalar variables, and
 the $V_j$ are a collection of mutually orthogonal fixed vectors of dimension $p$.
-The means of the $\eta_j$ are all zero and the variances of the $\eta_j$ are decreasing in $j$.
+The means of the $\eta_j$ are all zero and the variances of the $\eta_j$ are decreasing in $j$,
+That is, $E[\eta_j] = 0$, ${\rm Var}(\eta_1) \ge {\rm Var}(\eta_2) \ge \cdots$, and
+${\rm cor}(\eta_j, \eta_k) = 0$ if $j \ne k$.
 
 Each component $\eta_j V_j$ represents random variation in the direction of $V_j$.  The
 leading term $\eta_1 V_1$ captures the greatest variation of any one-dimensional
