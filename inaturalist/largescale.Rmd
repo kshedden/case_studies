@@ -1,0 +1,6 @@
+pclass = "Pinopsida"
+#pclass = "Polypodiopsida"
+
+pa = sprintf("/home/kshedden/data/Teaching/inaturalist/Plantae_%s.csv.gz", pclass)
+
+
