@@ -252,7 +252,8 @@ ${\rm diag}(S^2)/n$.
 
 ### Karhunen-Loeve decomposition
 
-PCA can be seen as a way to estimate the terms of the Karhunen-Loeve (K-L) decomposition
+PCA can be seen as a way to estimate the terms of the
+[Karhunen-Loeve (K-L) decomposition](https://en.wikipedia.org/wiki/Kosambi%E2%80%93Karhunen%E2%80%93Lo%C3%A8ve_theorem)
 of a multivariate distribution (a random vector). If $Y$ is a $p$-dimensional random vector, then
 the K-L decomposition expresses $Y$ in the form
 
