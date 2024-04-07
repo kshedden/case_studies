@@ -11,8 +11,7 @@ of data that is both high-dimensional (many attributes measured on each unit)
 and heterogeneous (the units can be clustered into subpopulations with much
 greater heterogeneity between than within subpopulations).
 
-As a concrete example, suppose we have a dataset with many observations and many
-variables, e.g. with the observations being people in the US who live in the
+As a concrete example, suppose we have a dataset with the observations being people in the US who live in the
 50 American states.  For each person we observe their income, and we also know their
 expenditures for 100 different spending categories (electricity bill, water bill, restaurant food,
 etc.).  One possible analysis would be to build a single high-dimensional regression model, perhaps
@@ -21,19 +20,21 @@ while simultaneously accounting for the heterogeneity among the 50 states (e.g. 
 regression).
 
 Alternatively, we could regress income on each expenditure, stratifying by state.  This yields $50\times 100 = 5000$
-regression coefficients and standard errors. We now have a large volume of results of the form $\hat{\theta}_j, \hat{s}_j$, where $\hat{\theta}_j$
+regression coefficients and standard errors, each very "local" to a particular subset of data.
+We now have a large volume of results of the form $\hat{\theta}_j, \hat{s}_j$, where $\hat{\theta}_j$
 is a point estimate (e.g. of a regression slope) and $\hat{s}_j$ is its estimated standard error.  It may also be possible to obtain
 a p-value $p_j$ based on the reference distribution of the ratio $\hat{\theta}_j/\hat{s}_j$.  These quantities are usually not
 fully independent between the hypotheses, but in many cases the dependencies may be weak.
 
-*Large scale* inference is a body of statistical methods developed to accommodate analysis in this setting.
+*Large scale inference* is a body of statistical methods developed to accommodate analysis in this setting.
 Specifically, large scale inference facilitates analysis conducted in two stages, where we first obtain a large
-collection of "local" estimates $\hat{\theta}_j$, $\hat{s}_j$, $\hat{p}_j$, then integrate these results
+collection of local findings $\hat{\theta}_j$, $\hat{s}_j$, $\hat{p}_j$, then integrate these results
 to obtain a more holistic understanding of the entire population.
 
 __Classical multiple inference__
 
-Large scale inference has connections to the more classical area of *multiple inference* (also known as *simultaneous inference*).  The
+Large scale inference has connections to the more classical area of *multiple inference* (also known as
+*multiple testing* or *simultaneous inference*).  The
 canonical setting for multiple inference is that we have $k$ hypotheses and conduct a formal hypothesis
 test for each of them.  This means that for the j'th hypothesis we have a p-value $p_j$, and we make a decision to
 reject this hypothesis based on the value of $p_j$, with smaller values of $p_j$ providing more evidence
@@ -51,11 +52,14 @@ Thus, if people conduct multiple tests in the same research project and only rep
 p-values, the evidence underlying the reported claims is exaggerated.  This issue has been known for a very long
 time, and recently has sometimes been termed *p-hacking*.
 
-An early method for addressing multiple hypotheses is the *Bonferroni method*, based on the *union bound*.
+An early method for addressing multiple hypotheses is the
+[Bonferroni method](https://en.wikipedia.org/wiki/Bonferroni_correction), based on the
+[union bound](https://en.wikipedia.org/wiki/Boole%27s_inequality).
 Under the Bonferroni method, to achieve a family-wise error rate of $\alpha$, the individual hypotheses
 are carried out using a modified value of $\alpha$, usually set to $\alpha/k$ (where $k$ is the number
 of tests).  More generally, the j'th test can be rejected when $p_j < \alpha_j$, with the $\alpha_j$
-satisfying $\sum_j \alpha_j = \alpha$.
+satisfying $\sum_j \alpha_j = \alpha$.  Equivalently, we can multiply each p-value by the number of
+tests, yielding adjusted p-values $k\cdot p_j$, and assess them relative to an unadjusted $\alpha$.
 
 A key consideration in multiple testing is the extent to which the p-values
 are dependent random variables.  If the p-values are positively dependent, the Bonferroni approach is conservative,
@@ -79,7 +83,7 @@ appropriate to control the expected proportion of drug candidates identified in 
 go on to fail in human or animal trials, say at 10%.  Note that it is very different to identify a list of drug candidates
 of which 10% are expected to be false positives, than to identify a list of drug candidates such that there is a
 0.1 probability of even one of them being a false positive.  The former perspective, discussed
-further below, is known as _false discovery rates_ (FDR).
+further below, is known as _false discovery rates_ (FDR), while the latter is the family-wise error rate (FWER).
 
 To formally define the FDR, suppose that we are interested in many hypotheses.  Let $H_j=1$ if the null hypothesis for the
 j'th hypothesis is true, and let $R_j=1$ if we decide to reject the j'th hypothesis.  The
@@ -106,9 +110,9 @@ $g$ is the empirical density of all test statistics.
 __Other strategies__
 
 At a high level, large scale inference can describe any approach to study a collection of Z-scores or p-values that result
-from many analyses conducted on the same data.  It can be very effective to consider Z-scores in relation to auxiliary
+from many analyses conducted on different components of a single dataset.  It can be very effective to consider Z-scores in relation to auxiliary
 quantities such as the sample size of each component.  This is related to the concept of a "funnel plot" that considers
 whether evidence against the null hypothesis (large Z-scores and small p-values) mainly occurs when the sample size is large.
 In this case the analysis may be limited by power, in which some of the partitions have too little data to yield any findings.
-It can also be useful to plot Z-scores (or p-values) against other auxiliary quantities that serve to characterize the chosen data
+It can also be useful to plot Z-scores (or p-values) against other auxiliary quantities that characterize the chosen data
 components.
