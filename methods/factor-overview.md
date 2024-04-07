@@ -264,13 +264,14 @@ $$
 where $\mu = E[Y]$ is a fixed $p$-dimensional vector containing the element-wise mean
 of $Y$, the $\eta_j$ are a collection of mutually uncorrelated random scalar variables, and
 the $V_j$ are a collection of mutually orthogonal fixed vectors of dimension $p$.
-The means of the $\eta_j$ are all zero and the variances of the $\eta_j$ are decreasing in $j$,
+The means of the $\eta_j$ are all zero and the variances of the $\eta_j$ are decreasing in $j$.
 That is, $E[\eta_j] = 0$, ${\rm Var}(\eta_1) \ge {\rm Var}(\eta_2) \ge \cdots$, and
 ${\rm cor}(\eta_j, \eta_k) = 0$ if $j \ne k$.
 
-Each component $\eta_j V_j$ represents random variation in the direction of $V_j$.  The
+Each component $\eta_j V_j$ represents random variation in the direction of
+the unit vector $V_j$.  The
 leading term $\eta_1 V_1$ captures the greatest variation of any one-dimensional
-component and the subsequent components $\eta_j V_j$ ($j=2, 3, \ldots$)
+component, and the subsequent components $\eta_j V_j$ ($j=2, 3, \ldots$)
 capture progressively less of the
 variance.  Since the $\eta_j$ are uncorrelated, these "axes of variation" capture
 distinct and unrelated contributions to the overall variance of $Y$.
