@@ -24,4 +24,4 @@ identified few issues with your previous submission.
 Your memo should include some analysis and findings that go beyond what we covered in class.
 
 7. (April 24): Write a memo discussing a specific finding relating to variation in the geographic ranges of plants, and the changes in these ranges over time.
-Your memo should include some analysis and findings that go beyond what we covered in class.
+Your analysis should use the iNaturalist data .  Your memo should include some analysis and findings that go beyond what we covered in class.
