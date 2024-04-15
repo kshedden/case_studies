@@ -1,6 +1,6 @@
 iNaturalist data
 
-iNaturalist is a platform that records observations of living organisms (we will be considering data for plants), annotated with their locations and taxonomic identifications. This notebook illustrates the concept of "large scale inference" to study the presence of systematic changes in species locations over time.
+iNaturalist is a platform that records observations of living organisms, annotated with their locations and taxonomic identifications. We will be considering data from two classes of plants in this notebook. Our goal here is to illustrate the concept of "large scale inference", to study the presence of systematic changes in species locations over time.
 
 ```{r}
 library(readr)
@@ -30,31 +30,41 @@ da = da %>% select(!elevation) %>% drop_na()
 da = da %>% mutate(date1 = as.Date('2015-01-01'))
 da = da %>% mutate(day=difftime(eventDate, date1, units="days")/1000)
 ```
-Calculate the mean latitude for each species:
+
+```{r}
+dn = da %>% group_by(species) %>% summarize(n=n())
+dn = dn %>% mutate(logn=log10(n))
+plt = ggplot(dn, aes(x=logn)) + geom_histogram()
+print(plt)
+```
+
+Below we calculate the mean latitude for each species.  Individual plants within each species occur at various locations, but each species has a geographic centroid.  We compute the centroid for latitude below since that is our focus here.
 
 ```{r}
 dm = da %>% group_by(species) %>% summarize(species_latitude=mean(decimalLatitude))
 da = inner_join(da, dm, by="species")
 head(da)
 ```
-Below we calculate the intraclass correlation coefficient (ICC), which describes the extent to which different species cluster by latitude.  An ICC of 1 corresponds to complete clustering and an ICC of 0 corresponds to no clustering.
+Below we calculate the intraclass correlation coefficient (ICC) of the latitude values, which describes the extent to which different species cluster by latitude.  An ICC of 1 corresponds to complete clustering and an ICC of 0 corresponds to no clustering.
 
 ```{r}
 var(da$species_latitude) / var(da$decimalLatitude)
 ```
 
-Analyze longitude as a circular variable.
+We will analyze longitude as a circular variable.
 
 ```{r}
 da = da %>% mutate(lonrad=pi*decimalLongitude/180)
 da = da %>% mutate(lonrad_sin=sin(lonrad), lonrad_cos=cos(lonrad))
 ```
 
+Below we create a synthetic variable that cannot contain any new information.  It will be used below as a newgtive control to evaluate the performance of inference procedures.
+
 ```{r}
 da = da %>% mutate(fake=lonrad_cos+rnorm(length(lonrad_cos)))
 ```
 
-Below we fit a linear model for each species that predicts latitude from day and some other control variables. The main interest here is the relationship between "day" and the mean latitude. If the slope of day on latitude is positive for a given species, this species is identified at more northerly locations as time progresses. If the coefficient is negative the species is identified at more southerly locations as time progresses. We assess these effects using two models. The first model has only main effects and the second model allows the time trend in mean latitude to vary by longitude.
+Below we fit a linear model for each species that predicts latitude from the time variable called "day" (the number of days since the time origin) and some other control variables. The main interest here is the relationship between "day" and the conditional mean latitude of a species. If the slope of day on latitude is positive for a given species, this species is identified at more northerly locations as time progresses. If the coefficient is negative the species is identified at more southerly locations as time progresses. We assess these effects using two models. The first model has only main effects and the second model allows the time trend in mean latitude to vary by longitude.
 
 ```{r}
 f = function(x, y) {
@@ -70,7 +80,8 @@ f = function(x, y) {
   stat = lrt$F[[2]]
   dof = lrt$Df[[2]]
   if (dof == 3) {
-    # The Wilson and Hilferty transformation from chi-square to Gaussian.
+    # The log likelihood ratio statistics is chi^2 under the null.  We use the 
+    # Wilson and Hilferty transformation to transform it from chi-square to Gaussian.
     lrt_z = (stat / dof)^(1/3) - (1 - 2/(9*dof))
     lrt_z = lrt_z / sqrt(2/(9*dof))
   } else {
@@ -91,7 +102,7 @@ f = function(x, y) {
 rr = da %>% group_by(species) %>% group_map(f) %>% bind_rows()
 ```
 
-Construct T-scores for parameters of interest. For species with large sample sizes these T-scores should also be approximate Z-scores (they approximately follow a standard normal distribution under the null hypothesis that the day slope is zero). For smaller sample sizes we need to account for the uncertainty in the scale parameter estimate.
+Below we construct T-scores for parameters of interest. For species with large sample sizes these T-scores should also be approximate Z-scores (they approximately follow a standard normal distribution under the null hypothesis that the day slope is zero). For smaller sample sizes we need to account for the uncertainty in the scale parameter estimate induced by the limited degrees of freedom.
 
 ```{r}
 rr = rr %>% mutate(day_slope_t=day_slope/day_slope_se, fake_slope_t=fake_slope/fake_slope_se)

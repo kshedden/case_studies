@@ -95,7 +95,7 @@ The family-wise error rate for all $k$ hypotheses is $P(\sum H_jR_j > 0 | H_1, \
 *false discovery rate* is $E [\sum H_jR_j / \sum R_j | \sum R_j > 0]$.  This is the expected proportion
 among all rejected hypotheses that are falsely rejected.
 
-There are several ways to estimate false discovery rates and we only briefly introduce them here.  A very basic
+There are several ways to estimate false discovery rates and we only briefly introduce two of them here.  A very basic
 approach is to start with a Z-scored test statistic for the j'th
 hypothesis.  This could be $Z_j = \hat{\theta}_j / \hat{s}_j$, or a transformed version of this ratio intended to improve the normality
 of $Z_j$.  Under the null hypothesis, $Z_j$ follows a standard normal distribution.  If the null distribution is not true,
