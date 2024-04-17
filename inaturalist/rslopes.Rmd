@@ -1,6 +1,6 @@
 # Inaturalist
 
-In this notebook we use multilevel regression to assess species-specific temporal trends in the latitudes of occurrences of species within a class of plants.  Each species has its own slope for the conditional mean of latitude given day.  Instead of estimating these slopes as parameters, they are treated as random effects, and we estimate the variance of the distribution of random slopes.
+In this notebook we use multilevel regression to assess species-specific linear temporal trends in the latitudes of occurrences of species within a class of plants.  Each species has its own slope for the conditional mean of latitude given day.  Instead of estimating these slopes as parameters, they are treated as random effects (random slopes), and we estimate the variance of the distribution of random slopes.
 
 ```{r}
 library(readr)
@@ -122,7 +122,7 @@ The formal test is below, it may be very slow to run so comment it out if these 
 #ss = exactRLRT(m3, m4, m1)
 ```
 
-Estimate the marginal mean latitude at Detroit
+Estimate the marginal mean latitude at Detroit's longitude
 
 ```{r}
 dp = head(da, 100)
@@ -131,14 +131,16 @@ dp = dp %>% mutate(lonrad=-pi*83/180) # Detroit longitude
 dp$yy = predict(m1, dp, re.form=NA)
 ```
 
-Plot the marginal mean latitude
+Plot the marginal mean latitude for plants observed at Detroit's longitude 
 
 ```{r}
 plt = ggplot(dp, aes(x=day, y=yy)) + geom_line() + xlab("Day (x1000)") + ylab("Marginal mean latitude")
 print(plt)
 ```
 
-Get a day 0 value for each species, based on its longitude
+The next set of cells produces predicted "trend lines" for each species using the fitted multilevel model.  These trend lines are "partially pooled", so that for species with large sample sizes, the trend line mainly follows the observed data for that species.  But for species with small sample sizes, the intercept and slope for the species are shrunken toward the population mean intercept and slope.
+
+First we get a predicted day 0 latitude value for each species.  Technically this is the marginal mean of the predicted day 0 latitudes, marginalizing over the longitude values (which do vary within a species but not by a lot for most species).
 
 ```{r}
 dx = da
@@ -184,7 +186,7 @@ pr = pr %>% mutate(name=ifelse(day=="Day0", day1, day2))
 Plot species-level trends in latitude
 
 ```{r}
-plt = ggplot(pr, aes(x=day, y=latitude, group=species)) + geom_line(alpha=0.5)
+plt = ggplot(pr, aes(x=day, y=latitude, group=species)) + geom_line(alpha=0.2)
 ```
 
 Plot the population averaged trend line in red.
