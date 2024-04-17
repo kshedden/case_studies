@@ -2,26 +2,32 @@
 
 Regression analysis aims to understand the conditional distribution of
 a scalar response $y$ in relation to explanatory variables
-$x \in {\mathbb R}^p$.  In many familiar forms of regression, we focus on the
-marginal distribution $y\\,|\\,x$.  However it may be that we collect data
-in such a way that different observed values of $y$ are not statistically
-independent of each other, i.e.
+$x \in {\mathbb R}^p$.  The conditional mean $E[y | x]$ is an important
+feature of this conditional distribution, but in many cases we may
+also be interested in the conditional variances ${\rm Var}[y | x]$ and the
+conditional covariances ${\rm Cov}[y | x]$.  Multilevel regression is a
+framework for regression analysis that is especially useful if we
+have covariances between observations.
+
+Conditional covariances often arise due to the way that the data were
+collected.  Formally, the data are statistically dependent if the joint
+pdf does not factor as the product of marginal pdf's, i.e.
 
 $$
 P(y_1, \ldots, y_n | x_1, \ldots, x_n) \ne \prod_i P(y_i | x_i).
 $$
 
 Multilevel regression is a means to understand the
-conditional mean $E[y|x]$, conditional variance ${\rm var}(y | x)$,
-conditional covariances ${\rm cov}(y_i, y_j | x_i, x_j)$, and other
+conditional mean $E[y|x]$, conditional variance ${\rm Var}(y | x)$,
+conditional covariances ${\rm Cov}(y_i, y_j | x_i, x_j)$, and other
 forms of dependence among the observations.
 
-The usual manner in which correlated data arise in practice is when
+A common manner in which correlated data arise in practice is when
 the data are collected as *repeated measures*.  For example,
 we may be studying a characteristic of individual people such as income,
 and we collect this data from each person every year for multiple years.
 Two repeated measures of one person's income are likely to be more similar
-than incomes for two different people, so there is an 
+than incomes for two different people, so there is an
 [intraclass correlation](https://en.wikipedia.org/wiki/intraclass_correlation)
 between two income observations made on the same person.
 Data collected in this way are called *longitudinal data*.
@@ -66,7 +72,7 @@ conventional linear model.
 The random intercepts $\theta_i$ are a collection of independent and
 identically distributed (IID) random variables assumed to follow a
 distribution with mean zero and variance $\tau^2$. Finally, we have
-*unexplained variation* specific to each observation that is represented 
+*unexplained variation* specific to each observation that is represented
 through the random variables
 $\epsilon_{ij}$, which are IID random variables with mean
 zero and variance $\sigma^2$ that are independent of the $\theta_i$.
@@ -110,7 +116,7 @@ and correlation between them is zero.
 
 It is important to note that the random effects $\theta_i$ are neither
 data (which must be observed) nor are they parameters which are
-unknown values to be estimated based on the data (e.g. using maximum likelihood).  
+unknown values to be estimated based on the data (e.g. using maximum likelihood).
 Instead, the random
 effects are "latent variables" that are not observed and are integrated out
 of the model before estimating the parameters using a procedure such
@@ -131,25 +137,25 @@ any dependence induced by the sampling design (e.g. longitudinal or
 cluster-wise dependence) and then adjusting the standard errors or
 test statistics.  For example, suppose we use OLS when the data are
 dependent, yielding an estimate $\check{\beta}$.  It can be shown that
-if the mean structure is linear, $\check{\beta}$ and $\hat{\beta}$ are 
+if the mean structure is linear, $\check{\beta}$ and $\hat{\beta}$ are
 both valid estimates of $\beta$.  However the standard errors and test
 statistics obtained by OLS are not correct when dependence is present.
-A procedure known as "robust inference", "Huber-White inference", or 
+A procedure known as "robust inference", "Huber-White inference", or
 "sandwich inference" can be used to obtain valid standard errors.
 
 * Estimating equations regression -- this involves reweighting the
-OLS estimator to obtain efficient estimates with valid standard 
-errors in the presence of dependence.  The most common implementation 
+OLS estimator to obtain efficient estimates with valid standard
+errors in the presence of dependence.  The most common implementation
 of this approach is "generalized estimating equations" (GEE).
 
-* Fixed effects regression -- this involves "one hot coding" the 
+* Fixed effects regression -- this involves "one hot coding" the
 group variable to produce a potentially large set of dummy variables
 that are included in the regression along with the other covariates.
 There is an extensive literature on the relationship between fixed
 effects and random effects approaches to modeling clustered data.
 An advantage of the fixed effects approach is that it does not
 assume a model for the cluster effects.
-The main drawback of the fixed effects approach is that when we have 
+The main drawback of the fixed effects approach is that when we have
 a large number of small groups, there is not enough information to
 estimate the fixed effects as parameters, and the estimates of
 parameters for variables of interest may be inconsistent.  This
@@ -189,7 +195,7 @@ $$
 
 Here we view $\gamma_i$ as a latent random variable with mean zero and
 variance $\tau_1^2$, and as above $\theta_i$ is random with mean zero
-and variance $\tau^2$.  
+and variance $\tau^2$.
 
 The formula for a model with random slopes can be expressed with the
 formula *y ~ x1 + x2 + (1 + x1 | b)*.
@@ -244,9 +250,9 @@ truth.
 # Generalized linear multilevel regression
 
 We may wish to use a GLM-like method to accommodate a non-linear single index
-mean structure, and also accommodate non-indepence in the data.  Generalized linear 
+mean structure, and also accommodate non-indepence in the data.  Generalized linear
 multilevel models (also known as GLIMMIX models) have been developed
-for this purpose.  
+for this purpose.
 
 For a setting with a single set of blocks (i.e. a random intercept model), the mean structure of a GLIMMIX model is
 
@@ -256,11 +262,11 @@ $$
 
 where $\eta_i$ is a random effect with mean zero and variance $\tau^2$.
 
-As with conventional GLMs, there is a mean/variance relationship, so the conditional 
+As with conventional GLMs, there is a mean/variance relationship, so the conditional
 variance is
 
 $$
-{\rm var}[y_{ij} | x_{ij}, \eta_i] = \phi \cdot v(E[y_{ij} | x_{ij}, \eta_i]) 
+{\rm var}[y_{ij} | x_{ij}, \eta_i] = \phi \cdot v(E[y_{ij} | x_{ij}, \eta_i])
 $$
 
 for a variance function $v: {\mathbb R}\rightarrow {\mathbb R}^+$ and a scale
@@ -268,19 +274,19 @@ parameter $\phi$.
 
 GLIMMIX models do not enjoy the distributional robustness of conventional GLMs.  For
 example, if we model the data as Poisson (given random effects), the data need to
-actually be Poisson for most theoretical guarantees to hold.  In contrast, 
-in a conventional GLM, obtaining valid results from a "Poisson model" 
+actually be Poisson for most theoretical guarantees to hold.  In contrast,
+in a conventional GLM, obtaining valid results from a "Poisson model"
 only requires that the conditional mean and conditional variance of the Poisson model
 hold.
 
 A major phenomenon that arises in the multilevel GLM setting with a non-linear
 link function is that the marginal and conditional covariate effects differ.  That is,
 in a GLIMMIX model $\beta_1$ is the change in expected response (on the scale of the link function)
-for a unit chance in $x_1$, for a fixed value of the random effect $\eta$.  This 
+for a unit chance in $x_1$, for a fixed value of the random effect $\eta$.  This
 leads to an important distinction between "subject specific" and "population average" covariate
 effects.
 
 Another important aspect of GLIMMIX models is that in practice they
 are quite difficult to fit using maximum likelihood methods.  While algorithms
-and software exist for this purpose, fitting such models can be slow and 
+and software exist for this purpose, fitting such models can be slow and
 issues such as non-convergence can occur.
