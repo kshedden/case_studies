@@ -184,3 +184,11 @@ plt = plt + geom_line(aes(x=logn, y=z2, color="purple"))
 plt = plt + theme(legend.position="none")
 print(plt)
 ```
+Another way to assess whether the Z-scores with greater magnitude concentrate in the species with larger sample sizes is to smooth the absolute Z-score against the log sample size as below.  Doing this, we loose the ability to distinguish positive from negative Z-scores, but we do see a clear tendency for the largest Z-scores to occur in the species with the greatest number of observations.
+
+```{r}
+plt = ggplot(rr1, aes(x=logn, y=abs(day_slope_z))) + geom_smooth()
+plt = plt + geom_hline(yintercept=sqrt(2/pi))
+plt = plt + scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
+print(plt)
+```
