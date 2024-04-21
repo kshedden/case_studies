@@ -62,7 +62,7 @@ In a "fixed effects" approach, the $\alpha_i$ and $\beta_i$ would be treated as 
 to be fit, e.g. by least squares or using a GLM.  Such a model could have thousands
 of parameters.  In addition to computational challenges, it may be quite difficult
 to demonstrate that the estimates lie close to their true values, due to the
-Neyman-Scott problem.  On the other hand, it may be untenable to require all the
+``Neyman-Scott paradox''.  On the other hand, it may be untenable to require all the
 $\alpha_i$ and/or all the $\beta_i$ to take on a common value.
 
 Multilevel regression circumvents these difficulties by treating the $\alpha_i$ and
