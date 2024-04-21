@@ -255,17 +255,20 @@ There are three distinct types of values in a multilevel regression:
 the data, the random effects, and the parameters.
 
 The data are always observed, and above would be denoted $y$, $x$, and
-$b$.  The data can be further partitioned into data that are modeled
+the batch or group label $b$.  The data can be further partitioned into
+data that are modeled
 as random (here $y$), and data that are conditioned upon so can be
 viewed as either fixed (deterministic) or random (here $x$ and $b$).
 
 Parameters are unknown deterministic (nonrandom) quantities to be
 estimated.  In a multilevel analysis, the parameters can be
 partitioned into the *mean structure parameters* $\beta$ and the
-*variance structure parameters* $\sigma^2$ and $\tau^2$.
+*variance structure parameters*. For the random intercepts model,
+the variance structure parameters are $\sigma^2$ and $\tau^2$,
+and more generally would be denoted $\Psi$ and $\sigma^2.
 
-The random effects $\alpha_i$ and $\beta_i$ are random variables but
-are not observed.
+The random effects $\alpha_i$ and $\beta_i$, and the "errors"
+$\epsilon_{ij}$ are random variables but are not observed.
 
 In frequentist statistics, we *estimate* parameters and *predict*
 unobserved random variables.  When we predict the random effects we
