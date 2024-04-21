@@ -9,6 +9,8 @@ conditional covariances ${\rm Cov}[y | x]$.  Multilevel regression is a
 framework for regression analysis that is especially useful if we
 have covariances between observations.
 
+__Multilevel regression to accommodate non-independence__
+
 Conditional covariances often arise due to the way that the data were
 collected.  Formally, the data are statistically dependent if the joint
 pdf does not factor as the product of marginal pdf's, i.e.
@@ -16,11 +18,6 @@ pdf does not factor as the product of marginal pdf's, i.e.
 $$
 P(y_1, \ldots, y_n | x_1, \ldots, x_n) \ne \prod_i P(y_i | x_i).
 $$
-
-Multilevel regression is a means to understand the
-conditional mean $E[y|x]$, conditional variance ${\rm Var}(y | x)$,
-conditional covariances ${\rm Cov}(y_i, y_j | x_i, x_j)$, and other
-forms of dependence among the observations.
 
 A common manner in which correlated data arise in practice is when
 the data are collected as *repeated measures*.  For example,
@@ -43,6 +40,51 @@ Generically, we can refer to a collection of repeated measures that
 may be statistically dependent as a
 *block*.  If we have longitudinal data, then each person is a block.
 If we have a cluster sample, then each cluster is a block.
+
+__Multilevel regression to accommodate heterogeneity__
+
+Another use-case for multilevel regression is when we have data that would naturally
+be described by a large number of parameters, but we wish to avoid fitting a high
+dimensional, highly parameterized model.  Suppose we have many "blocks"
+of observations, and let $y_{ij}$ denote the $j^{\rm th}$ observation within the
+$i^{\rm th}$ block.  Suppose also that there is a regression relationship of the form
+$E[y_{ij}] = \alpha_i + \beta_i x_{ij}$.  That is, we model the expected value of the
+response $y_{ij}$ as a linear function of the covariates $x_{ij}$, but we allow
+each block to have its own intercept $\alpha_i$ and its own coefficients vector
+$\beta_i$.  The full model can be written as
+
+$$
+y_{ij} = \alpha + \beta^\prime x_{ij} + \alpha_i + \beta_i^\prime x + \epsilon_{ij}
+$$
+
+In a "fixed effects" approach, the $\alpha_i$ and $\beta_i$ would be treated as parameters
+to be fit, e.g. by least squares or using a GLM.  Such a model could have thousands
+of parameters.  In addition to computational challenges, it may be quite difficult
+to demonstrate that the estimates lie close to their true values, due to the
+Neyman-Scott problem.  On the other hand, it may be untenable to require all the
+$\alpha_i$ and/or all the $\beta_i$ to take on a common value.
+
+Multilevel regression circumvents these difficulties by treating the $\alpha_i$ and
+$\beta_i$ as random effects.  This means that we take $(\alpha_i, \beta_i)$ for
+$i=1, \ldots, m$ ($m$ is the number of blocks or groups) to be independent and
+identically distributed (iid) draws from a Gaussian distribution with mean zero,
+and covariance $\Psi$ to be estimated from the data.  The requirement that the mean is
+zero is simply for the model to be identified, since we always include an intercept ($\alpha$)
+and non-random coefficient $\beta$ for $x$ in the model.
+
+When estimating such a "random effects" model, we marginalize out the random effects,
+leaving behing a model that only includes low-dimensional fixed effects $\alpha$ and
+$\beta$, which do not depend on $i$, and the "structural variance parameters" $\Psi$
+and $\sigma^2$ where $\sigma^2$ is the residual variance.  These parameters can be estimated using
+maximum likelihood techniques, and inference can be carried out using techniques based on
+the Fisher information matrix.
+
+Note that although multilevel regression models are relatively parsimonious
+in terms of parameters, their likelihoods can be difficult to maximize.  A great deal of
+effort has been put into developing software tools like lme4 in R to fit such models to
+large datasets.  Estimation and inference for linear mixed effects is largely a solved
+problem, but the analogius generalized linear mixed effects models (known as glmer or glimmix)
+remain a challenge and issues often arise when fitting such models in practice.
 
 ## A single level of blocking
 
