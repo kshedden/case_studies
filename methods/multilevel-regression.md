@@ -48,7 +48,8 @@ be described by a large number of parameters, but we wish to avoid fitting a hig
 dimensional, highly parameterized model.  Suppose we have many "blocks"
 of observations, and let $y_{ij}$ denote the $j^{\rm th}$ observation within the
 $i^{\rm th}$ block.  Suppose also that there is a regression relationship of the form
-$E[y_{ij}] = \alpha_i + \beta_i x_{ij}$.  That is, we model the expected value of the
+$E[y_{ij}] = \alpha + \beta^\prime x + \alpha_i + \beta_i x_{ij}$.
+That is, we model the expected value of the
 response $y_{ij}$ as a linear function of the covariates $x_{ij}$, but we allow
 each block to have its own intercept $\alpha_i$ and its own coefficient vector
 $\beta_i$.  The full model can be written as
