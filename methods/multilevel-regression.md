@@ -5,7 +5,7 @@ a scalar response $y$ in relation to explanatory variables
 $x \in {\mathbb R}^p$.  The conditional mean $E[y | x]$ is an important
 feature of this conditional distribution, but in many cases we may
 also be interested in the conditional variances ${\rm Var}[y | x]$ and the
-conditional covariances ${\rm Cov}[y, y^\prime | x, x^prime]$.
+conditional covariances ${\rm Cov}[y, y^\prime | x, x^\prime]$.
 Multilevel regression is a
 framework for regression analysis that is especially useful if we
 have covariances between observations.
@@ -85,7 +85,7 @@ Note that although multilevel regression models are relatively parsimonious
 in terms of parameters, their likelihoods can be difficult to maximize.  A great deal of
 effort has been put into developing software tools like lme4 in R to fit such models to
 large datasets.  Estimation and inference for linear mixed effects models is largely a solved
-problem, but the analogius generalized linear mixed effects models (known as glmer or glimmix)
+problem, but the analagous generalized linear mixed effects models (known as glmer or glimmix)
 remain a challenge and issues often arise when fitting such models in practice.
 
 ## A single level of blocking
@@ -231,14 +231,14 @@ slope for $x_1$ is $\beta_1$, meaning that the average response
 differs by $\beta_1$ units for two observations that differ by one
 unit in $x_1$ and are identical in all other covariates.  However it
 may be that this variable operates differently in different blocks.
-That is, there may be a slope $\gamma_i$ specifically for block $i$,
+That is, there may be a slope $\beta_i$ specifically for block $i$,
 leading to the following model:
 
 $$
-y_{ij} = \beta^\prime x_{ij} + \alpha_i + \gamma_i x_{1ij} + \epsilon_{ij}.
+y_{ij} = \beta^\prime x_{ij} + \alpha_i + \beta_i x_{1ij} + \epsilon_{ij}.
 $$
 
-Here we view $\gamma_i$ as a latent random variable with mean zero and
+Here we view $\beta_i$ as a latent random variable with mean zero and
 variance $\tau_1^2$, and as above $\alpha_i$ is random with mean zero
 and variance $\tau^2$.
 
@@ -264,7 +264,7 @@ estimated.  In a multilevel analysis, the parameters can be
 partitioned into the *mean structure parameters* $\beta$ and the
 *variance structure parameters* $\sigma^2$ and $\tau^2$.
 
-The random effects $\alpha_i$ and $\gamma_i$ are random variables but
+The random effects $\alpha_i$ and $\beta_i$ are random variables but
 are not observed.
 
 In frequentist statistics, we *estimate* parameters and *predict*
