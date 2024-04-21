@@ -5,7 +5,8 @@ a scalar response $y$ in relation to explanatory variables
 $x \in {\mathbb R}^p$.  The conditional mean $E[y | x]$ is an important
 feature of this conditional distribution, but in many cases we may
 also be interested in the conditional variances ${\rm Var}[y | x]$ and the
-conditional covariances ${\rm Cov}[y | x]$.  Multilevel regression is a
+conditional covariances ${\rm Cov}[y, y^\prime | x, x^prime]$.
+Multilevel regression is a
 framework for regression analysis that is especially useful if we
 have covariances between observations.
 
