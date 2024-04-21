@@ -50,7 +50,7 @@ of observations, and let $y_{ij}$ denote the $j^{\rm th}$ observation within the
 $i^{\rm th}$ block.  Suppose also that there is a regression relationship of the form
 $E[y_{ij}] = \alpha_i + \beta_i x_{ij}$.  That is, we model the expected value of the
 response $y_{ij}$ as a linear function of the covariates $x_{ij}$, but we allow
-each block to have its own intercept $\alpha_i$ and its own coefficients vector
+each block to have its own intercept $\alpha_i$ and its own coefficient vector
 $\beta_i$.  The full model can be written as
 
 $$
@@ -70,9 +70,9 @@ $i=1, \ldots, m$ ($m$ is the number of blocks or groups) to be independent and
 identically distributed (iid) draws from a Gaussian distribution with mean zero,
 and covariance $\Psi$ to be estimated from the data.  The requirement that the mean is
 zero is simply for the model to be identified, since we always include an intercept ($\alpha$)
-and non-random coefficient $\beta$ for $x$ in the model.
+and non-random coefficient vector for $x$ ($\beta$) in the model.
 
-When estimating such a "random effects" model, we marginalize out the random effects,
+When estimating such a model, we marginalize out the random effects,
 leaving behing a model that only includes low-dimensional fixed effects $\alpha$ and
 $\beta$, which do not depend on $i$, and the "structural variance parameters" $\Psi$
 and $\sigma^2$ where $\sigma^2$ is the residual variance.  These parameters can be estimated using
@@ -82,20 +82,21 @@ the Fisher information matrix.
 Note that although multilevel regression models are relatively parsimonious
 in terms of parameters, their likelihoods can be difficult to maximize.  A great deal of
 effort has been put into developing software tools like lme4 in R to fit such models to
-large datasets.  Estimation and inference for linear mixed effects is largely a solved
+large datasets.  Estimation and inference for linear mixed effects models is largely a solved
 problem, but the analogius generalized linear mixed effects models (known as glmer or glimmix)
 remain a challenge and issues often arise when fitting such models in practice.
 
 ## A single level of blocking
 
-Let $y_{ij}$ denote the $j^{\rm th}$ repeated measure for the $i^{\rm
-th}$ block.  One way to account for the correlations in the data is to
-introduce a *random effect*, with the most basic random effect being a
+Let $y_{ij}$ denote the $j^{\rm th}$ repeated measure for the
+$i^{\rm th}$ block, where the blocks are present due to either reason discussed above
+(repeated measures or heterogeneous effects).  We may choose to proceed by
+introducing a *random effect*, with the most basic random effect being a
 *random intercept*.  A random intercept is a random variable
-$\theta_i$ that arises in the following model:
+$\alpha_i$ that arises in the following model:
 
 $$
-y_{ij} = \beta^\prime x_{ij} + \theta_i + \epsilon_{ij}.
+y_{ij} = \beta^\prime x_{ij} + \alpha_i + \epsilon_{ij}.
 $$
 
 In this model, $i=1, \ldots n$ indexes blocks and $j=1, \ldots, n_i$
@@ -111,13 +112,13 @@ $$
 This linear predictor is exactly the same as would be present in a
 conventional linear model.
 
-The random intercepts $\theta_i$ are a collection of independent and
+The random intercepts $\alpha_i$ are a collection of independent and
 identically distributed (IID) random variables assumed to follow a
 distribution with mean zero and variance $\tau^2$. Finally, we have
 *unexplained variation* specific to each observation that is represented
 through the random variables
 $\epsilon_{ij}$, which are IID random variables with mean
-zero and variance $\sigma^2$ that are independent of the $\theta_i$.
+zero and variance $\sigma^2$ that are independent of the $\alpha_i$.
 
 We can now study the marginal moments of the multilevel model.  The
 marginal mean is
@@ -126,27 +127,27 @@ $$
 E[y_{ij} | x_{ij}] = \beta^\prime x_{ij},
 $$
 
-since the random effects $\theta_i$ and the unexplained "errors"
+since the random effects $\alpha_i$ and the unexplained "errors"
 $\epsilon_{ij}$ all have mean zero.
 
 The marginal variance is
 
 $$
-{\rm var}[y_{ij} | x_{ij}] = {\rm var}(\theta_i) + {\rm var}(\epsilon_{ij}) = \tau^2 + \sigma^2.
+{\rm var}[y_{ij} | x_{ij}] = {\rm var}(\alpha_i) + {\rm var}(\epsilon_{ij}) = \tau^2 + \sigma^2.
 $$
 
 Note that
 
 $$
-{\rm var}(\theta_i + \epsilon_{ij}) = {\rm var}(\theta_i) + {\rm var}(\epsilon_{ij})
+{\rm var}(\alpha_i + \epsilon_{ij}) = {\rm var}(\alpha_i) + {\rm var}(\epsilon_{ij})
 $$
 
-since $\theta_i$ and $\epsilon_{ij}$ are independent.
+since $\alpha_i$ and $\epsilon_{ij}$ are independent.
 
 The marginal covariance between two observations in the same block is
 
 $$
-{\rm cov}[y_{ij}, y_{ij^\prime} | x_{ij}, x_{ij^\prime}] = {\rm cov}(\theta_i+\epsilon_{ij}, \theta_i+\epsilon_{ij^\prime}) = \tau^2.
+{\rm cov}[y_{ij}, y_{ij^\prime} | x_{ij}, x_{ij^\prime}] = {\rm cov}(\alpha_i+\epsilon_{ij}, \alpha_i+\epsilon_{ij^\prime}) = \tau^2.
 $$
 
 Further, the marginal correlation between two observations in the same
@@ -156,7 +157,7 @@ block is $\tau^2/(\tau^2+\sigma^2)$, which is also known as the
 Two observations in different blocks are independent so the covariance
 and correlation between them is zero.
 
-It is important to note that the random effects $\theta_i$ are neither
+It is important to note that the random effects $\alpha_i$ are neither
 data (which must be observed) nor are they parameters which are
 unknown values to be estimated based on the data (e.g. using maximum likelihood).
 Instead, the random
@@ -232,11 +233,11 @@ That is, there may be a slope $\gamma_i$ specifically for block $i$,
 leading to the following model:
 
 $$
-y_{ij} = \beta^\prime x_{ij} + \theta_i + \gamma_i x_{1ij} + \epsilon_{ij}.
+y_{ij} = \beta^\prime x_{ij} + \alpha_i + \gamma_i x_{1ij} + \epsilon_{ij}.
 $$
 
 Here we view $\gamma_i$ as a latent random variable with mean zero and
-variance $\tau_1^2$, and as above $\theta_i$ is random with mean zero
+variance $\tau_1^2$, and as above $\alpha_i$ is random with mean zero
 and variance $\tau^2$.
 
 The formula for a model with random slopes can be expressed with the
@@ -261,7 +262,7 @@ estimated.  In a multilevel analysis, the parameters can be
 partitioned into the *mean structure parameters* $\beta$ and the
 *variance structure parameters* $\sigma^2$ and $\tau^2$.
 
-The random effects $\theta_i$ and $\gamma_i$ are random variables but
+The random effects $\alpha_i$ and $\gamma_i$ are random variables but
 are not observed.
 
 In frequentist statistics, we *estimate* parameters and *predict*
