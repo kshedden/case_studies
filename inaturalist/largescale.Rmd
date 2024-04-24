@@ -145,9 +145,25 @@ Below we calculate the local FDR for the day slope estimates.
 zz = rr$day_slope_z
 ii = is.finite(zz)
 zz = zz[ii]
-lfdr = locfdr(zz)
+lfdr = locfdr(zz, nulltype=0)
 rr$locfdr = NA
-rr$locfdr[ii] = zz
+rr$locfdr[ii] = lfdr$fdr
+```
+
+Below we count the number of species with local FDR smaller than 0.1.
+
+```{r}
+sum(lfdr$fdr < 0.1)
+```
+
+Below we have a plot that shows the cumulative number of species with FDR below each threshold.
+
+```{r}
+n = nrow(rr)
+rr = rr %>% arrange(locfdr)
+plt = ggplot(rr, aes(x=seq(n), y=locfdr)) + geom_line()
+plt = plt + xlim(1, 600)
+print(plt)
 ```
 
 ```{r}
