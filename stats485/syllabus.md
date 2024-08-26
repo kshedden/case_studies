@@ -125,7 +125,7 @@ or Rackham Honor Council.
 
 You may use large language models to assist in your writing and you
 do not need to acknowledge this.  However note that the current generation
-of LLMs has a simplisitic and superficial "understanding" of applied statistics,
+of LLMs has a simplistic and superficial "understanding" of applied statistics,
 and therefore will do a poor job of meeting the expectations of this course.
 You writing is expected to build on the ideas discussed in lectures,
 and no LLM is aware of what we cover in our lectures.

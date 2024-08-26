@@ -4,7 +4,7 @@ The BHHT (Brief History of Human Time) project provides a dataset about "notable
 
 The analyses below focus on lifespans of the people in the BHHT dataset, aiming to understand how lifespans vary based on factors including era of birth, the geographic region where the person lived, and the person's sex and occupation.
 
-This analysis uses survival analysis methods, allowing us to use information from still-living people.
+This analysis uses survival analysis methods, allowing us to appropriately use information from still-living people.
 
 ```{r}
 library(dplyr)
@@ -21,7 +21,7 @@ Change the path below as needed to point to the directory holding the data file.
 pa = "/home/kshedden/mynfs/data/Teaching/bhht"
 ```
 
-Load the dataset.  Use the latin-1 encoding since there is some non-UTF data in the file.  Add "nrows=####" when developing to reduce the run time, but use the complete data to get final results.
+Load the dataset.  Use the latin-1 encoding since there is some non-UTF data in the file.  Add "n_max=####" when developing to reduce the run time, but use as much data as possible to get final results.
 
 ```{r}
 df = read_csv(file.path(pa, "cross-verified-database.csv.gz"),
@@ -46,7 +46,7 @@ Retain only the variables needed below.
 dx = dx %>% select(birth, lifespan, gender, un_region, level1_main_occ)
 ```
 
-There are a small number of people with missing or "Other" gender but it is too small of a sample to draw conclusions.
+There are a small number of people with missing or "Other" gender but it is too small of a sample from which to draw conclusions.
 
 ```{r}
 print(table(dx$gender))
@@ -57,6 +57,13 @@ Drop uninformative occupation codes.
 
 ```{r}
 dx = dx %>% filter(!(level1_main_occ %in% c("Missing", "Other")))
+print(table(dx$level1_main_occ))
+```
+
+Note the distribution of geographic regions:
+
+```{r}
+print(table(dx$un_region))
 ```
 
 Censor lifespans at the calendar year 2022.
@@ -79,6 +86,8 @@ Create a categorical variable indicating the century in which a person was born.
 dx = dx %>% mutate(era = floor((birth - 1500) / 100))
 ```
 
+# Estimates of marginal survival functions
+
 Plot the marginal survival functions for people born in each century. These survival functions are estimated using the product limit (Kaplan-Meier) method.
 
 ```{r}
@@ -87,6 +96,26 @@ plot(sf, xlab="Age", ylab="Proportion alive", col=1:6, xlim=c(0, 100))
 legend(x="topright", c("1500s", "1600s", "1700s", "1800s", "1900s", "2000s"),
        col=1:6, lty=1)
 ```
+
+Plot the marginal survival functions for females and males:
+
+```{r}
+sf = survfit(Surv(clifespan, died) ~ gender, dx)
+plot(sf, xlab="Age", ylab="Proportion alive", col=1:2, xlim=c(0, 100))
+legend(x="topright", c("Female", "Male"), col=1:2, lty=1)
+```
+
+Plot the marginal survival functions stratified by region:
+
+```{r}
+sf = survfit(Surv(clifespan, died) ~ un_region, dx)
+plot(sf, xlab="Age", ylab="Proportion alive", col=1:5, xlim=c(0, 100))
+legend(x="topright", c("Africa", "America", "Asia", "Europe", "Oceania"), col=1:6, lty=1)
+```
+The results above may be heavily influenced by confounding.  The people from Oceania tended to live more recently, and people who lived more recently tend to have longer lifespans.  Conversely, many of the notable people from the 1500's-1700's are from Europe, and lifespans tended to be shorter in these historical eras. Looking at one factor at a time, it is not clear whether the "driver" of lifespan variation is geography (where a person lived) or time (when a person lived).
+
+# Survival regression analyses
+
 Create a time variable that has year 1500 as the origin.  Use this as a predictor in regression models below so that year 1500 becomes the reference year (i.e. all effects are relative to 1500).
 
 ```{r}
@@ -101,10 +130,12 @@ m0 = coxph(as.formula(fml), dx)
 m0
 ```
 
+The function below plots a partial regression plot, showing the log hazard ratio (lhr) for mortatlity versus year of birth, controlling for fixed values of other covariates.
+
 ```{r}
-plot_birthyear_partial = function(dx, rr) {
+plot_birthyear_partial = function(dx, rr, gender="Female", level1_main_occ="Leadership", un_region="Asia") {
   dp = dx[1:100,]
-  dp = dp %>% mutate(gender = "Female", level1_main_occ = "Leadership", un_region = "Asia")
+  dp = dp %>% mutate(gender = !!gender, level1_main_occ = !!level1_main_occ, un_region = !!un_region)
   b = seq(1500, 2000, length.out=100)
   dp = dp %>% mutate(time = b)
   dp = dp %>% mutate(time1500 = b - 1500)
@@ -115,6 +146,8 @@ plot_birthyear_partial = function(dx, rr) {
   print(plt)
 }
 ```
+
+The plot below shows how the log hazard ratio for mortality decreases by approximately 2.5 over 500 years.  This is approximately a factor of 12.
 
 ```{r}
 plot_birthyear_partial(dx, m0)
