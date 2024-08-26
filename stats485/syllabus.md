@@ -1,16 +1,16 @@
-# Capstone Seminar in Statistics
+# Capstone Seminar in Statistics (Statistics 485)
 
 ## Instructor
 
 Kerby Shedden (kshedden@umich.edu, 277 West Hall)
 
-Office hours: Monday & Thursday from 1:30-2:30, starting 1/22
+Office hours: TBD
 
 ## GSIs
 
-* Aaron Abkemeier (aaronabk@umich.edu): office hours 2-3:30 on Wednesdays and Fridays
+* Yash Patel (yppatel@umich.edu): office hours TBD
 
-* Samuel Rosenberg (rosesamk@umich.edu): office hours 2-3:30 on Tuesdays and Thursdays
+* Daniel Zou (zoudj@umich.edu): office hours TBD
 
 GSI office hours are held in Angell Hall, Room G219
 
@@ -37,7 +37,7 @@ The goals of the course are as follows:
 ## Format:
 
 The lectures will be balanced between informal discussion and more formal
-lectures introducing new areas and unfamiliar ideas.  Regular attendance
+presentations introducing new areas and unfamiliar ideas.  Regular attendance
 and participation is expected.  This is an in-person seminar-style course
 and lectures will not be recorded or streamed.
 
@@ -46,7 +46,7 @@ and lectures will not be recorded or streamed.
 Course materials will be available through the course github site
 [here](https://github.com/kshedden/case_studies).  There is no textbook
 for this course.  Grades and announcements will use the course canvas
-site, and we will have a [Piazza site](https://piazza.com/umich/winter2024/stats485001fa2019/home).
+site, and we will have a [Piazza site](https://piazza.com/umich/fall2024/stats485).
 
 ## Coursework
 
@@ -64,7 +64,8 @@ you will be asked to use a specific analytic approach in your analysis.
 
 Writing for this course is relatively short and focused.  The text
 component of a report should generally be 2-3 pages in length, with 3
-pages being a hard limit.  Graphs and tables do not count toward the
+pages being a hard limit.  Two pages is sufficient and you should only
+exceed two pages if it is absolutely necessary.  Graphs and tables do not count toward the
 page limit, and you should only include graphs and tables that directly
 contribute to your main claims.
 
@@ -74,11 +75,11 @@ There are no exams or quizzes in this course.
 
 Writing assignments will be submitted using Google Docs. Please use
 your University of Michigan user account when creating these files,
-and use default fonts and margins.  To facilitate grading, you must
+and use default fonts, margins, and line spacing.  To facilitate grading, you must
 title each document in the form “uniqname stats 485 assignment
 X”, where “uniqname” is your UM login id and X=1, 2, ... is the
 assignment number.  Share all your assignments with the instructor and
-GSI (but please do not send us an email notification when you share
+GSIs (but please do not send us an email notification when you share
 the document).  You should not edit any assignment after the due date,
 note that all edits are tracked in Google Docs. Instructors will provide
 feedback directly on your Google Doc.  Do not remove or unshare these
@@ -86,13 +87,14 @@ documents until the course is complete and final grades have been awarded.
 
 ## Case studies and datasets
 
-The case studies will cover a variety of areas of inquiry in domains
+The case studies will cover a variety of domains
 including human health, social and behavioral science, natural science,
 and industry/commerce. We will spend approximately three lectures
 discussing the background and relevant statistical issues associated
 with each case study. After this context is provided, you will be given
 a writing prompt and will have approximately 10 days to prepare your
-report.  Extensions will be given only in extreme situations.
+report.  Extensions will be given only in extreme situations and must be
+approved in advance of the deadline.
 
 ## Computing
 
@@ -120,6 +122,13 @@ course materials, other students, or from any non-acknowledged source is
 a serious violation of academic integrity and will result at minimum in
 a score of zero on the assignment, and may also be referred to the LSA
 or Rackham Honor Council.
+
+You may use large language models to assist in your writing and you
+do not need to acknowledge this.  However note that the current generation
+of LLMs has a simplisitic and superficial "understanding" of applied statistics,
+and therefore will do a poor job of meeting the expectations of this course.
+You writing is expected to build on the ideas discussed in lectures,
+and no LLM is aware of what we cover in our lectures.
 
 ## Grading
 
