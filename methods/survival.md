@@ -2,7 +2,7 @@
 
 Survival analysis is a set of techniques for characterizing distributions
 and building models.  Most commonly, survival analysis methods are used
-with *time to event* data, where "time to event" refers to the duration of time from an origin
+with *time to event* or *duration* data, where "time to event" refers to the duration of time from an origin
 until some event of interest occurs.  Many such examples consider
 *failure times*, such as the duration of time from when a person is diagnosed with
 a disease until they progress to a more advanced stage of the disease.
@@ -37,42 +37,24 @@ in which this assumption is not made.  However this document deals
 exclusively with the conventional setting where $P(T < \infty) = 1$
 is assumed.
 
-## Truncation
-
-An important concept in survival analysis is the potential selection
-bias induced by *truncation*.  If units (e.g. people) are selected into
-the sample conditionally on their event time, then this must be taken
-into account.  The most common form of truncation is *left truncation*
-in which there is a value $Q$ (which may be specific to each observation)
-such that if the event occurs before time $Q$ (i.e. if $T < Q$) then
-the person would not have been included in our sample.
-
-More formally, if we have left truncation then we are working with
-the conditional distribution $P(T | T\ge Q)$, while if there is no left
-truncation then we are working with the unconditional distribution $P(T)$.
-If we are doing regression analysis with covariates $X$, then with left
-truncation we are studying $P(T | T\ge Q, X)$ and with no such truncation
-we are studying $P(T | X)$.
-
-An example of left truncation would be a medical study where we are
-studying the incidence of stroke following implantation of a cardiac
-stent.  Suppose we use age as our time scale, let $T$ denote a subject's current age, and
-let $W$ denote the age at which the person had a stent placed ($W=\infty$ if the person
-never received a stent). We are selecting subjects conditionally
-on the event $T> W$, and $W$ is a left truncation time.
-
 ## Censoring
 
 Data in a survival analysis are often subject to "censoring", which
 means that we only have partial information about the value of $T$ for
-many subjects.  Continuing with the example where stroke is the event
-of interest, only a subset of the subjects will have a stroke during
-our study.  Suppose a person is recruited into the study at age 65
-immediately after receiving a stent (so $W=65$) and presently they are
-75 years old and have not
-yet had a stroke. This imaginary subject will have
-a stroke at some age $T<\infty$, but since that event occurs in the
-future we only know that $T > 75$.  This is called *right censoring* --
+many subjects.
+Suppose we are analyzing data from a medical study where we are
+studying the incidence of stroke following implantation of a cardiac
+stent.  We use age as our time scale and let $T$ denote the age
+when a subject first has a stroke.
+
+Typically, only a subset of the subjects will have a stroke during
+our study.  Other subjects will be followed for a period of time
+and will never be observed to have a stroke.  Formally, let
+$T$ denote the age at which a person has a stroke, and let $R$
+denote the last age at which the person is observed.  If $T<R$,
+we observe $T$ but if $T > R$ we do not.  More formally, we
+observe the time $Y={\rm min}(T, R)$ and the _status indicator_
+$\delta = {\cal I}(Y = T)$.  This is called *right censoring* --
 we know that the value of $T$ is greater than some known value, but we
 do not know the exact value of $T$.
 
@@ -85,9 +67,9 @@ at which the stroke occurred.
 
 A common assumption in survival analysis is that of *independent
 censoring*.  We will define this here in the context of right censoring.
-Let $T$ be the event time and $R$ be the right censoring time.
+As above, let $T$ be the event time and $R$ be the right censoring time.
 We never observe both $T$ and $R$, and instead only observe
-${\rm min}(T, R)$.  But we can
+$Y = {\rm min}(T, R)$.  Nevertheless, we can
 imagine that both values exist, one being a "latent" value.
 Independent censoring simply means that $T$ and $R$ are independent
 random variables. Concretely, this means, for example, that people who
@@ -98,9 +80,32 @@ to having late events.
 Since we don't observe $T$ and $R$ together, independent censoring is
 usually an untestable assumption, but in some cases there may be reason
 to accept it and in other cases there may be good reason to doubt that
-independent censoring holds.  There are various methods for dealing with
+independent censoring holds.  There are various methods for effectively handling with
 dependently censored data, but that is an advanced topic that we
 will not consider further here.
+
+## Truncation
+
+An important concept in survival analysis is the potential selection
+bias induced by *truncation* or *delayed entry*.  If units (e.g. people) are selected into
+the sample conditionally on their event time, then this must be taken
+into account.  The most common form of truncation is *left truncation*
+in which there is a value $Q$ (which may be specific to each observation)
+such that if the event occurs before time $Q$ (i.e. if $T < Q$) then
+the person would not have been included in our sample.
+
+For example, in our analysis of stroke following stent placement, introduced
+above, people "enter" the study once their stent is placed.  Let $W$ denote
+the age at which a stent is placed.  If a person never has a stent or
+if they have a stroke before the stent is placed, this person cannot
+belong to our sample.
+
+More formally, if we have left truncation then we are working with
+the conditional distribution $P(T | T\ge W)$, while if there is no left
+truncation then we are working with the unconditional distribution $P(T)$.
+If we are doing regression analysis with covariates $X$, then with left
+truncation we are studying $P(T | T\ge W, X)$ and with no such truncation
+we are studying $P(T | X)$.
 
 ## Competing risks
 
