@@ -201,16 +201,18 @@ $$ \hat{S}(t) \equiv \prod_{i:t_i\le t}(1 - d_i/n_i).  $$
 This is the product limit estimator of the survival function.
 
 There are many methods for statistical inference relating to survival functions.
-The *log rank test* is a formal hypothesis test of the null hypothesis that two
-survival functions are equal, i.e. the null hypothesis $S_0(t) \equiv S_1(t)$.
-It is also possible to put confidence intervals around the estimated survival
-function $\hat{S}(t)$ to convey the precision with which it is estimated.
+The [log rank test](https://en.wikipedia.org/wiki/Logrank_test) is a formal
+[hypothesis test](https://en.wikipedia.org/wiki/Statistical_hypothesis_test) of
+the null hypothesis that two survival functions are equal, i.e. the null
+hypothesis $S_0(t) \equiv S_1(t)$. It is also possible to put confidence
+intervals around the estimated survival function $\hat{S}(t)$ to convey the
+precision with which it is estimated.
 
 ## Hazard functions
 
-The *hazard* function is a way of mathematically representing a probability
-distribution that is commonly used in survival analysis. The hazard function is
-defined to be
+The [hazard function](https://en.wikipedia.org/wiki/Failure_rate) is a way of
+mathematically representing a probability distribution that is commonly used in
+survival analysis. The hazard function is defined to be
 
 $$ h(t) \equiv \lim_{\delta\downarrow 0}P(T\le t+\delta|T\ge t)/\delta
 = \lim_{\delta\downarrow 0}(S(t) - S(t+\delta)) / (\delta S(t)).
