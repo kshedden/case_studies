@@ -1,8 +1,9 @@
 # Survival analysis
 
 Survival analysis is a set of techniques for characterizing
-[distributions](https://en.wikipedia.org/wiki/Probability_distribution) and
-building [models](https://en.wikipedia.org/wiki/Probability_distribution). Most
+[probability distributions](https://en.wikipedia.org/wiki/Probability_distribution)
+and building
+[statistical models](https://en.wikipedia.org/wiki/Statistical_model). Most
 commonly, survival analysis methods are used with *time to event* or *duration*
 data, where "time to event" refers to the duration of time from an origin until
 some event of interest occurs. Many such examples consider *failure times*, such
@@ -19,14 +20,14 @@ interested in the time $T$ at which some event of interest occurs. It is very
 important to define the *origin* from which time is measured, i.e. what is the
 meaning of time zero? In the case of human-centered studies, we may let $T$
 denote the age of the person when the event occurs, in which case the time
-origin is the date of birth. Note that in this case you will still need to
-define [units](https://en.wikipedia.org/wiki/Unit_of_measurement) for $T$, e.g.
-months or years. Alternatively, there may be an event that must occur before the
-event of interest, and the time of this event may make a more sensible time
-origin. For example, if $T$ corresponds to graduating from university, we may
-choose the date of university matriculation (enrollment) as the time origin, so
-that e.g. if $T=4$ and the time units are years, then the person graduated four
-years after beginning their studies.
+origin is the date of birth. Note that in this case you will need to define
+[units](https://en.wikipedia.org/wiki/Unit_of_measurement) for $T$, e.g. months
+or years. Alternatively, there may be an event that must occur before the event
+of interest, and the time of this event may make a more sensible time origin.
+For example, if $T$ corresponds to graduating from university, we may choose the
+date of university matriculation (enrollment) as the time origin, so that e.g.
+if $T=4$ and the time units are years, then the person graduated four years
+after beginning their studies.
 
 ## Event time distributions
 
@@ -166,8 +167,9 @@ and Gamma and log-normal distributions are also encountered.
 ## Estimation of the survival function
 
 The *survival function* of a random variable $T$ is defined to be
-$S(t) \equiv P(T>t)$. It is closely related to the cumulative distribution
-function (CDF) $F(t) = P(T\le t)$ since $S(t) = 1 - F(t)$. In words, the
+$S(t) \equiv P(T>t)$. It is closely related to the
+[cumulative distribution function](https://en.wikipedia.org/wiki/Cumulative_distribution_function)
+(CDF), defined to be $F(t) = P(T\le t)$ since $S(t) = 1 - F(t)$. In words, the
 survival function at time $t$ is the probability that the event has not occurred
 by time $t$. It is the same function as the complementary CDF. We may also refer
 to this as the *marginal survival function* to emphasize that it is not
@@ -305,7 +307,7 @@ particular setting.
 The cumulative hazard function is easier to estimate than the hazard function,
 but is more difficult to interpret. The most basic non-parametric estimate of
 the cumulative hazard function under right censoring with no truncation is the
-*Nelson-Aalen* estimator
+[Nelson-Aalen](https://en.wikipedia.org/wiki/Nelson-Aalen_estimator) estimator
 
 $$ \hat{H}(t) = \sum_{i: t_i \le t} d_i/n_i, $$
 
