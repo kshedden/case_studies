@@ -32,9 +32,10 @@ Create a lifespan variable (years of life).  It will be missing for people who a
 
 ```{r}
 df = df %>% mutate(lifespan = death - birth)
+print(table(is.na(df$lifespan)))
 ```
 
-Exclude people born before 1500, there is too little data to gain a meaningful understanding of the trends in lifespan prior to this year.
+We exclude people born before 1500, there is too little data to gain a meaningful understanding of the distribution of lifespan prior to this year.
 
 ```{r}
 dx = df %>% filter(birth >= 1500)
@@ -44,6 +45,7 @@ Retain only the variables needed below.
 
 ```{r}
 dx = dx %>% select(birth, lifespan, gender, un_region, level1_main_occ)
+head(dx)
 ```
 
 There are a small number of people with missing or "Other" gender but it is too small of a sample from which to draw conclusions.
@@ -84,6 +86,12 @@ Create a categorical variable indicating the century in which a person was born.
 
 ```{r}
 dx = dx %>% mutate(era = floor((birth - 1500) / 100))
+```
+
+Note the fairly strong relationship between era of birth and region:
+
+```{r}
+table(dx$un_region, dx$era)
 ```
 
 # Estimates of marginal survival functions
