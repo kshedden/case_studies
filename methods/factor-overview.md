@@ -128,7 +128,7 @@ $$
 Thus we have
 
 $$
-\tilde{X} = {\rm argmin}_{A: {\rm rank}(A) = k} \\|A - X\\|_F.
+\tilde{X} = {\rm argmin}_{A: {\rm rank}(A) = k} \lVert A - X \rVert_F.
 $$
 
 Finding a low rank approximation is a type of least square problem,
@@ -212,7 +212,7 @@ This represents a two-step process of first reducing the dimension,
 then predicting the original data using the reduced data.  Among all
 possible loading matrices $B$, the PCA loading matrix loses the least
 information in that it minimizes the expected value of
-$\\|X - \hat{X}\\|$.
+$\lVert X - \hat{X} \rVert$.
 
 The loading matrix $B$ used in PCA is a truncated eigenvector matrix of
 $\Sigma = {\rm cov}(x)$.  Specifically, we can write $\Sigma = B\Lambda B^T$, where
@@ -308,8 +308,8 @@ Euclidean distances in the data.  For example, let
 $d = (1, -1, 0, 0, \ldots)^\prime$, and note that
 
 $$
-\\|d^\prime X_c\\|^2 = d^\prime X_cX_c^\prime d =
-d^\prime US^2U^\prime d = \\|d^\prime US\\|^2.
+\lVert d^\prime X_c \rVert^2 = d^\prime X_cX_c^\prime d =
+d^\prime US^2U^\prime d = \lVert d^\prime US \rVert^2.
 $$
 
 This shows that the Euclidean distance between
@@ -653,19 +653,19 @@ Euclidean embeding of the rows of $X$.
 First, note that since $V$ is orthogonal
 
 $$
-\\|F_{i,:} - F_{j,:}\\| = \\|(F_{i,:} - F_{j,:})V^T\\|.
+\lVert F_{i,:} - F_{j,:} \rVert = \lVert (F_{i,:} - F_{j,:})V^T \rVert.
 $$
 
 Therefore,
 
 $$
-\\|F_{i,:} - F_{j,:}\\|^2 =
-\\|r_i^{-1/2}U_{i,:}S - r_j^{-1/2}U_{j,:}S\\|^2 =
-\\|r_i^{-1}(P_{i,:} - r_ic^T)W_c^{-1/2} - r_j^{-1}(P_{j,:} - r_jc^T)W_c^{-1/2}\\|^2 =
+\lVert F_{i,:} - F_{j,:} \rVert^2 =
+\lVert r_i^{-1/2}U_{i,:}S - r_j^{-1/2}U_{j,:}S \rVert^2 =
+\lVert r_i^{-1}(P_{i,:} - r_ic^T)W_c^{-1/2} - r_j^{-1}(P_{j,:} - r_jc^T)W_c^{-1/2}\rVert^2 =
 $$
 
 $$
-\\|r_i^{-1}P_{i,:}W_c^{-1/2} - r_j^{-1}P_{j,:}W_c^{-1/2}\\|^2 =
+\lVert r_i^{-1}P_{i,:}W_c^{-1/2} - r_j^{-1}P_{j,:}W_c^{-1/2} \rVert^2 =
 (P_{i,:}/r_i - P_{j,:}/r_j)^TW_c^{-1}(P_{i,:}/r_i - P_{j,:}/r_j) =
 $$
 
@@ -675,7 +675,7 @@ $$
 
 Suppose for simplicity that $W_r \propto I_n$.
 Since $W_c/n = {\rm diag}(c/n)$, where $c/n$ is the mean
-of the rows of $P^r$, it follows that $\\|F_{i,:} - F_{j,:} \\|$ is
+of the rows of $P^r$, it follows that $\lVert F_{i,:} - F_{j,:} \rVert$ is
 $n^{-1}$ times the squared chi-square distance between $P^r_{i,:}$ and $P^r_{j,:}$.  Thus,
 the rows of $F$ embed the rows of $P^r$ as desired.  Applying the same
 argument to $X^T$ shows that the rows of $G$ embed the columns of
@@ -732,7 +732,7 @@ restricted to the dominant two components).
 The angle $\theta$ between two vectors $v$, $w$ satisfies
 
 $$
-\langle v, w\rangle = \\|v\\| \cdot \\|w\\| \cdot \cos(\theta).
+\langle v, w\rangle = \lVert v \rVert \cdot \lVert w \rVert \cdot \cos(\theta).
 $$
 
 Therefore, to understand the angles among the embedded categories, we
