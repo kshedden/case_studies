@@ -4,13 +4,13 @@
 
 Kerby Shedden (kshedden@umich.edu, 277 West Hall)
 
-Office hours: TBD
+Office hours: Wednesday 3:30-5:30, Friday 10-11
 
 ## GSIs
 
 * Yash Patel (yppatel@umich.edu): office hours TBD
 
-* Daniel Zou (zoudj@umich.edu): office hours TBD
+* Daniel Zou (zoudj@umich.edu): 8:30-11:30 Monday
 
 GSI office hours are held in Angell Hall, Room G219
 
