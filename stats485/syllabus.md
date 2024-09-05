@@ -8,9 +8,9 @@ Office hours: Wednesday 3:30-5:30, Friday 10-11
 
 ## GSIs
 
-* Yash Patel (yppatel@umich.edu): office hours TBD
+* Yash Patel (yppatel@umich.edu): office hours 2:30-4 Monday, 5-6:30 Thursday
 
-* Daniel Zou (zoudj@umich.edu): 8:30-11:30 Monday
+* Daniel Zou (zoudj@umich.edu): office hours 8:30-11:30 Monday
 
 GSI office hours are held in Angell Hall, Room G219
 
