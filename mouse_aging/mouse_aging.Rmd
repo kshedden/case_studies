@@ -1,0 +1,318 @@
+## Longevity phenotypes in mice of various ages
+
+In this notebook we consider a study that examines how phenotypes change as mice age.
+
+### Data
+
+The study data are available [here](https://data.mendeley.com/preview/ypz9zyc9rp?a=09b16f74-4581-48f7-94af-469e01757949), but you do not need to download the data directly from this link, as the script below will read a prepared version of the data. If you are curious about how the data were prepared, see the pool.py script. As always, you will need to download the "mouse_data.json.gz" file from github, which contains all the data, and adjust the path in the script to point to the location of the data file on your computer. Lists of all phenotypes with their abbreviated name, full name, and brief description are in supplementary data 2 file linked in the paper, direct link [here](https://static-content.springer.com/esm/art%3A10.1038%2Fs41467-022-34515-y/MediaObjects/41467_2022_34515_MOESM4_ESM.xlsx).
+
+## Scientific aims
+
+The overarching aim of this study is to understand how phenotypes change with age in mice, either naturalistically or following an intervention. These are referred to as *age specific phenotypes*, or "ASPs". The authors claim to perform "deep phenotyping", by which they mean that a large number (around two-hundred) phenotypes are assessed. This is an open-ended exploratory study that does not test a specific pre-specified hypothesis. The researchers considered all phenotypes in an "unbiased" manner for changes over the mouse lifespan, and in response to intervention.
+
+This study has an observational component in which changes in some phenotypes occur naturalistically over the mouse lifespan. It also includes an interventional component with three independent interventions: two genetic manipulations and a dietary intervention (intermittent fasting).
+
+The authors used both univariate and multivariate methods in their study. In univariate analyses, a single phenotype was considered in relation to age, and (if present) intervention group assignment. In multivariate analyses, the all phenotypes and all ages are considered jointly.
+
+## Study design and analytic methods
+
+This study considers phenotypic change over the mouse lifespan. Since some of the phenotypes of interest can only be assessed after sacrificing the mouse, it is implemented as a cross sectional rather than a longitudinal study. In the observational component of the study, the authors collected data at 6 distinct ages during the mouse lifespan (from 3-26 months), with around 15 independent mice assessed at each age. In the interventional component of the study, only two time points were considered. In all cases, mice observed at different ages are mutually independent.
+
+The authors emphasize that at the first age (3 months) the mice are considered to be very young, and are not yet subject to any aging effects. The effect of an intervention can be limited to the older ages, or alternatively can affect mice at all ages roughly equally. Although both effects are interesting, the authors argue that the interventions that specifically impact older mice are more likely to translate to human therapies, or to reveal important mechanisms underlying aging.
+
+All mice in this study are male. Current NIH guidance strongly advocates for sex balanced designs (this study was conducted in Europe).
+
+A large number of phenotypes are measured. Some, such as heart rate, can be measured on a living mouse, while others such as organ weights can only be made upon sacrifice of the animal -- this is why the design is cross sectional rather than longitudinal (i.e. by making repeated measures on the same mice). Some components of the study involved an intervention, such as mutation of a gene or dietary modifications. Other components of the study are observational, considering changes in a phenotype such as heart rate in unperturbed mice of various ages.
+
+The authors make a number of comments about their study design choices in the Discussion section of their paper.
+
+An important practical consideration is whether the phenotypes approximately change linearly over time, or if the phenotype changes are more complex than can be described in linear form. These two patterns of effects can be distinguished by considering models that are either additive, or that include a time by intervention group interaction.
+
+These are the libraries that we are using:
+
+```{r}
+library(dplyr)
+library(jsonlite)
+library(readr)
+library(stringr)
+library(ggplot2)
+library(FactoMineR)
+```
+
+Next we read the data as a json "blob". You don't need to work with this directly, it will be processed and converted to dataframes by the functions below.
+
+```{r}
+pa = "mouse_data.json.gz"
+
+mdat = read_json(pa)
+```
+
+The `get_data` function reads the data for one phenotype variable and converts it to a dataframe. If `convert_age` is true then the age value is converted from character type to numeric type. If `standardize` is true then the phenotype values are standardized to have mean zero and unit variance.
+
+```{r}
+get_data = function(dset, vname, convert_age=TRUE, standardize=FALSE) {
+  jx = mdat[[dset]]
+  if (is.null(jx)) {
+    stop(sprintf("Data set %s not found", dset))
+  }
+  jx = jx[[vname]]
+  if (is.null(jx)) {
+    stop(sprintf("Variable %s not found", vname))
+  }
+  da = read_csv(jx, show_col_types=FALSE)
+  da[[vname]] = as.double(da[[vname]])
+  if (convert_age) {
+   da = da %>% mutate(age = str_replace(age, "_mo", ""))
+   da = da %>% mutate(age = as.double(age))
+  }
+  if (standardize) {
+    da[vname] = (da[vname] - mean(da[[vname]])) / sd(da[[vname]])
+  }
+  
+  # Replace whitespace with underscore so that the variable name can be 
+  # used in a formula.
+  vname1 = str_replace_all(vname, " ", "_")
+
+  # If a variable name starts with a digit it can't be used in a formula, 
+  # so if needed put 'x' in front of the name.
+  vname1 = ifelse(grepl("^[[:digit:]]", vname1) == 1, sprintf("x%s", vname1), vname1)
+  da = da %>% rename({{ vname1 }} := {{ vname }})
+
+  return(list(vname=vname1, data=da))
+}
+```
+
+The phenotype data are grouped under these headings:
+
+```{r}
+names(mdat)
+```
+
+## Analysis of observational data
+
+In the observational data mouse age "naturalistically". We can see below how a few of the phenotypes differ with respect to age.
+
+```{r}
+for (vname in c("Body_mass_NMR", "HR")) {
+  rr = get_data("Figure2_phenotypes", convert_age=T, vname)
+  da = rr$data
+  da$age = factor(da$age)
+  vname1 = rr$vname
+  p = ggplot(da, aes(x=age, y=.data[[vname]])) + geom_boxplot()
+    print(p)
+}
+```
+
+### Formal statistical analyses
+
+In their paper, the authors claim that 59% of phenotypes have a statistically significant association with age. The underlying analysis uses a nonparametric one-way ANOVA procedure ([Kruskal-Wallis](https://en.wikipedia.org/wiki/Kruskal%E2%80%93Wallis_test)) for (semi) quantitative phenotypes, and [Fisher's exact test](https://en.wikipedia.org/wiki/Fisher%27s_exact_test) for binary phenotypes. Below we do a simplified version of this analysis, using for simplicity the Kruskal-Wallis ANOVA procedure for all phenotypes. This analysis does not impose a mean structure model, such as assuming linear change of the phenotype with age.
+
+The results are quite similar to those reported in the publication (57% versus 59%).
+
+```{r}
+n0 = 0
+n1 = 0
+kw = data.frame()
+for (vname in names(mdat[["Figure2_phenotypes"]])) {
+  rr = get_data("Figure2_phenotypes", vname)
+  da = rr$data
+  vname1 = rr$vname
+  fml = sprintf("%s ~ age", vname1)
+  kt = kruskal.test(as.formula(fml), da)
+  kw = rbind(kw, list(vname=vname1, kw=kt$statistic, kwp=kt$p.value, kwdof=kt$parameter))
+  n0 = n0 + 1
+  n1 = n1 + ifelse(kt$p.value < 0.05, 1, 0)
+}
+
+kw = kw %>% mutate(kwz = qnorm(pchisq(kw, kwdof)))
+
+print(n1/n0)
+```
+
+We can also assess for relationships using Pearson correlation. This approach is more sensitive to linear change but is completely unable to detect symmetric "U-shaped" relationships. The results of the Pearson correlation analysis are almost identical to the results of the "nonparametric" approach.
+
+```{r}
+n0 = 0
+n1 = 0
+pc = data.frame()
+for (vname in names(mdat[["Figure2_phenotypes"]])) {
+  rr = get_data("Figure2_phenotypes", vname)
+  da = rr$data
+  vname1 = rr$vname
+  r = cor(da[["age"]], da[[vname1]])
+  se = 1 / sqrt(dim(da)[1])
+  pc = rbind(pc, list(vname=vname1, pc=r, pcse=se, pcz=r/se))
+  if (is.finite(r)) {
+    n0 = n0 + 1
+    n1 = n1 + ifelse(abs(r) > 2*se, 1, 0)
+  }
+}
+print(n1/n0)
+```
+
+Taking a "large scale inference" perspective, we can plot the Z-scores for the Pearson correlation and Kruskal-Wallis analyses in a scatterplot. The Kruskal-Wallis approach cannot discern direction.
+
+```{r}
+stats = inner_join(kw, pc, by="vname")
+p = ggplot(stats, aes(kwz, pcz)) + geom_point()
+print(p)
+```
+
+Below we select a few of the phenotypes that have substantially different results between the Pearson and Kruskal-Wallis analysis.
+
+```{r}
+ii = (abs(stats$pcz) < 1) & (abs(stats$kwz) > 2.5)
+for (vname in stats$vname[ii]) {
+    if (is.na(vname)) { next }
+    rr = get_data("Figure2_phenotypes", vname, convert_age=T, standardize=F)
+    da = rr$data
+    da$age = factor(da$age)
+    vname = rr$vname
+    p = ggplot(da, aes(x=age, y=.data[[vname]])) + geom_boxplot()
+    print(p)
+}
+```
+
+## Analysis of interventional data
+
+Now we turn to diet, which is one of the interventional components of the study. Mice were on either a calorie-restricted or regular diet. In these experiments, there were two age groups denoted "young" and "old".
+
+Below we consider the distributions for a few phenotypes.
+
+```{r}
+for (vname in c("ST", "Body_mass_NMR", "HR")) {
+    rr = get_data("Figure5_phenotypes", vname, convert_age=F, standardize=F)
+    da = rr$data
+    vname = rr$vname
+    p = ggplot(da, aes(x=interaction(age, diet), y=.data[[vname]])) + geom_boxplot()
+    print(p)
+}
+```
+
+For more formal analysis, we can use regression analysis to assess the combined association of age and diet type in relation to each phenotype. Here we use ordinary least squares (OLS) to fit the models, fitting a "saturated" model for each phenotype. This model has an intercept, main effects for age and diet, and an interaction between age and diet.
+
+In interpreting the results of the analysis, we consider the evidence for additive and non-additive associations between the intervention variable (diet) and the outcome phenotype. Age is either a nuisance variable or a moderator (also known as a modifier).
+
+Since age and diet happen to both be binary here, this can also be seen as a two-way ANOVA, specifically a 2x2 layout. The additive model can be parameterized in three degrees of freedom and the non-additive model has four degrees of freedom. We focus on two Wald tests - one testing for an additive contribution of diet, and one testing for non-additivity of the age and diet effects. We have minimal interest in the main effect of age so do not formally test that effect below.
+
+There are over 200 phenotypes so we first calculate all of the relevant statistics and store them in a dataframe.
+
+```{r}
+rslt = data.frame()
+for (vname in names(mdat[["Figure5_phenotypes"]])) {
+    rr = get_data("Figure5_phenotypes", vname, convert_age=F)
+    da = rr$data
+    vname1 = rr$vname
+    fml = sprintf("%s ~ age * diet", vname1)
+    mm = lm(as.formula(fml), da)
+    mx = model.matrix(mm)
+    d = svd(mx)$d
+    if (max(d) / min(d) > 100000) {
+        print(sprintf("Skipping %s", vname))
+        continue
+    }
+    se = sqrt(diag(vcov(mm)))
+    cc = coef(mm)
+    pheno_sd = sd(residuals(mm) + fitted.values(mm))
+    rslt = rbind(rslt, list(vname=vname, young_main=cc[["ageyoung"]],
+                            young_main_z=cc[["ageyoung"]]/se[["ageyoung"]],
+                            young_main_se=se[["ageyoung"]],
+                            restricted_main=cc[["dietrestricted"]],
+                            restricted_main_z=cc[["dietrestricted"]]/se[["dietrestricted"]],
+                            restricted_main_se=se[["dietrestricted"]],
+                            interaction=cc[["ageyoung:dietrestricted"]],
+                            interaction_z=cc[["ageyoung:dietrestricted"]] /                                                           se[["ageyoung:dietrestricted"]],
+                            interaction_se=se[["ageyoung:dietrestricted"]],
+                            pheno_sd=pheno_sd))
+}
+```
+
+The plot below shows the Z-scores for the diet main effect with respect to each phenotype. Since there is an interaction term in the model, these effects correspond to the difference between diet groups (restricted minus control) when fixing age at "old" (the reference level of age). The vertical lines show the conventional Z-score thresholds of +/-2, and the thresholds that control the family-wise error rate to 5% for the given number of tests (phenotypes).
+
+```{r, fig.width=5, fig.height=20}
+zq = qnorm(1 - 0.025/dim(rslt[1]))
+rslt = arrange(rslt, by=restricted_main_z)
+rslt = rslt %>% mutate(vname=factor(vname, levels=vname))
+p = ggplot(rslt, aes(restricted_main_z, vname)) + geom_point()
+p = p + geom_vline(xintercept=-2, color="grey")
+p = p + geom_vline(xintercept=2, color="grey")
+p = p + geom_vline(xintercept=-zq, color="black")
+p = p + geom_vline(xintercept=zq, color="black")
+print(p)
+```
+
+The plot below shows the estimated interaction effects for each phenotype. These interaction terms can be interpreted as the difference between the diet effect (restricted diet minus ad lib diet) in the old age group and the same difference in the young age group. That is, it is a "difference of differences". Note that only one phenotype reaches the threshold required for family-wise error control. This is consistent with the authors' claims that interventions seldom change the rate of change of phenotypes with respect to aging, although some of the phenotypes do change their overall level in response to the intervention.
+
+```{r, fig.width=5, fig.height=20}
+zq = qnorm(1 - 0.025/dim(rslt[1]))
+rslt = arrange(rslt, by=interaction_z)
+rslt = rslt %>% mutate(vname=factor(vname, levels=vname))
+p = ggplot(rslt, aes(interaction_z, vname)) + geom_point()
+p = p + geom_vline(xintercept=-2, color="grey")
+p = p + geom_vline(xintercept=2, color="grey")
+p = p + geom_vline(xintercept=-zq, color="black")
+p = p + geom_vline(xintercept=zq, color="black")
+print(p)
+```
+
+Another approach to assessing the results is by presenting the effects in terms of standardized coefficients with error bars, instead of in terms of Z-scores. This largely recapitulates the findings from above, but using a different presentation. The standardized interaction term (the center of each error bar below) is the "difference in difference" in standardized units. The error bars are constructed to have 95% simultaneous coverage. The error bars that do not include zero correspond to phenotypes with strong evidence for a "difference in difference" (non-parallel diet effects across age groups).
+
+```{r}
+rslt = rslt %>% mutate(interaction_s = interaction / pheno_sd)
+rslt = rslt %>% mutate(interaction_s_se = interaction_se / pheno_sd)
+q = qnorm(1 - 0.025/dim(rslt)[1])
+rslt = rslt %>% mutate(interaction_s_lcb = interaction_s - q*interaction_s_se)
+rslt = rslt %>% mutate(interaction_s_ucb = interaction_s + q*interaction_s_se)
+```
+
+```{r, fig.width=5, fig.height=20}
+rslt = arrange(rslt, by=interaction_s)
+rslt = rslt %>% mutate(vname=factor(vname, levels=vname))
+p = ggplot(rslt, aes(interaction_s, vname)) + geom_point()
+p = p + geom_errorbar(aes(xmin=interaction_s_lcb, xmax=interaction_s_ucb, y=vname), rslt) + geom_vline(xintercept=0)
+print(p)
+```
+
+## Factor analyses
+
+Next we conduct some multivariate analyses, using matrix factorization. This allows us to see how several phenotypes may change in similar ways across the ages, and which ages have similar patterns of deviations from the mean value across the phenotypes.
+
+First we need a function that puts all the phenotype data into one matrix. Since each phenotype is measured on its own scale, to conduct a multivariate analysis it is natural to put everything on the same scale by standardizing the data for each phenotype.
+
+```{r}
+get_all_data = function(dset) {
+    pheno = data.frame()
+    ages = NULL
+    pnames = NULL
+    for (ky in names(mdat[[dset]])) {
+        rr = get_data(dset, ky, standardize=T)
+        da = rr$data
+        vname = rr$vname
+        dm = da %>% group_by(age) %>% summarize({{ vname }} := mean(.data[[vname]]))
+        dm = dm %>% arrange(age)
+        ages = dm[["age"]]
+        pheno = rbind(pheno, dm[[vname]])
+        pnames = c(pnames, vname)
+    }
+    colnames(pheno) = ages
+    rownames(pheno) = pnames
+    return(pheno)
+}
+
+dd = get_all_data("Figure2_phenotypes")
+```
+
+Next we use PCA to understand the relationships among the ages and among the phenotypes. There are many phenotypes and if we plot them all at once there will be a lot of overplotting.
+
+First we plot only the variables. This plot indicates that phenotypes predominantly tend to be anticorrelated between the young ages (3, 5, 8 months) and the oldest ages (20, 26 months). Phenotype values at the middle age (14 months) are generally uncorrelated with this dominant mode of variation.
+
+```{r}
+pca = PCA(dd)
+plot(pca, choix="var", select="coord 10")
+```
+
+To reduce overplotting, when we plot the phenotype scores (row score), we plot only the phenotypes with the 10 largest coefficients in the biplot (based on magnitude). These are mostly cd4 and cd8 counts, which relate to immune function.
+
+```{r}
+plot(pca, choix="ind", select="coord 10", cex=0.5)
+```
