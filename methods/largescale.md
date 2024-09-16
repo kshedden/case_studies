@@ -6,7 +6,7 @@ each component of the data. These findings are usually then integrated to
 understand the population as a whole. This contrasts with the strategy of
 building a single all-encompassing model using the entire dataset. Situations
 where this strategy is useful commonly arise due to modern innovations that
-allow for collection of data that is both high-dimensional (many attributes
+allow for collection of data that are both high-dimensional (many attributes
 measured on each unit) and heterogeneous (the units can be clustered into
 subpopulations with much greater heterogeneity between than within
 subpopulations).
@@ -30,12 +30,12 @@ p-value $p_j$ based on the reference distribution of the ratio
 $\hat{\theta}_j/\hat{s}_j$. These quantities are usually not fully independent
 between the hypotheses, but in many cases the dependencies may be weak.
 
-*Large scale inference* is a body of statistical methods developed to
-accommodate analysis in this setting. Specifically, large scale inference
-facilitates analysis conducted in two stages, where we first obtain a large
-collection of local findings $\hat{\theta}_j$, $\hat{s}_j$, $\hat{p}_j$, then
-integrate these results to obtain a more holistic understanding of the entire
-population.
+[Large scale inference](https://efron.ckirby.su.domains/other/2010LSIexcerpt.pdf)
+is a body of statistical methods developed to accommodate analysis in this
+setting. Specifically, large scale inference facilitates analysis conducted in
+two stages, where we first obtain a large collection of local findings
+$\hat{\theta}_j$, $\hat{s}_j$, $\hat{p}_j$, then integrate these results to
+obtain a more holistic understanding of the entire population.
 
 __Classical multiple inference__
 
