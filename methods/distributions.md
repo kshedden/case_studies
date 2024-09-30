@@ -58,11 +58,12 @@ example major earthquakes, large movements in financial markets, extremely long
 human lifespans, or extreme rainfall events. The study of extremes naturally
 leads us to focus on the right tail of a probability distribution. In some cases
 the extremes of interest may lie in the left tail, but in that case we can flip
-the distribution, so by convention, methods for studying extremes focus on the
+the distribution (multiply the values by -1 so the left and right tails are swapped).
+Therefore by convention methods for studying extremes focus on the
 right tail.
 
-In the statistical study of extremes, we do not attempt to define individual
-data points as "extreme" or "non-extreme". In some cases there may be
+In the statistical study of extremes, we do not attempt to classify individual
+data points as being "extreme" or "non-extreme". In some cases there may be
 non-statistical reasons to define a threshold beyond which an observation is
 extreme (for example, we may describe a hurricane as extreme if the wind speed
 exceeds 160 miles per hour). However, there is no objective statistical basis
@@ -270,7 +271,7 @@ As $\alpha\rightarrow\infty$ (or equivalently $\xi=1/\alpha\rightarrow 0$), the
 generalized Pareto distribution becomes the exponential distribution.
 
 The famous
-[Pickands-Balkema-De Haan theorem theorem](https://en.wikipedia.org/wiki/Pickands%E2%80%93Balkema%E2%80%93De_Haan_theorem)
+[Pickands-Balkema-De Haan theorem](https://en.wikipedia.org/wiki/Pickands%E2%80%93Balkema%E2%80%93De_Haan_theorem)
 demonstrates that with appropriate choice of threshold $T$, the exceedances for
 many distributions approximately follow a generalized Pareto distribution. This
 theorem plays the role of the central limit theorem in the study of extremes,
