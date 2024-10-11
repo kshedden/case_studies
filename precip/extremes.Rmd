@@ -345,11 +345,20 @@ z = df$PRCP - thresh
 z = z[z > 0]
 ```
 
-Estimate the tail parameter (alpha) using empirical Bayes fit to a generalized Pareto distribution.
+Estimate the tail parameter (alpha) using empirical Bayes fit to a generalized Pareto distribution.  The tail index is the reciprocal of the shape parameter.
 
 ```{r}
 eb = gp_estimate(z)
+alpha = 1 / eb$shape
+```
+
+```{r}
 gp_simstudy(df$PRCP)
+```
+
+Fit a generalized extreme value distribution to the block maxima.
+
+```{r}
 gev = block_max(annmax)
 ```
 
