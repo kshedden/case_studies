@@ -1,4 +1,4 @@
-Investigate the tails of a distribution of daily precipitation totals, considering the possibility that the tails may have either a powerlaw or an exponential tail.  Then estimate m-observation returns to quantify the risk for heavy precipitation events.
+Investigate the tails of a distribution of daily precipitation totals, considering the possibility that the tails may have either a powerlaw (heavy) or an exponential (light) tail.  Then estimate m-observation returns to quantify the risk of heavy precipitation events at several time horizons.
 
 ```{r}
 library(readr)
@@ -60,7 +60,7 @@ gp_simstudy_copula = function(n, r, eb0, nrep) {
 }
 ```
 
-Assess the empirical Bayes estimate of the GPD parameters. Use copula to induce serial dependence.
+Assess the empirical Bayes estimate of the GPD parameters. Use a copula to induce serial dependence.
 
 ```{r}
 gp_simstudy = function(z, nrep=500) {
@@ -169,6 +169,33 @@ fit_tail_reg = function(x, p0=0.99, family="powerlaw") {
     icept = mean(ts$p) + alpha_hat*mean(ts$x)
 
     return(list(icept=icept, alpha_hat=alpha_hat, x=ts$x, p=ts$p))
+}
+```
+
+Estimate the tail index using Hill's estimator, with a window width of k.
+
+```{r}
+hill_estimate = function(x, k=200) {
+  x = log(sort(x))
+  n = length(x)
+  x = x[(n-k+1):n]
+  n = length(x)
+  alpha_hat = -1 / mean(x[1] - x[2:n])
+  return(alpha_hat)
+}
+```
+
+```{r}
+hill_plot = function(x) {
+  kk = seq(20, 500, 5)
+  alpha_hat = NULL
+  for (k in kk) {
+    alpha_hat = c(alpha_hat, hill_estimate(x, k)) 
+  }
+  da = data.frame(k=k, alpha_hat=alpha_hat)
+  p = ggplot(da, aes(x=kk, y=alpha_hat)) + geom_line()
+  p = p + ylab("Estimated tail index") + xlab("Window width")
+  print(p)
 }
 ```
 
@@ -328,6 +355,7 @@ p = ggplot(aes(x=x, y=y), data=dp) + geom_step()
 p = p + ylab("Cumulative probability") + xlab("Precipitation (mm)")
 print(p)
 ```
+
 Plot the complementary cumulative distribution function (eCCDF) of the precipitation data
 
 ```{r}
@@ -343,6 +371,12 @@ Construct exceedances
 ```{r}
 z = df$PRCP - thresh
 z = z[z > 0]
+```
+
+Below we construct a "Hill plot", which shows Hill's estimator of the tail index plotted as a function of the window width k.
+
+```{r}
+hill_plot(df$PRCP)
 ```
 
 Estimate the tail parameter (alpha) using empirical Bayes fit to a generalized Pareto distribution.  The tail index is the reciprocal of the shape parameter.
