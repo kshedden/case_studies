@@ -185,6 +185,8 @@ hill_estimate = function(x, k=200) {
 }
 ```
 
+Generate a Hill plot for the data in 'x'.
+
 ```{r}
 hill_plot = function(x) {
   kk = seq(20, 500, 5)
