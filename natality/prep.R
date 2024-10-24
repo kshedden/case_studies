@@ -12,7 +12,7 @@ pa = "/home/kshedden/data/Teaching/natality"
 # Subset the demographics file to 2016.  This only needs to
 # be run once.  Change the next line to read 'if (TRUE)' to
 # run this section of code.
-if (TRUE) {
+if (FALSE) {
     f = file.path(pa, "us.1990_2022.19ages.adjusted.txt.gz")
     g = file.path(pa, "2016ages.txt.gz")
     inc = gzfile(f)

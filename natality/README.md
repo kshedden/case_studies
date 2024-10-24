@@ -19,10 +19,14 @@ Next visit
 to obtain demographic data about the counties.  The relevant file is
 under the table labeled "County-Level Population Files - 19 Age Groups", in the column labeled
 "1990-2020 4 expanded races by origin", in the row labeled "All States
-Combined".  You can download the file in one of two formats.
+Combined".  You can download the file in gzip/csv (.gz) format.
 
 The layout of the county demographics data is at
 [https://seer.cancer.gov/popdata/popdic.html](https://seer.cancer.gov/popdata/popdic.html).
 
 Then visit [https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx](https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx)
 and download the 2013 "Rural-Urban Continuum Codes".
+
+Once you have downloaded all these files, you can run one of the 'prep.X' scripts to
+prepare the data.  As usual, you will have to review these files to understand what they
+do, and set some configuration options for your local system.

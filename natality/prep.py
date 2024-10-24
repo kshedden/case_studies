@@ -25,7 +25,7 @@ births = births[~births["County"].str.contains("Unidentified")]
 # and takes time, so only run this once and save the result
 # for future runs.
 if False:
-    f = os.path.join(pa, "us.1990_2020.19ages.txt.gz")
+    f = os.path.join(pa, "us.1990_2022.19ages.adjusted.txt.gz")
     g = os.path.join(pa, "2016ages.txt.gz")
     with gzip.open(g, "w") as out:
         with gzip.open(f) as inp:
