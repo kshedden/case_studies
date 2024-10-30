@@ -1,3 +1,9 @@
+# Analyzing demographic variation among US counties using biplots
+
+The data considered here are a single year of population counts for US counties. The population within each county is partitioned into 2 x 2 x 4 x 19 = 304 demographic cells (sex ⨯ Hispanic ethnicity status ⨯ race ⨯ age). See the prep.R script for more information.
+
+In this notebnook we will use principal components analysis (PCA) and biplots to understand the covariation of demographic group sizes across US counties.
+
 ```{r}
 library(ggplot2)
 library(stringr)
@@ -9,13 +15,15 @@ library(dplyr)
 source("prep.R")
 ```
 
-Only consider counties for which we have natality data.
+Only consider counties for which we have natality data:
 
 ```{r}
 fips = sort(unique(births$FIPS))
 demog = demog %>% filter(FIPS %in% fips)
 demog = demog %>% arrange(demog, FIPS)
 ```
+
+Restructure the data into long form:
 
 ```{r}
 dl = pivot_longer(select(demog, -FIPS), cols=everything(), names_to="group", values_to="population")
@@ -31,16 +39,17 @@ demogx = demog %>% select(-FIPS)
 demogx = as.matrix(demogx)
 ```
 
-The total population per county, transformed like the county-level data.
+The total population per county.
 
 ```{r}
-totpop = apply(demogx, 1, sum)^0.25
+totpop = apply(demogx, 1, sum)
 ```
 
-Fourth root transform the population counts for variance stabilization and symmetry.
+Log transform the population counts for variance stabilization and symmetry.
 
 ```{r}
-demogx = demogx^0.25
+demogx = log(1 + demogx)
+totpop = log(1 + totpop)
 ```
 
 Double center the data
@@ -138,8 +147,9 @@ generate_biplots = function(uu, vv, sx, j1, j2, highlight=NULL) {
 }
 ```
 
+Select some counties to highlight in the plots (Wayne county MI, Santa Clara CA, Bristol MA, Cook IL, Pennington SD, Los Angeles CA).
+
 ```{r}
-# Wayne county MI, Santa Clara CA, Bristol MA, Cook IL, Pennington SD, Los Angeles CA
 f = c("26163", "06085", "25005", "17031", "46103", "06037")
 b = c("W", "S", "B", "C", "P", "L")
 highlight = data.frame(fips=f, label=b)
