@@ -298,7 +298,7 @@ $\mu\in{\mathbb R}^d$ denote the mean, and $\Sigma\in{\mathbb R}^{d\times d}$ de
 covariance matrix.  The
 squared [Mahalanobis distance](https://en.wikipedia.org/wiki/Mahalanobis_distance)
 is defined to be $(x-\mu)^\prime \Sigma^{-1}(x-\mu)$.  Points with larger
-Mahalanobis distance to the center are ``less central'' or ``more outlying''.
+Mahalanobis distance to the center are "less central" or "more outlying".
 Using the MCD or
 another robust estimate of the covariance matrix (and of the mean) can
 sometimes reveal more interesting sets of outliers than those that are identified
