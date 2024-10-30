@@ -78,9 +78,9 @@ $$
 D_S(z; \\{x_i\\}) = 1 - \lVert {\rm Avg}_i \\{(x_i-z)/ \lVert x_i-z \lVert \\} \lVert
 $$
 
-Note that $(x_i-z)/\\|x_i-z\\|$ is a unit vector pointing in the
+Note that $(x_i-z) / \lVert x_i-z \lVert$ is a unit vector pointing in the
 direction from $z$ to $x_i$.  If a point $z$ is "shallow" then most of
-the unit vectors $(x_i-z)/\\|x_i-z\\|$ point in roughly the same
+the unit vectors $(x_i-z) / \lVert x_i-z \lVert$ point in roughly the same
 direction, and therefore their average value will have large
 magnitude.  If a point $z$ is "deep" then these unit vectors will
 point in many different directions and their average value will have
@@ -91,7 +91,7 @@ small magnitude.
 The $L_2$ depth also has a simple definition and is easy to compute:
 
 $$
-D_{L_2}(z; \\{x_i\\}) = 1 / (1 + {\rm Avg}_i\{\\|x_i-z\\|\}).
+D_{L_2}(z; \\{x_i\\}) = 1 / (1 + {\rm Avg}_i\{\lVert x_i-z \lVert \\}).
 $$
 
 ### Band depth
