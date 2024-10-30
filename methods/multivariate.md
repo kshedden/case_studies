@@ -195,7 +195,7 @@ very effective and relatively easy to work with is called the *energy distance* 
 names as well), and is defined as
 
 $$
-2E\\|X-Y\\| - E\\|X-X^\prime\\| - E\\|Y-Y^\prime\\|.
+2E \lVert X-Y \lVert - E \lVert X-X^\prime \lVert - E \lVert Y-Y^\prime \lVert.
 $$
 
 Here, $X$, $X^\prime$ are independent draws from $F$, and $Y$, $Y^\prime$
@@ -216,14 +216,14 @@ and can be ignored when constructing $F$.  Thus, our goal is to construct
 $F$ that minimizes
 
 $$
-2E\\|X - Y\\| - E\\|X - X^\prime\\|.
+2E \lVert X - Y \lVert - E \lVert X - X^\prime \lVert.
 $$
 
 It is worth considering an alternative approach in which we simply minimize
-the first term above, $E\\|X-Y\\|$.  However doing this always yields a degenerate
+the first term above, $E \lVert X-Y \lVert$.  However doing this always yields a degenerate
 solution in which $F$ places all of its probability mass on the
 *spatial median*, which is the fixed vector
-$V$ that minimizes $E\\|Y - V\\|$.  This is the reason that the "repulsive"
+$V$ that minimizes $E \lVert Y - V \lVert$.  This is the reason that the "repulsive"
 term $E\\|X-X^\prime\\|$ in the distance measure is essential.
 
 In practice, we do not observe the distribution $G$ but instead observe a sample
@@ -232,7 +232,7 @@ is supported on a finite set of points $x_1, \ldots, x_n$.  This leads
 us to the empirical analogue of the distance function above:
 
 $$
-\frac{2}{nN}\sum_{i=1}^n\sum_{j=1}^N\\|y_j - x_i\\| - \frac{1}{n^2}\sum_{i=1}^n\sum_{j=1}^n\\|x_i-x_j\\|.
+\frac{2}{nN}\sum_{i=1}^n\sum_{j=1}^N \lVert y_j - x_i \lVert - \frac{1}{n^2}\sum_{i=1}^n\sum_{j=1}^n \lVert x_i-x_j \lVert.
 $$
 
 Our goal here was to discuss the motivation behind the support point algorithm.
