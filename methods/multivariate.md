@@ -138,7 +138,7 @@ the deepest point and we consider any unit vector $u$, and we then
 evaluate the depth at $\tilde{x} + \lambda u$ for
 $\lambda \in {\mathbb R}^+$, then the depth is a decreasing function of $\lambda$.
 
-* *Vanishing at infinity* -- for any sequence $z_i$ with $ \lVert z_i \lVert$
+* *Vanishing at infinity* -- for any sequence $z_i$ with $\lVert z_i \lVert$
 tending to infinity, the depths of the $z_i$ tend to zero.
 
 ### Depth peeling
