@@ -138,7 +138,7 @@ the deepest point and we consider any unit vector $u$, and we then
 evaluate the depth at $\tilde{x} + \lambda u$ for
 $\lambda \in {\mathbb R}^+$, then the depth is a decreasing function of $\lambda$.
 
-* *Vanishing at infinity* -- for any sequence $z_i$ with $\\|z_i\\|$
+* *Vanishing at infinity* -- for any sequence $z_i$ with $ \lVert z_i \lVert$
 tending to infinity, the depths of the $z_i$ tend to zero.
 
 ### Depth peeling
@@ -210,7 +210,7 @@ if (i) a random draw from $F$ tends to be close to a random draw from $G$,
 
 Our goal is to approximate a given distribution $G$ with a simpler distribution $F$
 that we construct.  Here "simple" means that $F$ has finite support, i.e. a finite
-sample space.  Since $G$ is given, the term $E\\|Y-Y^\prime\\|$ in the
+sample space.  Since $G$ is given, the term $E \lVert Y-Y^\prime \lVert$ in the
 energy distance is fixed
 and can be ignored when constructing $F$.  Thus, our goal is to construct
 $F$ that minimizes
@@ -224,7 +224,7 @@ the first term above, $E \lVert X-Y \lVert$.  However doing this always yields a
 solution in which $F$ places all of its probability mass on the
 *spatial median*, which is the fixed vector
 $V$ that minimizes $E \lVert Y - V \lVert$.  This is the reason that the "repulsive"
-term $E\\|X-X^\prime\\|$ in the distance measure is essential.
+term $E \lVert X-X^\prime \lVert$ in the distance measure is essential.
 
 In practice, we do not observe the distribution $G$ but instead observe a sample
 $y_1, \ldots, y_N$.  As stated above, the approximating distribution $F$ that we are constructing
