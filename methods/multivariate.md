@@ -91,7 +91,7 @@ small magnitude.
 The $L_2$ depth also has a simple definition and is easy to compute:
 
 $$
-D_{L_2}(z; \\{x_i\\}) = 1 / (1 + {\rm Avg}_i\{\lVert x_i-z \lVert \\}).
+D_{L_2}(z; \\{x_i\\}) = 1 / (1 + {\rm Avg}_i\\{\lVert x_i-z \lVert \\}).
 $$
 
 ### Band depth
