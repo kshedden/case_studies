@@ -23,8 +23,14 @@ feedback you received on your earlier submission in mind, but just as
 important is to meet all the standards expressed in the writing tips
 and course syllabus.
 
-5. (Due November 6th) Write a memo discussing a focused analuysis of
+5. (Due November 8th) Write a memo discussing a focused analysis of
 the natality data.  You should largely focus on the themes discussed
+in class but there should be some novelty to your approach as well.
+As always, be sure to keep the writing tips and syllabus in mind
+as you prepare your memo.
+
+6. (Due November 18th) Write a memo discussing an analysis of
+the Argo data.  You should largely focus on the themes discussed
 in class but there should be some novelty to your approach as well.
 As always, be sure to keep the writing tips and syllabus in mind
 as you prepare your memo.
