@@ -1,13 +1,13 @@
-Support points and quantization
+# Support points and quantization
 
+For reference, the method used in this notebook was originally proposed in this paper: https://arxiv.org/pdf/1609.01811.pdf
+
+You don't need to review this paper, there should be sufficient background provided in this notebook, in the 'multivariate' methods document, and in the lectures. 
 
 ```{r}
 library(ggplot2)
 source("read.R")
 ```
-
-See this reference for more information about the support point algorithm:
-https://arxiv.org/pdf/1609.01811.pdf
 
 ```{r}
 # Equation 22 in Mak et al.
@@ -61,17 +61,17 @@ Plot support points for temperature and salinity separately.
 for (j in 1:2) {
 
     if (j == 1) {
-        x = temp
+        xdat = temp
         ylab = "Temperature"
     } else {
-        x = psal
+        xdat = psal
         ylab = "Salinity"
     }
 
     # Make plots with different numbers of support points.
     for (npt in c(1, 2, 5)) {
         cat(sprintf("npt=%d\n", npt))
-        X = support(x, npt, maxiter=50)
+        X = support(xdat, npt, maxiter=50)
 
         # Put the support points in long form for plotting
         da = data.frame(x=array(X), g=kronecker(1:npt, array(1, 100)),
@@ -103,5 +103,49 @@ for (npt in c(3, 5)) {
     plt = ggplot(aes(x=pressure, y=x, group=grp, color=spt, lty=mea), data=da) + geom_line()
     plt = plt + labs(x="Pressure", y=ylab) + ggtitle(sprintf("%d support points", npt))
     print(plt)
+}
+```
+
+# Stability analysis of support point estimation
+
+Below we calculate 'npt' support points 'nrep' times, each time using a random subsample of 10,000 profiles.  Set the variable 'x' to either 'temp' or 'psal' to conduct this stability analysis on the temperature or salinity data.
+
+```{r}
+npt = 10
+nrep = 5
+x = temp
+S = list()
+n = dim(x)[2]
+for (k in 1:nrep) {
+    ii = sample(1:n, 10000, replace=F)
+    X = support(x[, ii], npt, maxiter=50)
+    S[[k]] = X
+}
+```
+
+The following function calculates the average distance between a column of X and a column of Y.
+
+```{r}
+ediff = function(X, Y) {
+    if (dim(X)[2] > dim(Y)[2]) {
+        Z = X
+        X = Y
+        Y = Z
+    }
+    d = 0.0
+    for (j in 1:dim(X)[2]) {
+        u = (Y - X[, j])^2
+        d = d + sum(sqrt(apply(u, 2, sum)))
+    }
+    d = d / (dim(X)[2] + dim(Y)[2])
+    return(d)
+}
+```
+
+The following function calculates the (sample) energy distance between the columns of X and Y.
+
+```{r}
+energy_distance = function(X, Y) {
+  return(2*ediff(X, Y) - ediff(X, X) - ediff(Y, Y))
 }
 ```
