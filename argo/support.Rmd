@@ -1,13 +1,69 @@
 # Support points and quantization
 
-For reference, the method used in this notebook was originally proposed in this paper: https://arxiv.org/pdf/1609.01811.pdf
-
-You don't need to review this paper, there should be sufficient background provided in this notebook, in the 'multivariate' methods document, and in the lectures. 
+For reference, the method used in this notebook was originally proposed in this paper: https://arxiv.org/pdf/1609.01811.pdf.  You don't need to review this paper, there should be sufficient background provided in this notebook, in the 'multivariate' methods document, and in the lectures.
 
 ```{r}
 library(ggplot2)
+library(Polychrome)
 source("read.R")
 ```
+
+The algorithms used here do not scale well to large datasets, so we subsample the profiles for speed.
+
+```{r}
+m = 20000
+n = dim(temp)[2]
+ii = sample(1:n, 20000, replace=FALSE)
+temp = temp[,ii]
+psal = psal[,ii]
+lat = lat[ii]
+lon = lon[ii]
+day = day[ii]
+```
+
+This function subsamples the columns of X so there are no more than 'cmax' columns.
+
+```{r}
+dsamp = function(X, cmax=1000) {
+    n = dim(X)[2]
+    if (n > cmax) {
+        ii = sample(1:n, cmax, replace=F)
+        X = X[, ii]
+    }
+    return(X)
+}
+```
+
+The 'ediff' function calculates the average distance between a column of X and a column of Y.
+
+```{r}
+ediff = function(X, Y) {
+    if (dim(X)[2] > dim(Y)[2]) {
+        Z = X
+        X = Y
+        Y = Z
+    }
+    d = 0.0
+    for (j in 1:dim(X)[2]) {
+        u = (Y - X[, j])^2
+        d = d + sum(sqrt(apply(u, 2, sum)))
+    }
+    d = d / (dim(X)[2] * dim(Y)[2])
+    return(d)
+}
+```
+
+The 'energy_distance' function calculates the (sample) energy distance between the columns of X and Y.
+
+```{r}
+energy_distance = function(X, Y) {
+  X = dsamp(X)
+  Y = dsamp(Y)
+  return(2*ediff(X, Y) - ediff(X, X) - ediff(Y, Y))
+}
+```
+
+The 'update_support' function is part of the majorization-maximization (MM) algorithm used to compute the support points.
 
 ```{r}
 # Equation 22 in Mak et al.
@@ -33,9 +89,9 @@ update_support = function(X, Y) {
 }
 ```
 
+The 'support' function calculates N support points for the data in Y.  The data points are stored in the columns of Y.
+
 ```{r}
-# Calculate N support points for the data in Y.  The points
-# are stored in the columns of Y.
 support = function(Y, N, maxiter=1000) {
 
     p = dim(Y)[1]
@@ -53,6 +109,18 @@ support = function(Y, N, maxiter=1000) {
 
     return(X)
 }
+```
+
+It will be helpful to know the diameters of the temperature and salinity profile sets, which are calculated below
+
+```{r}
+temp1 = dsamp(temp)
+ediff(temp1, temp1)
+```
+
+```{r}
+psal1 = dsamp(psal)
+ediff(psal1, psal1)
 ```
 
 Plot support points for temperature and salinity separately.
@@ -83,7 +151,7 @@ for (j in 1:2) {
     }
 }
 ```
-To understand the joint variation of temperature and salinity, concatenate these two measures and calculate support points.
+To understand the joint variation of temperature and salinity, concatenate these two measures and calculate support points.  Before concatenation, Z-score all temperature measures and all salinity measures.
 
 ```{r}
 tempz = (temp - mean(temp)) / sd(temp)
@@ -105,47 +173,99 @@ for (npt in c(3, 5)) {
     print(plt)
 }
 ```
+# Maps of profiles based on support point associations
+
+We can assign each profile to its spatially-closest support point, and make a map of the Pacific Ocean in which the profiles are colored based on these associations.
+
+
+```{r}
+support_neighbor = function(X, S) {
+    m = dim(S)[2]
+    n = dim(X)[2]
+    di = array(0, c(n, m))
+    for (j in 1:m) {
+        di[,j] = apply((X - S[,j])^2, 2, sum)  
+    }
+    ii = apply(di, 1, which.min)
+    return(ii)
+}
+```
+
+```{r}
+npt = 10
+for (j in 1:2) {
+
+    if (j == 1) {
+        xdat = temp
+        ti = "Temperature"
+    } else {
+        xdat = psal
+        ti = "Salinity"
+    }
+  
+    S = support(xdat, npt, maxiter=50)
+    ii = support_neighbor(xdat, S)
+    ii = sprintf("NC%d", ii)
+    xx = data.frame(lat=lat, lon=lon, grp=ii)
+    
+    lon0 = 70
+    xx$lon = (xx$lon + lon0) %% 360
+    
+    gg = ggplot(data=xx, aes(x=lon, y=lat, group=grp, color=grp)) + geom_point()
+    gg = gg + scale_color_manual(values=light.colors(n=10)) + xlim(180, 360)
+    gg = gg + labs(title=ti)
+    print(gg)
+}
+```
 
 # Stability analysis of support point estimation
 
-Below we calculate 'npt' support points 'nrep' times, each time using a random subsample of 10,000 profiles.  Set the variable 'x' to either 'temp' or 'psal' to conduct this stability analysis on the temperature or salinity data.
+One of the principles of veridical data science is stability, which basically means that the results of your analysis should not be highly sensitive to small data perturbations or reasonable alternatives to the data analysis methods that are employed. Below we conduct a very simplistic stability assessment for the support point analysis. We will perturb the data by subsampling 10,000 observations at a time without replacement. We then quantify the extent to which the minimized energy distance found through the support point optimization changes substantially upon subsampling. In addition, we assess the extent to which the support points themselves are The following function calculates the average distance between a column of X and a column of Y.
+
+Set the variable 'xdat' to either 'temp' or 'psal' to conduct this stability analysis on the temperature or salinity data.
+
+```{r}
+xdat = temp
+```
+
+Below we calculate 'npt' support points 'nrep' times, each time using a random subsample of 10,000 profiles.
+
 
 ```{r}
 npt = 10
 nrep = 5
-x = temp
 S = list()
-n = dim(x)[2]
+n = dim(xdat)[2]
 for (k in 1:nrep) {
     ii = sample(1:n, 10000, replace=F)
-    X = support(x[, ii], npt, maxiter=50)
-    S[[k]] = X
+    S[[k]] = support(xdat[, ii], npt, maxiter=50)
 }
 ```
 
-The following function calculates the average distance between a column of X and a column of Y.
+One way to assess stability is to check the energy distance between each set of support points and the target distribution. This is the quantity being minimized when the support points are constructed. This value will vary among the random subsamples as shown below.
 
 ```{r}
-ediff = function(X, Y) {
-    if (dim(X)[2] > dim(Y)[2]) {
-        Z = X
-        X = Y
-        Y = Z
-    }
-    d = 0.0
-    for (j in 1:dim(X)[2]) {
-        u = (Y - X[, j])^2
-        d = d + sum(sqrt(apply(u, 2, sum)))
-    }
-    d = d / (dim(X)[2] + dim(Y)[2])
-    return(d)
+for (k in 1:nrep) {
+  print(energy_distance(S[[k]], xdat))
 }
 ```
 
-The following function calculates the (sample) energy distance between the columns of X and Y.
+We can compare these energy distances to the distances between a random subset of profiles (of the same size) and the full dataset. This analysis shows that the support points do a much better job of representing the population than a random set of profiles.
 
 ```{r}
-energy_distance = function(X, Y) {
-  return(2*ediff(X, Y) - ediff(X, X) - ediff(Y, Y))
+n = dim(xdat)[2]
+for (k in 1:nrep) {
+  ii = sample(1:n, npt, replace=FALSE)
+  print(energy_distance(xdat[,ii], xdat))
 }
+```
+
+```{r}
+D = array(0, c(nrep, nrep))
+for (j in 1:nrep) {
+  for (k in 1:nrep) {
+    D[j, k] = energy_distance(S[[j]], S[[k]])
+  }
+}
+D
 ```
