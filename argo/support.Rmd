@@ -1,6 +1,6 @@
 # Support points and quantization
 
-For reference, the method used in this notebook was originally proposed in this paper: https://arxiv.org/pdf/1609.01811.pdf.  You don't need to review this paper, there should be sufficient background provided in this notebook, in the 'multivariate' methods document, and in the lectures.
+For reference, the method used in this notebook was originally proposed in this paper: https://arxiv.org/pdf/1609.01811.pdf.  You don't need to review this paper, sufficient background will be provided in this notebook, in the 'multivariate' methods document, and in the lectures.
 
 ```{r}
 library(ggplot2)
@@ -21,7 +21,7 @@ lon = lon[ii]
 day = day[ii]
 ```
 
-This function subsamples the columns of X so there are no more than 'cmax' columns.
+The 'dsamp' function subsamples the columns of an array X so there are no more than 'cmax' columns.
 
 ```{r}
 dsamp = function(X, cmax=1000) {
@@ -63,7 +63,7 @@ energy_distance = function(X, Y) {
 }
 ```
 
-The 'update_support' function is part of the majorization-maximization (MM) algorithm used to compute the support points.
+The 'update_support' function is used in the majorization-maximization (MM) algorithm for computing the support points.
 
 ```{r}
 # Equation 22 in Mak et al.
@@ -89,7 +89,7 @@ update_support = function(X, Y) {
 }
 ```
 
-The 'support' function calculates N support points for the data in Y.  The data points are stored in the columns of Y.
+The 'support' function calculates N support points for the data in Y.  The data points are stored in the columns of Y.  The loss function for calculating support points is not convex, so there are many different local minimizers.  This is not a major problem for using support points in practice, and we will consider this issue further below.
 
 ```{r}
 support = function(Y, N, maxiter=1000) {
@@ -111,7 +111,7 @@ support = function(Y, N, maxiter=1000) {
 }
 ```
 
-It will be helpful to know the diameters of the temperature and salinity profile sets, which are calculated below
+It will be helpful to know the "diameters" of the temperature and salinity profile sets, which are calculated below
 
 ```{r}
 temp1 = dsamp(temp)
@@ -220,7 +220,7 @@ for (j in 1:2) {
 
 # Stability analysis of support point estimation
 
-One of the principles of veridical data science is stability, which basically means that the results of your analysis should not be highly sensitive to small data perturbations or reasonable alternatives to the data analysis methods that are employed. Below we conduct a very simplistic stability assessment for the support point analysis. We will perturb the data by subsampling 10,000 observations at a time without replacement. We then quantify the extent to which the minimized energy distance found through the support point optimization changes substantially upon subsampling. In addition, we assess the extent to which the support points themselves are The following function calculates the average distance between a column of X and a column of Y.
+One of the principles of veridical data science is stability, which basically means that the results of a data analysis should not be highly sensitive to small data perturbations or reasonable alternatives to the data analysis approach. Below we conduct a very simplistic stability assessment for the support point analysis. We will perturb the data by subsampling 10,000 observations at a time without replacement. We then quantify the extent to which the minimized energy distance found through the support point optimization changes substantially upon subsampling. In addition, we assess the extent to which the support points themselves are The following function calculates the average distance between a column of X and a column of Y.
 
 Set the variable 'xdat' to either 'temp' or 'psal' to conduct this stability analysis on the temperature or salinity data.
 
@@ -259,6 +259,8 @@ for (k in 1:nrep) {
   print(energy_distance(xdat[,ii], xdat))
 }
 ```
+
+We can also consider how close (in energy distance) different support point sets are from each other.
 
 ```{r}
 D = array(0, c(nrep, nrep))
