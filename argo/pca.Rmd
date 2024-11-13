@@ -1,6 +1,13 @@
 # Dimension reduction analysis of Argo data
 
-The Argo data consist of paired multivariate observations for temperature and salinity, measured at the same location at the same time.  Each observation is a 100-dimensional vector of either temperature or salinity as a function of pressure.  Here we use dimension reduction methods including Principal Components Analysis (PCA) and Canonical Correlation Analysis (CCA) to better understand these profiles.
+The Argo data consist of paired multivariate observations for
+temperature and salinity, measured simultaneously at the same physical
+location at a series of depths below the ocean surface.  Each
+observation consists of 100-dimensional vectors of temperature and
+salinity, indexed as functions of pressure.  Here we use dimension
+reduction methods including Principal Components Analysis (PCA) and
+Canonical Correlation Analysis (CCA) to better understand these
+profiles.
 
 ```{r}
 source("read.R")
@@ -21,14 +28,14 @@ Convert latitude so that the Pacific ocean doesn't wrap around the origin.
 lonx = (lon + 60) %% 360
 ```
 
-The mean profiles for temperature and salinity.
+Calculate the mean profiles for temperature and salinity:
 
 ```{r}
 tempmean = apply(temp, 1, mean)
 psalmean = apply(psal, 1, mean)
 ```
 
-Plot the mean profiles.
+Plot the mean profiles:
 
 ```{r}
 dp = data.frame(pressure=pressure, temp=tempmean, psal=psalmean)
@@ -39,7 +46,7 @@ plt = ggplot(dp, aes(x=pressure, y=psal)) + geom_line()
 print(plt)
 ```
 
-Center the profiles
+Center the profiles:
 
 ```{r}
 tempc = temp - outer(tempmean, array(1, n))
@@ -60,7 +67,9 @@ psal_eigval = psal_ee$values
 psal_eigvec = psal_ee$vectors
 ```
 
-Flip each PC loading vector if it is mostly negative.
+As in any factor analysis, the loadings are only identified up tgo
+sign.  To ease interpretation, the function below flips the PC loading
+vectors if needed so that the majority of loadings are positive.
 
 ```{r}
 flip = function(eigvec) {
@@ -160,7 +169,9 @@ for (j in 1:3) {
 }
 ```
 
-Flip signs in two sets of CCA loadings to make them easier to understand in a plot.
+Analogous to 'flip_pca' above, this function flip the signs in two
+sets of CCA loadings so that the majority of loadings are positive.
+This may make them easier to interpret in a plot.
 
 ```{r}
 flip_cca = function(xcoef, ycoef) {
@@ -174,7 +185,15 @@ flip_cca = function(xcoef, ycoef) {
 }
 ```
 
-Use a combined PCA/CCA approach to relate temperature and salinity. Produce plots for a sequence of dimensions for the PCA dimension reduction.
+We could apply CCA directly to the 100-dimensional data, but even with
+our large sample size this would result in overfitting.  Therefore, we
+use a combined PCA/CCA approach to relate temperature and
+salinity. First, PCA is used to reduce the dimension and constrain the
+analysis to the subspace capturing the greatest fraction of variation.
+Then, CCA is used in this subspace to identify the maximally
+correlated components.  The function below produces plots for the
+results of this approach, for a sequence of dimensions 'q' defining
+the extent of PCA dimension reduction.
 
 ```{r}
 plot_cca = function() {
@@ -200,7 +219,7 @@ plot_cca = function() {
         ll = flip_cca(xcoef, ycoef)
         xcoef = ll$xcoef
         ycoef = ll$ycoef
-        
+
         da = data.frame(temp_weights=xcoef[,1], psal_weights=ycoef[,1], pressure=pressure)
         plt = ggplot(aes(x=pressure, y=temp_weights), data=da) + geom_line()
         plt = plt + labs(x="Pressure", y="Temperature coefficient")
@@ -244,7 +263,7 @@ plot_cc_map = function(q=2) {
     j1 = xx[,1] >= quantile(xx[,1], 0.9)
     j2 = yy[,1] >= quantile(yy[,1], 0.9)
     grp[j1 & j2] = 1
-    
+
     k1 = xx[,1] <= quantile(xx[,1], 0.1)
     k2 = yy[,1] <= quantile(yy[,1], 0.1)
     grp[k1 & k2] = 2
@@ -254,7 +273,7 @@ plot_cc_map = function(q=2) {
     dp$grp = as.factor(dp$grp)
     plt = ggplot(dp, aes(x=lon, y=lat, by=grp, color=grp)) + geom_point(alpha=0.2)
     print(plt)
-    
+
     # TODO plot loadings
 }
 
@@ -263,7 +282,9 @@ plot_cc_map()
 
 # Dimension reduction regression
 
-SIR is a dimension reduction regression (DR) method.  Here we will use it doidentify factors within the temperature data that predict latitude.
+SIR is a dimension reduction regression (DR) method.  Here we will use
+it to identify factors within the temperature data that predict
+latitude.
 
 ```{r}
 plot_sir = function() {
