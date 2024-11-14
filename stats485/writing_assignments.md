@@ -29,7 +29,7 @@ in class but there should be some novelty to your approach as well.
 As always, be sure to keep the writing tips and syllabus in mind
 as you prepare your memo.
 
-6. (Due November 18th) Write a memo discussing an analysis of
+6. (Due November 20th) Write a memo discussing an analysis of
 the Argo data.  You should largely focus on the themes discussed
 in class but there should be some novelty to your approach as well.
 As always, be sure to keep the writing tips and syllabus in mind

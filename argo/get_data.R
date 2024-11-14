@@ -1,6 +1,7 @@
 # Download ARGO data.
 
 library(stringr)
+library(lubridate)
 
 # Store the raw files in this location.  These files
 # can be deleted after the "prep.py" script is run.
@@ -29,21 +30,15 @@ getdata = function(ocean, year, month, day) {
     dir.create(target1, recursive=T, showWarnings=FALSE)
     target1 = sprintf("%s/%s", target1, fl)
 
-    download.file(url1, target1)
+    download.file(url1, target1, mode="wb")
 }
 
 get_year = function(ocean, year) {
     for (month in 1:12) {
         cat(sprintf("%s...\n", month))
-        if (month %in% c(4, 6, 9, 11)) {
-            days = 30
-        } else if (month == 2) {
-            days = ifelse(year %% 4 == 0, 29, 28)
-        } else {
-            days = 31
-        }
+        mdays = days_in_month(make_datetime(year, month, 1))
 
-        for (day in (1:days)) {
+        for (day in (1:mdays)) {
             cat(sprintf("  %s.\n", day))
             getdata(ocean, year, month, day)
         }
