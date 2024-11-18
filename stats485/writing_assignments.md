@@ -34,3 +34,9 @@ the Argo data.  You should largely focus on the themes discussed
 in class but there should be some novelty to your approach as well.
 As always, be sure to keep the writing tips and syllabus in mind
 as you prepare your memo.
+
+7. (Due December 4th) Write a memo discussing an analysis of
+the iNaturalist data.  As always, you should largely focus on the
+themes discussed in class, but there should be some novelty to your approach
+as well. Be sure to keep the writing tips and syllabus in mind
+as you prepare your memo.
