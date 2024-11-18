@@ -23,7 +23,7 @@ qpath = Path("/home/kshedden/data/Teaching/argo/python")
 os.makedirs(qpath, exist_ok=True)
 
 # Retain only profiles that span this range of pressures (these are dbar
-# values and 1dbar is close to 1 meter).
+# values and 1 dbar is close to 1 meter).
 minpress = 20
 maxpress = 1500
 

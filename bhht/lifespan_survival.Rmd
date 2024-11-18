@@ -246,6 +246,13 @@ summary(m6)
 plot_birthyear_partial_sexdiff(dx, m6)
 ```
 
+
+```{r}
+aic = c(AIC(m0), AIC(m1), AIC(m2), AIC(m4), AIC(m5), AIC(m6))
+aic = aic - min(aic)
+aic
+```
+
 # Stratification
 
 Fit a sex-stratified proportional hazards regression model, which gives each sex its own baseline hazard function.
