@@ -126,6 +126,8 @@ ediff(psal1, psal1)
 Plot support points for temperature and salinity separately.
 
 ```{r}
+spt_points = list()
+
 for (j in 1:2) {
 
     if (j == 1) {
@@ -139,13 +141,16 @@ for (j in 1:2) {
     # Make plots with different numbers of support points.
     for (npt in c(1, 2, 5)) {
         cat(sprintf("npt=%d\n", npt))
-        X = support(xdat, npt, maxiter=50)
+        spt = support(xdat, npt, maxiter=50)
+        spt_points[[sprintf("%d:%d", j, npt)]] = spt
 
         # Put the support points in long form for plotting
-        da = data.frame(x=array(X), g=kronecker(1:npt, array(1, 100)),
+        da = data.frame(x=array(spt), g=kronecker(1:npt, array(1, 100)),
                         pressure=kronecker(array(1, npt), pressure))
+        da = da %>% mutate(g=sprintf("NC%d", g))
 
-        plt = ggplot(aes(x=pressure, y=x, group=g), data=da) + geom_line()
+        plt = ggplot(aes(x=pressure, y=x, group=g, color=g), data=da) + geom_line()
+        plt = plt + scale_color_manual(values=light.colors(n=npt))
         plt = plt + labs(x="Pressure", y=ylab) + ggtitle(sprintf("%d support points", npt))
         print(plt)
     }
@@ -162,13 +167,14 @@ for (npt in c(3, 5)) {
 
     # Put the support points in long form for plotting
     ix = kronecker(1:(2*npt), array(1, 100))
-    spt = as.factor(1 + (ix %% npt))
+    spt = sprintf("NC%d", 1 + (ix %% npt))
     mea = c("Temp", "Psal")[1 + floor((ix - 1) / npt)]
     grp = c(sprintf("Temp%d", 1:npt), sprintf("Psal%d", 1:npt))[ix]
     da = data.frame(x=array(S), grp=grp, spt=spt, mea=mea,
                     pressure=kronecker(array(1, 2*npt), pressure))
 
     plt = ggplot(aes(x=pressure, y=x, group=grp, color=spt, lty=mea), data=da) + geom_line()
+    plt = plt + scale_color_manual(values=light.colors(n=npt))
     plt = plt + labs(x="Pressure", y=ylab) + ggtitle(sprintf("%d support points", npt))
     print(plt)
 }
@@ -192,7 +198,7 @@ support_neighbor = function(X, S) {
 ```
 
 ```{r}
-npt = 10
+npt = 5
 for (j in 1:2) {
 
     if (j == 1) {
@@ -203,7 +209,7 @@ for (j in 1:2) {
         ti = "Salinity"
     }
   
-    S = support(xdat, npt, maxiter=50)
+    S = spt_points[[sprintf("%d:%d", j, npt)]]
     ii = support_neighbor(xdat, S)
     ii = sprintf("NC%d", ii)
     xx = data.frame(lat=lat, lon=lon, grp=ii)
@@ -212,7 +218,7 @@ for (j in 1:2) {
     xx$lon = (xx$lon + lon0) %% 360
     
     gg = ggplot(data=xx, aes(x=lon, y=lat, group=grp, color=grp)) + geom_point()
-    gg = gg + scale_color_manual(values=light.colors(n=10)) + xlim(180, 360)
+    gg = gg + scale_color_manual(values=light.colors(n=npt)) + xlim(180, 360)
     gg = gg + labs(title=ti)
     print(gg)
 }
