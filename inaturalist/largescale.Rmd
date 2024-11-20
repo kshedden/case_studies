@@ -1,4 +1,4 @@
-iNaturalist data
+# iNaturalist
 
 iNaturalist is a platform that records observations of living organisms, annotated with their locations and taxonomic identifications. We will be considering data from two classes of plants in this notebook. Our goal here is to illustrate the concept of "large scale inference", to study the presence of systematic changes in species locations over time.
 
@@ -31,6 +31,8 @@ da = da %>% mutate(date1 = as.Date('2015-01-01'))
 da = da %>% mutate(day=difftime(eventDate, date1, units="days")/1000)
 ```
 
+This histogram below shows that the number of occurrences of individuals in a species has a very skewed distribution.
+
 ```{r}
 dn = da %>% group_by(species) %>% summarize(n=n())
 dn = dn %>% mutate(logn=log10(n))
@@ -51,20 +53,20 @@ Below we calculate the intraclass correlation coefficient (ICC) of the latitude 
 var(da$species_latitude) / var(da$decimalLatitude)
 ```
 
-We will analyze longitude as a circular variable.
+When we fit regression models below, we will analyze longitude as a circular variable.
 
 ```{r}
 da = da %>% mutate(lonrad=pi*decimalLongitude/180)
 da = da %>% mutate(lonrad_sin=sin(lonrad), lonrad_cos=cos(lonrad))
 ```
 
-Below we create a synthetic variable that cannot contain any new information.  It will be used below as a newgtive control to evaluate the performance of inference procedures.
+Below we create a synthetic variable that cannot contain any new information about plant locations.  It will be used below as a negative control to evaluate the performance of large scale inference procedures.
 
 ```{r}
 da = da %>% mutate(fake=lonrad_cos+rnorm(length(lonrad_cos)))
 ```
 
-Below we fit a linear model for each species that predicts latitude from the time variable called "day" (the number of days since the time origin) and some other control variables. The main interest here is the relationship between "day" and the conditional mean latitude of a species. If the slope of day on latitude is positive for a given species, this species is identified at more northerly locations as time progresses. If the coefficient is negative the species is identified at more southerly locations as time progresses. We assess these effects using two models. The first model has only main effects and the second model allows the time trend in mean latitude to vary by longitude.
+Below we fit a linear model for each species that predicts latitude from the time variable called "day" (the number of days, in thousands, since the time origin) and some other control variables. The main interest here is the relationship between "day" and the conditional mean latitude of a species. If the slope of day on latitude is positive for a given species, this species is identified at more northerly locations as time progresses. If the coefficient is negative the species is identified at more southerly locations as time progresses. We assess these effects using two models. The first model has only main effects and the second model allows the time trend in mean latitude to vary by longitude.
 
 ```{r}
 f = function(x, y) {
@@ -119,17 +121,20 @@ rr = rr %>% mutate(day_slope_z=qnorm(pt(day_slope_t, n-5)))
 rr = rr %>% mutate(fake_slope_z=qnorm(pt(fake_slope_t, n-5)))
 ```
 
+Plot the z-scores against the t-scores to see the effect of the transformation.
+
 ```{r}
 plt = ggplot(rr, aes(x=day_slope_t, y=day_slope_z)) + geom_point()
 print(plt)
 ```
+Below we construct QQ plots for the z-scores for day, the fake (synthetic) variable, and the transformed log-likelihood ratio test statistic.
 
 ```{r}
 for (vn in c("day_slope_z", "fake_slope_z", "lrt_z")) {
-  plt = ggplot(rr, aes(sample=.data[[vn]])) + stat_qq(na.rm=T) + geom_abline(intercept=0, slope=1) + ylim(-1, 4)
+  plt = ggplot(rr, aes(sample=.data[[vn]])) + stat_qq(na.rm=T)
+  plt = plt + geom_abline(intercept=0, slope=1) + ylim(-1, 4)
   print(plt)
 }
-
 ```
 The value calculated below is the threshold needed to control the family-wise error rate (FWER) at 0.05.
 
@@ -165,6 +170,7 @@ plt = ggplot(rr, aes(x=seq(n), y=locfdr)) + geom_line()
 plt = plt + xlim(1, 600)
 print(plt)
 ```
+Next we assess whether the species with the greatest evidence for range changes tend to fall at specific latitude values.
 
 ```{r}
 rr1 = rr %>% select(species_latitude, day_slope_z) %>% drop_na() %>% arrange(species_latitude)
