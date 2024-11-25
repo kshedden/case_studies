@@ -293,10 +293,10 @@ A *hazard ratio* is the ratio between two hazard values. For example, we may
 have two groups of subjects (e.g. people exposed or not exposed to a risk
 factor), with each group having a hazard function $h_k(t)$ for $k=0, 1$
 corresponding to not exposed and exposed people, respectively. The hazard ratio
-at time $t$ is $h_1(t)/h_0(t)$. This is a very useful and widely-utilized
-measure of the "risk" associated with an exposure. For example, if the hazard
-ratio is 2 then (roughly speaking) exposed people have twice the risk of
-experiencing the event as non-exposed people.
+at time $t$ is $h_1(t)/h_0(t)$. This is a very useful measure of the "risk"
+associated with an exposure. For example, if the hazard ratio is 2 then (roughly
+speaking) exposed people have twice the risk of experiencing the event as
+non-exposed people.
 
 Under an assumption of *proportional hazards* all hazard ratios are constant,
 meaning in the present example that $h_1 \propto h_0$. As we will see below,

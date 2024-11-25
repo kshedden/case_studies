@@ -14,13 +14,14 @@ is appropriate to do so.
   (i) motivating your analysis, (ii) describing the relevant structure of the data that
   you are analyzing, (iii) describing the precise methods that you are using, including
   their relevant theoretical properties, and (iv) interpreting the results of your analysis
-  and stating your findings.  Part (i) provides some room for broader discussion, but this
+  and stating your findings.  Part (i) provides some room for broader discussion, e.g.
+  about the scientific or social context, but for this course, this type of discussion
   should be extremely brief.  Nearly every sentence of your writing should pertain to your
   data analysis and the interpretation of your findings.
 
 * Scientific writing follows a constrained style, yet there is plenty of opportunity to develop
   your own voice.  This is the reason that we do not provide templates or example memos for
-  this course.  However, it will be impossible for you to write well in an appropriate
+  this course.  It will be impossible for you to write well in an appropriate
   scientific/academic style if you have not read a lot of scientific writing.  We will provide
   some pointers to good sources of scientific writing.
 
@@ -37,6 +38,11 @@ is appropriate to do so.
   paragraphs that are usually 3-5 sentences long.  Do not submit an outline or list of points.  You
   do not need to include section headers but may do so if you wish.
 
+* Your memo should be structured around a narrative that is driven by your research aim,
+  hypotheses, and findings.  Methods, plots, and raw results should follow and support the narrative rather
+  than the other way around.  Concretely, this means that your memo should not read like
+  "First we did X, then we did Y, then we did Z...", or "Figure 1 shows, Figure 2 shows, Figure 3 shows...".
+
 * Most memos will include a brief introductory paragraph
   containing an explicit statement of the research aim along with
   essential background information, one or two paragraphs discussing the
@@ -52,7 +58,7 @@ is appropriate to do so.
   that would apply in almost any setting.
 
 * Aim for an academic tone. Avoid the excessive use of self-congratulatory adjectives like
-  "comprehensive", "nuanced", and "intricate" to describe your analysis unless you can specifically
+  "comprehensive", "nuanced", "advanced", and "intricate" to describe your analysis unless you can specifically
   state why these terms are relevant.  Let the reader be the judge of whether these terms are applicable.
 
 * You can write in the first person "I found..." or using the "majestic we"
@@ -77,7 +83,7 @@ is appropriate to do so.
   a complex and challenging question with a single limited data set.
   Avoid making sweeping conclusions or suggesting without qualification that
   your findings support specific policy actions to be made in the "real world"
-  or major unexpected scientific insights.
+  or reveal major unexpected scientific insights.
   Remember that one brief analysis of one data set will only very rarely allow definitive or
   deeply novel insights to be gained.
 
@@ -123,7 +129,8 @@ or to prior assignments.
   can also be provided by reporting the mean and standard deviation of the
   variable in relevant subgroups, not only in the dataset as a whole.
 
-* Define any measures or variables that you use unambiguously.  For
+* Define any measures or variables that you use unambiguously, including their
+  scales or measurement units.  For
   example if you are looking at crime, is it the absolute number of crimes
   or the crime rate?  When reporting rates, always be explicit about the
   denominator of the rate (e.g. violent crimes per 10,000 population per year).
@@ -145,8 +152,9 @@ or to prior assignments.
 * Don't overstate or misstate the role of Gaussianity in statistical
   analyses.  Often it is a minor consideration.  It is almost never important
   that the data are Gaussian.  To the extent that Gaussianity matters,
-  it is usually because in some cases aggregated summary values should be Gaussian in
-  order to calibrate tests and confidence intervals.
+  it is usually because it is easier to calibrate tests and confidence intervals
+  when aggregateed quantities like descriptive statistics or parameter estimates
+  are approximately Gaussian.
 
 ## Organization and structure
 

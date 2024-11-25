@@ -24,5 +24,5 @@ The complete iNaturalist dataset can be obtained
 but this is a very large dataset.  We provide
 [here](https://www.dropbox.com/scl/fo/jo5ika5l84kr2wtw708vx/h?rlkey=8iy0w0mggomucx3hlcfmht88s&dl=0)
 some selected subsets of data, for
-example all occurrences in phylum *Pinopsida* (evergreen trees) and in phylum
+example all occurrences in class *Pinopsida* (evergreen trees) and in class
 Polypodiopsida (ferns).

@@ -1,6 +1,6 @@
 # Inaturalist
 
-In this notebook we use multilevel regression to assess species-specific linear temporal trends in the latitudes of occurrences of species within a class of plants.  Each species has its own slope for the conditional mean of latitude given day.  Instead of estimating these slopes as parameters, they are treated as random effects (random slopes), and we estimate the variance of the distribution of random slopes.
+In this notebook we use multilevel regression to assess species-specific linear temporal trends in the latitudes of occurrences of species within a class of plants.  In a multilevel regression model, each species has its own slope for the conditional mean of latitude given day.  However instead of estimating these slopes as parameters, they are treated as random effects (random slopes), and we estimate the variance of the distribution of random slopes.
 
 ```{r}
 library(readr)
@@ -17,8 +17,8 @@ library(RLRsim)
 Select a class of plants
 
 ```{r}
-pclass = "Pinopsida"
-#pclass = "Polypodiopsida"
+#pclass = "Pinopsida"
+pclass = "Polypodiopsida"
 
 pa = sprintf("Plantae_%s.csv.gz", pclass)
 pa = file.path("/home/kshedden/data/Teaching/inaturalist", pa)
@@ -73,13 +73,13 @@ summary(m1)
 A key parameter in the output above is the standard deviation of the random day slopes, which we can extract as follows
 
 ```{r}
-v = VarCorr(m1)
-print(v)
+vc = VarCorr(m1)
+print(vc)
 ```
 We can use the multilevel model to estimate the intraclass correlation coefficient (ICC) for the species latitudes.
 
 ```{r}
-sv = v$species[1] # the species variance
+sv = vc$species[1] # the species variance
 rv = summary(m1)$sigma^2 # the residual variance
 icc = sv / (sv + rv)
 print(icc)
@@ -91,21 +91,28 @@ Below we fit a multilevel linear regression with random species intercepts and r
 m2 = lmer(decimalLatitude ~ (1 + day | species) + day + sin(lonrad) + cos(lonrad) + sin(lonrad/2) + cos(lonrad/2), da)
 summary(m2)
 ```
+
 ```{r}
-v = VarCorr(m2)
-sv = v$species[1] # the species variance
-v = as.matrix(v$species)
+print(AIC(m1)-AIC(m2))
+```
+
+Below we plot the joint density of the random slope and random intercept.  The joint density is Gaussian, so we sample a large number of observations from this Gaussian distribution and plot its empirical distribution (based on 2d nonparametric density estimation).
+
+```{r}
+vc = VarCorr(m2)
+sv = vc$species[1] # the species variance
+va = as.matrix(vc$species)
 mn = c(0, fixef(m2)[2])
-r = chol(v)
-stopifnot(max(abs(v - t(r) %*% r)) < 1e-12)
+vr = chol(va)
+stopifnot(max(abs(va - t(vr) %*% vr)) < 1e-12)
 n = 10000
-z = array(rnorm(n*2), c(n, 2)) %*% r + outer(array(1, n), mn)
+z = array(rnorm(n*2), c(n, 2)) %*% vr + outer(array(1, n), mn)
 z = data.frame(intercept=z[,1], slope=z[,2])
 plt = ggplot(z, aes(x=intercept, y=slope)) + stat_density_2d()
 print(plt)
 ```
 
-Later we will conduct a formal test that the day (within species) variance is significantly positive. This requires us to fit two alternative models.
+Later we will conduct a formal test that the day (by species) variance is significantly positive. This requires us to fit two alternative models.
 
 ```{r}
 m3 = lmer(decimalLatitude ~ (0 + day | species) + day + sin(lonrad) + cos(lonrad) + sin(lonrad/2) + cos(lonrad/2), da)
@@ -156,7 +163,7 @@ day1 = as.numeric(min(da$day))
 day2 = as.numeric(max(da$day))
 ```
 
-Species random effects (random day slopes and intercepts)
+Extract the species random effects (random day slopes and intercepts)
 
 ```{r}
 r0 = ranef(m2)$species

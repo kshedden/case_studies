@@ -165,8 +165,8 @@ defining a distance function that measures how far apart $F$ and $G$ are from
 each other. Note that this distance compares two probability distributions (it
 is not the simpler notion of a distance between vectors). Distances among
 probability distributions play an important role in modern statistics. When
-$d=1$, many natural distance measures on probability distributions on
-${\mathbb R}^d$ can be constructed, but it is harder to construct good
+$d=1$, many natural distance measures on probability distributions
+can be constructed, but it is harder to construct good
 distances on probability distributions when the dimension $d$ is greater than
 one.
 
