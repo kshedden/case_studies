@@ -13,7 +13,7 @@ for (url in urls) {
     tail = strsplit(url, "/")[[1]]
     tail = tail[length(tail)]
     target = sprintf("%s/%s", pa, tail)
-    download.file(url, target)
+    download.file(url, target, mode='wb')
 }
 
 for (file in list.files(pa)) {
