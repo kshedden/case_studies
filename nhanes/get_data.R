@@ -17,11 +17,11 @@ for (url in urls) {
 }
 
 for (file in list.files(pa)) {
-    if (!endsWith(file, ".XPT")) {
+    if (!endsWith(file, ".xpt")) {
         next
     }
     f = file.path(pa, file)
     print(file.info(f))
     da = read_xpt(f)
-    write_csv(da, gsub(".XPT", ".csv.gz", f))
+    write_csv(da, gsub(".xpt", ".csv.gz", f))
 }

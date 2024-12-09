@@ -19,7 +19,7 @@ for url in urls:
 
 for root, dirs, files in os.walk(pa):
     for file in files:
-        if not file.endswith(".XPT"):
+        if not file.endswith(".xpt"):
             continue
         da = pd.read_sas(os.path.join(root, file))
-        da.to_csv(os.path.join(root, file.replace(".XPT", ".csv.gz")), index=None)
+        da.to_csv(os.path.join(root, file.replace(".xpt", ".csv.gz")), index=None)
