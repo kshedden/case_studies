@@ -1,10 +1,11 @@
 import os, requests
 import pandas as pd
 
+
 urls = [
-    "https://wwwn.cdc.gov/Nchs/Nhanes/2017-2018/DEMO_J.XPT",
-    "https://wwwn.cdc.gov/Nchs/Nhanes/2017-2018/BMX_J.XPT",
-    "https://wwwn.cdc.gov/Nchs/Nhanes/2017-2018/BPX_J.XPT",
+    "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles/DEMO_J.xpt",
+    "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles/BMX_J.xpt",
+    "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles/BPX_J.xpt",
     ]
 
 pa = "/home/kshedden/data/Teaching/nhanes"
