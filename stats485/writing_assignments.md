@@ -41,7 +41,7 @@ themes discussed in class, but there should be some novelty to your approach
 as well. Be sure to keep the writing tips and syllabus in mind
 as you prepare your memo.
 
-8. (Due December 13th) Write a memo discussing an analysis of
+8. (Due December 14th) Write a memo discussing an analysis of
 the NHANES data.  As always, you should largely focus on the
 themes discussed in class, but there should be some novelty to your approach
 as well. Be sure to keep the writing tips and syllabus in mind
