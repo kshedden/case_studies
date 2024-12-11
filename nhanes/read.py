@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-pa = "/home/kshedden/data/Teaching/nhanes/2017-2018"
+pa = "/home/kshedden/data/Teaching/nhanes"
 
 fn = ["DEMO_J.csv.gz", "BMX_J.csv.gz", "BPX_J.csv.gz"]
 
