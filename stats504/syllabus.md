@@ -4,13 +4,13 @@
 
 Kerby Shedden (kshedden@umich.edu, 277 West Hall)
 
-Office hours: Tuesday, Thursday 4-5
+Office hours: TBD
 
 ## GSI
 
-* Songkai Xue (sxue@umich.edu)
+* Julian Bernado (bernado@umich.edu)
 
-GSI office hours Monday 10-11:30 in Angell Hall G219.
+GSI office hours TBD
 
 ## Overview
 
@@ -51,7 +51,7 @@ site.
 ## Coursework
 
 The coursework will entirely take the form of individual writing
-assignments. There will be approximately 9 writing assignments, one for
+assignments. There will be approximately 8 writing assignments, one for
 each case study.  Each writing assignment will be 2-3 pages in length
 and will resemble a memo prepared by a professional data analyst,
 summarizing methods and findings from a data analysis.
@@ -73,7 +73,8 @@ There are no exams in this course.
 
 ## Using Google docs
 
-Writing assignments will be submitted using Google Docs. Please use
+Writing assignments will be submitted using Google Docs using default
+formatting (fot size, margins, etc.). Please use
 your University of Michigan user account when creating these files,
 and use default fonts and margins.  To facilitate grading, you must
 title each document in the form “uniqname stats 504 assignment
@@ -121,6 +122,13 @@ course materials, other students, or from any non-acknowledged source is
 a serious violation of academic integrity and will result at minimum in
 a score of zero on the assignment, and may also be referred to the LSA
 or Rackham Honor Council.
+
+You may use large language models (e.g. chatGPT) to assist in your writing and you
+do not need to acknowledge this.  However note that the current generation
+of LLMs has a simplistic and superficial "understanding" of applied statistics,
+and therefore will do a poor job of meeting the expectations of this course.
+You writing is expected to build on the ideas discussed in lectures,
+and no LLM is aware of what we cover in our lectures.
 
 ## Grading
 
