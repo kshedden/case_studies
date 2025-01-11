@@ -2,7 +2,7 @@
 
 The BHHT (Brief History of Human Time) project provides a dataset about "notable people" based mainly on wikipedia biography articles.
 
-The analyses below focus on lifespans of the people in the BHHT dataset, aiming to understand how lifespans vary based on factors including era of birth, the geographic region where the person lived, and the person's sex and occupation.
+The analyses below focus on lifespans of the people in the BHHT dataset, aiming to understand how lifespans vary based on factors including era of birth, the geographic region where the person lived, and the person's sex.
 
 This analysis uses survival analysis methods, allowing us to appropriately use information from still-living people.
 
@@ -18,14 +18,14 @@ library(tidyr)
 Change the path below as needed to point to the directory holding the data file.
 
 ```{r}
-pa = "/home/kshedden/mynfs/data/Teaching/bhht"
+pa = "/home/kshedden/data/Teaching/bhht"
 ```
 
 Load the dataset.  Use the latin-1 encoding since there is some non-UTF data in the file.  Add "n_max=####" when developing to reduce the run time, but use as much data as possible to get final results.
 
 ```{r}
 df = read_csv(file.path(pa, "cross-verified-database.csv.gz"),
-              locale=readr::locale(encoding="latin1"), n_max=200000)
+              locale=readr::locale(encoding="latin1"), n_max=500000)
 ```
 
 Create a lifespan variable (years of life).  It will be missing for people who are currently living.
@@ -35,7 +35,7 @@ df = df %>% mutate(lifespan = death - birth)
 print(table(is.na(df$lifespan)))
 ```
 
-We exclude people born before 1500, there is too little data to gain a meaningful understanding of the distribution of lifespan prior to this year.
+We exclude people born before 1500, there may not be enough data to gain a meaningful understanding of the distribution of lifespan prior to this year.
 
 ```{r}
 dx = df %>% filter(birth >= 1500)
@@ -44,7 +44,7 @@ dx = df %>% filter(birth >= 1500)
 Retain only the variables needed below.
 
 ```{r}
-dx = dx %>% select(birth, lifespan, gender, un_region, level1_main_occ)
+dx = dx %>% select(birth, lifespan, gender, un_region)
 head(dx)
 ```
 
@@ -53,13 +53,6 @@ There are a small number of people with missing or "Other" gender but it is too 
 ```{r}
 print(table(dx$gender))
 dx = dx %>% filter(gender %in% c("Female", "Male"))
-```
-
-Drop uninformative occupation codes.
-
-```{r}
-dx = dx %>% filter(!(level1_main_occ %in% c("Missing", "Other")))
-print(table(dx$level1_main_occ))
 ```
 
 Note the distribution of geographic regions:
@@ -96,7 +89,7 @@ table(dx$un_region, dx$era)
 
 # Estimates of marginal survival functions
 
-Plot the marginal survival functions for people born in each century. These survival functions are estimated using the product limit (Kaplan-Meier) method.
+Plot the marginal survival functions for people born in each century. These survival functions are estimated using the product limit (Kaplan-Meier) method.  Note that the curve for 1900 suggests that 10% of notable people live to be 100.  This is unlikely to be true, and could be due to improvements in health within the 20th century -- people born later in the 20th century are (by construction) more likely to be censored and also presumably have longer lifespans.  This results in dependent censoring, which biases the survival function estimate.
 
 ```{r}
 sf = survfit(Surv(clifespan, died) ~ era, dx)
@@ -122,6 +115,17 @@ legend(x="topright", c("Africa", "America", "Asia", "Europe", "Oceania"), col=1:
 ```
 The results above may be heavily influenced by confounding.  The people from Oceania tended to live more recently, and people who lived more recently tend to have longer lifespans.  Conversely, many of the notable people from the 1500's-1700's are from Europe, and lifespans tended to be shorter in these historical eras. Looking at one factor at a time, it is not clear whether the "driver" of lifespan variation is geography (where a person lived) or time (when a person lived).
 
+# Marginal hazard estimation
+
+A very important concept in survival analysis is the hazard function.  In this case, since the times are discrete (ages are in whole years), we can estimate the hazard easily as the ratio of the number of events (deaths) to the number at risk, for each age.  Below this is done for each gender.
+
+```{r}
+sf = survfit(Surv(clifespan, died) ~ gender, dx)
+dp = data.frame(time=sf$time, nevent=sf$n.event, nrisk=sf$n.risk, group=rep(names(sf$strata), sf$strata))
+p = ggplot() + geom_line(aes(time, nevent/nrisk, color=group), dp) + xlim(0, 90)
+print(p)
+```
+
 # Survival regression analyses
 
 Create a time variable that has year 1500 as the origin.  Use this as a predictor in regression models below so that year 1500 becomes the reference year (i.e. all effects are relative to 1500).
@@ -133,7 +137,7 @@ dx = dx %>% mutate(time1500 = birth - 1500)
 Fit a proportional hazards regression model with main effects for year of birth, gender, occupation, and region.
 
 ```{r}
-fml = "Surv(clifespan, died) ~ time1500 + gender + level1_main_occ + un_region"
+fml = "Surv(clifespan, died) ~ time1500 + gender + un_region"
 m0 = coxph(as.formula(fml), dx)
 m0
 ```
@@ -141,9 +145,9 @@ m0
 The function below plots a partial regression plot, showing the log hazard ratio (lhr) for mortatlity versus year of birth, controlling for fixed values of other covariates.
 
 ```{r}
-plot_birthyear_partial = function(dx, rr, gender="Female", level1_main_occ="Leadership", un_region="Asia") {
+plot_birthyear_partial = function(dx, rr, gender="Female", un_region="Asia") {
   dp = dx[1:100,]
-  dp = dp %>% mutate(gender = !!gender, level1_main_occ = !!level1_main_occ, un_region = !!un_region)
+  dp = dp %>% mutate(gender = !!gender, un_region = !!un_region)
   b = seq(1500, 2000, length.out=100)
   dp = dp %>% mutate(time = b)
   dp = dp %>% mutate(time1500 = b - 1500)
@@ -164,7 +168,7 @@ plot_birthyear_partial(dx, m0)
 To assess for curvature, consider a quadratic model for year of birth:
 
 ```{r}
-fml = "Surv(clifespan, died) ~ poly(time1500, 2) + gender + level1_main_occ + un_region"
+fml = "Surv(clifespan, died) ~ poly(time1500, 2) + gender + un_region"
 m1 = coxph(as.formula(fml), dx)
 m1
 ```
@@ -176,7 +180,7 @@ plot_birthyear_partial(dx, m1)
 Now consider a cubic model for year of birth.
 
 ```{r}
-fml = "Surv(clifespan, died) ~ poly(time1500, 3) + gender + level1_main_occ + un_region"
+fml = "Surv(clifespan, died) ~ poly(time1500, 3) + gender + un_region"
 m2 = coxph(as.formula(fml), dx)
 m2
 ```
@@ -196,7 +200,7 @@ aic
 High degree polynomials make poor basis functions so next we use polynomial splines, which are piecewise polynomials.
 
 ```{r}
-fml = "Surv(clifespan, died) ~ bs(time1500, 4) + gender + level1_main_occ + un_region"
+fml = "Surv(clifespan, died) ~ bs(time1500, 4) + gender + un_region"
 m4 = coxph(as.formula(fml), dx)
 m4
 ```
@@ -210,7 +214,7 @@ plot_birthyear_partial_sexdiff = function(dx, rr) {
   dp = dx[1:200,]
   g = c(rep("Female", 100), rep("Male", 100))
   f = c(rep(1, 100), rep(0, 100))
-  dp = dp %>% mutate(gender = g, female=f, level1_main_occ = "Leadership", un_region = "Asia")
+  dp = dp %>% mutate(gender = g, female=f, un_region = "Asia")
   b = seq(1500, 2000, length.out=100)
   dp = dp %>% mutate(time = c(b, b))
   dp = dp %>% mutate(time1500 = time - 1500)
@@ -224,7 +228,7 @@ plot_birthyear_partial_sexdiff = function(dx, rr) {
 
 ```{r}
 dx = dx %>% mutate(time1500=birth-1500)
-fml = "Surv(clifespan, died) ~ bs(time1500, 4)*gender + level1_main_occ + un_region"
+fml = "Surv(clifespan, died) ~ bs(time1500, 4)*gender + un_region"
 m5 = coxph(as.formula(fml), dx)
 summary(m5)
 ```
@@ -237,7 +241,7 @@ Above we considered an interaction between a categorical variable (gender) and a
 ```{r}
 dx = dx %>% mutate(time1500 = birth - 1500)
 dx = dx %>% mutate(female = ifelse(gender == "Female", 1, 0))
-fml = "Surv(clifespan, died) ~ bs(time1500, 4) + time1500:female + female + level1_main_occ + un_region"
+fml = "Surv(clifespan, died) ~ bs(time1500, 4) + time1500:female + female + un_region"
 m6 = coxph(as.formula(fml), dx)
 summary(m6)
 ```
@@ -259,7 +263,7 @@ Fit a sex-stratified proportional hazards regression model, which gives each sex
 
 ```{r}
 dx = dx %>% mutate(time1500=birth-1500)
-fml = "Surv(clifespan, died) ~ bs(time1500, 4) + level1_main_occ + un_region + strata(gender)"
+fml = "Surv(clifespan, died) ~ bs(time1500, 4) + un_region + strata(gender)"
 m7 = coxph(as.formula(fml), dx)
 summary(m7)
 ```
