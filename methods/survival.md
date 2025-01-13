@@ -417,7 +417,7 @@ and is interpreted as the contribution of $X_i$ to the statistic of interest,
 $\hat{\theta}_n$.
 
 It can be shown that the $u_i$ are approximately independent, that
-$\bar{u_i} \approx $\hat{\theta}\_n$, and that
+$\bar{u}_i \approx \hat{\theta}_n$, and that
 
 $${\rm SD}[u_i]/\sqrt{n} \approx {\rm SE}[\hat{\theta}_n].$$
 
