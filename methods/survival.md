@@ -409,7 +409,7 @@ Pseudo-observations are closely related to the
 [jackknife](https://en.wikipedia.org/wiki/Jackknife_resampling). To motivate
 the technique, let $\bar{X} = (X_1 + \cdots + X_n)/n$ be the sample mean of
 $n$ observations from a common distribution. Let
-$\bar{X}_{-i} = X_1 + \cdots + X_{i-1} + X_{i+1} + \cdots + X_n) / (n-1)$
+$\bar{X}_{-i} = X_1 + X_{i-1} + X_{i+1} + X_n) / (n-1)$
 denote the "deleted" version of this statistic (with the $i^{\rm th}$
 observation deleted). These statistics satisfy the identity
 $X_i = n\bar{X} - (n-1)\bar{X}_{-i}$. Now consider the more general setting
