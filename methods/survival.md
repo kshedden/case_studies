@@ -401,12 +401,12 @@ pseudo-observations for other quantities such as the mean restricted life or
 the cumulative hazard.
 
 Pseudo-observations are closely related to the jack-knife. To motivate the
-technique, let $\bar{X}_n = (X_1 + \cdots + X_n)/n$ be the sample mean of $n$
+technique, let $\bar{X} = (X_1 + \cdots + X_n)/n$ be the sample mean of $n$
 observations from a common distribution. Let
-$\bar{X}_n^{(-i)} = (X_1 + \cdots + X_{i-1} + X_{i+1} + \cdots + X_n) / (n-1)$
+$\bar{X}_{-i} = (X_1 + \cdots + X_{i-1} + X_{i+1} + \cdots + X_n) / (n-1)$
 denote the "deleted" version of this statistic (with the $i^{\rm th}$
 observation deleted). These statistics satisfy the identity
-$X_i = n\bar{X}_n - (n-1)\bar{X}_n^{(-i)}$. Now consider the more general
+$X_i = n\bar{X} - (n-1)\bar{X}_{-i}$. Now consider the more general
 setting where we have a statistic $\hat{\theta}_n$ based on the full sample of
 size $n$, and then we compute this statistic while deleting observation $i$,
 to yield $\hat{\theta}_n^{(-i)}$. The pseudo-observation is defined to be
