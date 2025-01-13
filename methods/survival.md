@@ -443,7 +443,7 @@ calculation for each $i$. The pseudo-observation is
 $u_i(t) = n\hat{S}(t) - (n-1)\hat{S}_{-i}(t)$. These can be used, for example,
 in a regression analysis, regressing $u_i$ on covariates $x_i$, since it can
 be shown that $E[u|x]$ can be interpreted as the probability of surviving to
-time $t$ when the covariates are equal to $x$. Due to the construction of the
-pseudo-observations, ${\rm var}[u|x]$ is not constant in $x$ (i.e. there is
+time $t$ when the covariates are equal to $x$. Pseudo-observations conditional
+variances, ${\rm var}[u|x]$, are generally not constant in $x$ (i.e. there is
 heteroscedasticity), so typically these regressions are fit with robust
 regression techniques such as using the Huber-White type of inference.
