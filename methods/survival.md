@@ -414,9 +414,9 @@ observation deleted). These statistics satisfy the identity
 $X_i = n\bar{X} - (n-1)\bar{X}_{-i}$. Now consider the more general setting
 where we have a statistic $\hat{\theta}_n$ based on the full sample of size
 $n$, and then we compute this statistic while deleting observation $i$, to
-yield $\hat{\theta}_n^{(-i)}$. The pseudo-observation is defined to be
+yield $\hat{\theta}_{-i}$. The pseudo-observation is defined to be
 
-$$u_i \equiv n\hat{\theta}_n - (n-1)\hat{\theta}_n^{(-i)},$$
+$$u_i \equiv n\hat{\theta}_n - (n-1)\hat{\theta}_{-i},$$
 
 and is interpreted as the contribution of $X_i$ to the statistic of interest,
 $\hat{\theta}_n$.
