@@ -394,14 +394,16 @@ time $Y$ and censoring status $\delta$ into a single real number. The
 resulting value can then be used in many forms of statistical analysis, for
 example as an independent or dependent variable in a regression, or in a
 multivariate analysis such as PCA. Importantly, as discussed in more detail
-below, the pseudo-observations are independent and their dispersion reflects
-the underlying uncertainty in estimating the parameter of interest. Using
-pseudo-observations allows survival analysis to be conducted using
-general-purpose statistical methods instead of requiring specialized methods
-such as those demonstrated above. Here we will discuss pseudo-observations for
-the survival probability ($S(t)$ evaluated at a specific $t$), but note that
-it is also possible to construct pseudo-observations for other quantities such
-as the mean restricted life or the cumulative hazard.
+below, the pseudo-observations are approximately independent and their
+standard deviation reflects the underlying uncertainty in estimating the
+parameter of interest. Using pseudo-observations allows survival analysis
+(both estimation and inference) to be conducted using general-purpose
+statistical methods instead of requiring specialized methods.
+
+Here we will discuss pseudo-observations for the survival probability ($S(t)$
+evaluated at a specific $t$), but note that it is also possible to construct
+pseudo-observations for other quantities such as the mean restricted life or
+the cumulative hazard.
 
 Pseudo-observations are closely related to the
 [jackknife](https://en.wikipedia.org/wiki/Jackknife_resampling). To motivate
