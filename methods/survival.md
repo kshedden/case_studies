@@ -412,9 +412,9 @@ $n$ observations from a common distribution. Let $\bar{X} _ {-i}$ denote the
 "deleted" version of this statistic (the sample mean with the $i^{\rm th}$
 observation deleted). These statistics satisfy the identity
 $X_i = n\bar{X} - (n-1)\bar{X} _ {-i}$. Now consider the more general setting
-where we have a statistic $\hat{\theta} _ {n}$ based on the full sample of size
-$n$, and then we compute this statistic while deleting observation $i$, to
-yield $\hat{\theta}_{-i}$. The pseudo-observation is defined to be
+where we have a statistic $\hat{\theta} _ {n}$ based on the full sample of
+size $n$, and then we compute this statistic while deleting observation $i$,
+to yield $\hat{\theta}_{-i}$. The pseudo-observation is defined to be
 
 $$u_i \equiv n\hat{\theta} _ n - (n-1)\hat{\theta} _ {-i},$$
 
@@ -426,18 +426,18 @@ $\rm Avg\\{u_i\\} \approx \hat{\theta}_n$, and that
 
 $${\rm SD}[u_i]/\sqrt{n} \approx {\rm SE}[\hat{\theta}_n].$$
 
-That is, the pseudo-observations approximately convert estimation and
-inference for $\theta$ into a linear inference problem, analogous to the
-sample mean. This idea could be useful in many settings, but is particularly
-useful in the setting of survival analysis since we can now treat the
-pseudo-observations $u_i$ like any other collection of independent
-quantitative measurements, and analyze them using a wide variety of
-statistical methods that are not otherwise adapted to survival analysis.
+Thus, the pseudo-observations approximately convert estimation and inference
+for $\theta$ into a linear inference problem, analogous to estimating the
+population mean with the sample mean. This idea could be useful in many
+settings, but is particularly useful in the setting of survival analysis since
+we can now treat the pseudo-observations $u_i$ like any other collection of
+independent quantitative measurements, and analyze them using a wide variety
+of statistical methods that are not otherwise adapted to survival analysis.
 
 The most common construction of pseudo-observations for survival analysis is
 based on the Kaplan-Meier (product limit) estimate of the marginal survival
 function. We can compute $\hat{S}(t)$ using all data, and then we can compute
-$\hat{S} _{(-i)}(t)$ by deleting observation $i$. There are fast
+$\hat{S} _ {-i}(t)$ by deleting observation $i$. There are fast
 approximations for doing this on large samples without repeating the full
 calculation for each $i$. The pseudo-observation is
 $u_i(t) = n\hat{S}(t) - (n-1)\hat{S}_{-i}(t)$. These can be used, for example,
