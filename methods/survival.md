@@ -390,28 +390,28 @@ but we do not discuss that further here.
 ## Pseudo-observations
 
 A "pseudo-observation" is a synthetic datapoint that combines the observed
-time ($Y$) and censoring status ($\delta$) into a single real number. The
-resulting value can then be used as an independent or dependent variable in a
-regression, or in any other form of statistical analysis (like PCA). Using
-pseudo-observations allows survival analysis to be conducted using
-general-purpose statistical methods instead of requiring specialized methods
-such as those demonstrated above. Here we will discuss pseudo-observations for
-the survival time, but note that it is also possible to construct
-pseudo-observations for other quantities such as the mean restricted life or
-the cumulative hazard.
+time $Y$ and censoring status $\delta$ into a single real number. The
+resulting value can then be used in many forms of statistical analysis, for
+example as an independent or dependent variable in a regression, or in a
+multivariate analysis such as PCA. Using pseudo-observations allows survival
+analysis to be conducted using general-purpose statistical methods instead of
+requiring specialized methods such as those demonstrated above. Here we will
+discuss pseudo-observations for the survival probability
+($S(t) evaluated at a specific $t\$), but note that it is also possible to
+construct pseudo-observations for other quantities such as the mean restricted
+life or the cumulative hazard.
 
 Pseudo-observations are closely related to the
-[jackknife](https://en.wikipedia.org/wiki/Jackknife_resampling).
-To motivate the
-technique, let $\bar{X} = (X_1 + \cdots + X_n)/n$ be the sample mean of $n$
-observations from a common distribution. Let
+[jackknife](https://en.wikipedia.org/wiki/Jackknife_resampling). To motivate
+the technique, let $\bar{X} = (X_1 + \cdots + X_n)/n$ be the sample mean of
+$n$ observations from a common distribution. Let
 $\bar{X}_{-i} = (X_1 + \cdots + X_{i-1} + X_{i+1} + \cdots + X_n) / (n-1)$
 denote the "deleted" version of this statistic (with the $i^{\rm th}$
 observation deleted). These statistics satisfy the identity
-$X_i = n\bar{X} - (n-1)\bar{X}_{-i}$. Now consider the more general
-setting where we have a statistic $\hat{\theta}_n$ based on the full sample of
-size $n$, and then we compute this statistic while deleting observation $i$,
-to yield $\hat{\theta}_n^{(-i)}$. The pseudo-observation is defined to be
+$X_i = n\bar{X} - (n-1)\bar{X}_{-i}$. Now consider the more general setting
+where we have a statistic $\hat{\theta}_n$ based on the full sample of size
+$n$, and then we compute this statistic while deleting observation $i$, to
+yield $\hat{\theta}_n^{(-i)}$. The pseudo-observation is defined to be
 
 $$u_i \equiv n\hat{\theta}_n - (n-1)\hat{\theta}_n^{(-i)},$$
 
@@ -434,9 +434,9 @@ statistical methods that are not otherwise adapted to survival analysis.
 The most common construction of pseudo-observations for survival analysis is
 based on the Kaplan-Meier (product limit) estimate of the marginal survival
 function. We can compute $\hat{S}(t)$ using all data, and then we can compute
-$\hat{S} _{(-i)}(t)$ by deleting observation $i$. There are fast approximations
-for doing this on large samples without repeating the full calculation for
-each $i$. The pseudo-observation is
+$\hat{S} _{(-i)}(t)$ by deleting observation $i$. There are fast
+approximations for doing this on large samples without repeating the full
+calculation for each $i$. The pseudo-observation is
 $u_i(t) = n\hat{S}(t) - (n-1)\hat{S}_{-i}(t)$. These can be used, for example,
 in a regression analysis, regressing $u_i$ on covariates $x_i$, since it can
 be shown that $E[u|x]$ can be interpreted as the probability of surviving to
