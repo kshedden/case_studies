@@ -416,7 +416,7 @@ where we have a statistic $\hat{\theta} _ {n}$ based on the full sample of size
 $n$, and then we compute this statistic while deleting observation $i$, to
 yield $\hat{\theta}_{-i}$. The pseudo-observation is defined to be
 
-$$u_i \equiv n\hat{\theta}_n - (n-1)\hat{\theta}_{-i},$$
+$$u_i \equiv n\hat{\theta} _ n - (n-1)\hat{\theta} _ {-i},$$
 
 and is interpreted as the contribution of $X_i$ to the statistic of interest,
 $\hat{\theta}_n$.
