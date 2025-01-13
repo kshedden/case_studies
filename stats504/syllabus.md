@@ -4,13 +4,14 @@
 
 Kerby Shedden (kshedden@umich.edu, 277 West Hall)
 
-Office hours: TBD
+Office hours: Wednesday 4:30-6, Friday 3:30-5 -- office hours begin
+1/24, until then please catch me right after class
 
 ## GSI
 
 * Julian Bernado (bernado@umich.edu)
 
-GSI office hours TBD
+GSI office hours: Tuesday/Thursday 1-2:30 in Angell Hall G219
 
 ## Overview
 
