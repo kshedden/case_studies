@@ -400,7 +400,9 @@ the survival time, but note that it is also possible to construct
 pseudo-observations for other quantities such as the mean restricted life or
 the cumulative hazard.
 
-Pseudo-observations are closely related to the jack-knife. To motivate the
+Pseudo-observations are closely related to the
+[jackknife](https://en.wikipedia.org/wiki/Jackknife_resampling).
+To motivate the
 technique, let $\bar{X} = (X_1 + \cdots + X_n)/n$ be the sample mean of $n$
 observations from a common distribution. Let
 $\bar{X}_{-i} = (X_1 + \cdots + X_{i-1} + X_{i+1} + \cdots + X_n) / (n-1)$
