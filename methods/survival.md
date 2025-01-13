@@ -445,5 +445,5 @@ in a regression analysis, regressing $u_i$ on covariates $x_i$, since it can
 be shown that $E[u|x]$ can be interpreted as the probability of surviving to
 time $t$ when the covariates are equal to $x$. Pseudo-observations conditional
 variances, ${\rm var}[u|x]$, are generally not constant in $x$ (i.e. there is
-heteroscedasticity), so typically these regressions are fit with robust
+heteroscedasticity), so typically regressions involving pseudo-observations are fit with robust
 regression techniques such as using the Huber-White type of inference.
