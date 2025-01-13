@@ -432,7 +432,7 @@ statistical methods that are not otherwise adapted to survival analysis.
 The most common construction of pseudo-observations for survival analysis is
 based on the Kaplan-Meier (product limit) estimate of the marginal survival
 function. We can compute $\hat{S}(t)$ using all data, and then we can compute
-$\hat{S}_{(-i)}(t)$ by deleting observation $i$. There are fast approximations
+$\hat{S}_ {(-i)}(t)$ by deleting observation $i$. There are fast approximations
 for doing this on large samples without repeating the full calculation for
 each $i$. The pseudo-observation is
 $u_i(t) = n\hat{S}(t) - (n-1)\hat{S}_{-i}(t)$. These can be used, for example,
