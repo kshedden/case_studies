@@ -306,3 +306,85 @@ bhx = bh %>% group_by(strata) %>% transform(hh=c(diff(hazard) / diff(time), NA))
 plt = ggplot(bhx, aes(x=time, y=log(hh), color=strata)) + geom_smooth(se=F) + xlim(0, 100) + xlab("Age") + ylab("Log hazard")
 print(plt)
 ```
+
+# Pseudo-observations
+
+A "pseudo-observation" is a synthetic datapoint that combines the observed time and censoring status into a single real number.  The value can then be used in many types of statistical analysis to circumvent the use of specialized methods for censored data.
+
+One application of pseudo-observations is to obtain standard errors for the estimated survival function.  Below we consider a small subset of notable people and construct pseudo-observations for survival to ages 1-90.  
+
+```{r}
+dr = dx %>% filter(era==4 & gender=="Female" & un_region=="Africa")
+sf = survfit(Surv(clifespan, died) ~ 1, dr)
+ages = seq(1, 90)
+ps = pseudo(sf, ages)
+dim(ps)
+```
+
+We can average the pseudo-observation values to obtain a point estimate of the survival function, and can use their dispersion to obtain point-wise standard errors.
+
+```{r}
+m = apply(ps, 2, mean)
+s = apply(ps, 2, sd)
+n = dim(ps)[1]
+dd = data.frame(age=ages, surv=m, surv_se=s/sqrt(n))
+ggplot(dd, aes(x=ages, y=surv)) + geom_line() + geom_ribbon(aes(x=ages, ymin=surv-2*surv_se, ymax=surv+2*surv_se), dd)
+```
+
+Next we obtain pseudo-observations for survival to age 60 for all BHHT subjects.  
+
+```{r}
+sf = survfit(Surv(clifespan, died) ~ 1, dx)
+ps = pseudo(sf, 60)
+dd = data.frame(un_region=dx$un_region, gender=dx$gender, time1500=dx$time1500, ps=ps)
+```
+
+We can consider these pseudo-observations in a regression model.  Since survival probabilities must
+fall between 0 and 1, we use the approach proposed [here](https://cran.r-project.org/web/packages/survivalVignettes/vignettes/pseudo.html),
+using a non-canonical link function with a GLM.  The non-canonical link function maps the real line to the unit interval,
+clipping the values so that they don't fall too close to the boundaries.
+
+```{r}
+blogit <- function(edge=.01) {
+    new <- make.link("logit")
+    new$linkfun <- function(mu) { 
+        x <- (pmax(edge, pmin(mu, 1-edge)))
+        log(x/(1-x))
+    }
+    new
+}
+
+m0 = glm(ps ~ un_region + gender + bs(time1500, 4), dd, family=gaussian(link=blogit()))
+```
+
+Due to the heteroscedasticity exhibited by pseudo-values, we should use robust inference methods, as shown below.
+
+```{r}
+library(sandwich)
+
+v = vcovHC(m0)
+s = sqrt(diag(v))
+cc = coef(m0)
+di = data.frame(coef=cc, se=s)
+di$z = di$coef / di$se
+di$z_naive = coef(m0) / sqrt(diag(vcov(m0)))
+di
+```
+
+To interpret the fitted model, we plot the conditional mean with respect to year of birth (time1500) at fixed values of the gender and region variables.  We can see that the probability of surviving to age 60 has increased from below 40% to greater than 80% in the last 500 years.
+
+```{r}
+pseudo_partial = function(gender="Female", un_region="Africa") {
+  d1 = dd[1:100,]
+  d1$gender = gender
+  d1$un_region = un_region
+  d1$time1500 = seq(0, 500, length.out=100)
+  d1$year = 1500 + d1$time1500
+  d1$ps = predict(m0, d1)
+  d1$pf = 1 / (1 + exp(-d1$ps))
+  p = ggplot(d1, aes(x=year, y=pf)) + geom_line()
+  print(p)
+}
+
+pseudo_partial()
+```
