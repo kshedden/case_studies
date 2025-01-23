@@ -55,12 +55,12 @@ stroke.
 Typically, only a subset of the subjects will have a stroke during our study.
 Other subjects will be followed for a period of time and will never be
 observed to have a stroke. Let $R$ denote the last age at which the person is
-observed. If $T<R$, we observe $T$ but if $T > R$ we do not. More formally, we
+observed. If $T<R$, we observe $T$ but if $T > R$ we do not know the value of $T$. More formally, we
 observe the time $Y={\rm min}(T, R)$ and the _status indicator_
 $\delta = {\cal I}(Y = T)$. This is called
 [right censoring](<https://en.wikipedia.org/wiki/Censoring_(statistics)>) --
 we know that the value of $T$ is greater than some known value, but we do not
-know the exact value of $T$.
+know the exact value of $T$.  In this context, $R$ is known as the _right censoring time_.
 
 Right censoring is the most commonly-encountered form of censoring, but in
 some settings we may have *left censoring*, meaning that we only know that $T$
@@ -71,7 +71,7 @@ but we do not know the exact age at which the stroke occurred.
 A common assumption in survival analysis is that of *independent censoring*.
 We will define this here in the context of right censoring. As above, let $T$
 be the event time and $R$ be the right censoring time. We never observe both
-$T$ and $R$, and instead only observe $Y = {\rm min}(T, R)$. Nevertheless, we
+$T$ and $R$. Nevertheless, we
 can imagine that both values exist, one being a "latent" value. Independent
 censoring simply means that $T$ and $R$ are independent random variables.
 Concretely, this means, for example, that people who are more prone to having
@@ -79,7 +79,8 @@ an early event (e.g. unhealthy people) do not have systematically different
 censoring times than people are are prone to having late events.
 
 Since we don't observe $T$ and $R$ together, independent censoring is usually
-an untestable assumption, but in some cases there may be reason to accept it
+an untestable assumption, but in some cases, based on the study design or other
+external information, there may be reason to accept it
 and in other cases there may be good reason to doubt that independent
 censoring holds. There are various methods for effectively handling with
 dependently censored data, but that is an advanced topic that we will not
@@ -91,20 +92,20 @@ An important concept in survival analysis is the potential selection bias
 induced by *truncation* or *delayed entry*. If units (e.g. people) are
 selected into the sample conditionally on their event time, then this must be
 taken into account. The most common form of truncation is *left truncation* in
-which there is a value $Q$ (which may be specific to each observation) such
-that if the event occurs before time $Q$ (i.e. if $T < Q$) then the person
+which there is a value $E$ (which may be specific to each observation) such
+that if the event occurs before time $E$ (i.e. if $T < E$) then the person
 would not have been included in our sample.
 
 For example, in our analysis of stroke following stent placement, people
-"enter" the study once their stent is placed. Let $W$ denote the age at which
+"enter" the study once their stent is placed. Let $E$ denote the age at which
 a stent is placed. If a person never has a stent or if they have a stroke
 before the stent is placed, this person cannot belong to our sample.
 
 More formally, if we have left truncation then we are working with the
-conditional distribution $P(T | T\ge W)$, while if there is no left truncation
+conditional distribution $P(T | T\ge E)$, while if there is no left truncation
 then we are working with the unconditional distribution $P(T)$. If we are
 doing regression analysis with covariates $X$, then with left truncation we
-are studying $P(T | T\ge W, X)$ and with no such truncation we are studying
+are studying $P(T | T\ge E, X)$ and with no such truncation we are studying
 $P(T | X)$.
 
 ## Competing risks
@@ -176,7 +177,7 @@ $S(t) \equiv P(T>t)$. It is closely related to the
 [cumulative distribution function](https://en.wikipedia.org/wiki/Cumulative_distribution_function)
 (CDF), defined to be $F(t) = P(T\le t)$ since $S(t) = 1 - F(t)$. In words, the
 survival function at time $t$ is the probability that the event has not
-occurred by time $t$. It is the same function as the complementary CDF. We may
+occurred by time $t$. Another name for the survival function is the _complementary CDF_. We may
 also refer to this as the *marginal survival function* to emphasize that it is
 not conditioned on any covariates.
 
@@ -308,7 +309,7 @@ event as non-exposed people.
 Under an assumption of *proportional hazards* all hazard ratios are constant,
 meaning in the present example that $h_1 \propto h_0$. As we will see below,
 many popular methods for survival analysis assume proportional hazards, but it
-is important to note that this assumed proportionality may not hold in a
+is important to note that this assumed proportionality may not hold in any
 particular setting.
 
 ## Estimating marginal hazard functions
@@ -330,8 +331,7 @@ $h$ by numerically differentiating an estimate of $H$.
 *Survival regression* is any method that aims to model conditional
 distributions $P(T|X)$, where $T$ is an event time variable possibly subject
 to censoring and/or truncation, and $X$ is a vector of explanatory variables.
-
-If $T$ is fully observed, specialized techniques may not be needed. For
+If $T$ is fully observed, specialized techniques for survival regression are not needed. For
 example, we may regress $T$ or $\log(T)$ on $X$ using least squares or a
 generalized linear model (GLM). This type of direct approach has been extended
 to accommodate censoring and truncation, leading to the so-called *accelerated
@@ -443,7 +443,7 @@ each $i$. The pseudo-observation is
 $u_i(t) = n\hat{S}(t) - (n-1)\hat{S}_{-i}(t)$. These can be used, for example,
 in a regression analysis, regressing $u_i$ on covariates $x_i$, since it can
 be shown that $E[u|x]$ can be interpreted as the probability of surviving to
-time $t$ when the covariates are equal to $x$. Pseudo-observations conditional
+time $t$ when the covariates are equal to $x$. Pseudo-observation conditional
 variances, ${\rm var}[u|x]$, are generally not constant in $x$ (i.e. there is
 heteroscedasticity), so typically regressions involving pseudo-observations
 are fit with robust regression techniques such as using the Huber-White type

@@ -2,11 +2,10 @@
 
 A large class of powerful statistical methods considers data in which many
 "objects" ("observations") are measured with respect to multiple variables.
-These analyses often focus on understanding the relationships among the
-variables as well as the relationships among the observations. The data in
-such an analysis naturally takes the form of a rectangular array, where by
-convention the rows correspond to objects and the columns correspond to
-variables.
+These analyses often focus on understanding both the relationships among the
+variables and the relationships among the observations. The data takes the
+form of a rectangular array, where by convention the rows correspond to
+objects and the columns correspond to variables.
 
 For example, we may have a sample of people (the "objects") with each person
 measured in terms of their height, weight, age, and sex. In this example, two
@@ -18,7 +17,13 @@ other variable for that same object.
 Matrix factorization is a powerful idea from linear algebra, and underlies
 many of the most important methods in statistics. We will use the term "factor
 analysis" here to refer in a broad way to any statistical method relying on a
-linear algebraic factorization of the data matrix.
+linear algebraic factorization of the data matrix (or a transformed version of
+the data matrix).
+
+To visualize such a data matrix, we can think in terms of _variable space_ and
+_case space_ (or _object space_). If there are $n$ cases and $p$ variables,
+then the cases are points in ${\mathbb R}^p$ and the variables are points in
+${\mathbb R}^n$.
 
 ## Embedding
 
@@ -57,12 +62,15 @@ objects, and whose columns are the variables. There are many ways to
 pre-process the data in $X$ prior to performing a factor analysis.
 
 Some factor-type methods work with the covariance matrix of the variables,
-which is a $p\times p$ positive semidefinite (PSD) matrix. Since covariances
-by definition are derived from mean centered variables, it is common to center
-the variables (columns) of the data matrix $X$ prior to running a factor
-analysis. Centering usually involves subtracting the mean from each column,
-but in some cases the columnns may be centered with respect to another measure
-of location such as the median.
+which is a $p\times p$
+[positive semidefinite](https://en.wikipedia.org/wiki/Definite_matrix) (PSD)
+matrix. Since covariances by definition are derived from mean centered
+variables, it is common to center the variables (columns) of the data matrix
+$X$ prior to conducting a factor analysis. Centering usually involves
+subtracting the mean from each column, but in some cases the columns may be
+centered with respect to another measure of location such as the median. After
+this centering, the case vectors become a point cloud that is centered around
+the origin in $R^p$.
 
 We may wish for our results to be independent of the units in which each
 variable was measured, and remove any influence of differing dispersions of
@@ -249,8 +257,8 @@ where $\mu = E[Y]$ is a fixed $p$-dimensional vector containing the
 element-wise mean of $Y$, the $\eta_j$ are a collection of mutually
 uncorrelated random scalar variables, and the $V_j$ are a collection of
 mutually orthogonal fixed vectors of dimension $p$. The means of the $\eta_j$
-are all zero and the variances of the $\eta_j$ are decreasing in $j$. That is,
-$E[\eta_j] = 0$, ${\rm Var}(\eta_1) \ge {\rm Var}(\eta_2) \ge \cdots$, and
+are all zero and the variances of the $\eta_j$ are non-increasing in $j$. That
+is, $E[\eta_j] = 0$, ${\rm Var}(\eta_1) \ge {\rm Var}(\eta_2) \ge \cdots$, and
 ${\rm cor}(\eta_j, \eta_k) = 0$ if $j \ne k$.
 
 Each component $\eta_j V_j$ represents random variation in the direction of
