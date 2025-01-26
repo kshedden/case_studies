@@ -1,9 +1,8 @@
 # Understanding the relationships among characteristics of notable people
 
-"Notability" is a social construct whose definition can vary over time and among geographic locations.  The BHHT data includes four main attributes -- sex, era of birth, occupation, and region -- that can be used to understand the construction of notability in different contexts.
+"Notability" is a social construct with no fixed definition.  The BHHT data contain four main attributes describing the notable people -- sex, occupation, birth era, region.  These characteristics can be used to understand the social construction of notability in different contexts.  For example, we can consider how the joint distribution of sex and occupation varies geographically (by region) and over time.
 
-Multiple Correspondence Analysis is a type of factor analysis for categorical data.  A common use of MCA is to produce biplots that can be used to visualize the joint distribution of several categorical variables.  Here we use MCA to understand the relationships among nominal (categorical) attributes of notable people.  These data can be thought of as a 4-way contingency table (sex x birth era x occupation x region).  The goal of MCA is to understand the structure of this contingency table as a graph.
-
+The characteristics of notable people in the BHHT data are nominal (except birth year, which can be recoded if desired to an ordinal "birth era" variable).  We can thus represent the data as a 4-way contingency table (sex x occupation x birth era x region). This contingency table reflects the joint distribution of the four characteristics in the population of interest.
 
 ```{r}
 library(dplyr)
@@ -18,7 +17,7 @@ Change this path as needed to point to the directory holding the data file.
 pa = "/home/kshedden/mynfs/data/Teaching/bhht"
 ```
 
-Read the data.  The overall dataset has around 2.4 million rows.  During exploration you might want to limit the analysis to the first million rows, then re-run to get final results with the full data.
+Next we read the data.  The overall dataset has around 2.4 million rows.  During exploration you might want to limit the analysis to the first million rows, then re-run to get final results with the full data.
 
 ```{r}
 da = read_csv(file.path(pa, "cross-verified-database.csv.gz"), n_max=1000000)
@@ -52,7 +51,29 @@ Remove small groups that are difficult to interpret due to low precision or high
 dx = dx %>% filter(occ != "Other" & occ != "Missing" & sex != "Other")
 ```
 
-Fit the MCA.
+We will aim to understand notability by studying the contingency table below:
+
+```{r}
+dz = dx %>% group_by(bcen, occ, sex, reg) %>% summarize(n=n())
+```
+
+We can calculate Pearson residuals for the contingency table.
+
+```{r}
+nx = sum(dz$n)
+vx = c("bcen", "occ", "sex", "reg")
+for (v in vx) {
+  vp = sprintf("%s_p", v)
+  dz = dz %>% group_by(.data[[v]]) %>% mutate("{v}_p" := sum(n)/nx)
+}
+dz = dz %>% mutate(expected=nx*bcen_p*occ_p*sex_p*reg_p)
+dz = dz %>% mutate(pearson_resid=(n-expected)/sqrt(expected))
+dz = dz %>% arrange(dz, pearson_resid)
+```
+
+## Multiple Correspondence Analysis
+
+Multiple Correspondence Analysis is a type of factor analysis for categorical data.  A common use of MCA is to produce biplots that can be used to visualize the joint distribution of several categorical variables.  Here we use MCA to understand the relationships among nominal (categorical) attributes of notable people.  These data can be thought of as a 4-way contingency table (sex x birth era x occupation x region).  The goal of MCA is to understand the structure of this contingency table as a graph.
 
 ```{r}
 mm = MCA(dx, ncp=4, graph=FALSE)
