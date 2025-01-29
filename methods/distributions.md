@@ -1,8 +1,11 @@
 # Characterizing distributions
 
 Probability distributions are the central object of interest in probability
-theory and statistics. There are several ways to represent a probability
-distribution, including the
+theory and statistics. The most general treatment of probability distributions
+involves
+[measure theory](<https://en.wikipedia.org/wiki/measure_(mathematics)>). In
+applied work, we usually are able to use more elementary representations of
+probability distributions, including the
 [probability density function](https://en.wikipedia.org/wiki/Probability_density_function)
 (pdf), the
 [cumulative distribution function](https://en.wikipedia.org/wiki/Cumulative_distribution_function)
@@ -18,14 +21,14 @@ quantity describing certain aspects of a probability distribution. The full
 distribution can be estimated using the
 [empirical cdf](https://en.wikipedia.org/wiki/Empirical_distribution_function)
 (an estimator of the cdf), or the
-[histogram](https://en.wikipedia.org/wiki/Histogram) (an estimator of the pdf),
-among other tools not discussed here. Summary measures often have a natural
-estimator, such as the sample mean (an estimator of the population mean), and
-the sample median (an estimator of the population median).
+[histogram](https://en.wikipedia.org/wiki/Histogram) (an estimator of the
+pdf), among other tools not discussed here. Summary measures often have a
+natural estimator, such as the sample mean (an estimator of the population
+mean), and the sample median (an estimator of the population median).
 
-The discussion here focuses on univariate distributions of a quantitative random
-variable. The settings of categorical (non-quantitative) and multivariate data
-involve different methods not discussed here.
+The discussion here focuses on univariate distributions of a quantitative
+random variable. The settings of categorical (non-quantitative) and
+multivariate data involve different methods.
 
 The two most common characteristics used to summarize univariate distributions
 of a quantitative value (i.e. probability distributions on the real line) are
@@ -34,33 +37,33 @@ of a quantitative value (i.e. probability distributions on the real line) are
 can provide us with measures of *location* (also known as *centrality* or
 *central tendency*), and measures of
 [dispersion](https://en.wikipedia.org/wiki/Statistical_dispersion) (also known
-as *scale*). A moment-based measure of location is the mean, while a
-quantile-based measure of location is the median. A moment-based measure of
-dispersion is the
+as *scale*). For example, a moment-based measure of location is the mean,
+while a quantile-based measure of location is the median. A moment-based
+measure of dispersion is the
 [standard deviation](https://en.wikipedia.org/wiki/Standard_deviation), while
 quantile-based measures of dispersion include the
-[inter-quartile range](https://en.wikipedia.org/wiki/Interquartile_range) (IQR)
-and the [MAD](https://en.wikipedia.org/wiki/Median_absolute_deviation) (median
-absolute deviation).
+[inter-quartile range](https://en.wikipedia.org/wiki/Interquartile_range)
+(IQR) and the [MAD](https://en.wikipedia.org/wiki/Median_absolute_deviation)
+(median absolute deviation).
 
 "Higher order" summary characteristics of a distribution such as
 [skew](https://en.wikipedia.org/wiki/Skewness) and
-[kurtosis](https://en.wikipedia.org/wiki/Kurtosis) are less commonly encountered
-but are of great interest in certain settings.
+[kurtosis](https://en.wikipedia.org/wiki/Kurtosis) are less commonly
+encountered but are of great interest in certain settings.
 
 Below we summarize some less familiar characteristics of probability
 distributions, and discuss how to estimate these characteristics from data.
 
 ## Extremes, heavy-tailed distributions, and tail parameter estimation
 
-Many important research questions involve the frequency of "extreme" events, for
-example major earthquakes, large movements in financial markets, extremely long
-human lifespans, or extreme rainfall events. The study of extremes naturally
-leads us to focus on the right tail of a probability distribution. In some cases
-the extremes of interest may lie in the left tail, but in that case we can flip
-the distribution (multiply the values by -1 so the left and right tails are swapped).
-Therefore by convention methods for studying extremes focus on the
-right tail.
+Many important research questions involve the frequency of "extreme" events,
+for example major earthquakes, large movements in financial markets, extremely
+long human lifespans, or extreme rainfall events. The study of extremes
+naturally leads us to focus on the right tail of a probability distribution.
+In some cases the extremes of interest may lie in the left tail, but in that
+case we can flip the distribution (multiply the values by -1 so the left and
+right tails are swapped). Therefore by convention methods for studying
+extremes focus on the right tail.
 
 In the statistical study of extremes, we do not attempt to classify individual
 data points as being "extreme" or "non-extreme". In some cases there may be
@@ -74,11 +77,11 @@ asymptotic rate of decay.
 Recall that the cumulative distribution funtion (cdf) of a random variable $X$
 is the function $F(t) = P(X \le t)$, viewed as a function of
 $t \in {\mathbb R}^+$. The *complementary cdf* (ccdf), also known as the
-*survival function*, is the right tail probability $S(t) = P(X > t) = 1 - F(t)$.
-To understand the frequency of extreme (large) values, we should consider how
-rapidly the tail probability converges to zero as $t$ increases. In many
-familiar distributions, the tails are *exponential* meaning that
-$P(X > t) = L(t)\cdot \exp(-t/\mu)$, where $L(t)$ is a
+*survival function*, is the right tail probability
+$S(t) = P(X > t) = 1 - F(t)$. To understand the frequency of extreme (large)
+values, we should consider how rapidly the tail probability converges to zero
+as $t$ increases. In many familiar distributions, the tails are *exponential*
+meaning that $P(X > t) = L(t)\cdot \exp(-t/\mu)$, where $L(t)$ is a
 [slowly varying function](https://en.wikipedia.org/wiki/Slowly_varying_function)
 and $\mu$ is a scale parameter. For our purposes, we can treat $L(t)$ as a
 constant, so having exponential tails implies that
@@ -111,20 +114,20 @@ $Z = \exp(Y / \alpha)$ follows a Pareto distribution.
 
 ### Exceedances
 
-The Pareto and exponential distributions are one-parameter families and in
-general will not fit many datasets well. Furthermore, when focusing on extreme
-values we usually don't want to become distracted by the structure of the center
-of the distribution. Therefore, we need a more flexible way to model the tail of
-a probability distribution.
+The Pareto and exponential distributions are one-parameter families and will
+not fit many datasets well. Furthermore, when focusing on extreme values we
+usually don't want to become distracted by the structure of the center of the
+distribution. Therefore, we need a more flexible way to model the tail of a
+probability distribution.
 
-One way to focus on the tail is to convert the data to *exceedances*. This means
-that we find a parameter $T$ and replace the dataset $\\{X_i\\}$ with the
-dataset $\\{X_i-T | X_i \ge T\\}$.
+One way to focus on the tail is to convert the data to *exceedances*. This
+means that we find a parameter $T$ and replace the dataset $\\{X_i\\}$ with
+the dataset $\\{X_i-T | X_i \ge T\\}$.
 
 If $T$ is appropriately selected then the exceedances may follow a Pareto or
 exponential distribution, even though these models are a poor fit to the full
-dataset. However in general we will want to use a more flexible two-parameter
-family of models in most cases.
+dataset. However we will want to use a more flexible two-parameter family of
+models in most cases.
 
 ### Tail plots
 
@@ -135,8 +138,8 @@ structure of the tail of a distribution. These approaches consider the upper
 reflect the shape of the tail. Recall that the $j^{\rm th}$ order statistic is
 the $j^{\rm th}$ sorted value in our data, sorted in increasing order.
 
-Let $X_{(j)}$ denote the $j^{\rm th}$ order statistic either of our data, or of
-the exceedances derived from our data. This order statistic corresponds to
+Let $X_{(j)}$ denote the $j^{\rm th}$ order statistic either of our data, or
+of the exceedances derived from our data. This order statistic corresponds to
 *probability point* or "plotting position" $j/(n+1)$ (there is a more general
 definition of plotting position that takes the probability to be
 $(j-a)/(n+1-2a)$ for a parameter $0 < a < 1$). For the plotting position with
@@ -174,19 +177,19 @@ $$
 \log(1 - j/(n+1)) \approx \log(c) - X_{(j)}/\mu.
 $$
 
-In a *semi-log* plot (log transforming the probability points but not the order
-statistics), when the distribution has exponential tails we obtain a linear
-relationship with slope $-1/\mu$.
+In a *semi-log* plot (log transforming the probability points but not the
+order statistics), when the distribution has exponential tails we obtain a
+linear relationship with slope $-1/\mu$.
 
 Using such probability tail plots, we can estimate distributional parameters
-($\alpha$ or $\mu$) by fitting a least squares regression line to the points in
-the plot. The number of points used in the least squares fit is a tuning
+($\alpha$ or $\mu$) by fitting a least squares regression line to the points
+in the plot. The number of points used in the least squares fit is a tuning
 parameter that must be selected, typically in the range $20-200$. These
-estimators are convenient, intuitive, and *distributionally robust* (since they
-depend on the assumed form of the tail but do not require a complete
-specification of a probability model). However these estimators may not be very
-efficient (i.e. they may have high estimation variance). Several more efficient
-estimators will be discussed below.
+estimators are convenient, intuitive, and *distributionally robust* (since
+they depend on the assumed form of the tail but do not require a complete
+specification of a probability model). However these estimators may not be
+very efficient (i.e. they may have high estimation variance). Several more
+efficient estimators will be discussed below.
 
 ### The Hill estimate of the tail parameter
 
@@ -223,9 +226,9 @@ $$
 \hat{A} \equiv (k-1)^{-1}\sum_{j=1}^{k-1} \log X_{(n-j)} / X_{(n-k)} \approx -\alpha^{-1} \sum_{j=1}^{k-1}\log((j+1)/(k+1)).
 $$
 
-This establishes a relationship between the statistic $\hat{A}$ and the quantity
-of intetrest $\alpha$. The constant of proportionality turns out to be nearly
-equal to $1$:
+This establishes a relationship between the statistic $\hat{A}$ and the
+quantity of intetrest $\alpha$. The constant of proportionality turns out to
+be nearly equal to $1$:
 
 $$
 \sum_{j=1}^{k-1}\log((j+1)/(k+1)) \approx \int_0^k \log((x+1)/(k+1))dx \rightarrow -1.
@@ -237,19 +240,19 @@ $$
 \hat{\alpha}_{\rm Hill} = 1/\hat{A}.
 $$
 
-In the Hill estimate, the value of $k$ is a tuning parameter. To select $k$, we
-usually calculate $\hat{\alpha}_{\rm Hill}$ for various values of $k$ (typically
-$k \approx 20-200$) and choose a value that corresponds to a stable range of
-values of the estimate.
+In the Hill estimate, the value of $k$ is a tuning parameter. To select $k$,
+we usually calculate $\hat{\alpha}_{\rm Hill}$ for various values of $k$
+(typically $k \approx 20-200$) and choose a value that corresponds to a stable
+range of values of the estimate.
 
 If the data are exactly Pareto, the maximum likelihood estimate (MLE) of
 $\alpha$ is the Hill estimate using $k=n$.
 
 ### The generalized Pareto distribution
 
-As noted above, the one-parameter Pareto distribution may not fit many data sets
-well, and further has an awkward sample space of $[1, \infty)$. To address these
-issues, the
+As noted above, the one-parameter Pareto distribution may not fit many data
+sets well, and further has an awkward sample space of $[1, \infty)$. To
+address these issues, the
 [generalized Pareto distribution](https://en.wikipedia.org/wiki/Generalized_Pareto_distribution)
 was developed, which has sample space $[0, \infty)$ and complementary CDF
 
@@ -267,16 +270,16 @@ $$
 so the generalized Pareto and Pareto distributions both have power law tails
 with the same tail parameter $\alpha$.
 
-As $\alpha\rightarrow\infty$ (or equivalently $\xi=1/\alpha\rightarrow 0$), the
-generalized Pareto distribution becomes the exponential distribution.
+As $\alpha\rightarrow\infty$ (or equivalently $\xi=1/\alpha\rightarrow 0$),
+the generalized Pareto distribution becomes the exponential distribution.
 
 The famous
 [Pickands-Balkema-De Haan theorem](https://en.wikipedia.org/wiki/Pickands%E2%80%93Balkema%E2%80%93De_Haan_theorem)
-demonstrates that with appropriate choice of threshold $T$, the exceedances for
-many distributions approximately follow a generalized Pareto distribution. This
-theorem plays the role of the central limit theorem in the study of extremes,
-since it allows us to use a specific parametric model to study data that may
-follow a large range of distributions.
+demonstrates that with appropriate choice of threshold $T$, the exceedances
+for many distributions approximately follow a generalized Pareto distribution.
+This theorem plays the role of the central limit theorem in the study of
+extremes, since it allows us to use a specific parametric model to study data
+that may follow a large range of distributions.
 
 ## Block maxima and the generalized extreme value distribution
 
@@ -291,18 +294,18 @@ populations have block maxima that are well-approximated by the GEV
 distribution.
 
 The block maxima approach is often used with serially observed data (time
-series), and the block is a coarse resolution of time. For example, if our time
-series consists of daily values, we might choose a block size of one year. To
-estimate a GEV, we need to have a sufficient number of blocks. If there are too
-few blocks, say 50 or fewer, then the GEV parameter estimates will be very
-uncertain.
+series), and the block is a coarse resolution of time. For example, if our
+time series consists of daily values, we might choose a block size of one
+year. To estimate a GEV, we need to have a sufficient number of blocks. If
+there are too few blocks, say 50 or fewer, then the GEV parameter estimates
+will be very uncertain.
 
-One advantage of working with block-wise maxima is that they are less sensitive
-to *positive serial dependence* that causes clusters of extreme values to occur
-in close proximity to each other. These clusters will generally occur within one
-block and only the largest among them will influence the analysis results.
-Fitting a generalized Pareto distribution to the exceedances may produce biased
-estimates due to such dependence.
+One advantage of working with block-wise maxima is that they are less
+sensitive to *positive serial dependence* that causes clusters of extreme
+values to occur in close proximity to each other. These clusters will
+generally occur within one block and only the largest among them will
+influence the analysis results. Fitting a generalized Pareto distribution to
+the exceedances may produce biased estimates due to such dependence.
 
 ### Likelihood-based estimation
 
@@ -310,12 +313,12 @@ Likelihood-based estimation is generally more efficient than moment or
 quantile-matching estimates such as considered above. The most well-known
 likelihood-based estimator is the maximum likelihood estimator (MLE), which is
 asymptotically fully efficient under standard conditions. However, the MLE can
-be non-unique and difficult to compute. Additionally, in the case of the GEV the
-support of the distribution depends on the parameters which violates the
+be non-unique and difficult to compute. Additionally, in the case of the GEV
+the support of the distribution depends on the parameters which violates the
 standard conditions on which theoretical guarantees about the MLE are based.
 
-For the standard one-parameter Pareto distribution, the MLE of the tail index is
-simply
+For the standard one-parameter Pareto distribution, the MLE of the tail index
+is simply
 
 $$
 \hat{\alpha}_{\rm MLE} = 1/({\rm Avg}(\log(X_i))).
@@ -333,30 +336,30 @@ likelihood-based estimators have been developed including the empirical Bayes
 estimator discussed [here](https://www.jstor.org/stable/40586625).
 
 Maximum likelihood estimates for the generalized extreme value (GEV)
-distribution can be calculated numerically, but good starting values are needed
-to obtain robust convergence. One way to get good starting values is using the
-*probability weighted moments* approach discussed
+distribution can be calculated numerically, but good starting values are
+needed to obtain robust convergence. One way to get good starting values is
+using the *probability weighted moments* approach discussed
 [here](https://www.stat.cmu.edu/technometrics/80-89/VOL-27-03/v2703251.pdf).
 
 ### Return levels
 
 The *m-observation return level* (or simply $m$-return) is a value $T$ that is
-expected to be exceeded once out of every $m$ observations. In other words, $T$
-is the m-observation return level if $I_i = {\cal I}(X_i > T)$ and
-$E[I_1 + \cdots + I_m] = 1$, where the $X_i$ are identically distributed random
-variables. Since $E[I_1 + \cdots + I_m] = mE[I]$, where $I$ has the same
-distribution as the $I_i$, the $m$-return can be inferred from the equation
-$mE[I] = 1$ or $E[I] = 1/m$. Since $E[I] = P(X > t) = 1 - P(X \le t)$, if $F(x)$
-is the cumulative distribution function (CDF) of a random variable $X$, then the
-m-observation return level (for $m$ independent copies of $X$) is the solution
-to $F(x) = 1 - 1/m$. Thus, the m-observation return level is the $1 - 1/m$
-quantile of $X$.
+expected to be exceeded once out of every $m$ observations. In other words,
+$T$ is the m-observation return level if $I_i = {\cal I}(X_i > T)$ and
+$E[I_1 + \cdots + I_m] = 1$, where the $X_i$ are identically distributed
+random variables. Since $E[I_1 + \cdots + I_m] = mE[I]$, where $I$ has the
+same distribution as the $I_i$, the $m$-return can be inferred from the
+equation $mE[I] = 1$ or $E[I] = 1/m$. Since
+$E[I] = P(X > t) = 1 - P(X \le t)$, if $F(x)$ is the cumulative distribution
+function (CDF) of a random variable $X$, then the m-observation return level
+(for $m$ independent copies of $X$) is the solution to $F(x) = 1 - 1/m$. Thus,
+the m-observation return level is the $1 - 1/m$ quantile of $X$.
 
-If we are working with exceedances, we need to take account of the observations
-that were excluded since they fell below the threshold $T$. Let $q$ denote the
-proportion of the full dataset that exceeds $T$. Then the m-observation return
-level is the $1 - 1/(q\cdot m)$ quantile calculated using the distribution of
-exceedances.
+If we are working with exceedances, we need to take account of the
+observations that were excluded since they fell below the threshold $T$. Let
+$q$ denote the proportion of the full dataset that exceeds $T$. Then the
+m-observation return level is the $1 - 1/(q\cdot m)$ quantile calculated using
+the distribution of exceedances.
 
 ## L-moments
 
@@ -367,23 +370,24 @@ $E[X^2]$ is the raw second moment. In practice we usually work with the
 which is better known as the variance.
 
 In principle, if you know all the moments of a distribution, then you know
-everything about the distribution (there are some technical conditions for this
-to be literally true, as it is based on the invertibility of the moment
-generating function). But this fact is not very useful in practice because it is
-nearly impossible to estimate high order moments $E[(X-EX)^k]$ for large values
-of $k$. The sample estimator of this moment is $n^{-1}\sum (X_i - \bar{X})^k$,
-and this estimator is consistent and asymptotically unbiased, but if $k > 2$ it
-has huge mean squared error for practically realistic sample sizes.
+everything about the distribution (there are some technical conditions for
+this to be literally true, as it is based on the invertibility of the moment
+generating function). But this fact is not very useful in practice because it
+is nearly impossible to estimate high order moments $E[(X-EX)^k]$ for large
+values of $k$. The sample estimator of this moment is
+$n^{-1}\sum (X_i - \bar{X})^k$, and this estimator is consistent and
+asymptotically unbiased, but if $k > 2$ it has huge mean squared error for
+practically realistic sample sizes.
 
 As noted earlier, many descriptive statistics are either moments or quantiles.
 If high order moments are hard to estimate, perhaps there is a quantile-based
 analogue to these moments that is easier to estimate? This idea led to the
 development of [L-moments](https://en.wikipedia.org/wiki/L-moment) which are
-linear combinations of order statistics (order statistics in turn are estimates
-of quantiles).
+linear combinations of order statistics (order statistics in turn are
+estimates of quantiles).
 
-The definition of an L-moment of arbitrary order is complex, so we focus here on
-the first four L-moments.
+The definition of an L-moment of arbitrary order is complex, so we focus here
+on the first four L-moments.
 
 The first L-moment $\lambda_1$ is the same as the usual mean.
 
@@ -407,12 +411,13 @@ $$
 
 Often we work with the standardized third and fourth L-moments,
 $\lambda_3^s = \lambda_3/\lambda_2$ and $\lambda_4^s = \lambda_4/\lambda_2$.
-Note that these standardized L-moments are *scale invariant* meaning that their
-value is not changed by scaling the data. All L-moments except for the first
-L-moment are *translation invariant*, meaning that their values are not changed
-by adding a constant to all data values. Scale and translation invariance (also
-known as *affine invariance*) are important becuase they imply that the result
-does not depend on the units or origin of the measurement scale.
+Note that these standardized L-moments are *scale invariant* meaning that
+their value is not changed by scaling the data. All L-moments except for the
+first L-moment are *translation invariant*, meaning that their values are not
+changed by adding a constant to all data values. Scale and translation
+invariance (also known as *affine invariance*) are important becuase they
+imply that the result does not depend on the units or origin of the
+measurement scale.
 
 L-moments are useful descriptive statistics that capture the shape of
 distributions. They are more robust (less sensitive to contamination) than the
