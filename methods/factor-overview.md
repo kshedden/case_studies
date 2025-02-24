@@ -66,18 +66,21 @@ which is a $p\times p$
 [positive semidefinite](https://en.wikipedia.org/wiki/Definite_matrix) (PSD)
 matrix. Since covariances by definition are derived from mean centered
 variables, it is common to center the variables (columns) of the data matrix
-$X$ prior to conducting a factor analysis. Centering usually involves
-subtracting the mean from each column, but in some cases the columns may be
+$X$ prior to conducting a factor analysis. Centering usually is accomplished
+by subtracting the mean from each column, but in some cases the columns may be
 centered with respect to another measure of location such as the median. After
 this centering, the case vectors become a point cloud that is centered around
 the origin in $R^p$.
 
 We may wish for our results to be independent of the units in which each
 variable was measured, and remove any influence of differing dispersions of
-the variables on our results. This motivates standardizing the columns of $X$
-prior to performing a factor analysis. This *standardization* involves first
-centering each column as discussed above, then dividing each column by a
-measure of scale such as the standard deviation or inter-quartile range.
+the variables on our results. This motivates *standardizing* the columns of
+$X$ prior to performing a factor analysis. The most common way to standardize
+data is to divide each column by a
+[measure of scale](https://en.wikipedia.org/wiki/Statistical_dispersion) such
+as the standard deviation or inter-quartile range. Usually standardization is
+done after centering, but in some cases (e.g. for a variable that is naturally
+constrained to positive values), no centering is performed.
 
 In some datasets there is strong heterogeneity among the observations (rows)
 and it is desirable to supress this in the analysis. In this case we may
@@ -183,7 +186,7 @@ have mean zero we can replace it with $x-\mu$, where $\mu=E[x]$). Principal
 Components Analysis (PCA) seeks a linear embedding of $x$ into a lower
 dimensional space of dimension $q < p$. The standard approach to PCA gives us
 a $p\times q$ orthogonal matrix $B$ of *loadings*, which can be used to
-produce *scores* $Q = B^Tx$, which are $q-$dimensional vectors.
+produce *scores* $Q = B^Tx$, which are $q$ -dimensional vectors.
 
 For a single vector $x$, the scores are obtained via the mapping
 $Q(x) = B^Tx$. For a data matrix $X$ whose rows are independent and
@@ -255,18 +258,18 @@ $$
 
 where $\mu = E[Y]$ is a fixed $p$-dimensional vector containing the
 element-wise mean of $Y$, the $\eta_j$ are a collection of mutually
-uncorrelated random scalar variables, and the $V_j$ are a collection of
-mutually orthogonal fixed vectors of dimension $p$. The means of the $\eta_j$
-are all zero and the variances of the $\eta_j$ are non-increasing in $j$. That
-is, $E[\eta_j] = 0$, ${\rm Var}(\eta_1) \ge {\rm Var}(\eta_2) \ge \cdots$, and
+uncorrelated scalar random variables, and the $V_j$ are a collection of
+mutually orthogonal fixed vectors of dimension $p$. The expected values of the
+$\eta_j$ are all zero and their variances are non-increasing in $j$. That is,
+$E[\eta_j] = 0$, ${\rm Var}(\eta_1) \ge {\rm Var}(\eta_2) \ge \cdots$, and
 ${\rm cor}(\eta_j, \eta_k) = 0$ if $j \ne k$.
 
 Each component $\eta_j V_j$ represents random variation in the direction of
 the unit vector $V_j$. The leading term $\eta_1 V_1$ captures the greatest
 variation of any one-dimensional component, and the subsequent components
-$\eta_j V_j$ ($j=2, 3, \ldots$) capture progressively less of the variance.
-Since the $\eta_j$ are uncorrelated, these "axes of variation" capture
-distinct and unrelated contributions to the overall variance of $Y$.
+$\eta_j V_j$ ($j=2, 3, \ldots$) capture progressively smaller fractions of the
+variance. Since the $\eta_j$ are uncorrelated, these "axes of variation"
+capture distinct and unrelated contributions to the overall variance of $Y$.
 
 ### Biplots
 
