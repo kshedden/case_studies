@@ -27,6 +27,9 @@ The layout of the county demographics data is at
 Then visit [https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx](https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx)
 and download the 2013 "Rural-Urban Continuum Codes".
 
+We will use the [Area Deprivation index](https://www.neighborhoodatlas.medicine.wisc.edu), which can be obtained
+[here](https://www.dropbox.com/scl/fo/jo5ika5l84kr2wtw708vx/h?rlkey=8iy0w0mggomucx3hlcfmht88s&st=h2cnjmll&dl=0).
+
 Once you have downloaded all these files, you can run one of the 'prep.X' scripts to
 prepare the data.  As usual, you will have to review these files to understand what they
 do, and set some configuration options for your local system.
