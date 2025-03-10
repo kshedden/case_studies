@@ -76,3 +76,11 @@ demog = demog %>% mutate_at(vars(-"FIPS"), ~ replace_na(., 0))
 # Get the Rural/Urban Continuity Codes (RUCC)
 rucc = read_excel(file.path(pa, "ruralurbancodes2013.xls"), sheet="Rural-urban Continuum Code 2013")
 rucc = rucc %>% select(FIPS, RUCC_2013)
+
+# Get the ADI values, need to aggregate from zip code to county code
+fname = "US_2022_ADI_Census_Block_Group_v4_0_1.csv.gz"
+#dt = {"FIPS": str, "ADI_NATRANK": str}
+adi = read_csv(file.path(pa, fname), col_types=cols_only(FIPS=col_character(), ADI_NATRANK=col_double()))
+adi = adi %>% mutate(FIPS5=substr(FIPS, 1, 5))
+adi = drop_na(adi)
+adi = adi %>% group_by(FIPS5) %>% summarize(ADI_NATRANK = median(ADI_NATRANK))

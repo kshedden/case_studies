@@ -3,14 +3,16 @@
 import pandas as pd
 import numpy as np
 import os, gzip
+from pathlib import Path
 
 # Path to the data files
-pa = "/home/kshedden/data/Teaching/natality"
+pa = Path("/home/kshedden/data/Teaching/natality")
 
 # Create a long form version of the birth data.
 dl = []
 for y in range(2011, 2021):
-    da = pd.read_csv(os.path.join(pa, "%4d.txt.gz" % y), delimiter="\t",
+    bname = "%4d.txt.gz" % y
+    da = pd.read_csv(pa / bname, delimiter="\t",
                      dtype={"County Code": object})
     da = da[["County", "County Code", "Births"]]
     da["year"] = y
@@ -25,8 +27,8 @@ births = births[~births["County"].str.contains("Unidentified")]
 # and takes time, so only run this once and save the result
 # for future runs.
 if False:
-    f = os.path.join(pa, "us.1990_2022.19ages.adjusted.txt.gz")
-    g = os.path.join(pa, "2016ages.txt.gz")
+    f = pa / "us.1990_2022.19ages.adjusted.txt.gz"
+    g = pa / "2016ages.txt.gz"
     with gzip.open(g, "w") as out:
         with gzip.open(f) as inp:
             for line in inp:
@@ -37,7 +39,7 @@ if False:
 # file.
 x = [1, 5, 7, 9, 12, 14, 15, 16, 17, 19, 27]
 cs = [(x[i]-1, x[i+1]-1) for i in range(len(x)-1)]
-with gzip.open(os.path.join(pa, "2016ages.txt.gz")) as io:
+with gzip.open(pa / "2016ages.txt.gz") as io:
     demog = pd.read_fwf(io, colspecs=cs, header=None)
 demog.columns = ["Year", "State", "StateFIPS", "CountyFIPS", "Registry",
                  "Race", "Origin", "Sex", "Age", "Population"]
@@ -70,7 +72,15 @@ demog.columns = ["%s_%s_%s_%d" % tuple(x) for x in na]
 demog = demog.fillna(0)
 
 # Get the Rural/Urban Continuity Codes (RUCC)
-rucc = pd.read_excel(os.path.join(pa, "ruralurbancodes2013.xls"), sheet_name=None)
+rucc = pd.read_excel(pa / "ruralurbancodes2013.xls", sheet_name=None)
 rucc = rucc["Rural-urban Continuum Code 2013"]
 rucc = rucc[["FIPS", "RUCC_2013"]]
 rucc["FIPS"] = ["%05d" % x for x in rucc.FIPS]
+
+# Get the ADI values, need to aggregate from zip code to county code
+fname = "US_2022_ADI_Census_Block_Group_v4_0_1.csv.gz"
+dt = {"FIPS": str, "ADI_NATRANK": str}
+adi = pd.read_csv(pa / fname, usecols=["FIPS", "ADI_NATRANK"], dtype=dt)
+adi["ADI_NATRANK"] = pd.to_numeric(adi["ADI_NATRANK"], errors="coerce")
+adi["FIPS5"] = [x[0:5] for x in adi["FIPS"]]
+adi = adi.groupby("FIPS5")["ADI_NATRANK"].agg("median")

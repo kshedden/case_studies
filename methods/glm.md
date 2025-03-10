@@ -87,8 +87,7 @@ they imply.
 Mean/variance relationships are a powerful way to accommodate *heteroscedasticity* in
 regression analyses.  They provide a simpler alternative to *variance regression*
 in which the conditional variance function ${\rm Var}[Y|X=x]$ is an arbitrary function
-of $x$, rather than being restricted to being a function of the conditional
-mean.
+of $x$.
 
 __GLM's and parametric probability models:__ Many basic GLM's are
 equivalent to using maximum likelihood analysis to fit a parametric
@@ -452,7 +451,7 @@ equations_, where $\mu_i = \mu_i(\beta) = g^{-1}(x_i^\prime \beta)$
 is the mean of observation $i$ implied by a given value of $\beta$:
 
 $$
-\sum_i \partial \mu_i/\partial \beta \cdot (y_i - \mu_i) / V(\mu_i) = 0.
+\sum_i (\partial \mu_i/\partial \beta) \cdot (y_i - \mu_i) / V(\mu_i) = 0.
 $$
 
 Note that $\partial \mu_i/\partial \beta$ is a $p$-dimensional vector,
@@ -509,7 +508,7 @@ $$
 $$
 
 is the antiderivative of
-$\partial \mu/\partial \beta \cdot (y - \mu) / V(\mu)$.  Therefore,
+$(\partial \mu/\partial \beta) \cdot (y - \mu) / V(\mu)$.  Therefore,
 this expression can be seen as providing a
 quasi-likelihood function corresponding to the quasi-score function.
 This quasi-likelihood may not be an actual likelihood, but it can be used to
