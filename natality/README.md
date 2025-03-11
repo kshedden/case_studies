@@ -17,9 +17,11 @@ data.  Then compress all the files using gzip.
 Next visit
 [https://seer.cancer.gov/popdata/download.html](https://seer.cancer.gov/popdata/download.html)
 to obtain demographic data about the counties.  The relevant file is
-under the table labeled "County-Level Population Files - 19 Age Groups", in the column labeled
-"1990-2020 4 expanded races by origin", in the row labeled "All States
-Combined".  You can download the file in gzip/csv (.gz) format.
+under the table labeled "County-Level Population Files - 20 Age Groups", in the column labeled
+"1990-2023 4 Expanded Races by Origin", in the row labeled "All States
+Combined".  You should download the file in gzip/csv (.gz) format.
+[Here](https://seer.cancer.gov/popdata/yr1990_2023.20ages/us.1990_2023.20ages.adjusted.txt.gz) is
+a direct link.
 
 The layout of the county demographics data is at
 [https://seer.cancer.gov/popdata/popdic.html](https://seer.cancer.gov/popdata/popdic.html).

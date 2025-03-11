@@ -1,6 +1,6 @@
 # Demographic predictors of birth counts in US counties from 2011-2020
 
-In this notebook we will explore predictors of natality, defined here as birth count per county/year, for a subset of US counties between 2011 and 2020.  
+In this notebook we will explore predictors of natality, defined here as birth count per county/year.  The analysis considers a subset of US counties between 2011 and 2020.
 
 ```{r}
 library(geepack)
@@ -25,57 +25,71 @@ plt = ggplot(mv, aes(x=log_births_mean, y=log_births_var)) + geom_point()
 print(plt)
 ```
 
-Use a linear model to assess the mean variance relationsip within the family of relationships representable as Var[E[Y|X]] = a*E[Y|X]^b.
+Use a linear model to assess the mean variance relationship within the family of relationships representable as Var[E[Y|X]] = a*E[Y|X]^b.
 
 ```{r}
 mmv = lm(log_births_var ~ log_births_mean, data=mv)
 summary(mmv)
 ```
 
-Merge the birth data with population and RUCC data
+Merge the birth data with population, RUCC, and ADI data
 
 ```{r}
 da = merge(births, pop, on="FIPS", how="left")
 da = merge(da, rucc, on="FIPS", how="left")
-da = da %>% mutate(logPop = log(da$Population))
+da = merge(da, adi, by.x="FIPS", by.y="FIPS5", how="left")
+```
+
+We will be using population as an offset below, so log transform it here.
+
+```{r}
+da = da %>% mutate(logPop = log(Population))
+da = da %>% mutate(logADINatRank = log(ADI_NATRANK))
+```
+
+To simplify interpretation of interactions, we create centered versions of quantitative predictors below.
+
+```{r}
 da = da %>% mutate(yearc = year - mean(year))
 da = da %>% mutate(logPopc = logPop - mean(logPop))
 da = da %>% mutate(RUCC_2013c = RUCC_2013 - mean(RUCC_2013))
+da = da %>% mutate(logADINatRank = logADINatRank - mean(logADINatRank))
+da = da %>% mutate(logADINatRankZ = logADINatRank / sd(logADINatRank))
 head(da)
 ```
 
 Basic GLM looking at births in terms of population and urbanicity. This model does not account for correlations between repeated observations on the same county.
 
 ```{r}
-r0 = glm(Births ~ logPop + RUCC_2013, quasipoisson(), da)
+r0 = glm(Births ~ logPop + logADINatRankZ + RUCC_2013, quasipoisson(), da)
 summary(r0)
 ```
 
 GEE accounts for the correlated data, no need to use quasipoisson here since GEE is already robust to this form of heteroscedasticity.
 
 ```{r}
-r1 = geeglm(Births ~ logPop + RUCC_2013, data=da, id=FIPS, family=poisson())
+r1 = geeglm(Births ~ logPop + logADINatRankZ + RUCC_2013, data=da, id=FIPS, family=poisson())
 summary(r1)
 ```
 
 GEE with log population as an offset instead of being a covariate.
 
 ```{r}
-r2 = geeglm(Births ~ RUCC_2013, data=da, id=FIPS, family=poisson(), offset=logPop)
+r2 = geeglm(Births ~ RUCC_2013 + logADINatRankZ, data=da, id=FIPS, family=poisson(), offset=logPop)
 summary(r2)
 ```
 
 GEE with log population as an offset instead of being a covariate.
 
 ```{r}
-r3 = geeglm(Births ~ RUCC_2013, data=da, id=FIPS, family=Gamma(link="log"), offset=logPop)
+r3 = geeglm(Births ~ RUCC_2013 + logADINatRankZ, data=da, id=FIPS, family=Gamma(link="log"), offset=logPop)
 summary(r3)
 ```
 
 GEE with log population as an offset instead of being a covariate.
 
 ```{r}
-r4 = geeglm(Births ~ RUCC_2013, data=da, id=FIPS, family=Gamma(link="log"),
+r4 = geeglm(Births ~ RUCC_2013 + logADINatRankZ, data=da, id=FIPS, family=Gamma(link="log"),
             corstr="exchangeable", offset=logPop)
 summary(r4)
 ```
@@ -83,7 +97,7 @@ summary(r4)
 Add year as a main effect
 
 ```{r}
-r5 = geeglm(Births ~ RUCC_2013 + year, data=da, id=FIPS, family=Gamma(link="log"),
+r5 = geeglm(Births ~ RUCC_2013 + logADINatRankZ + year, data=da, id=FIPS, family=Gamma(link="log"),
             corstr="exchangeable", offset=logPop)
 summary(r5)
 ```
@@ -91,7 +105,7 @@ summary(r5)
 Add an interaction between year and RUCC
 
 ```{r}
-r6 = geeglm(Births ~ RUCC_2013c * yearc, data=da, id=FIPS, family=Gamma(link="log"),
+r6 = geeglm(Births ~ (RUCC_2013c + logADINatRankZ) * yearc, data=da, id=FIPS, family=Gamma(link="log"),
             corstr="exchangeable", offset=logPop)
 summary(r6)
 ```
@@ -156,7 +170,7 @@ GLM, not appropriate since we have repeated measures on counties
 ```{r}
 fml = paste("pc", seq(npc), sep="")
 fml = paste(fml, collapse=" + ")
-fml = sprintf("Births ~ (logPopc + RUCC_2013c) * yearc + %s", fml)
+fml = sprintf("Births ~ (logPopc + RUCC_2013c + logADINatRankZ) * yearc + %s", fml)
 fml = as.formula(fml)
 r7 = glm(fml, quasipoisson(), da)
 summary(r7)
@@ -192,7 +206,7 @@ fitmodel = function(npc, use_gee=TRUE) {
     } else {
         r = glm(fml, data=da, family=Gamma(link="log"), offset=da$logPop)
     }
-        
+
     # Convert the coefficients back to the original coordinates
     cf = coef(r)
     ii = grep("pc", names(cf))

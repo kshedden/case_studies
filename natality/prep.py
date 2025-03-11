@@ -27,7 +27,7 @@ births = births[~births["County"].str.contains("Unidentified")]
 # and takes time, so only run this once and save the result
 # for future runs.
 if False:
-    f = pa / "us.1990_2022.19ages.adjusted.txt.gz"
+    f = pa / "us.1990_2023.20ages.adjusted.txt.gz"
     g = pa / "2016ages.txt.gz"
     with gzip.open(g, "w") as out:
         with gzip.open(f) as inp:
@@ -63,7 +63,7 @@ demog = demog.pivot(index="FIPS", columns=["Race", "Origin", "Sex", "Age"], valu
 # Age group labels
 age_groups = ["0", "1-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39",
               "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79",
-              "80-84", "85+"]
+              "80-84", "85-89", "90+"]
 
 na = demog.columns.tolist()
 demog.columns = ["%s_%s_%s_%d" % tuple(x) for x in na]

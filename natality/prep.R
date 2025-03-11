@@ -13,7 +13,7 @@ pa = "/home/kshedden/data/Teaching/natality"
 # be run once.  Change the next line to read 'if (TRUE)' to
 # run this section of code.
 if (FALSE) {
-    f = file.path(pa, "us.1990_2022.19ages.adjusted.txt.gz")
+    f = file.path(pa, "us.1990_2023.20ages.adjusted.txt.gz")
     g = file.path(pa, "2016ages.txt.gz")
     inc = gzfile(f)
     otc = gzfile(g, "w")
@@ -79,7 +79,6 @@ rucc = rucc %>% select(FIPS, RUCC_2013)
 
 # Get the ADI values, need to aggregate from zip code to county code
 fname = "US_2022_ADI_Census_Block_Group_v4_0_1.csv.gz"
-#dt = {"FIPS": str, "ADI_NATRANK": str}
 adi = read_csv(file.path(pa, fname), col_types=cols_only(FIPS=col_character(), ADI_NATRANK=col_double()))
 adi = adi %>% mutate(FIPS5=substr(FIPS, 1, 5))
 adi = drop_na(adi)
