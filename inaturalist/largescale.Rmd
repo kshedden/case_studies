@@ -60,6 +60,21 @@ da = da %>% mutate(lonrad=pi*decimalLongitude/180)
 da = da %>% mutate(lonrad_sin=sin(lonrad), lonrad_cos=cos(lonrad))
 ```
 
+Using circular statistics, calculate the longitudinal center for each species.
+
+```{r}
+da = da %>% group_by(species) %>% transform(lonrad_sin_cen=mean(lonrad_sin), lonrad_cos_cen=mean(lonrad_cos))
+u = sqrt(da$lonrad_sin_cen^2 + da$lonrad_cos_cen^2)
+da$lonrad_sin_cen = da$lonrad_sin_cen / u
+da$lonrad_cos_cen = da$lonrad_cos_cen / u
+```
+
+Now calculate residuals of the longitude relative to the center
+
+```{r}
+da = da %>% mutate(lonrad_cos_resid=lonrad_cos-lonrad_cos_cen, lonrad_sin_resid=lonrad_sin-lonrad_sin_cen)
+```
+
 Below we create a synthetic variable that cannot contain any new information about plant locations.  It will be used below as a negative control to evaluate the performance of large scale inference procedures.
 
 ```{r}
@@ -79,15 +94,19 @@ f = function(x, y) {
   m2 = lm(decimalLatitude ~ day * (lonrad_sin + lonrad_cos + fake), data=x)
 
   lrt = anova(m1, m2)
+  
   stat = lrt$F[[2]]
   dof = lrt$Df[[2]]
+  
+  lrt_z = qnorm(pchisq(stat, dof))
+  
   if (dof == 3) {
     # The log likelihood ratio statistics is chi^2 under the null.  We use the 
     # Wilson and Hilferty transformation to transform it from chi-square to Gaussian.
-    lrt_z = (stat / dof)^(1/3) - (1 - 2/(9*dof))
-    lrt_z = lrt_z / sqrt(2/(9*dof))
+    lrt_zwh = (stat / dof)^(1/3) - (1 - 2/(9*dof))
+    lrt_zwh = lrt_zwh / sqrt(2/(9*dof))
   } else {
-    lrt_z = NA
+    lrt_zwh = NA
   }
   
   s = sqrt(diag(vcov(m1)))
@@ -96,12 +115,19 @@ f = function(x, y) {
   fake_slope = coef(m1)[["fake"]]
   fake_slope_se = s[["fake"]]
 
-  return(list(species=species, n=nrow(x), lrt_z=lrt_z, 
+  return(list(species=species, n=nrow(x), lrt_z=lrt_z, lrt_zwh=lrt_zwh,
               day_slope=day_slope, day_slope_se=day_slope_se,
               fake_slope=fake_slope, fake_slope_se=fake_slope_se))
 }
 
 rr = da %>% group_by(species) %>% group_map(f) %>% bind_rows()
+```
+
+The following plot shows that the cube root (Wilson Hilferty) and "exact" Z-scores are very similar.
+
+```{r}
+plt = ggplot(rr, aes(x=lrt_z, y=lrt_zwh)) + geom_point() + xlim(-5, 5) + ylim(-5, 5)
+print(plt)
 ```
 
 Below we construct T-scores for parameters of interest. For species with large sample sizes these T-scores should also be approximate Z-scores (they approximately follow a standard normal distribution under the null hypothesis that the day slope is zero). For smaller sample sizes we need to account for the uncertainty in the scale parameter estimate induced by the limited degrees of freedom.
@@ -136,6 +162,36 @@ for (vn in c("day_slope_z", "fake_slope_z", "lrt_z")) {
   print(plt)
 }
 ```
+Since many species have a strong interaction between longitude and day, we reconstruct the data using
+an interaction model that controls for deviations from the mean species longitude.
+
+```{r}
+f = function(x, y) {
+  species = as.character(y)
+  if (nrow(x) < 10) {
+    return(list(species=species, n=nrow(x)))
+  }
+  
+  m1 = lm(decimalLatitude ~ day * (lonrad_sin_resid + lonrad_cos_resid + fake), data=x)
+
+  s = sqrt(diag(vcov(m1)))
+  day_slope = coef(m1)[["day"]]
+  day_slope_se = s[["day"]]
+  fake_slope = coef(m1)[["fake"]]
+  fake_slope_se = s[["fake"]]
+
+  return(list(species=species, n=nrow(x), 
+              day_slope=day_slope, day_slope_se=day_slope_se,
+              fake_slope=fake_slope, fake_slope_se=fake_slope_se))
+}
+
+rr = da %>% group_by(species) %>% group_map(f) %>% bind_rows()
+rr = rr %>% mutate(day_slope_t=day_slope/day_slope_se, fake_slope_t=fake_slope/fake_slope_se)
+rr = left_join(rr, dm, by="species")
+rr = rr %>% mutate(day_slope_z=qnorm(pt(day_slope_t, n-5)))
+rr = rr %>% mutate(fake_slope_z=qnorm(pt(fake_slope_t, n-5)))
+```
+
 The value calculated below is the threshold needed to control the family-wise error rate (FWER) at 0.05.
 
 ```{r}
