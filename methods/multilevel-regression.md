@@ -11,17 +11,17 @@ covariances between observations.
 
 __Multilevel regression to accommodate non-independence__
 
-Conditional covariances often arise due to the way that the data were
-collected. Formally, the data are statistically dependent if the joint pdf
-does not factor as the product of marginal pdf's, i.e.
+Formally, the data are statistically dependent if the joint pdf does not
+factor as the product of marginal pdf's, i.e.
 
 $$
 P(y_1, \ldots, y_n | x_1, \ldots, x_n) \ne \prod_i P(y_i | x_i).
 $$
 
-A common manner in which correlated data arise in practice is when the data
-are collected as *repeated measures*. For example, we may be studying a
-characteristic of individual people such as income, and we collect this data
+Conditional covariances often arise due to the way that the data were
+collected. A common manner in which correlated data arise in practice is when
+the data are collected as *repeated measures*. For example, we may be studying
+a characteristic of individual people such as income, and we collect this data
 from each person every year for multiple years. Two repeated measures of one
 person's income are likely to be more similar than incomes for two different
 people, so there is an
