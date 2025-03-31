@@ -33,7 +33,7 @@ if (FALSE) {
 dl = list()
 for (y in 2011:2020) {
     fn = file.path(pa, sprintf("%4d.txt.gz", y))
-    ct = cols(Births=col_double())
+    ct = cols(Births=col_double(), "County Code"=col_integer())
     # This produces warnings
     da = read_tsv(fn, col_types=ct, show_col_types=F)
     da = da %>% select("County Code", "County", Births)
