@@ -2,7 +2,7 @@
 
 The sun emits streams of charged particles in all directions called
 the [solar wind](https://en.wikipedia.org/wiki/Solar_wind) -- see
-[here](https://www.nasa.gov/sites/default/files/thumbnails/image/magnetosphere.gif)
+[here](https://www.youtube.com/watch?v=GX5FbXX-hks)
 for a visualization.  The intensity of the solar wind varies according
 to an 11-year [solar
 cycle](https://en.wikipedia.org/wiki/Solar_cycle), and is also
