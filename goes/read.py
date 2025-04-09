@@ -6,7 +6,13 @@ import os
 qpath = "/home/kshedden/data/Teaching/goes"
 
 def get_goes(year):
-    return pd.read_csv(os.path.join(qpath, "goes%4d.csv.gz" % year))
+    df = pd.read_csv(os.path.join(qpath, "goes%4d.csv.gz" % year))
+    df = df.rename(columns={"Time": "Second"})
+    df = df.query("Second>=0").copy() # the second offset is rarely negative
+    df.loc[:, "Date"] = pd.to_datetime(df[["Year", "Month", "Day"]])
+    df.loc[:, "Time"] = df["Date"] + pd.to_timedelta(df["Second"], unit='s')
+    df = df.drop(["Date", "Year", "Month", "Day", "Second"], axis=1)
+    return df
 
 # Create a data matrix whose rows are non-overlapping blocks
 # of X-ray flux data, each block having length m.  The values
@@ -15,15 +21,17 @@ def get_goes(year):
 # that each block is differenced.  Use d=0 to do no differencing.
 def make_blocks(df, m, d):
 
-    df.loc[:, "Date"] = pd.to_datetime(df[["Year", "Month", "Day"]])
-    df.loc[:, "DayofYear"] = [x.dayofyear for x in df["Date"]]
-    df = df.loc[df["Time"] >= 0, :].copy()
-    df.loc[:, "Timex"] = df["DayofYear"] * 60 * 60 * 24 + df["Time"]
-    df = df.sort_values(by="Timex")
+    df["Timex"] = df["Time"]
+    #df.loc[:, "Date"] = pd.to_datetime(df[["Year", "Month", "Day"]])
+    #df.loc[:, "DayofYear"] = [x.dayofyear for x in df["Time"]]
+    #df = df.loc[df["Time"] >= 0, :].copy()
+    #df.loc[:, "Timex"] = df["Time"] + pd.Timedelta(days=df["DayofYear"])
+    #df = df.sort_values(by="Timex")
 
     ti = df["Timex"].values
     fl = df["Flux1"].values
 
+    # Trim the end, so that the data can be evenly partitioned into blocks.
     # g is the number of complete blocks
     q = len(ti) // m
     n = q * m
@@ -36,10 +44,10 @@ def make_blocks(df, m, d):
     flx = np.reshape(fl, [g, m])
 
     # Time difference within block
-    td = tix[:, m-1] - tix[:, 0]
+    td = tix[:, -1] - tix[:, 0]
 
     # Exclude the blocks that contain skips
-    ii = np.abs(td - np.median(td)) < 1
+    ii = np.abs(td - np.median(td)) < pd.to_timedelta(1, unit='s')
     tix = tix[ii, :]
     flx = flx[ii, :]
 
