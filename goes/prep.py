@@ -19,7 +19,8 @@ def prep_year(year):
     for root, dirs, files in os.walk(tpa):
 
         errs = []
-        bar = progressbar.ProgressBar(max_value=len(files))
+        bar = progressbar.ProgressBar(maxval=len(files))
+        bar.start()
         for ixf,f in enumerate(files):
             bar.update(ixf)
             yr = f[4:8]

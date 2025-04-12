@@ -1,6 +1,6 @@
 # Inaturalist
 
-In this notebook we use multilevel regression to assess species-specific linear temporal trends in the latitudes of occurrences of species within a class of plants.  In a multilevel regression model, each species has its own slope for the conditional mean of latitude given day.  However instead of estimating these slopes as parameters, they are treated as random effects (random slopes), and we estimate the variance of the distribution of random slopes.
+In this notebook we use multilevel regression to assess species-specific linear temporal trends in the latitudes of occurrences of species within a class of plants.  In a multilevel regression model, each species has its own slope for the rate of change of latitude over time.  However instead of estimating these slopes as parameters, they are treated as random effects (random slopes), and we estimate the variance of the probability distribution of random slopes.  This variance parameter reflects the dispersion among species of the rates of change, but does not directly tell us anything about the slope (rate of change) for each individual species.
 
 ```{r}
 library(readr)
@@ -70,7 +70,8 @@ Fit a multilevel linear regression with random species intercepts.
 m1 = lmer(decimalLatitude ~ (1 | species) + day + sin(lonrad) + cos(lonrad) + sin(lonrad/2) + cos(lonrad/2), da)
 summary(m1)
 ```
-A key parameter in the output above is the standard deviation of the random day slopes, which we can extract as follows
+We can extract the estimated variance parameters (standard deviation of the random species intercept and
+residual standard deviation) as follows:
 
 ```{r}
 vc = VarCorr(m1)
@@ -86,13 +87,27 @@ print(icc)
 ```
  
 Below we fit a multilevel linear regression with random species intercepts and random day slopes for species.
+These two random effects are correlated with each other.  The estimated variance of the random day slope
+tells us to what extent different species ranges are moving (in terms of latitude) over time at different
+rates.
 
 ```{r}
 m2 = lmer(decimalLatitude ~ (1 + day | species) + day + sin(lonrad) + cos(lonrad) + sin(lonrad/2) + cos(lonrad/2), da)
 summary(m2)
 ```
 
+A key parameter in the output above is the standard deviation of the random day slopes.  If this variance parameter is zero,
+the conclusion should be that all species have the same slope (which is given in the mean structure by the fixed slope
+for day).  Testing that a variance parameter is zero is a non-regular hypothesis test (since the null hypothesis is on
+the boundary of the parameter space).  The likelihood ratio test statistic in this case does not follow a chi-square distribution
+under the null hypothesis.  However, inference based on the chi square distribution in this setting will generally
+be conservative.  When there is strong evidence against the null hypothesis, we can still be confident in rejecting the
+null hypothesis.  Similar guidance applies to the AIC.
+
 ```{r}
+print(logLik(m1))
+print(logLik(m2))
+print(logLik(m1) - logLik(m2))
 print(AIC(m1)-AIC(m2))
 ```
 
@@ -123,7 +138,7 @@ summary(m3)
 m4 = lmer(decimalLatitude ~ (0 + day | species) + (1 | species) + day + sin(lonrad) + cos(lonrad) + sin(lonrad/2) + cos(lonrad/2), da)
 ```
 
-The formal test is below, it may be very slow to run so comment it out if these results are not needed.
+A formal test that the variance parameter is equal to zero is below.  It may be very slow to run so comment it out if these results are not needed.
 
 ```{r}
 #ss = exactRLRT(m3, m4, m1)
@@ -141,11 +156,26 @@ dp$yy = predict(m1, dp, re.form=NA)
 Plot the marginal mean latitude for plants observed at Detroit's longitude 
 
 ```{r}
-plt = ggplot(dp, aes(x=day, y=yy)) + geom_line() + xlab("Day (x1000)") + ylab("Marginal mean latitude")
+plt = ggplot(dp, aes(x=day, y=yy)) + geom_line() + xlab("Time (day x 1000)") + ylab("Marginal mean latitude")
 print(plt)
 ```
 
-The next set of cells produces predicted "trend lines" for each species using the fitted multilevel model.  These trend lines are "partially pooled", so that for species with large sample sizes, the trend line mainly follows the observed data for that species.  But for species with small sample sizes, the intercept and slope for the species are shrunken toward the population mean intercept and slope.
+The next set of cells produces predicted "trend lines" of latitude versus time for each species using the fitted multilevel model.  These trend lines are "partially pooled", so that for species with large sample sizes, the trend line mainly follows the observed data for that species.  But for species with small sample sizes, the intercept and slope for the species are shrunken toward the population mean intercept and slope.
+
+```{r}
+rr = ranef(m2)$species
+rr$species = row.names(rr)
+nn = group_by(da, species) %>% summarise(n=n())
+rr = left_join(rr, nn)
+rr = rename(rr, "Intercept"="(Intercept)")
+
+plt = ggplot(rr, aes(x=log(n), y=Intercept)) + geom_point()
+print(plt)
+
+plt = ggplot(rr, aes(x=log(n), y=day)) + geom_point()
+print(plt)
+```
+
 
 First we get a predicted day 0 latitude value for each species.  Technically this is the marginal mean of the predicted day 0 latitudes, marginalizing over the longitude values (which do vary within a species but not by a lot for most species).
 
@@ -208,6 +238,6 @@ plt = plt + geom_abline(aes(intercept=a, slope=b, color="red"))
 ```
 
 ```{r}
-plt = plt + xlab("Day (x1000)") + ylab("Species latitude")
+plt = plt + xlab("Time (day x 1000)") + ylab("Species latitude")
 print(plt)
 ```
