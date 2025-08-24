@@ -19,17 +19,10 @@ def get_goes(year):
 # within each block are uniformly spaced in time, with approximately
 # 2-second time differences.  The value of d is the number of times
 # that each block is differenced.  Use d=0 to do no differencing.
-def make_blocks(df, m, d):
+def make_blocks(df, m, d, timevar="Time", fluxvar="Flux1"):
 
-    df["Timex"] = df["Time"]
-    #df.loc[:, "Date"] = pd.to_datetime(df[["Year", "Month", "Day"]])
-    #df.loc[:, "DayofYear"] = [x.dayofyear for x in df["Time"]]
-    #df = df.loc[df["Time"] >= 0, :].copy()
-    #df.loc[:, "Timex"] = df["Time"] + pd.Timedelta(days=df["DayofYear"])
-    #df = df.sort_values(by="Timex")
-
-    ti = df["Timex"].values
-    fl = df["Flux1"].values
+    ti = df[timevar].values
+    fl = df[fluxvar].values
 
     # Trim the end, so that the data can be evenly partitioned into blocks.
     # g is the number of complete blocks
