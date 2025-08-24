@@ -4,5 +4,5 @@ This repository contains case studies used in Statistics 485 and 504 at the Univ
 
 Most of the case studies include analysis code in R, Python, and Julia.
 
-See the [methods](github.com/kshedden/case_studies/methods) folder for discussion of the statistical
+See the [methods](methods) folder for discussion of the statistical
 methods used in the case studies.
