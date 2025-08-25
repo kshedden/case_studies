@@ -8,6 +8,7 @@ library(lubridate)
 library(stringr)
 library(ROOPSD)
 library(dplyr)
+library(Lmoments)
 ```
 
 Estimate the parameters of a generalized Pareto distribution using the empirical Bayes method of Zhang and Stephens. See https://www.jstor.org/stable/pdf/40586625.pdf
@@ -366,6 +367,31 @@ dp = data.frame(y=1-(seq(n)-1/2)/n, x=sort(df$PRCP))
 p = ggplot(aes(x=x, y=y), data=dp) + geom_step()
 p = p + ylab("Complementary cumulative probability") + xlab("Precipitation (mm)")
 print(p)
+```
+
+Calculate the standardized third and fourth L-moment, compare to figure 3 of [this paper](https://www.tandfonline.com/doi/full/10.1080/00031305.2024.2402898). Arguably, if the standardized fourth L-moment exceeds 0.35 then conventional statistical inference is "disrupted".
+
+```{r}
+lmt = Lmoments(df$PRCP)
+l3s = lmt[3] / lmt[2]
+l4s = lmt[4] / lmt[2]
+print(c(l3s, l4s))
+```
+
+For comparison, below we calculate the standardized third and fourth L-moments for Gaussian (normal) and exponential data.
+
+```{r}
+n = as.integer(1e6)
+
+z = rnorm(n)
+lmt = Lmoments(z)
+print(lmt[3] / lmt[2])
+print(lmt[4] / lmt[2])
+
+e = rexp(n)
+lmt = Lmoments(e)
+print(lmt[3] / lmt[2])
+print(lmt[4] / lmt[2])
 ```
 
 Construct exceedances

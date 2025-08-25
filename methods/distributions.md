@@ -74,8 +74,8 @@ for defining a single observation as being extreme. Instead, we study extremes
 by characterizing the tail of the probability distribution according to its
 asymptotic rate of decay.
 
-Recall that the cumulative distribution funtion (cdf) of a random variable $X$
-is the function $F(t) = P(X \le t)$, viewed as a function of
+Recall that the cumulative distribution function (cdf) of a random variable
+$X$ is the function $F(t) = P(X \le t)$, viewed as a function of
 $t \in {\mathbb R}^+$. The *complementary cdf* (ccdf), also known as the
 *survival function*, is the right tail probability
 $S(t) = P(X > t) = 1 - F(t)$. To understand the frequency of extreme (large)
@@ -109,8 +109,8 @@ The simplest family of distributions with power law tails is the
 sample space of the Pareto distribution is $[1, \infty)$, and the CCDF is
 $P(X > t) = 1/t^\alpha$. This distribution has a tail index of $\alpha$ as
 defined above. If $U$ follows a uniform distribution, then $U^{-1/\alpha}$ is
-Pareto. Alternativey, if $Y$ follows a standard exponential distribution, then
-$Z = \exp(Y / \alpha)$ follows a Pareto distribution.
+Pareto. Alternatively, if $Y$ follows a standard exponential distribution,
+then $Z = \exp(Y / \alpha)$ follows a Pareto distribution.
 
 ### Exceedances
 
@@ -227,8 +227,8 @@ $$
 $$
 
 This establishes a relationship between the statistic $\hat{A}$ and the
-quantity of intetrest $\alpha$. The constant of proportionality turns out to
-be nearly equal to $1$:
+quantity of interest $\alpha$. The constant of proportionality turns out to be
+nearly equal to $1$:
 
 $$
 \sum_{j=1}^{k-1}\log((j+1)/(k+1)) \approx \int_0^k \log((x+1)/(k+1))dx \rightarrow -1.
@@ -400,14 +400,20 @@ them.
 The third L-moment is
 
 $$
-\lambda_3 = (EX_{3:3} - 2EX_{2:3} + EX_{1:3}) / 3.
+\lambda_3 = (EX_{3:3} - 2EX_{2:3} + EX_{1:3}) / 3 = ((EX_{3:3} - EX_{2:3} - (EX_{2:3} - EX_{1:3})) / 3.
 $$
+
+From the second expression we can see that the third L-moment measures the
+asymmetry between the upper and lower order statistic differences.
 
 Finally, the fourth L-moment is
 
 $$
-\lambda_4 = (EX_{4:4} - 3EX_{3:4} + 3EX_{2:4} + EX_{1:4}) / 4.
+\lambda_4 = (EX_{4:4} - 3EX_{3:4} + 3EX_{2:4} - EX_{1:4}) / 4 = ((EX_{4:4} - EX_{3:4}) + (EX_{2:4} - EX_{1:4}) - 2(EX_{3:4} - EX_{2:4})) / 4$.
 $$
+
+From the second expression we can see that the fourth L-moment measures the
+asymmetry between the outer and inner order statistic differences.
 
 Often we work with the standardized third and fourth L-moments,
 $\lambda_3^s = \lambda_3/\lambda_2$ and $\lambda_4^s = \lambda_4/\lambda_2$.
@@ -415,11 +421,18 @@ Note that these standardized L-moments are *scale invariant* meaning that
 their value is not changed by scaling the data. All L-moments except for the
 first L-moment are *translation invariant*, meaning that their values are not
 changed by adding a constant to all data values. Scale and translation
-invariance (also known as *affine invariance*) are important becuase they
+invariance (also known as *affine invariance*) are important because they
 imply that the result does not depend on the units or origin of the
 measurement scale.
 
 L-moments are useful descriptive statistics that capture the shape of
 distributions. They are more robust (less sensitive to contamination) than the
-classical moments, and one can estimate much higher order L-moments than is
+classical moments, and one can estimate higher order L-moments than is
 practical with classical moments.
+
+The standardized fourth L-moment $\lambda_4^s$ is a measure of tail heaviness.
+It is not directly equivalent to the tail index $\alpha$, but arguably
+captures a similar characteristic of a distribiution. It has been argued (see
+[here](https://www.tandfonline.com/doi/full/10.1080/00031305.2024.2402898#abstract))
+that if the standardized fourth L-moment exceeds 0.35, then the tails are
+sufficiently heavy that conventional statistical inference is "disrupted".
