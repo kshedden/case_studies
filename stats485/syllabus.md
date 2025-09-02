@@ -8,9 +8,9 @@ Office hours: Monday 10-11:30 (starting 9/8), Thursday 3:30-5
 
 ## GSIs
 
-- Noah Kochanski (noahkoch@umich.edu): office hours TBD
+- Jaylin Lowe (jaylincl@umich.edu): office hours Tuesday 1-4
 
-- Jaylin Lowe (jaylincl@umich.edu): office hours TBD
+- Abhiti Mishra (abhiti@umich.edu): office hours Tuesday 4-5:30, Wednesday 8:30-10
 
 GSI office hours are held in Angell Hall, Room G219
 
