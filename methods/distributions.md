@@ -47,7 +47,7 @@ quantile-based measures of dispersion include the
 (median absolute deviation).
 
 "Higher order" summary characteristics of a distribution such as
-[skew](https://en.wikipedia.org/wiki/Skewness) and
+[skewness](https://en.wikipedia.org/wiki/Skewness) and
 [kurtosis](https://en.wikipedia.org/wiki/Kurtosis) are less commonly
 encountered but are of great interest in certain settings.
 
@@ -400,7 +400,7 @@ them.
 The third L-moment is
 
 $$
-\lambda_3 = (EX_{3:3} - 2EX_{2:3} + EX_{1:3}) / 3 = ((EX_{3:3} - EX_{2:3} - (EX_{2:3} - EX_{1:3})) / 3.
+\lambda_3 = (EX_{3:3} - 2EX_{2:3} + EX_{1:3}) / 3 = ((EX_{3:3} - EX_{2:3}) - (EX_{2:3} - EX_{1:3})) / 3.
 $$
 
 From the second expression we can see that the third L-moment measures the
@@ -409,7 +409,7 @@ asymmetry between the upper and lower order statistic differences.
 Finally, the fourth L-moment is
 
 $$
-\lambda_4 = (EX_{4:4} - 3EX_{3:4} + 3EX_{2:4} - EX_{1:4}) / 4 = ((EX_{4:4} - EX_{3:4}) + (EX_{2:4} - EX_{1:4}) - 2(EX_{3:4} - EX_{2:4})) / 4$.
+\lambda_4 = (EX_{4:4} - 3EX_{3:4} + 3EX_{2:4} - EX_{1:4}) / 4 = ((EX_{4:4} - EX_{3:4}) + (EX_{2:4} - EX_{1:4}) - 2(EX_{3:4} - EX_{2:4})) / 4.
 $$
 
 From the second expression we can see that the fourth L-moment measures the
