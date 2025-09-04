@@ -10,23 +10,24 @@ appropriate to do so.
 
 ## Content/overall approach
 
-- Writing for this course should narrowly focus on data analysis, which
-  usually includes (i) motivating your analysis, (ii) describing the relevant
-  structure of the data that you are analyzing, (iii) precisely describing the
-  methods that you use, including their relevant theoretical properties, and
-  (iv) interpreting the results of your analysis and stating your findings.
-  Part (i) provides some room for broader discussion, e.g. about the
-  scientific or social context, but for this course, this type of discussion
-  should be extremely brief. Nearly every sentence of your writing should
-  pertain to your data analysis and the rigorous interpretation of your
-  findings.
+- Writing for this course should narrowly focus on data analysis. In every
+  memo, you should (i) state and motivate your research aim, (ii) describe the
+  relevant aspects of the data that you are analyzing, (iii) precisely
+  describe the analysis methods that you use, including their relevant
+  theoretical properties, (iv) interpret the results of your analysis, and (v)
+  state your findings. Part (i) allows some room for broader discussion, e.g.
+  about the scientific or social context, but for this course, this type of
+  discussion should be extremely brief. Nearly every sentence of your writing
+  should pertain to your data analysis and provide rigorous,
+  statistically-grounded interpretation of your findings.
 
 - Scientific writing follows a constrained style, yet there is plenty of
   opportunity to develop your own voice. This is the reason that we do not
-  provide templates or example memos for this course. It will be impossible
-  for you to write well in an appropriate scientific/academic style if you
-  have not read a lot of scientific writing. We will provide some pointers to
-  good sources of scientific writing.
+  provide templates or example memos for this course.
+
+- It will be impossible for you to write well in an appropriate
+  scientific/academic style if you have not read a lot of scientific writing.
+  We will provide some pointers to good sources of scientific writing.
 
 - The goal of these memos is to document a specific research question that you
   have devised, and an analysis that you have conducted using the data that we
@@ -46,9 +47,9 @@ appropriate to do so.
 - Your memo should be structured around a narrative that is driven by your
   research aim, hypotheses, and findings. Methods, plots, and raw results
   should follow and support the narrative rather than the other way around.
-  Concretely, this means that your memo should not read like "First we did X,
-  then we did Y, then we did Z...", or "Figure 1 shows, Figure 2 shows, Figure
-  3 shows...".
+  Your memo should not read like a recipe or diary, e.g. "First we did X, then
+  we did Y, then we did Z...", or "Figure 1 shows, Figure 2 shows, Figure 3
+  shows...".
 
 - Most memos will include a brief introductory paragraph containing an
   explicit statement of the research aim along with essential background
@@ -62,7 +63,7 @@ appropriate to do so.
   these should be very specific to your analysis and conclusions, not a
   generic list of limitations that would apply in almost any setting.
 
-- Aim for an academic tone. Avoid the excessive use of self-congratulatory
+- Write in an academic tone. Avoid the excessive use of self-congratulatory
   adjectives like "comprehensive", "nuanced", "advanced", and "intricate" to
   describe your analysis unless you can specifically state why these terms are
   relevant. Let the reader be the judge of whether these terms are applicable.
@@ -88,14 +89,13 @@ appropriate to do so.
   implications. Be realistic about what can be accomplished when addressing a
   complex and challenging question with a single limited data set. Avoid
   making sweeping conclusions or suggesting without qualification that your
-  findings support specific policy actions to be made in the "real world" or
-  reveal major unexpected scientific insights. Remember that one brief
-  analysis of one data set will only very rarely allow definitive or deeply
-  novel insights to be gained.
+  findings support specific policy actions or reveal major unexpected
+  scientific insights. Remember that one brief analysis of one data set will
+  only very rarely allow definitive or deeply novel insights to be gained.
 
-- Avoid "straw man" arguments, for example, spending a lot of time discussing
-  the difficulty of answering questions that are tangential to the main
-  analysis goal.
+- Avoid [straw man](https://en.wikipedia.org/wiki/Straw_man) arguments, for
+  example, spending a lot of time discussing the difficulty of answering
+  questions that are tangential to the main analysis goal.
 
 - Don't enumerate things that are impossible to do with the data that you
   have. Don't waste space writing about things that you did not do, even if
@@ -103,8 +103,8 @@ appropriate to do so.
 
 - Avoid presenting your work as if you followed a set script or recipe. There
   are no pre-defined scripts for data analysis. The flow of your report should
-  follow the logic of the question you are aiming to address, and the evidence
-  and interpretation that you use to support your claims.
+  follow the logic of the question you are aiming to address, and the
+  interpretation of evidence that you use to support your claims.
 
 - Avoid presenting your methods as a "laundry list", e.g. "In this memo we use
   least squares regression, residual diagnostics, and principal components
@@ -116,25 +116,25 @@ appropriate to do so.
 - Discussion of how you "cleaned" the data is only relevant if it is needed
   for the reader to understand your question, approach, and conclusions. There
   is no need to document menial data processing tasks that involve no
-  statistical judgment. Avoid use of programming language syntax in your
-  writing. This includes variable names -- refer to variables using plain
-  language.
+  statistical judgment.
 
-- Try to make your writing as self-contained as reasonably possible. For this
-  course, you can assume that the reader is familiar with the statistical
-  methodology that you use -- you do not need to teach the reader about
-  statistics from the ground up. Nevertheless, it is important to reinforce
-  key aspects of your approach, by explaining the strengths and weaknesses of
-  the methods that you employ, and presenting the statistical reasoning behind
-  your conclusions.
+- Avoid use of programming language syntax in your writing. This includes
+  variable names -- refer to variables using plain language.
+
+- Aim to make your writing as self-contained as reasonably possible. For this
+  course, you can assume that the reader is familiar with basic facts about
+  the statistical methods that you use -- you do not need to teach the reader
+  about statistics from the ground up. Nevertheless, it is important to
+  reinforce key aspects of your approach, by explaining the strengths and
+  weaknesses of the methods that you employ, and presenting the statistical
+  reasoning behind your conclusions.
 
 - Do not simply summarize the lectures or other course materials. These
   materials are not organized around focused research questions, and contain
   much didactic material that is not appropriate for your memos. You can
   borrow many of the ideas from the course materials to support your
   arguments, but your memo should be structured around a specific scientific
-  question, which is not usually the way that the lectures and other course
-  materials are organized.
+  research question.
 
 - To make the writing more realistic, do not refer to our class as such, or to
   prior assignments.
@@ -152,11 +152,11 @@ appropriate to do so.
   provided by reporting the mean and standard deviation of the variable in
   relevant subgroups, not only in the dataset as a whole.
 
-- Define any measures or variables that you use unambiguously, including their
-  scales or measurement units. For example if you are looking at crime, is it
-  the absolute number of crimes or the crime rate? When reporting rates,
-  always be explicit about the denominator of the rate (e.g. violent crimes
-  per 10,000 population per year).
+- Define any measures or variables that you use, including their scales or
+  measurement units. For example if you are looking at crime, is it the
+  absolute number of crimes or the crime rate? When reporting rates, always be
+  explicit about the denominator of the rate (e.g. violent crimes per 10,000
+  population per year).
 
 - If you are presenting a regression analysis, unambiguously state what is the
   dependent variable, and what are the independent variables.
@@ -168,16 +168,16 @@ appropriate to do so.
 - Avoid over-simplified analyses -- most systems in the real-world have
   nonlinear and interactive behavior, and exhibit various forms of
   heterogeneity. When building models, you should generally aim to fit as
-  complicated of a model as you have statistical power to estimate. If
-  presenting summary statistics for heterogeneous data, present them at an
-  appropriately disaggregated or stratified level.
+  complicated of a model as you have statistical power to estimate. When
+  providing summary statistics, present them at an appropriately disaggregated
+  or stratified level.
 
 - Don't overstate or misstate the role of Gaussianity in statistical analyses.
   Often it is a minor consideration. It is almost never important that the
   data are Gaussian. To the extent that Gaussianity matters, it is usually
   because it is easier to calibrate tests and confidence intervals when
-  aggregateed quantities like descriptive statistics or parameter estimates
-  are approximately Gaussian.
+  aggregated quantities like descriptive statistics or parameter estimates are
+  approximately Gaussian.
 
 ## Organization and structure
 
@@ -186,15 +186,13 @@ appropriate to do so.
   that you are addressing, and may also refer to the data that you will be
   using. You generally will not want to mention the analytic methodology (e.g.
   regression analysis) in the title. The title should not have the format
-  "Analyzing..." or "Exploring...". You want to give the reader a reason to
-  expect that they will learn something specific by reading your memo. Your
-  analyses and explorations of the data will not be of interest to a reader
-  unless you can tell them up-front what question you will be posing and
-  attempting to resolve.
+  "Analyzing..." or "Exploring..." -- these are two broad and vague. Your
+  title should give the reader an indication of what they will learn by
+  reading your memo.
 
 - The introductory paragraph should convey the main topic and focus of your
   writing. Information about the data set, and the methodology that you plan
-  to use should also be discussed, but the primary substantive question is the
+  to use may also be discussed, but the primary substantive question is the
   most important information and should be covered first. You may need to
   provide a bit of background information to motivate your question, but keep
   the background discussion in the first paragraph brief.
@@ -249,18 +247,18 @@ appropriate to do so.
   language that is used informally and needlessly).
 
 - Since the word "significant" has a specific technical meaning in statistics,
-  it is best to avoid using it in its colloquial sense. In general, it is best
-  to use the phrase "statistically significant" when you mean that a formal
-  statistical uncertainty assessment has been used to support a finding. Using
+  it is best to avoid using it in its colloquial sense. It is best to use the
+  phrase "statistically significant" when you mean that a formal statistical
+  uncertainty assessment has been used to support a finding. Using
   "significant" on its own can be ambiguous since it has both a
   common-language meaning and a technical meaning.
 
-- The word "valid" is best avoided. In addition to being vague, this term
-  reinforces a binary interpretation of statistical evidence, i.e. that there
-  is a sharp line between analytic methods that are right or wrong ("valid" or
-  "invalid"). Most statisticians prefer to think in more continuous terms. An
-  analysis should be meaningful (otherwise don't present it), but nearly
-  always will have limitations. It is neither fully valid nor fully invalid.
+- The term "valid" inappropriately reinforces a binary interpretation of
+  statistical evidence, i.e. that there is a sharp line between analytic
+  methods that are right or wrong ("valid" or "invalid"). Most statisticians
+  prefer to think in more continuous terms. An analysis should be meaningful
+  (otherwise don't present it), but nearly always will have limitations. It is
+  neither fully valid nor fully invalid.
 
 - The term "assumption" is very commonly used when describing statistical
   methods, but is arguably over-used. A good alternative term is "condition".
@@ -271,9 +269,9 @@ appropriate to do so.
 
 - It is important to distinguish "testable assumptions" (which need not really
   be assumptions at all if you carefully assess them), versus "untestable
-  assumptions", which you must take on faith. Of course, most assumptions are
-  neither completely testable or completely untestable, but fall somewhere in
-  between.
+  assumptions", which you must take on faith. In practice, most assumptions
+  are neither completely testable or completely untestable, but fall somewhere
+  in between.
 
 - Keep in mind the distinction between "methods" and "models". A "method" is
   any technique used for analyzing and gaining insight from data. A "model" is
@@ -304,8 +302,7 @@ appropriate to do so.
   based on the value of $z$", or equivalently that "the role of $z$ differs
   based on the value of $x$". If, for example, $z$ is categorical, you could
   write that "the fitted slope of $E[y | x, z]$ on $x$ differs between the
-  groups defined by $z$". You would need to adjust this language if, for
-  example, there is a link function.
+  groups defined by $z$".
 
 ## Causality
 
@@ -346,11 +343,11 @@ appropriate to do so.
   variables may support a causal interpretation, even though it is not viewed
   as being a technique from causal inference.
 
-- In general, demonstrating causality is a trade-off between rigor and power.
-  Causal inference tends to favor rigor even when a great sacrifice of power
-  results. Mainstream regression analysis favors a different balance in which
-  some effort is made to promote a causal interpretation (e.g. by controlling
-  for known confounders), but efforts to achieve causality are balanced with
+- Demonstrating causality is often a trade-off between rigor and power. Causal
+  inference tends to favor rigor even when a great sacrifice of power results.
+  Mainstream regression analysis favors a different balance in which some
+  effort is made to promote a causal interpretation (e.g. by controlling for
+  known confounders), but efforts to achieve causality are balanced with
   efforts to maintain power.
 
 ## Graphics
@@ -361,14 +358,16 @@ appropriate to do so.
   conclusions. In most cases 1-4 graphs is appropriate for a memo of two
   pages.
 
-- Number all plots and tables and always use these numbers when referring to
-  plots/tables in the body of your report. Do not refer to graphs as being
-  "above" or "below" a particular location in the text.
+- Place all graphs and tables at the end of your memo. Number all graphs and
+  tables and always use these numbers when referring to them in the body of
+  your report. Do not refer to graphs as being "above" or "below" a particular
+  location in the text.
 
-- Refer to plots using proper and specific terminology. For example, is the
-  plot a scatterplot, a histogram, a time-series plot, a quantile-quantile
-  plot, a graph of a function, etc. The horizontal and vertical axes should be
-  labeled using terms that connect the graph to the data being analyzed.
+- Refer to plots using proper and specific terminology. For example, the plot
+  may be a scatterplot, a histogram, a time-series plot, a quantile-quantile
+  plot, or a graph of a function. The horizontal and vertical axes of all
+  graphs should be labeled using terms that connect the graph to the data
+  being analyzed.
 
 - In a statistical analysis, graphs typically are used to reinforce specific
   statistical claims. For example, histograms reflect "probability density",
@@ -383,15 +382,14 @@ appropriate to do so.
   multiple conditional mean relationships by coloring the points in a
   scatterplot corresponding to different subgroups.
 
-- Avoid pie charts in almost all situations
-
-- Bar graphs are a very elementary and limited form of statistical graphic. It
-  is almost always possible to create something more informative. For example,
-  side-by-side box plots show the mean (which is often what is shown in a bar
-  graph), but also convey information about the dispersion. Or, you can
-  identify another attribute of the data underlying each bar, and then show a
-  scatterplot of the primary feature against this secondary attribute. Another
-  good alternative to bar graphs is a dot plot.
+- Avoid very basic types of graphs such as pie charts and bar charts. For
+  example, bar graphs are a very elementary and limited form of statistical
+  graphic. It is almost always possible to create something more informative.
+  For example, side-by-side box plots show the mean (which is often what is
+  shown in a bar graph), but also convey information about the dispersion. Or,
+  you can identify another attribute of the data underlying each bar, and then
+  show a scatterplot of the primary feature against this secondary attribute.
+  Another good alternative to bar graphs is a dot plot.
 
 ## Grammar
 
@@ -412,10 +410,9 @@ appropriate to do so.
   obtained.
 
 - Most empirical research involves comparisons, although occasionally the
-  primary insight is an "absolute" value. In general, you should aim to make
-  comparisons. For example, we might like to compare the influenza death rate
-  in children to adults, rather than estimate the absolute death rate in
-  either group.
+  primary insight is an "absolute" value. For example, we might like to
+  compare the influenza death rate in children to adults, rather than estimate
+  the absolute death rate in either group.
 
 - In almost any report, you should state the sample size for any analyses that
   you are reporting.
@@ -435,7 +432,8 @@ appropriate to do so.
   themselves percentages. The term "percentage points" can clarify your
   meaning in this setting. For example, if you say that the unemployment rate
   increased by 3% (say, from 3%), it is not clear if you mean that it
-  increased by 3 percentage points (to 6%), or by 3% of 3% (to 3.09%).
+  increased by 3 percentage points (from 3% to 6%), or by 3% of 3% (from 3% to
+  3.09%).
 
 - Categorical variables must usually be coded into multiple dummy variables
   before being considered in a regression model. The interpretation of the
