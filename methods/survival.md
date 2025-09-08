@@ -1,6 +1,6 @@
 # Survival analysis
 
-Survival analysis is a set of techniques for characterizing
+Survival analysis comprises a set of techniques for characterizing
 [probability distributions](https://en.wikipedia.org/wiki/Probability_distribution)
 and building
 [statistical models](https://en.wikipedia.org/wiki/Statistical_model). Most
@@ -11,24 +11,25 @@ origin until some event of interest occurs. Many such examples consider
 with a disease until they progress to a more advanced stage of the disease.
 There are many other applications of survival analysis methods that have
 nothing to do with "survival" or "failure", and these methods can even be
-applied in settings where time does not play a central role (although this is
-less common).
+applied in settings where time does not play a central role.
 
 ## Time origin
 
-Consider a setting where we are observing a person over time, and we are
+Consider a setting where we are monitoring a person over time, and we are
 interested in the time $T$ at which some event of interest occurs. It is very
 important to define the *origin* from which time is measured, i.e. what is the
-meaning of time zero? In the case of human-centered studies, we may let $T$
+meaning of time $T=0$? In the case of human-centered studies, we may let $T$
 denote the age of the person when the event occurs, in which case the time
-origin is the date of birth. Note that in this case you will need to define
+origin is the date of birth. Alternatively, there may be an event that must
+occur before the event of interest, and the time of this event may make a more
+sensible time origin. For example, if $T$ corresponds to graduating from
+university, we may choose the date of university matriculation (first
+enrollment) as the time origin, so that e.g. if $T=4$ and the time units are
+years, then the person graduated four years after beginning their studies.
+
+You will also need to define
 [units](https://en.wikipedia.org/wiki/Unit_of_measurement) for $T$, e.g.
-months or years. Alternatively, there may be an event that must occur before
-the event of interest, and the time of this event may make a more sensible
-time origin. For example, if $T$ corresponds to graduating from university, we
-may choose the date of university matriculation (enrollment) as the time
-origin, so that e.g. if $T=4$ and the time units are years, then the person
-graduated four years after beginning their studies.
+months or years.
 
 ## Event time distributions
 
@@ -48,58 +49,65 @@ assumed.
 Data in a survival analysis are often subject to "censoring", which means that
 we only have partial information about the value of $T$ for many subjects.
 Suppose we are analyzing data from a medical study where we are studying the
-incidence of stroke following implantation of a cardiac stent. We use age in
-years as our time scale and let $T$ denote the age when a subject first has a
-stroke.
+incidence of stent thrombosis following implantation of a cardiac stent (stent
+thrombosis is a clot forming near the stent). We use age in years as our time
+scale and let $T$ denote the age when a subject first has stent thrombosis.
 
-Typically, only a subset of the subjects will have a stroke during our study.
-Other subjects will be followed for a period of time and will never be
-observed to have a stroke. Let $R$ denote the last age at which the person is
-observed. If $T<R$, we observe $T$ but if $T > R$ we do not know the value of $T$. More formally, we
-observe the time $Y={\rm min}(T, R)$ and the _status indicator_
-$\delta = {\cal I}(Y = T)$. This is called
+Typically, only a subset of the subjects will have stent thrombosis during our
+study. Other subjects will be followed for a period of time and will never be
+observed to have stent thrombosis. Let $R$ denote the last age at which the
+person is observed. If $T<R$, we observe $T$ but if $T > R$ we do not know the
+value of $T$. More formally, we observe the time $Y={\rm min}(T, R)$ and the
+_status indicator_ $\delta = {\cal I}(Y = T)$. This is called
 [right censoring](<https://en.wikipedia.org/wiki/Censoring_(statistics)>) --
 we know that the value of $T$ is greater than some known value, but we do not
-know the exact value of $T$.  In this context, $R$ is known as the _right censoring time_.
+know the exact value of $T$. In this context, $R$ is known as the _right
+censoring time_.
 
 Right censoring is the most commonly-encountered form of censoring, but in
 some settings we may have *left censoring*, meaning that we only know that $T$
 is less than some observed value. Also, there is *interval censoring* in which
-we know, for example, that someone had a stroke between the age of 75 and 77
-but we do not know the exact age at which the stroke occurred.
+we know, for example, that someone had stent thrombosis between the age of 75
+and 77 but we do not know the exact age at which the stent thrombosis
+occurred.
 
 A common assumption in survival analysis is that of *independent censoring*.
 We will define this here in the context of right censoring. As above, let $T$
 be the event time and $R$ be the right censoring time. We never observe both
-$T$ and $R$. Nevertheless, we
-can imagine that both values exist, one being a "latent" value. Independent
-censoring simply means that $T$ and $R$ are independent random variables.
-Concretely, this means, for example, that people who are more prone to having
-an early event (e.g. unhealthy people) do not have systematically different
-censoring times than people are are prone to having late events.
+$T$ and $R$. Nevertheless, we can imagine that both values exist, one being a
+"latent" value. Independent censoring simply means that $T$ and $R$ are
+independent random variables. Concretely, this means, for example, that people
+who are more prone to having an early event (e.g. unhealthy people) do not
+have systematically different censoring times than people are prone to having
+late events.
 
 Since we don't observe $T$ and $R$ together, independent censoring is usually
-an untestable assumption, but in some cases, based on the study design or other
-external information, there may be reason to accept it
-and in other cases there may be good reason to doubt that independent
-censoring holds. There are various methods for effectively handling with
-dependently censored data, but that is an advanced topic that we will not
-consider further here.
+an untestable assumption, but in some cases, based on the study design or
+other external information, there may be reason to accept it and in other
+cases there may be good reason to doubt that independent censoring holds.
+There are various methods for effectively handling with dependently censored
+data, but that is an advanced topic that we will not consider further here.
 
 ## Truncation
 
 An important concept in survival analysis is the potential selection bias
 induced by *truncation* or *delayed entry*. If units (e.g. people) are
-selected into the sample conditionally on their event time, then this must be
-taken into account. The most common form of truncation is *left truncation* in
-which there is a value $E$ (which may be specific to each observation) such
-that if the event occurs before time $E$ (i.e. if $T < E$) then the person
-would not have been included in our sample.
+selected into the sample conditionally on their event time or some other
+factor, then this must be taken into account. The most common form of
+truncation is *left truncation* in which there is a value $E$ (which may be
+specific to each observation) such that if the event occurs before time $E$
+(i.e. if $T < E$) then the person would not have been included in our sample.
 
-For example, in our analysis of stroke following stent placement, people
-"enter" the study once their stent is placed. Let $E$ denote the age at which
-a stent is placed. If a person never has a stent or if they have a stroke
-before the stent is placed, this person cannot belong to our sample.
+For example, supppose that in our analysis of stent thrombosis following stent
+placement, we only have access to data from one health insurance provider.
+People may join this health insurance program at any age, e.g. when switching
+jobs. If a person had a stent placed before joining this insurance company's
+plan, we would not know the exact age when the stent was placed. Therefore, we
+may choose to eliminate from the analysis all people who already had a stent
+when joining the health insurance plan. Thus, not having a stent at the
+beginning of the insurance record is a requirement for being in our study, so
+setting $E$ to be the age at which a person began their health insurance
+coverage would be a left truncation time.
 
 More formally, if we have left truncation then we are working with the
 conditional distribution $P(T | T\ge E)$, while if there is no left truncation
@@ -177,9 +185,9 @@ $S(t) \equiv P(T>t)$. It is closely related to the
 [cumulative distribution function](https://en.wikipedia.org/wiki/Cumulative_distribution_function)
 (CDF), defined to be $F(t) = P(T\le t)$ since $S(t) = 1 - F(t)$. In words, the
 survival function at time $t$ is the probability that the event has not
-occurred by time $t$. Another name for the survival function is the _complementary CDF_. We may
-also refer to this as the *marginal survival function* to emphasize that it is
-not conditioned on any covariates.
+occurred by time $t$. Another name for the survival function is the
+_complementary CDF_. We may also refer to this as the *marginal survival
+function* to emphasize that it is not conditioned on any covariates.
 
 The empirical CDF (eCDF) is one of the fundamental objects in statistics.
 Based on an independent and identically distributed (IID) sample from some
@@ -195,16 +203,21 @@ of the survival function $S(t)$ known as the *product limit* estimator or the
 [Kaplan-Meier](https://en.wikipedia.org/wiki/Kaplan%E2%80%93Meier_estimator)
 estimator.
 
+The Kaplan-Meier estimator focuses exclusively on the observed event times.
 Let $t_1 < t_2 < \cdots < t_m$ denote the distinct times at which events are
 observed to occur, let $d_i$ denote the number of events that occur at time
 $t_i$, and let $n_i$ denote the size of the risk set just before time $t_i$.
-Roughly speaking, the probability of passing through time $t_i$ without
-experiencing the event is $1 - d_i/n_i$. Further, the probability of making it
+The estimated probability of passing through time $t_i$ without experiencing
+the event is $1 - d_i/n_i$. Further, the estimated probability of making it
 from time 0 to time $t$ without experiencing the event is
 
 $$ \hat{S}(t) \equiv \prod_{i:t_i\le t}(1 - d_i/n_i).  $$
 
-This is the product limit estimator of the survival function.
+This is the product limit estimator of the survival function. Note that the
+actual survival function can be any non-increasing right continous function,
+and thus in general $S(t)$ will change at infinitely many values of $t$.
+However the Kaplan-Meier estimate of the survival function is a step function
+that only changes at the observed values of $t$ where an event occurs.u
 
 There are many methods for statistical inference relating to survival
 functions. The [log rank test](https://en.wikipedia.org/wiki/Logrank_test) is
@@ -293,7 +306,7 @@ to increase again.
 A similar phenomenon exists with human lifespans, whereby the hazard of dying
 is greater for infants and very young children (up to around age 3-5) and then
 becomes very low for several decades before beginning to increase again around
-age 50.
+age 40.
 
 ## Hazard ratios and hazard proportionality
 
@@ -331,11 +344,12 @@ $h$ by numerically differentiating an estimate of $H$.
 *Survival regression* is any method that aims to model conditional
 distributions $P(T|X)$, where $T$ is an event time variable possibly subject
 to censoring and/or truncation, and $X$ is a vector of explanatory variables.
-If $T$ is fully observed, specialized techniques for survival regression are not needed. For
-example, we may regress $T$ or $\log(T)$ on $X$ using least squares or a
-generalized linear model (GLM). This type of direct approach has been extended
-to accommodate censoring and truncation, leading to the so-called *accelerated
-failure time* (AFT) models that we will not discuss further here.
+If $T$ is fully observed, specialized techniques for survival regression are
+not needed. For example, we may regress $T$ or $\log(T)$ on $X$ using least
+squares or a generalized linear model (GLM). This type of direct approach has
+been extended to accommodate censoring and truncation, leading to the
+so-called *accelerated failure time* (AFT) models that we will not discuss
+further here.
 
 The most widely-used approach to survival regression is arguably the
 semi-parametric *proportional hazards* (PH) model, often known as the "Cox
