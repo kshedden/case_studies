@@ -85,8 +85,8 @@ Since we don't observe $T$ and $R$ together, independent censoring is usually
 an untestable assumption, but in some cases, based on the study design or
 other external information, there may be reason to accept it and in other
 cases there may be good reason to doubt that independent censoring holds.
-There are various methods for effectively handling with dependently censored
-data, but that is an advanced topic that we will not consider further here.
+There are various methods for effectively handling dependently censored data,
+but that is an advanced topic that we will not consider further here.
 
 ## Truncation
 
@@ -129,7 +129,7 @@ of interest.
 The *risk set* at a specific time $t$ is the subset of units (e.g. people) who
 could possibly experience the event at time $t$. Anyone who has already had
 the event before time $t$, has been right censored before time $t$, or has
-experienced a competing risk before time $t$ is not in this risk set.
+experienced a competing risk before time $t$ is not in the risk set.
 
 ## Recurrent events
 
