@@ -1,19 +1,31 @@
 # Large scale inference
 
-Modern data analysis often involves estimation of many parameters $\theta_j$,
-and in some cases these parameters are weakly coupled so that it is possible
-to estimate each parameter without referring to the others. For example, this
-occurs when the $\theta_j$ are _local parameters_ referring to different
-subpopulations of the overall population.
+Modern data analysis often involves estimation of many parameters which we
+will denote here $\theta_j$, for $j=1,\ldots, p$. In some cases these
+parameters are completely uncoupled or only weakly coupled, so that it is
+possible to estimate each parameter without referring to the others. For
+example, if we are interested in the median credit card debt for residents of
+each US state, we can estimate the value for state $j$ without referring to
+the data from other states.
 
-In many cases it is desirable to integrate the parameters $\theta_j$ to
-understand the population as a whole. This contrasts with the strategy of
-building a single all-encompassing model using the entire dataset. Situations
-where the former strategy is useful commonly arise due to modern innovations
-that allow for collection of data that are both high-dimensional (many
-attributes measured on each unit) and heterogeneous (the units can be
-clustered into subpopulations with greater heterogeneity between than within
-subpopulations).
+On the other hand, some parameters are deeply connectected so that it is
+impossible to estimate one parameter without simultaneously estimating all the
+others. For example, suppose we wish to estimate the average blood pressure
+for a 50 year old, using data for people of age 18 to 80. Simplistically, we
+might use a linear model of the form $E[Y|A] = \alpha + \beta(A - 50)$, where
+$A$ is age and $Y$ is blood pressure. The parameter of interest here is
+$\alpha$, but we cannot estimate $\alpha$ without simultaneously estimating
+$\beta$ -- these two parameters are strongly coupled.
+
+Even when it is possible to estimate the parameters $\theta_j$ in isolation,
+In many cases it is desirable to integrate our understanding of these
+parameters to obtain a better understanding of the population as a whole. This
+contrasts with the strategy of building a single all-encompassing model using
+the entire dataset. Situations where the former strategy is useful commonly
+arise due to modern innovations that allow for collection of data that are
+both high-dimensional (many attributes measured on each unit) and
+heterogeneous (the units can be clustered into subpopulations with greater
+heterogeneity between than within subpopulations).
 
 [Large scale inference](https://efron.ckirby.su.domains/other/2010LSIexcerpt.pdf)
 is a body of statistical methods developed to accommodate data analysis in
