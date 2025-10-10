@@ -37,6 +37,7 @@ library(readr)
 library(stringr)
 library(ggplot2)
 library(FactoMineR)
+library(locfdr)
 ```
 
 Next we read the data as a json "blob". You don't need to work with this directly, it will be processed and converted to dataframes by the functions below.
@@ -141,7 +142,7 @@ for (vname in names(mdat[["Figure2_phenotypes"]])) {
   vname1 = rr$vname
   r = cor(da[["age"]], da[[vname1]])
   se = 1 / sqrt(dim(da)[1])
-  pc = rbind(pc, list(vname=vname1, pc=r, pcse=se, pcz=r/se))
+  pc = rbind(pc, list(vname=vname1, pc=r, pcse=se, pcz=r/se, n=dim(da)[1]))
   if (is.finite(r)) {
     n0 = n0 + 1
     n1 = n1 + ifelse(abs(r) > 2*se, 1, 0)
@@ -172,6 +173,46 @@ for (vname in stats$vname[ii]) {
     print(p)
 }
 ```
+
+The graph below shows the distribution of the number of observations (across all ages) per phenotype.
+
+```{r}
+hist(pc$n)
+```
+
+Although 107 (around 58%) of the phenotypes show age dependence based on having a p-value smaller than 0.05, this set potentially includes many false positives since we are testing multiple hypotheses. The traditional way to address this is to control the Family-Wise Error Rate (FWER). The Bonferroni method achieves this and is easy to use. However it can be quite conservative when the data corresponding to different hypotheses are not independent. As shown below, if we control the FWER, then less than half of the phenotypes remain "significant".
+
+```{r}
+ntest = dim(stats)[1]
+print(sum(stats$kwp < 0.05))
+print(sum(stats$kwp < 0.05 / ntest))
+print(sum(ntest * stats$kwp < 0.05))
+```
+
+False Discovery Rates (FDR) are a popular method to assess the results of large numbers of hypothesis tests. The FDR is calculated at a threshold t, and considers a hypothesis to be a "discovery" if its test statistic exceeds t (usually we do two-sided analysis, so we consider whether the magnitude of the test statistic exceeds t). The FDR is the proportion of discoveries that are false, so the number of discoveries belongs in the denominator of the FDR, and the numerator of the FDR is an estimate of the number of false discoveries that would be made for a given number of tests m and a given test statistic threshold t. If our test statistic is a Z-score and follows a standard normal distribution under the null, this numerator can be easily estimated (or bounded).
+
+Below we calculate FDR values for a series of thresholds t. These FDR values pertain to the null hypothesese that each phenotype is unrelated to age (i.e. follows the same distribution at each age). We use as a conservative estimator the ratio of the expected number of false discoveries to the number of discoveries.
+
+```{r}
+for (t in c(1, 2, 3, 4, 5, 10)) {
+  n_expected = ntest * (1 - pnorm(t))
+  n_observed = sum(stats$kwz > t)
+  fdr = n_expected / n_observed
+  cat(sprintf("%4.0f %12.5f %12.0f %12.4f\n", t, n_expected, n_observed, fdr))
+}
+```
+
+Efron devised the "local" false discovery rate which is the ratio of the density of observed statistics to its null density.  The local FDR is $p_0f_0(z)/f(z)$, where $p_0$ is the proportion of true null hypotheses, $f_0$ is the density of null Z-scores, and $f$ is the density of observed Z-scores.  A conservative estimate of the local FDR is obtained by setting $p_0=1$.  In the next cell we estimate $f$ using a histogram and assume that $f_0$ is standard normal.
+
+```{r}
+lfdr = locfdr(stats$kwz, nulltype=0)
+```
+The actual local FDR approach uses "Lindsey's method" instead of a histogram to estimate $f$.  There is also an "empirical null" strategy that allows the data to inform the value of $f_0$, but we do not consider that further here.  Below we see that under the standard of local FDR, we can be confident that 50 of the phenotypes are age-specific.  This is modestly more than under FWER control.
+
+```{r}
+sum(lfdr$fdr < 0.05)
+```
+
 
 ## Analysis of interventional data
 
