@@ -19,6 +19,7 @@ Only consider counties for which we have natality data:
 
 ```{r}
 fips = sort(unique(births$FIPS))
+fips = intersect(fips, demog$FIPS)
 demog = demog %>% filter(FIPS %in% fips)
 demog = demog %>% arrange(demog, FIPS)
 ```
