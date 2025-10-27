@@ -110,6 +110,12 @@ r6 = geeglm(Births ~ (RUCC_2013c + logADINatRankZ) * yearc, data=da, id=FIPS, fa
 summary(r6)
 ```
 
+We can use a score test to compare the goodness of fit of the model with interactions to the additive model.
+
+```{r}
+anova(r6, r5, test="score")
+```
+
 Next we prepare to fit a Poisson model using principal components regression (PCR). The principal components (PC's) will be based on demographic characteristics of each county.
 
 Use a log transformation to variance-stabilize the counts.
