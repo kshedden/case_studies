@@ -23,6 +23,8 @@ dx = dx %>% drop_na()
 ```{r}
 dx$RIAGENDRx = recode(dx$RIAGENDR, "F"=1, "M"=-1)
 dx$RIAGENDR = as.factor(dx$RIAGENDR)
+
+dx = dx %>% mutate(BMXBMI=pmax(15, pmin(BMXBMI, 50)))
 ```
 
 Compare sexes at fixed BMI
@@ -117,7 +119,7 @@ plot_all(m3, 3)
 Allow age and BMI to relate non-additively to SBP
 
 ```{r}
-f4 = as.formula("BPXSY1 ~ te(RIDAGEYR, BMXBMI) + s(RIDAGEYR, by=RIAGENDR) + s(BMXBMI, by=RIAGENDR)")
+f4 = as.formula("BPXSY1 ~ te(RIDAGEYR, BMXBMI, k=c(3, 3)) + s(RIDAGEYR, by=RIAGENDR) + s(BMXBMI, by=RIAGENDR)")
 m4 = gam(f4, data=dx)
 plot_all(m4, 4)
 ```
@@ -125,7 +127,7 @@ plot_all(m4, 4)
 Allow the non-additive relationship between age and BMI to differ by sex
 
 ```{r}
-f5 = as.formula("BPXSY1 ~ te(RIDAGEYR, BMXBMI, by=RIAGENDR) + s(RIDAGEYR, by=RIAGENDR) + s(BMXBMI, by=RIAGENDR)")
+f5 = as.formula("BPXSY1 ~ te(RIDAGEYR, BMXBMI, by=RIAGENDR, k=c(3, 3)) + s(RIDAGEYR, by=RIAGENDR) + s(BMXBMI, by=RIAGENDR)")
 m5 = gam(f5, data=dx)
 plot_all(m5, 5)
 ```
