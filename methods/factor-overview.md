@@ -1,18 +1,26 @@
-# Factor analyses and embeddings
+# Dimension reduction, factor analysis, and embeddings
 
 A large class of powerful statistical methods considers data in which many
 "objects" ("observations") are measured with respect to multiple variables.
 These analyses often focus on understanding both the relationships among the
-variables and the relationships among the observations. The data takes the
-form of a rectangular array, where by convention the rows correspond to
-objects and the columns correspond to variables.
+variables and the relationships among the observations. The data take the form
+of a rectangular array, where by convention the rows correspond to objects and
+the columns correspond to variables.
 
 For example, we may have a sample of people (the "objects") with each person
-measured in terms of their height, weight, age, and sex. In this example, two
-people are similar if they have similar values on most or all of the
-variables, and two variables are similar if knowing the value of just one of
-the variables for a particular object allows one to predict the value of the
-other variable for that same object.
+measured in terms of their height, weight, age, and sex (the "variables"). In
+this example, two people are similar if they have similar values on most or
+all of the variables, and two variables are similar if knowing the value of
+just one of the variables for a particular object allows one to predict the
+value of the other variable for that same object.
+
+The branch of statistics known as
+[multivariate analysis](https://en.wikipedia.org/wiki/Multivariate_statistics)
+is concerned with analysis of such datasets. Many methods of classical
+multivariate statistics operate specifically on rectangular arrays of data, as
+described above. More modern multivariate statistics provides methods that can
+operate on much more diverse forms of multivariate data, such as partially
+observed arrays, infinite dimensional arrays, and tensors.
 
 Matrix factorization is a powerful idea from linear algebra, and underlies
 many of the most important methods in statistics. We will use the term "factor
@@ -35,16 +43,30 @@ $q \equiv {\rm dim}(z) < {\rm dim}(x) \equiv p$. However some embeddings
 preserve or even increase the dimension.
 
 Embeddings can be used for exploratory analysis, especially in visualizations,
-and can also be used to construct features for prediction, as well as being
-used in formal statistical inference, e.g. in hypothesis testing.
+and can also be used to construct features for prediction (e.g. in
+[Principal Component Regression (PCR)](https://en.wikipedia.org/wiki/Principal_component_regression)),
+as well as being used in formal statistical inference such as hypothesis
+testing.
 
 An embedding approach is linear if $z = B^Tx$ for a fixed $p\times q$ matrix
-$B$. The matrix $B$ may be based on training data, in which case the embedding
-is *adaptive*. In other settings $B$ is completely independent of any data and
-the embedding is *non-adaptive*. Linear embedding algorithms are simpler to
-devise and characterize than nonlinear embeddings. Many modern embedding
-algorithms are nonlinear, and use this additional flexibility to better
-capture complex structure.
+$B$. If $B$ is completely independent of any data then the embedding is
+*non-adaptive*. For example, the
+[discrete Fourier transfrom (DFT)](https://en.wikipedia.org/wiki/Discrete_Fourier_transform)
+projects the data onto a fixed set of orthogonal trigonometric basis vectors.
+[Wavelet transforms](https://en.wikipedia.org/wiki/Wavelet_transform) can also
+be seen as non-adaptive in this sense.
+
+If $B$ is based on training data, the embedding is *adaptive*. A non-adaptive
+method can be made adaptive by using the training data to exclude certain
+vectors from a basis set, as in _coefficient thresholding_. But many forms of
+adaptive dimension reduction construct a basis directly to match the structure
+of the training data, rather than only using the training data to select from
+a fixed basis set. We will see examples of this below.
+
+Linear embedding algorithms are simpler to devise and characterize than
+nonlinear embeddings. Many modern embedding algorithms are
+[nonlinear](https://en.wikipedia.org/wiki/Nonlinear_dimensionality_reduction),
+and use this additional flexibility to better capture complex structure.
 
 Some embedding algorithms embed only the objects while other embedding
 algorithms embed both the objects and the variables. Embedding the objects
@@ -54,6 +76,17 @@ variables provides a means to interpret the relationships among the variables.
 When utilizing an embedding algorithm that embeds both objects and variables
 we have the opportunity to interpret the results through a
 [biplot](https://en.wikipedia.org/wiki/Biplot).
+
+Finally, it is important be aware that some methods of multivariate analysis
+do not take the form of a dimension reduction at all. The most prominent
+example of this type of approach might be
+[clustering](https://en.wikipedia.org/wiki/Cluster_analysis), which groups
+observations into discrete categories such that the observations within a
+group are similar. A way to contrast these methods is through the idea that
+dimension reduction places the observations on a multi-dimensional continuum
+or spectrum, which is itself situated in a metric space, whereas cluster
+analysis seeks discrete groups of observations that are only interpretable as
+unordered categories.
 
 ## Centering and standardization
 
