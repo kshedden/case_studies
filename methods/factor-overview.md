@@ -503,15 +503,15 @@ Specifically, taking $X$ and $Y$ to be column-centered, the objective function
 is
 
 $$
-\frac{a^\prime S_{xy} b}{(a'S_{xx}a)^{1/2}\cdot (b^\prime S_{yy}b)^{1/2}},
+\frac{a^T S_{xy} b}{(a'S_{xx}a)^{1/2}\cdot (b^T S_{yy}b)^{1/2}},
 $$
 
-where $S_{xy} = X^\prime Y/n$, $S_{xx} = X^\prime X/n$, and
-$S_{yy} = Y^\prime Y/n$ are the cross-correlation and correlation matrices.
+where $S_{xy} = X^T Y/n$, $S_{xx} = X^T X/n$, and
+$S_{yy} = Y^T Y/n$ are the cross-correlation and correlation matrices.
 
 Once we have found the leading canonical loadings, say $a^{(1)}$ and
 $b^{(1)}$, we can maximize the same objective function subject to the
-constraints $a^\prime S_{xx}a^{(1)} = 0$ and $b^\prime S_{yy}b^{(1)} = 0$.
+constraints $a^T S_{xx}a^{(1)} = 0$ and $b^T S_{yy}b^{(1)} = 0$.
 This can be repeated up to ${\rm min}(p, q)$ times to produce a series of
 canonical variate loading pairs
 
@@ -543,7 +543,7 @@ relationships that happen to coincide with the PCs.
 DR can be viewed as fitting the multi-index regression model
 
 $$
-E[Y | X=x] = f(b_1^\prime x, \ldots, b_q^\prime x),
+E[Y | X=x] = f(b_1^T x, \ldots, b_q^T x),
 $$
 
 where the $b_j \in {\mathbb R}^p$ are coefficient vectors defining the
@@ -588,8 +588,8 @@ M_{xy}b = \lambda S_xb,
 $$
 
 where $S_x = {\rm cov(X)}$ is the covariance matrix of $X$ (ignoring $Y$).
-Solving the GEP identifies vectors $b$ such that $b^\prime E[X|y]$ has high
-variance relative to $b^\prime X$.
+Solving the GEP identifies vectors $b$ such that $b^T E[X|y]$ has high
+variance relative to $b^T X$.
 
 ## Correspondence Analysis
 
@@ -768,7 +768,7 @@ variables, the Burt matrix $X$ has the property that every row sums to $q$
 sums to $1/n$ and the column means of $P^c$ are also all equal to $1/n$, since
 
 $$
-\bar{P}^c = n^{-1}1_n^\prime PQ_c^{-1} = n^{-1}1_p^T.
+\bar{P}^c = n^{-1}1_n^T PQ_c^{-1} = n^{-1}1_p^T.
 $$
 
 ### Angles and magnitudes of category scores
