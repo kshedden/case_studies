@@ -244,12 +244,12 @@ of power-law decay.
 Suppose we have multivariate grouped data, such as vectors of individual
 characteristics for people who have been partitioned into $G$ groups, The data
 for each individual is a $p$-dimensional vector of characteristics, so we let
-$y_{ij}$ denote the $j$th observation in the $i$th group. There are $n_i$
-observations in the $i^{\rm th}$ group, so $j=1,\ldots,n_i$. Let $m_j$ denote the
-mean (centroid) of group $j$ (so $m_j$ is a $p$-dimensional vector), and let
-$r_{ij} = y_{ij} - m_j$ denote the residual vector (a $p$-dimensional vector)
-for observation $y_{ij}$. The overall _scatter matrix_ is
-$E = \sum_{ij} r_{ij}r_{ij}^\prime$, a $p\times p$ matrix. Letting
+$y_{ij}$ denote the $j^{\rm th}$ observation in the $i^{\rm th}$ group. There
+are $n_i$ observations in the $i^{\rm th}$ group, so $j=1,\ldots,n_i$. Let
+$m_j$ denote the mean (centroid) of group $j$ (so $m_j$ is a $p$-dimensional
+vector), and let $r_{ij} = y_{ij} - m_j$ denote the residual vector (a
+$p$-dimensional vector) for observation $y_{ij}$. The overall _scatter matrix_
+is $E = \sum_{ij} r_{ij}r_{ij}^\prime$, a $p\times p$ matrix. Letting
 $n=\sum_i n_i$, one could view $E$ as the _residual covariance matrix_. Let
 $m$ be the centroid of the entire collection of observations, and define the
 _hypothesis matrix_ as $H = \sum_i n_i (m_j - m)(m_j - m)^\prime$, a
