@@ -593,8 +593,11 @@ Therefore, the matrix $M_{x|y}$ is smaller than $\Sigma_x$ in the sense of
 
 The solutions to the generalized eigenvalue problem
 $\Sigma_xb = \lambda M_{x|y}b$ correspond to the solutions of the Rayleigh
-quotient optimization ${\\rm argmax}_b b^T M_{x|y}b / (b^T \Sigma_x b)$, which
-in turn is equivalent to the solutions of
+quotient optimization
+
+$${\rm argmax}_b b^T M_{x|y}b / (b^T \Sigma_x b),$$
+
+which in turn is equivalent to the solutions of
 ${\rm argmax}_b {\rm var}E[b^T x|y] / {\rm var}(b^Tx)$. This last expression
 provides the best intuition for how SIR works -- we are seeking direction
 vectors such that if we project the data in the given direction, the explained
