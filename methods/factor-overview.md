@@ -610,17 +610,6 @@ increasing values of $y$, dividing this sorted sequence into "slices"
 $u_k \in {\mathbb R}^d$ denote the mean of slice $k$. We then estimate
 $M_{xy}$ as the covariance matrix of the $u_k$.
 
-In SIR, we estimate the coefficient vectors $b_j$ by solving the generalized
-eigenvalue problem (GEP)
-
-$$
-M_{xy}b = \lambda S_xb,
-$$
-
-where $S_x = {\rm cov(X)}$ is the covariance matrix of $X$ (ignoring $Y$).
-Solving the GEP identifies vectors $b$ such that $b^T E[X|y]$ has high
-variance relative to $b^T X$.
-
 ## Correspondence Analysis
 
 Correspondence analysis (CA) is an embedding approach that aims to represent
