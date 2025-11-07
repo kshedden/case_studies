@@ -183,7 +183,7 @@ among all rank $k$ matrices, $\tilde{X}$ is the closest matrix to $X$ in the
 *Frobenius norm*, which is defined as
 
 $$
-{\rm Frob}(X)^2 = \lVert X \rVert_F^2 \equiv \sum\_{ij}X\_{ij}^2 = {\rm trace}(X^\prime X).
+{\rm Frob}(X)^2 = \lVert X \rVert_F^2 \equiv \sum\_{ij}X\_{ij}^2 = {\rm trace}(X^T X).
 $$
 
 Thus we have
@@ -391,23 +391,23 @@ the dominant factors). The parameter $0 \le \alpha \le 1$ is usually set to
 either $0$, $1/2$, or $1$.
 
 If we set $\alpha=1$, the object scores approximate Euclidean distances in the
-data. For example, let $d = (1, -1, 0, 0, \ldots)^\prime$, and note that
+data. For example, let $d = (1, -1, 0, 0, \ldots)^T$, and note that
 
 $$
-\lVert d^\prime X_c \rVert^2 = d^\prime X_cX_c^\prime d =
-d^\prime US^2U^\prime d = \lVert d^\prime US \rVert^2.
+\lVert d^T X_c \rVert^2 = d^T X_cX_c^T d =
+d^T US^2U^T d = \lVert d^T US \rVert^2.
 $$
 
 This shows that the Euclidean distance between two rows of $X_c$ is equal to
 the Euclidean distance between two rows of $US$ (which are the object scores
 if $\alpha=1$).
 
-If we set $\alpha=0$, then $n^{-1}X_c^\prime X_c$, which is the covariance
+If we set $\alpha=0$, then $n^{-1}X_c^T X_c$, which is the covariance
 matrix among the variables, can be written (up to a proportionality constant)
 as
 
 $$
-X_c^\prime X_c = VS^2V^\prime.
+X_c^T X_c = VS^2V^T.
 $$
 
 This shows that the magnitudes of the variable scores are equal to the
