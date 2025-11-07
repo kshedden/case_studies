@@ -252,9 +252,8 @@ $p$-dimensional vector) for observation $y_{ij}$. The overall _scatter matrix_
 is $E = \sum_{ij} r_{ij}r_{ij}^T$, a $p\times p$ matrix. Letting
 $n=\sum_i n_i$, one could view $E$ as the _residual covariance matrix_. Let
 $m$ be the centroid of the entire collection of observations, and define the
-_hypothesis matrix_ as $H = \sum_i n_i (m_i - m)(m_i - m)^T$, a
-$p\times p$ matrix. We can interpret $H/n$ as the "between group covariance"
-matrix.
+_hypothesis matrix_ as $H = \sum_i n_i (m_i - m)(m_i - m)^T$, a $p\times p$
+matrix. We can interpret $H/n$ as the "between group covariance" matrix.
 
 In classical multivariate analysis, a technique known as
 [multivariate analysis of variance](https://en.wikipedia.org/wiki/Multivariate_analysis_of_variance)
@@ -272,10 +271,10 @@ corresponding eigenvectors.
 
 The natural interpretation of $\lambda_k$ is that it represents the ratio of
 between-group to within-group variance of the data projected in the direction
-$\eta_k$, i.e. of the scalars $\eta_k^T y_{ij}$. The transformed
-eigenvalue statistic $\lambda_k / (1 + \lambda_k)$ is the proportion of total
-variance of the projected data that is between-group, which is essentially an
-$R^2$ statistic for the projected data.
+$\eta_k$, i.e. of the scalars $\eta_k^T y_{ij}$. The transformed eigenvalue
+statistic $\lambda_k / (1 + \lambda_k)$ is the proportion of total variance of
+the projected data that is between-group, which is essentially an $R^2$
+statistic for the projected data.
 
 ## Principal Components Analysis
 
@@ -402,9 +401,8 @@ This shows that the Euclidean distance between two rows of $X_c$ is equal to
 the Euclidean distance between two rows of $US$ (which are the object scores
 if $\alpha=1$).
 
-If we set $\alpha=0$, then $n^{-1}X_c^T X_c$, which is the covariance
-matrix among the variables, can be written (up to a proportionality constant)
-as
+If we set $\alpha=0$, then $n^{-1}X_c^T X_c$, which is the covariance matrix
+among the variables, can be written (up to a proportionality constant) as
 
 $$
 X_c^T X_c = VS^2V^T.
@@ -506,14 +504,14 @@ $$
 \frac{a^T S_{xy} b}{(a'S_{xx}a)^{1/2}\cdot (b^T S_{yy}b)^{1/2}},
 $$
 
-where $S_{xy} = X^T Y/n$, $S_{xx} = X^T X/n$, and
-$S_{yy} = Y^T Y/n$ are the cross-correlation and correlation matrices.
+where $S_{xy} = X^T Y/n$, $S_{xx} = X^T X/n$, and $S_{yy} = Y^T Y/n$ are the
+cross-correlation and correlation matrices.
 
 Once we have found the leading canonical loadings, say $a^{(1)}$ and
 $b^{(1)}$, we can maximize the same objective function subject to the
-constraints $a^T S_{xx}a^{(1)} = 0$ and $b^T S_{yy}b^{(1)} = 0$.
-This can be repeated up to ${\rm min}(p, q)$ times to produce a series of
-canonical variate loading pairs
+constraints $a^T S_{xx}a^{(1)} = 0$ and $b^T S_{yy}b^{(1)} = 0$. This can be
+repeated up to ${\rm min}(p, q)$ times to produce a series of canonical
+variate loading pairs
 
 If the dimension is high, CCA can overfit the data. A procedure analogous to
 principal components regression can be used to address this. We first reduce
@@ -523,16 +521,16 @@ in the original coordinates for interpretation.
 
 ## Dimension reduction regression
 
-Dimension reduction regression (DR) is a flexible approach to regression
-analysis that can be seen as extending PCA to the setting of regression. In a
-DR analysis, we have a matrix $X \in {\mathbb R}^{n\times p}$ containing data
-on the explanatory (independent) variables, and we also have a vector
-$Y \in {\mathbb R}^n$ containing values of a response (dependent) variable.
-Like PCA, the goal is to find *factors*, *components*, or *variates* among the
-$X$ variables, but in the case of DR the goal is for these factors to predict
-$Y$, not to predict $X$ itself. One way to view DR is as a means to "steer"
-PCA toward variates that explain the variation in $Y$, rather than seeking
-variates that explain the variation in $X$.
+Dimension reduction regression (DR) is a flexible, nonparametric approach to
+regression analysis that can be seen as extending PCA to the setting of
+regression. In a DR analysis, we have a matrix $X \in {\mathbb R}^{n\times p}$
+containing data on the explanatory (independent) variables, and we also have a
+vector $Y \in {\mathbb R}^n$ containing values of a response (dependent)
+variable. Like PCA, the goal is to find *factors*, *components*, or *variates*
+among the $X$ variables, but in the case of DR the goal is for these factors
+to predict $Y$, not to predict $X$ itself. One way to view DR is as a means to
+"steer" PCA toward variates that explain the variation in $Y$, rather than
+seeking variates that explain the variation in $X$.
 
 In some cases, the variates in $X$ that explain $X$ and the variates in $X$
 that explain $Y$ can be quite similar, but in other cases they dramatically
@@ -548,7 +546,9 @@ $$
 
 where the $b_j \in {\mathbb R}^p$ are coefficient vectors defining the
 "indices" in $X$ that predict $Y$. The span of $b_1, \ldots, b_q$ is known as
-the "dimension reduction" subpsace for the regression function $E[Y|X=x]$.
+the "dimension reduction" subpsace for the regression function $E[Y|X=x]$. The
+link function $f$ must be non-linear, since in a linear $f$, the multiple
+indices would collapse down to a single index.
 
 An appealing feature of the DR approach is that it incorporates a link
 function $f$ but this function does not need to be known. Thus, DR provides a
@@ -562,22 +562,47 @@ DR is most effective when relatively small values of $q$ can be used, thereby
 compressing the regression structure into a few variates.
 
 It is advantageous that the link function $f$ does not need to be known while
-estimating the coefficients $b_j$. However later in the analysis we will
-probably want to estimate $f$, and commonly a nonparametric regression method
-like loess can be used for this purpose.
+estimating the coefficients $b_j$. However later in the analysis we may wish
+to estimate $f$, and commonly a nonparametric regression method like loess can
+be used for this purpose. Since $f$ operates on the dimensionally reduced
+variates, rather than on the full set of candidate covariates, the _curse of
+dimensionality_ is partially overcome, potentially allowing basic
+nonparametric methods to be employed for estimation of $f$.
 
 One of the simplest and most widely-used approaches to dimension reduction
 regression is known as Sliced Inverse Regression (SIR). Recall that the
-loading vectors of PCA are the eigenvectors of ${\rm cov}(X)$. In SIR, we wish
-to steer the PCA loadings toward directions that are relevant for predicting
-$Y$. To do this we consider $M_{xy} \equiv {\rm cov}E[X|Y]$, which is also a
-type of covariance matrix for $X$, but which suppresses the variation in $X$
-that is irrelevant for $Y$. This is accomplished by replacing $X$ in
-${\rm cov}(X)$ with $E[X|Y]$, which suppresses the variation in $X$ that
-occurs when $Y$ is fixed. The matrix $M_{xy}$ is estimated by sorting the data
-$\{(x_i, y_i)\}$ by increasing values of $y$, dividing this sorted sequence
-into "slices" (blocks), and averaging the values of $x_i$ within each slice.
-Let $u_k \in {\mathbb R}^d$ denote the mean of slice $k$. We then estimate
+loading vectors of PCA are the eigenvectors of $\Sigma_x = {\rm cov}(X)$. In
+SIR, we wish to steer the PCA loadings toward directions that are relevant for
+predicting $Y$. To do this we consider $M_{x|y} \equiv {\rm cov}E[X|Y]$, which
+is also a type of covariance matrix for $X$, but which suppresses the
+variation in $X$ that is irrelevant for $Y$. This is accomplished by replacing
+$X$ in ${\rm cov}(X)$ with $E[X|Y]$, which suppresses the variation in $X$
+that occurs when $Y$ is fixed.
+
+The relationship between $\Sigma_x$ and $M_{x|y}$ can be further elucidated by
+employing the
+[law of total covariance](https://en.wikipedia.org/wiki/Law_of_total_covariance),
+which asserts that ${\rm cov}(X) = {\rm cov} E[x|y] + E {\rm cov}(x|y)$.
+Equivalently, $\Sigma_x = M_{x|y} + R$, where $R = E{\rm cov}(X|Y)$. The
+matrices $\Sigma_x = {\rm cov}(X)$, $M_{x|y} = {\rm cov} E[x|y]$, and
+$R = E{\rm cov}(X|Y)$ are all
+[positive semidefinite](https://en.wikipedia.org/wiki/Positive_semidefinite_matrix).
+
+The solutions to the generalized eigenvalue problem
+$\Sigma_xb = \lambda M_{x|y}b$ correspond to the solutions of the Rayleigh
+quotient optimization
+${\rm argmax}_b b^\prime M_{x|y}b / (b^\prime \Sigma_x b)$, which in turn is
+equivalent to the solutions of
+${\rm argmax}_b {\rm var}E[b^T x|y] / {\rm var}(b^Tx)$. This last expression
+provides the best intuition for how SIR works -- we are seeking direction
+vectors such that if we project the data in the given direction, the explained
+variance ${\rm var}E[b^T x|y]$ is maximized relative to the total variance
+${\rm var}(b^Tx)$.
+
+The matrix $M_{x|y}$ is estimated by sorting the data $\{(x_i, y_i)\}$ by
+increasing values of $y$, dividing this sorted sequence into "slices"
+(blocks), and averaging the values of $x_i$ within each slice. Let
+$u_k \in {\mathbb R}^d$ denote the mean of slice $k$. We then estimate
 $M_{xy}$ as the covariance matrix of the $u_k$.
 
 In SIR, we estimate the coefficient vectors $b_j$ by solving the generalized
