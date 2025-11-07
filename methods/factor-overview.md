@@ -534,9 +534,9 @@ seeking variates that explain the variation in $X$.
 
 In some cases, the variates in $X$ that explain $X$ and the variates in $X$
 that explain $Y$ can be quite similar, but in other cases they dramatically
-differ. This is a critique of principal component regression (PCR), which uses
-the PCs as explanatory variables and therefore can only find regression
-relationships that happen to coincide with the PCs.
+differ. This is a common critique of principal component regression (PCR),
+which uses the PCs as explanatory variables and therefore can only find
+regression relationships that happen to coincide with the PCs.
 
 DR can be viewed as fitting the multi-index regression model
 
@@ -546,9 +546,9 @@ $$
 
 where the $b_j \in {\mathbb R}^p$ are coefficient vectors defining the
 "indices" in $X$ that predict $Y$. The span of $b_1, \ldots, b_q$ is known as
-the "dimension reduction" subpsace for the regression function $E[Y|X=x]$. The
-link function $f$ must be non-linear, since in a linear $f$, the multiple
-indices would collapse down to a single index.
+the "sufficient dimension reduction" (SDR) subpsace for the regression
+function $E[Y|X=x]$. The link function $f$ must be non-linear, since in a
+linear $f$, the multiple indices would collapse down to a single index.
 
 An appealing feature of the DR approach is that it incorporates a link
 function $f$ but this function does not need to be known. Thus, DR provides a
@@ -563,11 +563,12 @@ compressing the regression structure into a few variates.
 
 It is advantageous that the link function $f$ does not need to be known while
 estimating the coefficients $b_j$. However later in the analysis we may wish
-to estimate $f$, and commonly a nonparametric regression method like loess can
-be used for this purpose. Since $f$ operates on the dimensionally reduced
-variates, rather than on the full set of candidate covariates, the _curse of
-dimensionality_ is partially overcome, potentially allowing basic
-nonparametric methods to be employed for estimation of $f$.
+to estimate $f$, and commonly a nonparametric regression method like
+[loess](https://en.wikipedia.org/wiki/Local_regression) can be used for this
+purpose. Since $f$ operates on the dimensionally reduced variates, rather than
+on the full set of candidate covariates, the _curse of dimensionality_ is
+partially overcome, potentially allowing basic nonparametric methods to be
+employed for estimation of $f$.
 
 One of the simplest and most widely-used approaches to dimension reduction
 regression is known as Sliced Inverse Regression (SIR). Recall that the
@@ -587,12 +588,13 @@ Equivalently, $\Sigma_x = M_{x|y} + R$, where $R = E{\rm cov}(X|Y)$. The
 matrices $\Sigma_x = {\rm cov}(X)$, $M_{x|y} = {\rm cov} E[x|y]$, and
 $R = E{\rm cov}(X|Y)$ are all
 [positive semidefinite](https://en.wikipedia.org/wiki/Positive_semidefinite_matrix).
+Therefore, the matrix $M_{x|y}$ is smaller than $\Sigma_x$ in the sense of
+[Loewner ordering](https://en.wikipedia.org/wiki/Loewner_order).
 
 The solutions to the generalized eigenvalue problem
 $\Sigma_xb = \lambda M_{x|y}b$ correspond to the solutions of the Rayleigh
-quotient optimization
-${\rm argmax}_b b^\prime M_{x|y}b / (b^\prime \Sigma_x b)$, which in turn is
-equivalent to the solutions of
+quotient optimization ${\rm argmax}_b b^T M_{x|y}b / (b^T \Sigma_x b)$, which
+in turn is equivalent to the solutions of
 ${\rm argmax}_b {\rm var}E[b^T x|y] / {\rm var}(b^Tx)$. This last expression
 provides the best intuition for how SIR works -- we are seeking direction
 vectors such that if we project the data in the given direction, the explained
