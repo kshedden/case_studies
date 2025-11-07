@@ -7,26 +7,29 @@ variables and the relationships among the observations. The data take the form
 of a rectangular array, where by convention the rows correspond to objects and
 the columns correspond to variables.
 
-For example, we may have a sample of people (the "objects") with each person
-measured in terms of their height, weight, age, and sex (the "variables"). In
-this example, two people are similar if they have similar values on most or
-all of the variables, and two variables are similar if knowing the value of
-just one of the variables for a particular object allows one to predict the
-value of the other variable for that same object.
+For example, we may have a
+[sample](<https://en.wikipedia.org/wiki/Sampling_(statistics)>) of people (the
+"objects") with each person measured in terms of their height, weight, age,
+and sex (the "variables"). In this example, two people are similar if they
+have similar values on most or all of the variables, and two variables are
+similar if knowing the value of just one of the variables for a particular
+object allows one to predict the value of the other variable for that same
+object.
 
 The branch of statistics known as
 [multivariate analysis](https://en.wikipedia.org/wiki/Multivariate_statistics)
 is concerned with analysis of such datasets. Many methods of classical
 multivariate statistics operate specifically on rectangular arrays of data, as
-described above. More modern multivariate statistics provides methods that can
+described above. Modern multivariate statistics provides methods that can
 operate on much more diverse forms of multivariate data, such as partially
-observed arrays, infinite dimensional arrays, and tensors.
+observed arrays, infinite dimensional arrays, and
+[tensors](https://en.wikipedia.org/wiki/Tensor).
 
 Matrix factorization is a powerful idea from linear algebra, and underlies
-many of the most important methods in statistics. We will use the term "factor
-analysis" here to refer in a broad way to any statistical method relying on a
-linear algebraic factorization of the data matrix (or a transformed version of
-the data matrix).
+many of the most important methods in classical multivarite statistics. We
+will use the term "factor analysis" here to refer in a broad way to any
+statistical method relying on a linear algebraic factorization of the data
+matrix (or a transformed version of the data matrix).
 
 To visualize such a data matrix, we can think in terms of _variable space_ and
 _case space_ (or _object space_). If there are $n$ cases and $p$ variables,
@@ -36,14 +39,18 @@ ${\mathbb R}^n$.
 ## Embedding
 
 Many methods of factor analysis can be viewed as a way to obtain an
-*embedding*. Embedding algorithms take input data vectors $x$ and transform
-them into output data vectors $z$. Many embedding algorithms take the form of
-a "dimension reduction", so that
-$q \equiv {\rm dim}(z) < {\rm dim}(x) \equiv p$. However some embeddings
-preserve or even increase the dimension.
+[embedding](https://en.wikipedia.org/wiki/Embedding). Embedding algorithms
+take input data vectors $x$ and transform them into output data vectors $z$.
+Many embedding algorithms take the form of a
+[dimension reduction](https://en.wikipedia.org/wiki/Dimensionality_reduction),
+so that $q \equiv {\rm dim}(z) < {\rm dim}(x) \equiv p$. However some
+embeddings preserve or even increase the dimension. The latter case is related
+to the notion of
+[overcompleteness](https://en.wikipedia.org/wiki/Overcompleteness) in linear
+algebra.
 
 Embeddings can be used for exploratory analysis, especially in visualizations,
-and can also be used to construct features for prediction (e.g. in
+and can also be used to construct features for prediction (e.g. as in
 [Principal Component Regression (PCR)](https://en.wikipedia.org/wiki/Principal_component_regression)),
 as well as being used in formal statistical inference such as hypothesis
 testing.
@@ -54,17 +61,20 @@ $B$. If $B$ is completely independent of any data then the embedding is
 [discrete Fourier transfrom (DFT)](https://en.wikipedia.org/wiki/Discrete_Fourier_transform)
 projects the data onto a fixed set of orthogonal trigonometric basis vectors.
 [Wavelet transforms](https://en.wikipedia.org/wiki/Wavelet_transform) can also
-be seen as non-adaptive in this sense.
+be seen as a non-adaptive linear dimension reduction in this sense.
 
-If $B$ is based on training data, the embedding is *adaptive*. A non-adaptive
+If the transform matrix $B$ is based on training data, the embedding is
+*adaptive*. The purpose of this adaptation is to do a better job capturing the
+structure in the values that are most likely to be encountered. A non-adaptive
 method can be made adaptive by using the training data to exclude certain
 vectors from a basis set, as in _coefficient thresholding_. But many forms of
 adaptive dimension reduction construct a basis directly to match the structure
 of the training data, rather than only using the training data to select from
 a fixed basis set. We will see examples of this below.
 
-Linear embedding algorithms are simpler to devise and characterize than
-nonlinear embeddings. Many modern embedding algorithms are
+Embeddings can be either linear (as in the map $z = B^Tx$) or nonlinear.
+Linear embedding embedding algorithms are simpler to devise and characterize
+than nonlinear embeddings. Many modern embedding algorithms are
 [nonlinear](https://en.wikipedia.org/wiki/Nonlinear_dimensionality_reduction),
 and use this additional flexibility to better capture complex structure.
 
@@ -77,33 +87,48 @@ When utilizing an embedding algorithm that embeds both objects and variables
 we have the opportunity to interpret the results through a
 [biplot](https://en.wikipedia.org/wiki/Biplot).
 
-Finally, it is important be aware that some methods of multivariate analysis
-do not take the form of a dimension reduction at all. The most prominent
-example of this type of approach might be
+Finally, it is important to be aware that some methods of multivariate
+analysis do not take the form of a dimension reduction at all. The most
+prominent example of this type of approach might be
 [clustering](https://en.wikipedia.org/wiki/Cluster_analysis), which groups
 observations into discrete categories such that the observations within a
-group are similar. A way to contrast these methods is through the idea that
-dimension reduction places the observations on a multi-dimensional continuum
-or spectrum, which is itself situated in a metric space, whereas cluster
-analysis seeks discrete groups of observations that are only interpretable as
-unordered categories.
+category are similar. Whereas dimension reduction places the observations on a
+multi-dimensional continuum or spectrum, which is itself situated in a metric
+space, cluster analysis seeks discrete groups of observations that are only
+interpretable as unordered categories. Put more geometrically, cluster
+analysis seeks disconnected "islands" of observations, while dimension
+reduction aims to organize the observations onto a low dimensional continuum.
+In either case, the goal is to retain as much information as possible while
+simplifying the representation of the data.
 
 ## Centering and standardization
 
 Suppose that $X$ is a $n\times p$ matrix whose rows are the observations or
 objects, and whose columns are the variables. There are many ways to
-pre-process the data in $X$ prior to performing a factor analysis.
+pre-process the data in $X$ prior to performing a factor analysis. The purpose
+of this preprocessing is to suppress the aspects of the data that are not of
+primary interest, such as the
+[locations](https://en.wikipedia.org/wiki/Location_parameter) and
+[scales](https://en.wikipedia.org/wiki/Scale_parameter) of the variables. A
+dimension reduction method that yields the same result upon linear
+transformation of the variables is called
+[equivariant](https://en.wikipedia.org/wiki/Eqiuvariant_map), and this is
+usually considered to be a desirable property of a factor analysis procedure.
 
-Some factor-type methods work with the covariance matrix of the variables,
-which is a $p\times p$
+Some factor-type methods depend only on the sample covariance matrix of the
+variables, which is a $p\times p$
 [positive semidefinite](https://en.wikipedia.org/wiki/Definite_matrix) (PSD)
-matrix. Since covariances by definition are derived from mean centered
-variables, it is common to center the variables (columns) of the data matrix
-$X$ prior to conducting a factor analysis. Centering usually is accomplished
-by subtracting the mean from each column, but in some cases the columns may be
-centered with respect to another measure of location such as the median. After
-this centering, the case vectors become a point cloud that is centered around
-the origin in $R^p$.
+matrix. For these methods, the sample covariance acts as a
+[sufficient statistic](https://en.wikipedia.org/wiki/Sufficient_statistic).
+Since covariances by definition are derived from mean centered variables, it
+is common to center the variables (columns) of the data matrix $X$ prior to
+conducting a factor analysis. Centering usually is accomplished by subtracting
+the mean from each column, but in some cases the columns may be centered with
+respect to another measure of location such as the median. After this
+centering, the case vectors become a point cloud that is centered around the
+origin in $R^p$, and all subsequent analysis can be interpreted as aiming to
+understand the pattern of deviations from the mean, or
+[centroid](https://en.wikipedia.org/wiki/Centroid) of the original data.
 
 We may wish for our results to be independent of the units in which each
 variable was measured, and remove any influence of differing dispersions of
@@ -121,20 +146,23 @@ choose to *double center* the data so that every row and every column has mean
 zero. To achieve this, the following three steps can be performed: (i) center
 the overall matrix around its grand mean, (ii) center each row of the matrix
 with respect to the row mean, (iii) center each column of the matrix with
-respect to the column mean.
+respect to the column mean. The resulting matrix will have centered rows and
+centered columns, and it can be shown that the same result is obtained if
+steps (ii) and (iii) above are performed in either order.
 
 ## Singular Value Decoposition
 
 Many embedding methods make use of a matrix factorization known as the
-*Singular Value Decomposition* (SVD). The SVD is defined for any $n\times p$
-matrix $X$. In most cases we want $n \ge p$, and if $n < p$ we can take the
-SVD of $X^T$. When $n\ge p$, we decompose $X$ as $X = USV^T$, where $U$ is
-$n\times p$, $S$ is $p\times p$, and $V$ is $p\times p$. The matrices $U$ and
-$V$ are orthogonal so that $U^TU = I_p$, $V^TV = I_p$, and $S$ is diagonal
-with $S_{11} \ge S_{22} \ge \cdots \ge S_{pp}$. The values on the diagonal of
-$S$ are the *singular values* of $S$, and the SVD is unique except when there
-are ties among the singular values or if one or more of the singular values
-are zero.
+[Singular Value Decomposition](https://en.wikipedia.org/wiki/Singular_value_decomposition),
+or SVD. The SVD is defined for any $n\times p$ matrix $X$. In most cases we
+want $n \ge p$, and if $n < p$ we can take the SVD of $X^T$. When $n\ge p$, we
+decompose $X$ as $X = USV^T$, where $U$ is $n\times p$, $S$ is $p\times p$,
+and $V$ is $p\times p$. The matrices $U$ and $V$ are orthogonal so that
+$U^TU = I_p$, $V^TV = I_p$, and $S$ is diagonal with
+$S_{11} \ge S_{22} \ge \cdots \ge S_{pp}$. The values on the diagonal of $S$
+are the *singular values* of $S$, and the SVD is unique except when there are
+ties among the singular values or if one or more of the singular values are
+zero.
 
 One use of the SVD is to obtain a low rank approximation to a matrix $X$. The
 extreme example of a low rank matrix is a matrix with rank 1, which means that
@@ -170,7 +198,7 @@ it is not the linear least squares used in regression analysis.
 ### Analyzing a data matrix using the SVD
 
 Suppose we have a data matrix $X$ and wish to understand its structure. We can
-begin my double centering the matrix $X$ as discussed above:
+begin by double centering the matrix $X$ as discussed above:
 
 $$
 X_{ij} = m + r_i + c_j + R_{ij}.
@@ -210,6 +238,44 @@ $s_j \approx a/j^b$. To assess the decay of the eigenvalues, we can consider
 plots of $\log s_j$ against $j$, which is linear in the case of exponential
 decay, and plots of $\log s_j$ against $\log j$, which is linear in the case
 of power-law decay.
+
+## Dimension reduction of grouped data
+
+Suppose we have multivariate grouped data, such as vectors of individual
+characteristics for people who have been partitioned into $G$ groups, The data
+for each individual is a $p$-dimensional vector of characteristics, so we let
+$y_{ij}$ denote the $j$th observation in the $i$th group. There are $n_i$
+observations in the $i$th group, so $j=1,\ldots,n_i$. Let $m_j$ denote the
+mean (centroid) of group $j$ (so $m_j$ is a $p$-dimensional vector), and let
+$r_{ij} = y_{ij} - m_j$ denote the residual vector (a $p$-dimensional vector)
+for observation $y_{ij}$. The overall _scatter matrix_ is
+$E = \sum_{ij} r_{ij}r_{ij}^\prime$, a $p\times p$ matrix. Letting
+$n=\sum_i n_i$, one could view $E$ as the _residual covariance matrix_. Let
+$m$ be the centroid of the entire collection of observations, and define the
+_hypothesis matrix_ as $H = \sum_i n_i (m_j - m)(m_j - m)^\prime$, a
+$p\times p$ matrix. We can interpret $H/n$ as the "between group covariance"
+matrix.
+
+In classical multivariate analysis, a technique known as
+[multivariate analysis of variance](https://en.wikipedia.org/wiki/Multivariate_analysis_of_variance)
+allows us to understand the within and between group structure captured by the
+matrices $H$ and $E$, and to reduce the dimension of the data while preserving
+as much of the between-group information as possible. A closely related
+technique is
+[linear discriminant analysis (LDA)](https://en.wikipedia.org/wiki/Linear_discriminant_analysis).
+
+The classical approaches to LDA and MANOVA are all based on the eigenvalues
+and eigenvectors of $E^{-1}H$, which are also the generalized eigenvalues of
+$H$ relative to $E$. Let $\lambda_1 \ge \lambda_2 \ge \cdots$ represent these
+eigenvalues in descending order, and let $\eta_1, \eta_2, \ldots$ denote the
+corresponding eigenvectors.
+
+The natural interpretation of $\lambda_k$ is that it represents the ratio of
+between-group to within-group variance of the data projected in the direction
+$\eta_k$, i.e. of the scalars $\eta_k^\prime y_{ij}$. The transformed
+eigenvalue statistic $\lambda_i / (1 + \lambda_i)$ is the proportion of total
+variance of the projected data that is between-group, which is essentially an
+$R^2$ statistic for the projected data.
 
 ## Principal Components Analysis
 
