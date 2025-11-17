@@ -1,8 +1,14 @@
 # Additional methods for multivariate analysis
 
 This document discusses several modern methods for analyzing multivariate
-data. Since these methods were developed in the past 20 years, they are less
-widely known than the classical multivariate methods such as PCA, CCA, etc.
+data. These methods were developed since around 1970, whereas the classical
+multivariate methods such as PCA, CCA, etc. were developed in the 1930's or
+earlier. The methods discussed here make less use of factor analysis/dimension
+reduction using the singular value decomposition, and instead make more use of
+point set geometry. Methods such as PCA work best for
+[elliptically distributed](https://en.wikipedia.org/wiki/Elliptical_distribution)
+data, whereas the methods discussed here can in some cases overcome this
+limitation.
 
 ## Functional data
 
@@ -10,7 +16,8 @@ A particular type of multivariate data is known as *functional data*, in which
 we observe vectors $v \in {\mathbb R}^d$ that arise from evaluating a function
 on a grid of points, i.e. $v = [f(t_i)]_{i=1}^d$ for a grid
 $t_1 < t_2 < \cdots < t_d$. If the function $f$ is smooth then the elements of
-each $v_i$ will reflect this smoothness. *Functional Data Analysis* (FDA)
+each $v_i$ will reflect this smoothness.
+[Functional Data Analysis (FDA)](https://en.wikipedia.org/wiki/Functional_data_analysis)
 encompasses many methods for analyzing functions as data. In practice we never
 actually observe a function in its entirety, thus the data we work with in FDA
 are finite dimensional vectors, and (superficially) have the same form as
@@ -22,10 +29,10 @@ property.
 
 ## Data Depth
 
-There are various ways to measure the *depth* of a point $z \in {\mathbb R}^d$
-relative to a distribution or collection of points
-$\\{x_i\in {\mathbb R}^d; i=1,\ldots,n\\}$. Formally, a *depth measure* on
-${\mathbb R}^d$ is a function from ${\mathbb R}^d\rightarrow{\mathbb R}^+$
+There are various ways to measure the [depth](https://arxiv.org/abs/1207.4988)
+of a point $z \in {\mathbb R}^d$ relative to a distribution or collection of
+points $\\{x_i\in {\mathbb R}^d; i=1,\ldots,n\\}$. Formally, a *depth measure*
+on ${\mathbb R}^d$ is a function from ${\mathbb R}^d\rightarrow{\mathbb R}^+$
 that quantifies the depth of each point as a non-negative real number.
 
 "Deep" points are surrounded in all directions by many other points, while
@@ -39,16 +46,17 @@ Below are several examples of depths.
 
 ### Halfspace depth
 
-The original definition of depth was the *halfspace depth* introduced by John
-Tukey in 1975. The definition of the halfspace depth is simple to describe
-graphically and a bit more difficult to define formally. To calculate the
-halfspace depth of a single point $z\in {\mathbb R}^d$ with respect to a
+The original definition of depth was the
+[halfspace depth](https://en.wikipedia.org/wiki/Tukey_depth) introduced by
+John Tukey in 1975. The definition of the halfspace depth is simple to
+describe graphically and a bit more difficult to define formally. To calculate
+the halfspace depth of a single point $z\in {\mathbb R}^d$ with respect to a
 collection of points $\{x_i; i=1, \ldots, n\}$, with each
 $x_i \in {\mathbb R}^d$, let $U$ denote the set of all unit vectors in
 ${\mathbb R}^d$ and define the halfspace depth as
 
 $$
-D_{HS}(z; \\{x_i\\}) = {\rm min}_{u\in U} \\,n^{-1}\\,\sum_i {\cal I}(u^\prime (x_i - z) > 0)
+D_{HS}(z; \\{x_i\\}) = {\rm min}_{u\in U} \\,n^{-1}\\,\sum_i {\cal I}(u^T (x_i - z) > 0)
 $$
 
 What we are doing here is searching for a hyperplane passing through $z$ that
@@ -165,14 +173,13 @@ defining a distance function that measures how far apart $F$ and $G$ are from
 each other. Note that this distance compares two probability distributions (it
 is not the simpler notion of a distance between vectors). Distances among
 probability distributions play an important role in modern statistics. When
-$d=1$, many natural distance measures on probability distributions
-can be constructed, but it is harder to construct good
-distances on probability distributions when the dimension $d$ is greater than
-one.
+$d=1$, many natural distance measures on probability distributions can be
+constructed, but it is harder to construct good distances on probability
+distributions when the dimension $d$ is greater than one.
 
 One distance measure on probability distributions that turns out to be very
-effective and relatively easy to work with is called the *energy distance*,
-defined as
+effective and relatively easy to work with is called the
+[energy distance](https://en.wikipedia.org/wiki/Energy_distance), defined as
 
 $$
 2E \lVert X-Y \lVert - E \lVert X-X^\prime \lVert - E \lVert Y-Y^\prime \lVert.
@@ -245,12 +252,11 @@ determinant among all such subsets.
 
 The determinant of a covariance matrix is a measure of its dispersion. If $x$
 follows the multivariate normal distribution $N_p(\mu, \Sigma)$, the squared
-Mahalanobis distance $(x-\mu)^\prime \Sigma^{-1}(x-\mu)$ follows the
-$\chi^2_p$ distribution, where $x \in {\mathbb R}^p$. It follows that the
-ellipsoid
+Mahalanobis distance $(x-\mu)^T \Sigma^{-1}(x-\mu)$ follows the $\chi^2_p$
+distribution, where $x \in {\mathbb R}^p$. It follows that the ellipsoid
 
 $$
-\\{(x-\mu)^\prime \Sigma^{-1}(x-\mu) \le t\\}
+\\{(x-\mu)^T \Sigma^{-1}(x-\mu) \le t\\}
 $$
 
 covers $F_p(t)$ probability mass of the $N_p(\mu, \Sigma)$ distribution, where
@@ -265,28 +271,27 @@ with any "robust" estimator, there is an implicit assertion that certain
 points may be outliers and should be discounted or excluded from the analysis.
 However there is no guarantee that any particular definition of an outlier is
 correct. In the case of the MCD, we are asserting that points that inflate the
-volume of an estimated \`\`high probability ellipsoid'' may be outliers.
+volume of an estimated _high probability ellipsoid_ may be outliers.
 
 Exact calculation of the MCD estimator of the covariance matrix is
 challenging. Enumerating all possible subsets of $m$ out of $n$ observations
-is impossible in practice. Therefore a greedy approach called \`\`fast MCD''
-is used in practice.
+is impossible in practice. Therefore a greedy approach called _fast MCD_ is
+used in practice.
 
 One use for the covariance matrix is to quantify the "outlyingness" of
 individual observations. Specifically, let $x\in{\mathbb R}^d$ denote an
 observation, $\mu\in{\mathbb R}^d$ denote the mean, and
 $\Sigma\in{\mathbb R}^{d\times d}$ denote the covariance matrix. The squared
 [Mahalanobis distance](https://en.wikipedia.org/wiki/Mahalanobis_distance) is
-defined to be $(x-\mu)^\prime \Sigma^{-1}(x-\mu)$. Points with larger
-Mahalanobis distance to the center are "less central" or "more outlying".
-Using the MCD or another robust estimate of the covariance matrix (and of the
-mean) can sometimes reveal more interesting sets of outliers than those that
-are identified by the sample covariance matrix.
+defined to be $(x-\mu)^T \Sigma^{-1}(x-\mu)$. Points with larger Mahalanobis
+distance to the center are "less central" or "more outlying". Using the MCD or
+another robust estimate of the covariance matrix (and of the mean) can
+sometimes reveal more interesting sets of outliers than those that are
+identified by the sample covariance matrix.
 
 There is a connection between the MCD and data depth using the "Mahalanobis
-depth" (MD), which is defined to be
-$1 / (1 + (x-\mu)^\prime \Sigma^{-1}(x-\mu))$. The conventional MD uses the
-sample covariance to estimate $\Sigma$, but this opens the possibility of
-"masking", where a small group of outliers distorts the covariance matrix so
-as to mask their outlyingness. Using the MCD to estimate $\Sigma$ circumvents
-this issue.
+depth" (MD), which is defined to be $1 / (1 + (x-\mu)^T \Sigma^{-1}(x-\mu))$.
+The conventional MD uses the sample covariance to estimate $\Sigma$, but this
+opens the possibility of "masking", where a small group of outliers distorts
+the covariance matrix so as to mask their outlyingness. Using the MCD to
+estimate $\Sigma$ circumvents this issue.
