@@ -56,7 +56,7 @@ $x_i \in {\mathbb R}^d$, let $U$ denote the set of all unit vectors in
 ${\mathbb R}^d$ and define the halfspace depth as
 
 $$
-D_{HS}(z; \\{x_i\\}) = {\rm min}_{u\in U} \\,n^{-1}\\,\sum_i {\cal I}(u^T (x_i - z) > 0)
+D_{HS}(z; \\{x_i\\}) = {\rm min}_{u\in U} \sum_i {\cal I}(u^T (x_i - z) > 0)
 $$
 
 What we are doing here is searching for a hyperplane passing through $z$ that
