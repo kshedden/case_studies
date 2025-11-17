@@ -209,9 +209,10 @@ $$
 It is worth considering an alternative approach in which we simply minimize
 the first term above, $E \lVert X-Y \lVert$. However doing this always yields
 a degenerate solution in which $F$ places all of its probability mass on the
-*spatial median*, which is the fixed vector $V$ that minimizes
-$E \lVert Y - V \lVert$. This is the reason that the "repulsive" term
-$E \lVert X-X^\prime \lVert$ in the distance measure is essential.
+[spatial median](https://en.wikipedia.org/wiki/Geometric_median), which is the
+fixed vector $V$ that minimizes $E \lVert Y - V \lVert$. This is the reason
+that the "repulsive" term $E \lVert X-X^\prime \lVert$ in the distance measure
+is essential.
 
 In practice, we do not observe the distribution $G$ but instead observe a
 sample $y_1, \ldots, y_N$. As stated above, the approximating distribution $F$
