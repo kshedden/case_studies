@@ -1,0 +1,302 @@
+## Shape analysis of species ranges
+
+In this notebook we consider methods that allow us to better understand the spatial ranges of the species of plants in a taxonomic class. The observations of each species can be considered as a spatial point set. The methods used here are examples of [spatial descriptive statistics](https://en.wikipedia.org/wiki/Spatial_descriptive_statistics).
+
+```{r}
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(maps)
+library(geodist)
+library(tidyr)
+```
+
+Select a taxonomic class for analysis.
+
+```{r}
+#pclass = "Pinopsida"
+pclass = "Polypodiopsida"
+```
+
+These are some geophysical constants that we will need below.
+
+```{r}
+earth_radius_m = 6371000
+earth_radius_km = earth_radius_m / 1000
+earth_circumference_km = 40075
+land_area = 149 * 10^6
+```
+
+We will only use observations made since January 1, 2015.
+
+```{r}
+pa = sprintf("/home/kshedden/data/Teaching/inaturalist/Plantae_%s.csv.gz", pclass)
+da = read_csv(pa)
+da = da %>% mutate(eventDate = as.Date(eventDate))
+da = da %>% filter(eventDate >= as.Date('2015-01-01'))
+da = da %>% select(!elevation) %>% drop_na()
+```
+
+For this analysis we will only consider species with at least 1000 observations.
+
+```{r}
+da = da %>% group_by(species) %>% mutate(n=n()) %>% ungroup()
+da = da %>% filter(n>=1000)
+```
+
+To visualize the results of this analysis, we will make maps showing the locations of observations of a single species.
+
+```{r}
+map_species = function(sn) {
+
+    db = da %>% filter(species==sn)
+  
+    world_map = map_data("world")
+    p = ggplot(data=world_map, aes(x=long, y=lat, group=group)) +
+        geom_polygon(fill="lightgray", color="lightgray") +
+        coord_fixed(1.3) +
+        geom_point(data=db, aes(x=decimalLongitude, y=decimalLatitude, group=1), 
+                 size=0.3, alpha=0.5, color="purple") + ggtitle(sn)
+    return(p)
+}
+
+# Test the map_species function
+map_species("Amauropelta noveboracensis")
+```
+
+To calculate distances below, we will need to have the latitude and longitude of each observation in radians.
+
+```{r}
+da = da %>% mutate(lonrad=pi*decimalLongitude/180)
+da = da %>% mutate(latrad=pi*decimalLatitude/180)
+```
+
+We will be calculating some circular statistics below, for which we need these quantities.
+
+```{r}
+da = da %>% mutate(lonrad_sin=sin(lonrad))
+da = da %>% mutate(lonrad_cos=cos(lonrad))
+```
+
+The circular mean and circular variance are based on these means:
+
+```{r}
+da = da %>% group_by(species) 
+        %>% mutate(lonrad_cos_mean=mean(lonrad_cos),
+                   lonrad_sin_mean=mean(lonrad_sin)) 
+        %>% ungroup()
+```
+
+# Comparing species ranges based on spatial dispersion
+
+Below we calculate the circular variances of the longitude values for each species.
+
+```{r}
+da = da %>% mutate(lon_var=1 - sqrt(lonrad_cos_mean^2 + lonrad_sin_mean^2))
+```
+
+The histogram below shows a bimodal pattern in the circular variances.
+
+```{r}
+da1 = da %>% group_by(species) %>% slice_head(n=1)
+ggplot() + geom_histogram(data=da1, aes(x=lon_var), bins=10)
+```
+
+The maps below show the observed locations for the three species with the least longitudinal variance. These maps reveal that the species with small longitudinal variances are often limited to a single island or a strip of coast that runs north to south.
+
+```{r}
+da1 = arrange(da1, lon_var)
+
+for (i in c(1, 2, 3)) {
+  sn = da1[i, "species"][[1]]
+  p = map_species(sn)
+  print(p)
+}
+```
+
+The maps below show the three species with the greatest longitudinal variance.
+
+```{r}
+da1 = arrange(da1, desc(lon_var))
+
+for (i in c(1, 2, 3)) {
+  sn = da1[i, "species"][[1]]
+  p = map_species(sn)
+  print(p)
+}
+```
+
+Below we calculate empirical quantiles of the sets of pairwise distances between pairs of observations for a species. These pairwise distances are the basis for many methods of spatial analysis.
+
+```{r}
+f = function(dx) {
+  dx = dx %>% select(decimalLongitude, decimalLatitude)
+  dx = dx %>% rename(lon=decimalLongitude, lat=decimalLatitude)
+  n = dim(dx)[1]
+  if (n > 1000) {
+    ii = sample(n, 100)
+    dx = dx[ii,]
+  }
+  dd = geodist(dx, measure="haversine")
+  xd = dd[lower.tri(dd)] / 1000
+  qt = quantile(xd, probs=seq(0, 1, length.out=100))
+  qt = data.frame(t(qt))
+  colnames(qt) = sprintf("q%d", 1:100)
+  return(qt)
+}
+
+dd = da %>% group_by(species) %>% group_modify(~ f(.x)) %>% ungroup()
+```
+
+The median pairwise distance between two observations of one species is a measure of spatial dispersion. Below we plot the spatial distributions of occurrences of the three species with the least median pairwise distance, and the three species with the greatest median pairwise distance.
+
+```{r}
+xq = dd %>% select(species, q50)
+xq = arrange(xq, q50)
+
+for (i in 1:3) {
+  p = map_species(xq$species[i])
+  print(p)
+}
+
+xq = arrange(xq, desc(q50))
+for (i in 1:3) {
+  p = map_species(xq$species[i])
+  print(p)
+}
+```
+
+The empirical CDF of the pairwise distances for a species is a functional summary of the distribution of the species occurrences. We plot a few of these eCDFs below.
+
+```{r}
+# Make a longform dataframe containing the quantiles for 5 randomly selected species.
+pp = seq(1e-6, 1-1e-6, length.out=100)
+xl = list()
+for (i in 1:5) {
+  dd1 = dd %>% slice_sample(n=1)
+  qq = unlist(dd1[1,2:101])
+  xl[[i]] = data.frame(id=i, p=pp, q=qq)
+}
+
+xl = bind_rows(xl)
+xl$id = as.factor(xl$id)
+
+p = ggplot() + geom_line(data=xl, aes(x=q, y=p, group=id, color=id))
+print(p)
+```
+
+## Comparing species ranges based on their geometric dimension
+
+The [correlation dimension](https://en.wikipedia.org/wiki/Correlation_dimension) posits that the fraction $p(\epsilon)$ of pairwise distances that are less than a value $\epsilon > 0$ follow the power law $p(\epsilon) \sim \epsilon^\nu$ for small $\epsilon$. The value of $\nu$ is the correlation dimension. When $\nu$ is small the species range is restricted to a lower dimensional region. When $\nu$ is large, the species range fills space more fully. If the species distribution is spatially uniform the correlation dimension will be 2. If the species distribution is restricted to 1-dimensional paths, the correlation dimension will be 1. Correlation dimensions smaller than 1 indicate a "fractal-like" distribution.
+
+The correlation dimension can be estimated using the least squares slope of the graph of the empirical CDF in log/log space.
+
+```{r}
+p = ggplot() + geom_line(data=xl, aes(x=log(q), y=log(p), group=id, color=id))
+print(p)
+```
+
+```{r}
+ppl = log(pp)
+
+f = function(dx) {
+  qq = as.vector(unlist(dx))
+  w = pp * (1 - pp)
+  ii = which(qq > 0)
+  qql = log(qq)
+  xx = cbind(ppl[ii], qql[ii])
+  cc = cov.wt(xx, w[ii])
+  return(cc$cov[1,2]/cc$cov[2,2])
+}
+
+dd = dd %>% rowwise() %>% mutate(cor_dim=f(pick(starts_with("q")))) %>% ungroup()
+```
+
+Below is a histogram of the estimated correlation dimension values for all species.
+
+```{r}
+ggplot() + geom_histogram(data=dd, aes(x=cor_dim))
+```
+
+Below we plot the spatial distributions of occurrences of the three species with least and greatest correlation dimensions.
+
+```{r}
+dd = arrange(dd, cor_dim)
+
+for (i in 1:3) {
+  sn = dd$species[i]
+  p = map_species(sn)
+  print(p)
+}
+
+dd = arrange(dd, desc(cor_dim))
+
+for (i in 1:3) {
+  sn = dd$species[i]
+  p = map_species(sn)
+  print(p)
+}
+```
+
+## Principal Component Analysis of pairwise distance CDFs
+
+We can use PCA to understand the main modes of variation among the pairwise distance eCDFs.
+
+```{r}
+xc = select(dd, starts_with("q"))
+xr = as.matrix(xc)
+xr = log(1 + xr)
+cmn = colMeans(xr)
+xc = scale(xr, scale=F)
+ss = svd(xc)
+loadings = ss$v[,1:3]
+scores = t(t(ss$u[,1:3]) * ss$d[1:3])
+```
+
+The first 30-40 singular values decay like a power law.
+
+```{r}
+dp = data.frame(pos=seq(100), d=ss$d)
+ggplot() + geom_point(data=dp, aes(x=log(pos), y=log(d)))
+
+cc = cov(log(dp[1:40,]))
+slope = cc[1, 2] / cc[1,1]
+```
+
+```{r}
+plot_factor = function(j) {
+  s = sd(scores[,j])
+  x = c(pp, pp, pp)
+  y = c(cmn, cmn + s*loadings[,j], cmn - s*loadings[,j])
+  g = c(array("mean", length(cmn)), array("mean+1sd", length(cmn)), array("mean-1sd", length(cmn)))
+  xx = data.frame(x=x, y=y, g=as.factor(g))
+  p = ggplot() + geom_line(data=xx, aes(x=x, y=y, group=g, color=g))
+  p = p + xlab("Probability point") + ylab("Log quantile")
+  return(p)
+}
+
+plot_factor(1)
+plot_factor(2)
+```
+
+
+```{r}
+plot_extremes = function(j) {
+  ii = order(scores[,j])
+  n = dim(xc)[1]
+  x = c(pp, pp, pp, pp, pp, pp)
+  y = c(xr[ii[1], ], xr[ii[2],], xr[ii[3],], xr[ii[n],], xr[ii[n-1],], xr[ii[n-2],])
+  g = kronecker(seq(6), array(1, 100))
+  r = rep("red", 100)
+  b = rep("blue", 100)
+  col = c(b, b, b, r, r, r)
+  dp = data.frame(x=x, y=y, g=g)
+  p = ggplot() + geom_line(data=dp, aes(x=x, y=y, group=g, color=col))
+  p = p + xlab("Probability point") + ylab("Log quantile")
+  return(p)
+}
+
+plot_extremes(1)
+plot_extremes(2)
+```
+
