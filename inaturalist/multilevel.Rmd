@@ -1,6 +1,6 @@
-# Inaturalist
+# Systematic changes in the latitudes of plant species ranges over time -- multilevel regression approach
 
-In this notebook we use multilevel regression to assess species-specific linear temporal trends in the latitudes of occurrences of species within a class of plants.  In a multilevel regression model, each species has its own slope for the rate of change of latitude over time.  However instead of estimating these slopes as parameters, they are treated as random effects (random slopes), and we estimate the variance of the probability distribution of random slopes.  This variance parameter reflects the dispersion among species of the rates of change, but does not directly tell us anything about the slope (rate of change) for each individual species.
+In this notebook we use multilevel regression to assess species-specific linear temporal trends in the mean latitude at which a plant species is observed.  In a multilevel regression model, each species has its own slope for the rate of change of the mean latitude over time.  However instead of estimating these slopes as parameters, they are treated as random effects (random slopes), and we estimate the variance of the probability distribution of random slopes.  This variance parameter reflects the dispersion among species of the rates of change, but does not directly tell us anything about the slope (rate of change) for each individual species.
 
 ```{r}
 library(readr)
@@ -11,7 +11,6 @@ library(tidyr)
 library(ggplot2)
 library(ggfortify)
 library(mapdata)
-library(RLRsim)
 ```
 
 Select a class of plants
@@ -56,12 +55,17 @@ da = da %>% mutate(lonrad=pi*decimalLongitude/180)
 Plot the locations of the occurrences.
 
 ```{r}
-world = map_data("world")
-plt = ggplot() + ggtitle(pclass)
-plt = plt + geom_map(data=world, map=world, aes(long, lat, map_id=region, fill="grey"))
-plt = plt + geom_point(data=da, aes(decimalLongitude, decimalLatitude), alpha=0.2)
-plt = plt + theme(legend.position="none")
-print(plt)
+plot_range = function(da, sn) {
+  world = map_data("world")
+  plt = ggplot() 
+  plt = plt + geom_map(data=world, map=world, aes(long, lat, map_id=region, fill="grey"))
+  plt = plt + geom_point(data=da, aes(decimalLongitude, decimalLatitude), alpha=0.2, size=0.2)
+  plt = plt + theme(legend.position="none")
+  plt = plt + ggtitle(sprintf("%s (%s)", sn, pclass))
+  print(plt)
+}
+
+plot_range(da, "all")
 ```
 
 Fit a multilevel linear regression with random species intercepts. 
@@ -107,7 +111,13 @@ null hypothesis.  Similar guidance applies to the AIC.
 ```{r}
 print(logLik(m1))
 print(logLik(m2))
+```
+
+```{r}
 print(logLik(m1) - logLik(m2))
+```
+
+```{r}
 print(AIC(m1)-AIC(m2))
 ```
 
@@ -127,22 +137,6 @@ plt = ggplot(z, aes(x=intercept, y=slope)) + stat_density_2d()
 print(plt)
 ```
 
-Later we will conduct a formal test that the day (by species) variance is significantly positive. This requires us to fit two alternative models.
-
-```{r}
-m3 = lmer(decimalLatitude ~ (0 + day | species) + day + sin(lonrad) + cos(lonrad) + sin(lonrad/2) + cos(lonrad/2), da)
-summary(m3)
-```
-
-```{r}
-m4 = lmer(decimalLatitude ~ (0 + day | species) + (1 | species) + day + sin(lonrad) + cos(lonrad) + sin(lonrad/2) + cos(lonrad/2), da)
-```
-
-A formal test that the variance parameter is equal to zero is below.  It may be very slow to run so comment it out if these results are not needed.
-
-```{r}
-#ss = exactRLRT(m3, m4, m1)
-```
 
 Estimate the marginal mean latitude at Detroit's longitude
 
@@ -168,7 +162,11 @@ rr$species = row.names(rr)
 nn = group_by(da, species) %>% summarise(n=n())
 rr = left_join(rr, nn)
 rr = rename(rr, "Intercept"="(Intercept)")
+```
 
+One effect of partial pooling is that the BLUPs should have similar dispersion at all sample sizes.  We can assess this using the plots below.
+
+```{r}
 plt = ggplot(rr, aes(x=log(n), y=Intercept)) + geom_point()
 print(plt)
 
@@ -182,8 +180,9 @@ First we get a predicted day 0 latitude value for each species.  Technically thi
 ```{r}
 dx = da
 dx$day = 0
-dx$Latitude0 = predict(m2, dx, re.form=NA)
+dx$Latitude0 = predict(m2, dx)#, re.form=NA)
 dx = dx %>% group_by(species) %>% summarize(Latitude0=mean(Latitude0))
+hist(dx$Latitude0)
 ```
 
 Plot species-level linear trends over this time range
@@ -201,6 +200,18 @@ r0 = as.data.frame(r0)
 r0$species = row.names(r0)
 row.names(r0) = NULL
 r0 = r0 %>% left_join(group_by(da, species) %>% summarize(species_latitude=mean(species_latitude)))
+```
+
+Next we plot the empirical distribution of time slopes.
+
+```{r}
+hist(r0$day)
+```
+
+Note that the empirical variance of the time slopes is less than the structural variance parameter estimate, due to the partial-pooling.
+
+```{r}
+var(r0$day)
 ```
 
 Use the predicted random effects (BLUPs) to predict species-level mean latitudes on the first and last day covered by the dataset.
@@ -241,3 +252,16 @@ plt = plt + geom_abline(aes(intercept=a, slope=b, color="red"))
 plt = plt + xlab("Time (day x 1000)") + ylab("Species latitude")
 print(plt)
 ```
+In the following, we consider the species with the smallest predicted day slopes.
+
+```{r}
+for (j in 1:3) {
+  r0 = arrange(r0, day)
+  sn = r0$species[j]
+  plot_range(da1, sn)
+  da1 = da %>% filter(species==sn)
+  plt = ggplot() + geom_point(data=da1, aes(x=day, y=decimalLatitude))
+  print(plt)
+}
+```
+
