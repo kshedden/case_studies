@@ -52,6 +52,23 @@ Convert longitude to radians
 da = da %>% mutate(lonrad=pi*decimalLongitude/180)
 ```
 
+```{r}
+da = da %>% mutate(lonrad_sin = sin(lonrad))
+da = da %>% mutate(lonrad_cos = cos(lonrad))
+da = da %>% mutate(lonrad_sin2 = sin(lonrad/2))
+da = da %>% mutate(lonrad_cos2 = cos(lonrad/2))
+```
+
+```{r}
+da = da %>% group_by(species) 
+da = da %>% mutate(lonrad_sin_cen = lonrad_sin - mean(lonrad_sin))
+da = da %>% mutate(lonrad_cos_cen = lonrad_cos - mean(lonrad_cos))
+da = da %>% mutate(lonrad_sin2_cen = lonrad_sin2 - mean(lonrad_sin2))
+da = da %>% mutate(lonrad_cos2_cen = lonrad_cos2 - mean(lonrad_cos2))
+da = da %>% ungroup()
+```
+
+
 Plot the locations of the occurrences.
 
 ```{r}
@@ -71,7 +88,7 @@ plot_range(da, "all")
 Fit a multilevel linear regression with random species intercepts. 
 
 ```{r}
-m1 = lmer(decimalLatitude ~ (1 | species) + day + sin(lonrad) + cos(lonrad) + sin(lonrad/2) + cos(lonrad/2), da)
+m1 = lmer(decimalLatitude ~ (1 | species) + day + lonrad_sin_cen + lonrad_cos_cen + lonrad_sin2_cen + lonrad_cos2_cen, da)
 summary(m1)
 ```
 We can extract the estimated variance parameters (standard deviation of the random species intercept and
@@ -96,17 +113,11 @@ tells us to what extent different species ranges are moving (in terms of latitud
 rates.
 
 ```{r}
-m2 = lmer(decimalLatitude ~ (1 + day | species) + day + sin(lonrad) + cos(lonrad) + sin(lonrad/2) + cos(lonrad/2), da)
+m2 = lmer(decimalLatitude ~ (1 + day | species) + day + lonrad_sin_cen + lonrad_cos_cen + lonrad_sin2_cen + lonrad_cos2_cen, da)
 summary(m2)
 ```
 
-A key parameter in the output above is the standard deviation of the random day slopes.  If this variance parameter is zero,
-the conclusion should be that all species have the same slope (which is given in the mean structure by the fixed slope
-for day).  Testing that a variance parameter is zero is a non-regular hypothesis test (since the null hypothesis is on
-the boundary of the parameter space).  The likelihood ratio test statistic in this case does not follow a chi-square distribution
-under the null hypothesis.  However, inference based on the chi square distribution in this setting will generally
-be conservative.  When there is strong evidence against the null hypothesis, we can still be confident in rejecting the
-null hypothesis.  Similar guidance applies to the AIC.
+A key parameter in the output above is the standard deviation of the random day slopes.  If this variance parameter is zero, the conclusion should be that all species have the same slope (which is given in the mean structure by the fixed slope for day).  Testing that a variance parameter is zero is a non-regular hypothesis test (since the null hypothesis is on the boundary of the parameter space).  The likelihood ratio test statistic in this case does not follow a chi-square distribution under the null hypothesis.  However, inference based on the chi square distribution in this setting will generally be conservative.  When there is strong evidence against the null hypothesis, we can still be confident in rejecting the null hypothesis.  Similar guidance applies to the AIC.
 
 ```{r}
 print(logLik(m1))
@@ -137,23 +148,6 @@ plt = ggplot(z, aes(x=intercept, y=slope)) + stat_density_2d()
 print(plt)
 ```
 
-
-Estimate the marginal mean latitude at Detroit's longitude
-
-```{r}
-dp = head(da, 100)
-dp = dp %>% mutate(day=seq(min(da$day), max(da$day), length.out=100))
-dp = dp %>% mutate(lonrad=-pi*83/180) # Detroit longitude
-dp$yy = predict(m1, dp, re.form=NA)
-```
-
-Plot the marginal mean latitude for plants observed at Detroit's longitude 
-
-```{r}
-plt = ggplot(dp, aes(x=day, y=yy)) + geom_line() + xlab("Time (day x 1000)") + ylab("Marginal mean latitude")
-print(plt)
-```
-
 The next set of cells produces predicted "trend lines" of latitude versus time for each species using the fitted multilevel model.  These trend lines are "partially pooled", so that for species with large sample sizes, the trend line mainly follows the observed data for that species.  But for species with small sample sizes, the intercept and slope for the species are shrunken toward the population mean intercept and slope.
 
 ```{r}
@@ -180,7 +174,7 @@ First we get a predicted day 0 latitude value for each species.  Technically thi
 ```{r}
 dx = da
 dx$day = 0
-dx$Latitude0 = predict(m2, dx)#, re.form=NA)
+dx$Latitude0 = predict(m2, dx)
 dx = dx %>% group_by(species) %>% summarize(Latitude0=mean(Latitude0))
 hist(dx$Latitude0)
 ```
@@ -240,10 +234,8 @@ plt = ggplot(pr, aes(x=day, y=latitude, group=species)) + geom_line(alpha=0.2)
 Plot the population averaged trend line in red.
 
 ```{r}
-ang = -pi*83/180
 f = fixef(m2)
-a = f[["(Intercept)"]] + f[["sin(lonrad)"]]*sin(ang) + f[["cos(lonrad)"]]*cos(ang) +
-    f["sin(lonrad/2)"]*sin(ang/2) + f["cos(lonrad/2)"]*cos(ang/2)
+a = f[["(Intercept)"]]
 b = f[["day"]]
 plt = plt + geom_abline(aes(intercept=a, slope=b, color="red"))
 ```
@@ -258,8 +250,8 @@ In the following, we consider the species with the smallest predicted day slopes
 for (j in 1:3) {
   r0 = arrange(r0, day)
   sn = r0$species[j]
-  plot_range(da1, sn)
   da1 = da %>% filter(species==sn)
+  plot_range(da1, sn)
   plt = ggplot() + geom_point(data=da1, aes(x=day, y=decimalLatitude))
   print(plt)
 }
