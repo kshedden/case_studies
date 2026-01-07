@@ -293,7 +293,7 @@ plot_sir = function() {
 
     # Due to high-dimensionality, we project the temperature data to
     # a limited number of PC's before using SIR to estimate the coefficients.
-    q = 5
+    q = 3
     svx = svd(X)
     dd = dr.compute(svx$u[,1:q], lat, array(1, length(lat)))
     ddx = diag(svx$d[1:q], q, q)

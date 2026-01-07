@@ -197,10 +197,11 @@ independent random draws from $G$ are far from each other.
 
 Our goal is to approximate a given distribution $G$ with a simpler
 distribution $F$ that we construct. Here "simple" means that $F$ has finite
-support, i.e. a finite sample space. Since $G$ is given, the term
-$E \lVert Y-Y^\prime \lVert$ in the energy distance is fixed and can be
-ignored when constructing $F$. Thus, our goal is to construct $F$ that
-minimizes
+support, i.e. a finite sample space, and is uniform, i.e. $F$ assigns
+probability $1/m$ to each of the $m$ points in the sample space. Since $G$ is
+given, the term $E \lVert Y-Y^\prime \lVert$ in the energy distance is a
+constant that can be ignored when constructing $F$. Thus, our goal is to
+construct $F$ that minimizes
 
 $$
 2E \lVert X - Y \lVert - E \lVert X - X^\prime \lVert.
@@ -210,7 +211,7 @@ It is worth considering an alternative approach in which we simply minimize
 the first term above, $E \lVert X-Y \lVert$. However doing this always yields
 a degenerate solution in which $F$ places all of its probability mass on the
 [spatial median](https://en.wikipedia.org/wiki/Geometric_median), which is the
-fixed vector $V$ that minimizes $E \lVert Y - V \lVert$. This is the reason
+fixed vector $V$ that minimizes $E \lVert Y - V \lVert$. This is one reason
 that the "repulsive" term $E \lVert X-X^\prime \lVert$ in the distance measure
 is essential.
 

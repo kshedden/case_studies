@@ -29,7 +29,7 @@ Below we load the data and retain only occurrences after January 1, 2015.
 da = read_csv(pa)
 da = da %>% mutate(eventDate = as.Date(eventDate))
 da = da %>% filter(eventDate >= as.Date('2015-01-01'))
-da = da %>% select(!elevation) %>% drop_na()
+da = da %>% drop_na()
 ```
 
 The 'day' variable counts days since January 1, 2015.
@@ -42,8 +42,8 @@ da = da %>% mutate(day=difftime(eventDate, date1, units="days")/1000)
 Get the mean latitude for each species
 
 ```{r}
-dm = da %>% group_by(species) %>% summarize(species_latitude=mean(decimalLatitude))
-da = inner_join(da, dm, by="species")
+dm = da %>% group_by(scientificName) %>% summarize(species_latitude=mean(decimalLatitude))
+da = inner_join(da, dm, by="scientificName")
 ```
 
 Convert longitude to radians
@@ -60,7 +60,7 @@ da = da %>% mutate(lonrad_cos2 = cos(lonrad/2))
 ```
 
 ```{r}
-da = da %>% group_by(species) 
+da = da %>% group_by(scientificName) 
 da = da %>% mutate(lonrad_sin_cen = lonrad_sin - mean(lonrad_sin))
 da = da %>% mutate(lonrad_cos_cen = lonrad_cos - mean(lonrad_cos))
 da = da %>% mutate(lonrad_sin2_cen = lonrad_sin2 - mean(lonrad_sin2))
@@ -88,7 +88,7 @@ plot_range(da, "all")
 Fit a multilevel linear regression with random species intercepts. 
 
 ```{r}
-m1 = lmer(decimalLatitude ~ (1 | species) + day + lonrad_sin_cen + lonrad_cos_cen + lonrad_sin2_cen + lonrad_cos2_cen, da)
+m1 = lmer(decimalLatitude ~ (1 | scientificName) + day + lonrad_sin_cen + lonrad_cos_cen + lonrad_sin2_cen + lonrad_cos2_cen, da)
 summary(m1)
 ```
 We can extract the estimated variance parameters (standard deviation of the random species intercept and
@@ -101,7 +101,7 @@ print(vc)
 We can use the multilevel model to estimate the intraclass correlation coefficient (ICC) for the species latitudes.
 
 ```{r}
-sv = vc$species[1] # the species variance
+sv = vc$scientificName[1] # the species variance
 rv = summary(m1)$sigma^2 # the residual variance
 icc = sv / (sv + rv)
 print(icc)
@@ -113,7 +113,7 @@ tells us to what extent different species ranges are moving (in terms of latitud
 rates.
 
 ```{r}
-m2 = lmer(decimalLatitude ~ (1 + day | species) + day + lonrad_sin_cen + lonrad_cos_cen + lonrad_sin2_cen + lonrad_cos2_cen, da)
+m2 = lmer(decimalLatitude ~ (1 + day | scientificName) + day + lonrad_sin_cen + lonrad_cos_cen + lonrad_sin2_cen + lonrad_cos2_cen, da)
 summary(m2)
 ```
 
@@ -136,8 +136,8 @@ Below we plot the joint density of the random slope and random intercept.  The j
 
 ```{r}
 vc = VarCorr(m2)
-sv = vc$species[1] # the species variance
-va = as.matrix(vc$species)
+sv = vc$scientificName[1] # the species variance
+va = as.matrix(vc$scientificName)
 mn = c(0, fixef(m2)[2])
 vr = chol(va)
 stopifnot(max(abs(va - t(vr) %*% vr)) < 1e-12)
@@ -151,9 +151,9 @@ print(plt)
 The next set of cells produces predicted "trend lines" of latitude versus time for each species using the fitted multilevel model.  These trend lines are "partially pooled", so that for species with large sample sizes, the trend line mainly follows the observed data for that species.  But for species with small sample sizes, the intercept and slope for the species are shrunken toward the population mean intercept and slope.
 
 ```{r}
-rr = ranef(m2)$species
-rr$species = row.names(rr)
-nn = group_by(da, species) %>% summarise(n=n())
+rr = ranef(m2)$scientificName
+rr$scientificName = row.names(rr)
+nn = group_by(da, scientificName) %>% summarise(n=n())
 rr = left_join(rr, nn)
 rr = rename(rr, "Intercept"="(Intercept)")
 ```
@@ -175,7 +175,7 @@ First we get a predicted day 0 latitude value for each species.  Technically thi
 dx = da
 dx$day = 0
 dx$Latitude0 = predict(m2, dx)
-dx = dx %>% group_by(species) %>% summarize(Latitude0=mean(Latitude0))
+dx = dx %>% group_by(scientificName) %>% summarize(Latitude0=mean(Latitude0))
 hist(dx$Latitude0)
 ```
 
@@ -189,11 +189,11 @@ day2 = as.numeric(max(da$day))
 Extract the species random effects (random day slopes and intercepts)
 
 ```{r}
-r0 = ranef(m2)$species
+r0 = ranef(m2)$scientificName
 r0 = as.data.frame(r0)
-r0$species = row.names(r0)
+r0$scientificName = row.names(r0)
 row.names(r0) = NULL
-r0 = r0 %>% left_join(group_by(da, species) %>% summarize(species_latitude=mean(species_latitude)))
+r0 = r0 %>% left_join(group_by(da, scientificName) %>% summarize(species_latitude=mean(species_latitude)))
 ```
 
 Next we plot the empirical distribution of time slopes.
@@ -211,9 +211,9 @@ var(r0$day)
 Use the predicted random effects (BLUPs) to predict species-level mean latitudes on the first and last day covered by the dataset.
 
 ```{r}
-rr = left_join(r0, dx, by="species")
+rr = left_join(r0, dx, by="scientificName")
 rr = rr %>% mutate(Latitude1=Latitude0+day*(day2-day1))
-rr = rr %>% select(species, Latitude0, Latitude1)
+rr = rr %>% select(scientificName, Latitude0, Latitude1)
 ```
 
 Reshape the predictions for plotting
@@ -228,7 +228,7 @@ pr = pr %>% mutate(name=ifelse(day=="Day0", day1, day2))
 Plot species-level trends in latitude
 
 ```{r}
-plt = ggplot(pr, aes(x=day, y=latitude, group=species)) + geom_line(alpha=0.2)
+plt = ggplot(pr, aes(x=day, y=latitude, group=scientificName)) + geom_line(alpha=0.2)
 ```
 
 Plot the population averaged trend line in red.
@@ -249,8 +249,8 @@ In the following, we consider the species with the smallest predicted day slopes
 ```{r}
 for (j in 1:3) {
   r0 = arrange(r0, day)
-  sn = r0$species[j]
-  da1 = da %>% filter(species==sn)
+  sn = r0$scientificName[j]
+  da1 = da %>% filter(scientificName==sn)
   plot_range(da1, sn)
   plt = ggplot() + geom_point(data=da1, aes(x=day, y=decimalLatitude))
   print(plt)

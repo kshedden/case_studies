@@ -34,13 +34,13 @@ pa = sprintf("/home/kshedden/data/Teaching/inaturalist/Plantae_%s.csv.gz", pclas
 da = read_csv(pa)
 da = da %>% mutate(eventDate = as.Date(eventDate))
 da = da %>% filter(eventDate >= as.Date('2015-01-01'))
-da = da %>% select(!elevation) %>% drop_na()
+da = da %>% drop_na()
 ```
 
 For this analysis we will only consider species with at least 1000 observations.
 
 ```{r}
-da = da %>% group_by(species) %>% mutate(n=n()) %>% ungroup()
+da = da %>% group_by(scientificName) %>% mutate(n=n()) %>% ungroup()
 da = da %>% filter(n>=1000)
 ```
 
@@ -49,7 +49,7 @@ To visualize the results of this analysis, we will make maps showing the locatio
 ```{r}
 map_species = function(sn) {
 
-    db = da %>% filter(species==sn)
+    db = da %>% filter(scientificName==sn)
   
     world_map = map_data("world")
     p = ggplot(data=world_map, aes(x=long, y=lat, group=group)) +
@@ -81,10 +81,8 @@ da = da %>% mutate(lonrad_cos=cos(lonrad))
 The circular mean and circular variance are based on these means:
 
 ```{r}
-da = da %>% group_by(species) 
-        %>% mutate(lonrad_cos_mean=mean(lonrad_cos),
-                   lonrad_sin_mean=mean(lonrad_sin)) 
-        %>% ungroup()
+da = da %>% group_by(scientificName) %>% mutate(lonrad_cos_mean=mean(lonrad_cos),
+                   lonrad_sin_mean=mean(lonrad_sin)) %>% ungroup()
 ```
 
 # Comparing species ranges based on spatial dispersion
@@ -98,7 +96,7 @@ da = da %>% mutate(lon_var=1 - sqrt(lonrad_cos_mean^2 + lonrad_sin_mean^2))
 The histogram below shows a bimodal pattern in the circular variances.
 
 ```{r}
-da1 = da %>% group_by(species) %>% slice_head(n=1)
+da1 = da %>% group_by(scientificName) %>% slice_head(n=1)
 ggplot() + geom_histogram(data=da1, aes(x=lon_var), bins=10)
 ```
 
@@ -108,7 +106,7 @@ The maps below show the observed locations for the three species with the least 
 da1 = arrange(da1, lon_var)
 
 for (i in c(1, 2, 3)) {
-  sn = da1[i, "species"][[1]]
+  sn = da1[i, "scientificName"][[1]]
   p = map_species(sn)
   print(p)
 }
@@ -120,7 +118,7 @@ The maps below show the three species with the greatest longitudinal variance.
 da1 = arrange(da1, desc(lon_var))
 
 for (i in c(1, 2, 3)) {
-  sn = da1[i, "species"][[1]]
+  sn = da1[i, "scientificName"][[1]]
   p = map_species(sn)
   print(p)
 }
@@ -145,23 +143,23 @@ f = function(dx) {
   return(qt)
 }
 
-dd = da %>% group_by(species) %>% group_modify(~ f(.x)) %>% ungroup()
+dd = da %>% group_by(scientificName) %>% group_modify(~ f(.x)) %>% ungroup()
 ```
 
 The median pairwise distance between two observations of one species is a measure of spatial dispersion. Below we plot the spatial distributions of occurrences of the three species with the least median pairwise distance, and the three species with the greatest median pairwise distance.
 
 ```{r}
-xq = dd %>% select(species, q50)
+xq = dd %>% select(scientificName, q50)
 xq = arrange(xq, q50)
 
 for (i in 1:3) {
-  p = map_species(xq$species[i])
+  p = map_species(xq$scientificName[i])
   print(p)
 }
 
 xq = arrange(xq, desc(q50))
 for (i in 1:3) {
-  p = map_species(xq$species[i])
+  p = map_species(xq$scientificName[i])
   print(p)
 }
 ```
@@ -224,7 +222,7 @@ Below we plot the spatial distributions of occurrences of the three species with
 dd = arrange(dd, cor_dim)
 
 for (i in 1:3) {
-  sn = dd$species[i]
+  sn = dd$scientificName[i]
   p = map_species(sn)
   print(p)
 }
@@ -232,7 +230,7 @@ for (i in 1:3) {
 dd = arrange(dd, desc(cor_dim))
 
 for (i in 1:3) {
-  sn = dd$species[i]
+  sn = dd$scientificName[i]
   p = map_species(sn)
   print(p)
 }

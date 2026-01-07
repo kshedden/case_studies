@@ -26,7 +26,7 @@ Below we load the data and construct a time variable that starts on January 1, 2
 da = read_csv(pa)
 da = da %>% mutate(eventDate = as.Date(eventDate))
 da = da %>% filter(eventDate >= as.Date('2015-01-01'))
-da = da %>% select(!elevation) %>% drop_na()
+da = da %>% drop_na()
 da = da %>% mutate(date1 = as.Date('2015-01-01'))
 da = da %>% mutate(day=difftime(eventDate, date1, units="days")/1000)
 ```
@@ -34,7 +34,7 @@ da = da %>% mutate(day=difftime(eventDate, date1, units="days")/1000)
 This histogram below shows that the number of occurrences of individuals in a species has a very skewed distribution.
 
 ```{r}
-dn = da %>% group_by(species) %>% summarize(n=n())
+dn = da %>% group_by(scientificName) %>% summarize(n=n())
 dn = dn %>% mutate(logn=log10(n))
 plt = ggplot(dn, aes(x=logn)) + geom_histogram()
 print(plt)
@@ -43,8 +43,8 @@ print(plt)
 Below we calculate the mean latitude for each species.  Individual plants within each species occur at various locations, but each species has a geographic centroid.  We compute the centroid for latitude below since that is our focus here.
 
 ```{r}
-dm = da %>% group_by(species) %>% summarize(species_latitude=mean(decimalLatitude))
-da = inner_join(da, dm, by="species")
+dm = da %>% group_by(scientificName) %>% summarize(species_latitude=mean(decimalLatitude))
+da = inner_join(da, dm, by="scientificName")
 head(da)
 ```
 Below we calculate the intraclass correlation coefficient (ICC) of the latitude values, which describes the extent to which different species cluster by latitude.  An ICC of 1 corresponds to complete clustering and an ICC of 0 corresponds to no clustering.
@@ -63,7 +63,7 @@ da = da %>% mutate(lonrad_sin=sin(lonrad), lonrad_cos=cos(lonrad))
 Using circular statistics, calculate the longitudinal center for each species.
 
 ```{r}
-da = da %>% group_by(species) %>% transform(lonrad_sin_cen=mean(lonrad_sin), lonrad_cos_cen=mean(lonrad_cos))
+da = da %>% group_by(scientificName) %>% transform(lonrad_sin_cen=mean(lonrad_sin), lonrad_cos_cen=mean(lonrad_cos))
 u = sqrt(da$lonrad_sin_cen^2 + da$lonrad_cos_cen^2)
 da$lonrad_sin_cen = da$lonrad_sin_cen / u
 da$lonrad_cos_cen = da$lonrad_cos_cen / u
@@ -85,9 +85,9 @@ Below we fit a linear model for each species that predicts latitude from the tim
 
 ```{r}
 f = function(x, y) {
-  species = as.character(y)
+  scientificName = as.character(y)
   if (nrow(x) < 10) {
-    return(list(species=species, n=nrow(x)))
+    return(list(scientificName=scientificName, n=nrow(x)))
   }
   
   m1 = lm(decimalLatitude ~ day + lonrad_sin + lonrad_cos + fake, data=x)
@@ -115,12 +115,12 @@ f = function(x, y) {
   fake_slope = coef(m1)[["fake"]]
   fake_slope_se = s[["fake"]]
 
-  return(list(species=species, n=nrow(x), lrt_z=lrt_z, lrt_zwh=lrt_zwh,
+  return(list(scientificName=scientificName, n=nrow(x), lrt_z=lrt_z, lrt_zwh=lrt_zwh,
               day_slope=day_slope, day_slope_se=day_slope_se,
               fake_slope=fake_slope, fake_slope_se=fake_slope_se))
 }
 
-rr = da %>% group_by(species) %>% group_map(f) %>% bind_rows()
+rr = da %>% group_by(scientificName) %>% group_map(f) %>% bind_rows()
 ```
 
 The following plot shows that the cube root (Wilson Hilferty) and "exact" Z-scores are very similar.
@@ -137,7 +137,7 @@ rr = rr %>% mutate(day_slope_t=day_slope/day_slope_se, fake_slope_t=fake_slope/f
 ```
 
 ```{r}
-rr = left_join(rr, dm, by="species")
+rr = left_join(rr, dm, by="scientificName")
 ```
 
 Account for finite group sizes, by mapping the t-distributed statistics to normally distributed statistics.
@@ -167,9 +167,9 @@ an interaction model that controls for deviations from the mean species longitud
 
 ```{r}
 f = function(x, y) {
-  species = as.character(y)
+  scientificName = as.character(y)
   if (nrow(x) < 10) {
-    return(list(species=species, n=nrow(x)))
+    return(list(scientificName=scientificName, n=nrow(x)))
   }
   
   m1 = lm(decimalLatitude ~ day * (lonrad_sin_resid + lonrad_cos_resid + fake), data=x)
@@ -180,14 +180,14 @@ f = function(x, y) {
   fake_slope = coef(m1)[["fake"]]
   fake_slope_se = s[["fake"]]
 
-  return(list(species=species, n=nrow(x), 
+  return(list(scientificName=scientificName, n=nrow(x), 
               day_slope=day_slope, day_slope_se=day_slope_se,
               fake_slope=fake_slope, fake_slope_se=fake_slope_se))
 }
 
-rr = da %>% group_by(species) %>% group_map(f) %>% bind_rows()
+rr = da %>% group_by(scientificName) %>% group_map(f) %>% bind_rows()
 rr = rr %>% mutate(day_slope_t=day_slope/day_slope_se, fake_slope_t=fake_slope/fake_slope_se)
-rr = left_join(rr, dm, by="species")
+rr = left_join(rr, dm, by="scientificName")
 rr = rr %>% mutate(day_slope_z=qnorm(pt(day_slope_t, n-5)))
 rr = rr %>% mutate(fake_slope_z=qnorm(pt(fake_slope_t, n-5)))
 ```
