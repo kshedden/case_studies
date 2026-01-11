@@ -32,7 +32,7 @@ variable".
   research domains, the strength of the relationship between two variables may
   be too weak to be useful for prediction, nevertheless regression can suggest
   important, potentially causal relationships. This use of regression analysis
-  aims to provide insight into mechanisms behind the relationshup of $x$ with
+  aims to provide insight into mechanisms behind the relationship of $x$ with
   $y$.
 
 - __Mean regression__: this term refers to any regression analysis where the
@@ -47,7 +47,7 @@ variable".
 
 - __Quantile regression__: this refers to any method that models a conditional
   quantile at a given "probability point" in terms of covariates. A common
-  form of quantile reqression is "median regression", which is sometimes
+  form of quantile regression is "median regression", which is sometimes
   favored over approaches targeting the conditional mean because it is more
   "robust". Quantile regression using probability points other than 0.5 can be
   used to understand the skewness, kurtosis, or tails of the conditional
@@ -56,10 +56,10 @@ variable".
 - __Single index models__: a single index model is any regression model that
   is expressed in terms of one "linear predictor" involving the covariates,
   where a linear predictor has the form $b_1x_1 + \cdots + b_px_p$, with the
-  $x_j$ being the observed covariates (data) and the $b_j$ being unknown
-  coefficients (parameters). In a single index model, all the information in
-  $x$ about the conditional distribition of $y$ given $x$ is contained in this
-  single linear combination of the components of $x$.
+  $x_j$ being the observed covariates and the $b_j$ being unknown coefficients
+  (parameters). In a single index model, all the information in $x$ about the
+  conditional distribution of $y$ given $x$ is contained in this single linear
+  combination of the components of $x$.
 
 - __Linear model__: Depending on the context, this term can mean any of the
   following: (i) the conditional mean is a linear function of the covariates,
@@ -68,19 +68,19 @@ variable".
   response variable. In common use, "linear model" refers to a linear model
   for the mean structure, e.g. $E[y|x] = \alpha + \beta x$, that is usually
   fit to the data using _linear least squares_. This model always has
-  properties (ii) and (iii) (in reference to the conditional mean). It may not
-  have property (i), since $E[y|x] = \alpha + \beta x + \gamma x^2$ can also
-  be considered to be a linear model with properties (i) and (iii) but does
-  not have property (ii). It is incorrect to assert that linear models must
-  have property (ii), and as a result cannot represent regression
-  relationships between $y$ and $x$ that are nonlinear. An example of a model
-  that does not have properties (i), (ii), or (iii) is the mean structure
-  model $E[y|x] = \exp(\alpha + \beta x)$.
+  properties (ii) and (iii). It may not have property (i), since
+  $E[y|x] = \alpha + \beta x + \gamma x^2$ can also be considered to be a
+  linear model with properties (i) and (iii) but does not have property (ii).
+  It is incorrect to assert that linear models must have property (ii), and as
+  a result cannot represent regression relationships between $y$ and $x$ that
+  are nonlinear. An example of a model that does not have properties (i),
+  (ii), or (iii) is the mean structure model
+  $E[y|x] = \exp(\alpha + \beta x)$.
 
 - __Regression for independent observations__: Most basic regression methods
   are directly applicable for samples of independent observations (where
-  "independence" in this context means independence conditionally on the
-  covariate values). These basic methods may or may not give meaningful
+  "independence" in this context means statistical independence conditioning
+  on the covariate values). These basic methods may or may not give meaningful
   results when the observations are statistically dependent. More advanced
   regression methods have been devised for use when the observations are
   statistically dependent.
@@ -117,7 +117,8 @@ variable".
   fall into groups, and the observations in any one group are more similar to
   each other than they are to observations in other groups. This can happen,
   for example, due to unobserved covariates that are stable (constant) within
-  a group.
+  a group. Repeated measures usually arise by design, e.g. if we are working
+  with longitudinal data or a cluster sample.
 
 - __Marginal regression__: This is a form of regression analysis where the
   estimation target is the marginal regression function $E[y|x]$, even though
@@ -126,8 +127,7 @@ variable".
   ${\rm Var}[y|x]$ and marginal covariances ${\rm Cov}[y_1, y_2|x_1, x_2]$. If
   the data are dependent, a "complete" model should target the joint
   distribution $P(y_1, \ldots, y_n | x_1, \ldots, x_n)$. A marginal model
-  averages over most of the data, allowing us to focus on simpler "marginal"
-  relationships.
+  allows us to focus on simpler "marginal" relationships.
 
 - __Multilevel regression__: This is an alternative term for "random effects
   modeling". It emphasizes the fact that in many data sets, there are complex
@@ -136,9 +136,9 @@ variable".
   unobserved "random effects" that are incorporated into the linear predictors
   of one or more observations. The random effects give rise to dependence, and
   also, in nonlinear models, they give rise to different ways of defining a
-  "regression effect". Multilevel models can also be viewed as a way to model
-  variances and covariances, but modeling them through random effects, rather
-  than directly.
+  "regression effect". Multilevel models also provide a way to model variances
+  and covariances, modeling them through random effects rather than directly
+  (as in a marginal model).
 
 - __Conditional/marginal effect__ (in multilevel regression): In a multilevel
   model, a "marginal effect" is usually defined as the change in $E[y|x]$
@@ -158,15 +158,16 @@ variable".
   unit change of $x_k$, while the conditional effect is the change in
   $E[y| x_1, \ldots, x_p]$ corresponding to a single unit change in $x_k$,
   with the other variables $x_j$ for $j\ne k$ held fixed. When referring to
-  this type of marginal effect, the marginal and conditional effects differ
-  even in a linear model.
+  this type of marginal effect, the marginal and conditional effects generally
+  differ even in a linear model.
 
 - __Nonparametric regression__: There isn't always a bright line between
-  "parametric" and "nonparametric" regression methods, but in general
+  "parametric" and "nonparametric" regression methods, but in general,
   parametric methods are less "flexible" and may only work well if certain
   strong conditions on the population hold. Nonparametric methods may work
-  well in a broader class of population settings, but often with lower power
-  and precision.
+  well in a broader class of population settings, and are more robust to
+  difficult to test assumptions being violated, but often have lower power and
+  precision.
 
 ## Models, fitting procedures, and algorithms
 
@@ -182,11 +183,11 @@ regression, and Bayesian regression. However all of these fitting procedures
 are fitting the same model structure to the data.
 
 As an example, least squares is a fitting procedure that can be used to fit a
-model to data. The least squares fitting procedure has statistical properties
-(i.e. it is known to be efficient and consistent in many settings). A
-different (e.g. Bayesian or penalized) procedure for fitting the same class of
-models will have its own, potentially different statistical properties (e.g.
-it may be consistent in some settings where least squares is not and
+linear model to data. The least squares fitting procedure has statistical
+properties (i.e. it is known to be efficient and consistent in many settings).
+A different (e.g. Bayesian or penalized) procedure for fitting the same class
+of models will have its own, potentially different statistical properties
+(e.g. it may be consistent in some settings where least squares is not and
 vice-versa).
 
 Algorithms are specific numerical procedures used to fit a model to data. For
@@ -200,19 +201,20 @@ neighbor regression, regression trees, or deep neural networks, people may say
 that "the algorithm is the model". In these settings, there is a mean
 structure model, but the model is extremely flexible and the properties of the
 procedure result mostly from the algorithm rather than from the structural
-form of the model.
+form of the model. An early exploration of these ideas was Leo Breiman's
+[two cultures](https://www.jstor.org/stable/2676681) paper.
 
 ## Some specific regression analysis methods
 
 - __Least squares__: ordinary least squares (OLS) is the most basic type of
   curve fitting. It is most effective when the conditional mean function is
   linear in the covariates, and the conditional variance is constant (i.e. we
-  have "homoscedasticity"). Both of these restrictions can be worked around,
-  however. Nonlinearity of the mean function can be accommodated using basis
-  functions, and heteroscedasticity can be accommodated using inverse variance
-  weights (in which case were are doing "weighted least squares", or WLS).
-  Also, heteroscedasticity only impacts statistical efficiency, which may not
-  be a major concern when fitting simple models to large datasets.
+  have "homoscedasticity"). Both of these restrictions can be worked around --
+  nonlinearity of the mean function can be accommodated using basis functions,
+  and heteroscedasticity can be accommodated using inverse variance weights
+  (in which case were are doing "weighted least squares", or WLS). Also,
+  heteroscedasticity only impacts statistical efficiency, which may not be a
+  major concern when fitting simple models to large datasets.
 
 - __Generalized Linear Models (GLM)__: GLM's are an extension of linear models
   that introduce _link functions_ and _mean/variance relationships_. The link
@@ -244,11 +246,12 @@ form of the model.
   covariates, and also "random effects" which describe how the observations
   are correlated with each other. These unobserved random effects can be
   viewed as missing information that reflects additional structure in the
-  population not captured through the covariates. There is essentially a 1-1
-  correspondence between mixed linear models and GLS/GEE models, in that both
-  estimate the same population target (the conditional mean function), but
-  using different estimators. The mixed linear model will in most cases give
-  better estimates of variance parameters than GLS/GEE, but may be less robust
+  population not captured through the covariates. In the case of a linear mean
+  structure, there is essentially a 1-1 correspondence between mixed (linear)
+  models and linear GLS/GEE models, in that both estimate the same population
+  target (the conditional mean function), but using different estimators. The
+  mixed linear model will give more precise estimates of variance parameters
+  than GLS/GEE when the model is correctly specified, but may be less robust
   to misspecification of the dependence structure. It is a very rich framework
   that can be used to account for a variety of structures in the population
   that are difficult to model in other ways, including clustering, multilevel
@@ -266,7 +269,7 @@ form of the model.
 ### Other forms of regression:
 
 - __Survival regression__ -- this is a large set of techniques used for
-  handling censored data
+  handling censored data.
 
 - __Conditional regression__ -- this is a useful but narrowly applicable
   "trick" in which by conditioning on certain statistics, a multilevel model
@@ -277,6 +280,13 @@ form of the model.
   observed total of the outcome values within each group, the observations
   become conditionally independent, and can be rigorously fit using a
   single-level likelihood approach.
+
+- __Fixed effects regression__ -- this is an approach for working with
+  clustered data in which "fixed" intercepts (covariates) are introduced
+  indicating each cluster. When the sample size per cluster is sufficiently
+  large, this can be a robust and effective way to accommodate clustering, but
+  with many small clusters, high-dimensional models result and poor efficiency
+  or inconsistency (the __Neyman-Scott problem__) may result.
 
 - __Local regression__ -- this is a very flexible approach to capturing
   nonlinear regression relationships. It is an example of a regression method
@@ -318,3 +328,10 @@ form of the model.
   regression" is generally artificial and not useful to make, but some
   techniques, especially neural networks, are often viewed as being part of
   machine learning.
+
+- __Manifold regression__ -- this is a class of methods that can be applied
+  when the independent and/or dependent variables lie on a manifold that is
+  not a metric space. Since many regression procedures depend on distances,
+  this usually takes place in the setting of Riemannian manifolds. A
+  relatively simpler example of manifold regression is __compositional
+  regression__ in which the response lies on a circle.
