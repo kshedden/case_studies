@@ -10,7 +10,7 @@ Office hours: Tuesday 9:30-11, Thursday 3:30-5 (starting 1/13)
 
 - Kevin Wibisono (kwib@umich.edu)
 
-GSI office hours: TBD
+GSI office hours: Monday 12-3 in Angell Hall G219
 
 ## Overview
 
