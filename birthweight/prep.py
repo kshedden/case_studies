@@ -1,7 +1,8 @@
 """
-Extract birth record data from NCHS archives.  The raw data are in fixed width format.
-Convert these to CSV files, including birth weight and several predictors of birth
-weight that seem to be consistently coded across years.
+Extract birth record data from NCHS archives.  The raw data are in
+fixed width format.  This script converts these to CSV files,
+including birth weight and several predictors of birth weight that
+seem to be consistently coded across years.
 
 The data files and documentation are here:
 
@@ -10,6 +11,7 @@ https://www.cdc.gov/nchs/data_access/vitalstatsonline.htm
 The same data files seem to also be available here:
 
 https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/natality/
+
 """
 
 import pandas as pd
@@ -22,7 +24,9 @@ import numpy as np
 # Directory in which to place the data files
 spath = Path("/home/kshedden/data/Teaching/birthweight/births")
 
-# Column specification for 1969-1971
+# Column specification for 1969-1971.  The first number of each
+# 2-tuple is the starting position (1-based counting), and the
+# second number is the width of the field.
 colspec_1969_1971={
     "year": (1,1),
     "state": (13,2),
@@ -37,7 +41,7 @@ colspec_1969_1971={
     "plurality": (81,1),
     "interval": (117, 3)}
 
-# Column specification for 1981 is the same as 1969-1971 for the fields we are using
+# The column specification for 1981 is the same as 1969-1971 for the fields we are using
 colspec_1981={
     "year": (1,1),
     "state": (13,2),
@@ -104,7 +108,7 @@ def clean_births(da, year):
     da["sex"] = da["sex"].replace({1: "male", 2: "female"})
     da["birthorder"] = da["birthorder"].replace({99: np.nan})
     da["dadage"] = da["dadage"].replace({99: np.nan})
-    da["interval"] = da["interval"].replace({999: np.nan, 777: -1})
+    da["interval"] = da["interval"].replace({888: np.nan, 999: np.nan, 777: -1})
 
     if 1969 <= year <= 1971:
         da["year"] = da["year"].replace({9: 1969, 0: 1970, 1: 1971})
@@ -115,7 +119,7 @@ def clean_births(da, year):
         da["momrace"] = recode_race_1971(da["momrace"])
         da["dadrace"] = recode_race_1971(da["dadrace"])
     elif year == 1991:
-        da["year"] = da["year"].replace({1: 1981})
+        da["year"] = da["year"].replace({1: 1991})
         da["birthweight"] /= 1000
         da["momrace"] = recode_race_1991(da["momrace"])
         da["dadrace"] = recode_race_1991(da["dadrace"])
