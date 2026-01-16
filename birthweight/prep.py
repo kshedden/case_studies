@@ -163,7 +163,6 @@ def download(year):
 for year in 1971, 1981, 1991:
     download(year)
 
-for year in [1971, 1981, 1991]:
+for year in [1991]: #[1971, 1981, 1991]:
     da = get_births(year)
-    da = clean_births(da, year)
     da.to_csv(spath / f"{year}.csv.gz")
