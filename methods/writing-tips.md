@@ -142,8 +142,8 @@ appropriate to do so.
 - Aim to write in a "declarative" rather than an "imperative" style.  This
   means that you focus on telling us what you aim to obtain in your
   analysis, not the steps that you followed to obtain it.  As a basic example,
-  instead of writing "first we subtracted the mean, then we subtracted
-  the variance", instead write "we linearly transformed the data to have
+  instead of writing "first we subtracted the mean, then we divided by
+  the standard deviation", instead write "we linearly transformed the data to have
   mean zero and unit variance".
 
 # Analysis
