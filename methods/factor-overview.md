@@ -256,7 +256,7 @@ covariance matrix are the variances of the variables, since
 ${\rm Cov}(X_i, X_i) = {\rm Var}(X_i)$. The covariance matrix has the special
 property of being _positive semi-definite_ (PSD), which means that for any
 vector $v \in {\cal R}^p$, $v^T\Sigma v \ge 0$. Since
-$v^T\Sigma v \ge 0 = {\rm Var}(v^T x)$, where $X = (X_1, \ldots, X_p)^T$, this
+$v^T\Sigma v = {\rm Var}(v^T x)$, where $X = (X_1, \ldots, X_p)^T$, this
 inequality is expected, but the PSD property originates in the study of
 _quadratic forms_ (multivariate quadratic functions), so a PSD matrix defines
 a quadratic form that cannot take on negative values.
@@ -265,24 +265,25 @@ The existence of _eigenvalues_ and a complementary orthogonal basis of
 _eigenvectors_ is a complicated question in general. But symmetric matrices
 always have a basis of orthogonal eigenvectors and corresponding real
 eigenvalues. That is, we can write any $p\times p$ symmetric matrix $S$ in the
-form $S = VDV^T$ where $V$ is $p\times p$ with $V^TV = I$, and $D$ is a
-diagonal matrix. If in addition we know that $S$ is PSD, then the diagonal
-elements of $D$ are non-negative. If the diagonal elements of $D$ are strictly
-positive, then $S$ is _positive definite_ (PD). The factorization $S = VDV^T$
-is known as the
+form $S = V\Lambda V^T$ where $V$ is $p\times p$ with $V^TV = I$, and
+$\Lambda$ is a diagonal matrix. If in addition we know that $S$ is PSD, then
+the diagonal elements of $\Lambda$ are non-negative. If the diagonal elements
+of $\Lambda$ are strictly positive, then $S$ is _positive definite_ (PD). The
+factorization $S = V\Lambda V^T$ is known as the
 [spectral decomposition](https://en.wikipedia.org/wiki/Eigendecomposition_of_a_matrix).
 
 In practice, we take the spectral decomposition of the sample covariance
-matrix. If $\tilde{X}$ is the column-centered data matrix, then
+matrix $\hat{\Sigma}$. If $\tilde{X}$ is the column-centered data matrix, then
 $\tilde{X}^T\tilde{X}/n$ is the sample covariance matrix (dividing by $n-1$
 yields an unbiased estimate of the population covariance matrix but this only
 matters for small samples). There is a close connection between the SVD of
 $\tilde{X}$ and the spectral decomposition of the sample covariance matrix.
 Let $\tilde{X} = USV^T$ denote the SVD of the column-centered data matrix, so
 that the sample covariance matrix is
-$\hat{\Sigma} = \tilde{X}^T/\tilde{X}/n = VS^2V^T/n$. Then if
-$\hat{\Sigma} = VDV^T$ is the spectral decomposition of $\hat{\Sigma}$, we see
-that the $V$ terms in these two decompositions are the same, and $D = S^2$.
+$\hat{\Sigma} = \tilde{X}^T\tilde{X}/n = VS^2V^T/n$. Then if
+$\hat{\Sigma} = V\Lambda V^T$ is the spectral decomposition of $\hat{\Sigma}$,
+we see that the $V$ terms in these two decompositions are the same, and
+$\Lambda = S^2$.
 
 A small caveat to this discussion is when there are tied eigenvalues (i.e.
 several elements of $S$ are identical). In this case, neither the SVD nor the
@@ -378,10 +379,11 @@ ${\rm cov}(Q) = I_q$.
 Next we consider how PCA can be carried out with a sample of data, rather than
 in a population. Given a $n\times p$ matrix of data $X$ whose rows are iid
 copies of the random vector $x$, we can estimate the covariance matrix
-$\Sigma$ by column centering $X$ to produce $X_c \equiv X - 1_n\bar{x}^T$,
-where $\bar{x} \in {\mathbb R}^p$ is the vector of column-wise means of $X$,
-Then set $\hat{\Sigma} = X_c^TX_c/n$. Letting $B$ denote the eigenvectors of
-$\hat{\Sigma}$, the scores have the form $Q = X_cB$.
+$\Sigma$ by column centering $X$ to produce
+$\tilde{X} \equiv X - 1_n\bar{x}^T$, where $\bar{x} \in {\mathbb R}^p$ is the
+vector of column-wise means of $X$, Then set
+$\hat{\Sigma} = \tilde{X}^T\tilde{X}/n$. Letting $B$ denote the eigenvectors
+of $\hat{\Sigma}$, the scores have the form $Q = \tilde{X}B$.
 
 Since the eigenvalues $\Lambda_{ii}$ are non-increasing, the leading columns
 of $Q$ contain the greatest fraction of information about the distributiuon of
@@ -390,10 +392,10 @@ best reflect the relationships in $X$ (compared to any other scatterplot
 formed from linear scores).
 
 PCA can also be carried out using the SVD of the column-centered data matrix
-$X_c$. Write $X_c = USV^T$ as discussed above and note that
+$\tilde{X}$. Write $\tilde{X} = USV^T$ as discussed above and note that
 
 $$
-\hat{\Sigma} = X_c^T X_c/n = VS^2V^T/n.
+\hat{\Sigma} = \tilde{X}^T \tilde{X}/n = VS^2V^T/n.
 $$
 
 Thus, $\hat{\Sigma}V = VS^2/n$, so $V$ contains the eigenvectors of
@@ -419,26 +421,26 @@ $E[\eta_j] = 0$, ${\rm Var}(\eta_1) \ge {\rm Var}(\eta_2) \ge \cdots$, and
 ${\rm cor}(\eta_j, \eta_k) = 0$ if $j \ne k$. If $\Sigma$ is the $p\times p$
 covariance matrix of $Y$ and $\Sigma = V\Lambda V^T$ is the spectral
 decomposition of $\Sigma$, then the variance of $\eta_j$ in the KL
-decomposition is \$\\Lambda\_\{jj}.
+decomposition is $\Lambda_{jj}$.
 
 Each component $\eta_j V_j$ represents random variation in the direction of
 the unit vector $V_j$. The leading term $\eta_1 V_1$ captures the greatest
-variation of any one-dimensional component, and the subsequent components
+variation of any such one-dimensional component, and the subsequent components
 $\eta_j V_j$ ($j=2, 3, \ldots$) capture progressively smaller fractions of the
-variance. Since the $\eta_j$ are uncorrelated, these "axes of variation"
+total variance. Since the $\eta_j$ are uncorrelated, these "axes of variation"
 capture distinct and unrelated contributions to the overall variance of $Y$.
 
 ### Biplots
 
-Suppose that $X_c$ is the column-centered or double-centered data (where the
-rows are observations and the columns are variables). Let $X_c = USV^T$ denote
-the SVD. A *biplot* is a plot that displays both the variables and the
-observations in a way that conveys (i) how the variables are related to each
-other, (ii) how the observations are related to each other, and (iii) how the
-variables are related to the observations. In other words, the biplot shows
-which variables load on each of the two displayed components ($j$ and $k$),
-and simultaneously shows which of the observations most exhibit the
-characteristics summarized by each component.
+Suppose that $\tilde{X}$ is the column-centered or double-centered data (where
+the rows are observations and the columns are variables). Let
+$\tilde{X} = USV^T$ denote the SVD. A *biplot* is a plot that displays both
+the variables and the observations in a way that conveys (i) how the variables
+are related to each other, (ii) how the observations are related to each
+other, and (iii) how the variables are related to the observations. In other
+words, the biplot shows which variables load on each of the two displayed
+components ($j$ and $k$), and simultaneously shows which of the observations
+most exhibit the characteristics summarized by each component.
 
 To construct the biplot, observation $i$ is plotted as the point
 $(S_{jj}^\alpha U_{ij}, S_{kk}^\alpha U_{ik})$ (the *object scores*) and
@@ -452,19 +454,20 @@ If we set $\alpha=1$, the object scores approximate Euclidean distances in the
 data. For example, let $d = (1, -1, 0, 0, \ldots)^T$, and note that
 
 $$
-\lVert d^T X_c \rVert^2 = d^T X_cX_c^T d =
+\lVert d^T \tilde{X} \rVert^2 = d^T \tilde{X}\tilde{X}^T d =
 d^T US^2U^T d = \lVert d^T US \rVert^2.
 $$
 
-This shows that the Euclidean distance between two rows of $X_c$ is equal to
-the Euclidean distance between two rows of $US$ (which are the object scores
-if $\alpha=1$).
+This shows that the Euclidean distance between two rows of $\tilde{X}$ is
+equal to the Euclidean distance between two rows of $US$ (which are the object
+scores if $\alpha=1$).
 
-If we set $\alpha=0$, then $n^{-1}X_c^T X_c$, which is the covariance matrix
-among the variables, can be written (up to a proportionality constant) as
+If we set $\alpha=0$, then $n^{-1}\tilde{X}^T \tilde{X}$, which is the
+covariance matrix among the variables, can be written (up to a proportionality
+constant) as
 
 $$
-X_c^T X_c = VS^2V^T.
+\tilde{X}^T \tilde{X} = VS^2V^T.
 $$
 
 This shows that the magnitudes of the variable scores are equal to the
