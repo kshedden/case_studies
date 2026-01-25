@@ -150,7 +150,7 @@ respect to the column mean. The resulting matrix will have centered rows and
 centered columns, and it can be shown that the same result is obtained if
 steps (ii) and (iii) above are performed in either order.
 
-## Singular Value Decoposition
+## Singular Value Decomposition
 
 Many embedding methods make use of a matrix factorization known as the
 [Singular Value Decomposition](https://en.wikipedia.org/wiki/Singular_value_decomposition),
@@ -161,8 +161,7 @@ and $V$ is $p\times p$. The matrices $U$ and $V$ are orthogonal so that
 $U^TU = I_p$, $V^TV = I_p$, and $S$ is diagonal with
 $S_{11} \ge S_{22} \ge \cdots \ge S_{pp}$. The values on the diagonal of $S$
 are the *singular values* of $S$, and the SVD is unique except when there are
-ties among the singular values or if one or more of the singular values are
-zero.
+ties among the singular values.
 
 One use of the SVD is to obtain a low rank approximation to a matrix $X$. The
 extreme example of a low rank matrix is a matrix with rank 1, which means that
@@ -173,10 +172,9 @@ in describing the variation in $X$.
 
 Suppose we truncate the SVD using only the first $k$ components, so that
 $\tilde{U}$ is the $n\times k$ matrix consisting of the leading (left-most)
-$k$ columns of $U$, $\tilde{S} = (S_1, \ldots, S_k)$, and $V$ is the
+$k$ columns of $U$, $\tilde{S} = {\rm diag}(S_1, \ldots, S_k)$, and $V$ is the
 $p\times k$ matrix consisting of the leading $k$ columns of $V$. In this case,
-the matrix
-$\tilde{X} \equiv \tilde{U}\cdot {\rm diag}(\tilde{S})\cdot \tilde{V}^T$ is a
+the matrix $\tilde{X} \equiv \tilde{U}\cdot \tilde{S}\cdot \tilde{V}^T$ is a
 rank $k$ matrix (it has $k$ non-zero singular values). According to the
 [Eckart-Young](https://en.wikipedia.org/wiki/Low-rank_approximation) theorem,
 among all rank $k$ matrices, $\tilde{X}$ is the closest matrix to $X$ in the
@@ -195,6 +193,12 @@ $$
 Finding a low rank approximation is a type of least square problem, although
 it is not the linear least squares used in regression analysis.
 
+Thinking geometrically, the rows of $\tilde{X}$ are spanned by a basis of $q$
+elements, and the span of this basis captures most of the variation in the
+rows of $X$. Also, the columns of $\tilde{X}$ are spanned by a basis of $q$
+elements, and the span of this basis captures most of the variation in the
+columns of $X$.
+
 ### Analyzing a data matrix using the SVD
 
 Suppose we have a data matrix $X$ and wish to understand its structure. We can
@@ -204,28 +208,28 @@ $$
 X_{ij} = m + r_i + c_j + R_{ij}.
 $$
 
-Here, $m$ is the grand mean of $X$, $r$ contains the row means of $X-m$, $c$
-contains the column means of $X-m$, and $R_{ij} \equiv X_{ij} - m - r_i - c_j$
-are residuals. Next we can take the SVD of $R$, yielding
-$R = U\cdot {\rm diag}(S)\cdot V^T$, or equivalently
+Here, $m\in {\cal R}$ is the grand mean of $X$, $r\in {\cal R}^n$ contains the
+row means of $X-m$, $c \in {\cal R}^p$ contains the column means of $X-m$, and
+$R_{ij} \equiv X_{ij} - m - r_i - c_j$ are residuals. Next we can take the SVD
+of $R$, yielding $R = U\cdot {\rm diag}(S)\cdot V^T$, or equivalently
 
 $$
-R_{ij} = \sum_{k=1}^p S_k U_{ik}V_{jk}.
+R_{ij} = \sum_{k=1}^p S_{kk} U_{ik}V_{jk}.
 $$
 
 Although there are $p$ terms in the SVD of $R$, the first few terms may
 capture most of the structure, so
 
 $$
-R_{ij} \approx \sum_{k=1}^q S_k U_{ik}V_{jk}
+R_{ij} \approx \sum_{k=1}^q S_{kk} U_{ik}V_{jk}
 $$
 
 for $q < p$ (this approximation holds better when the *tail singular values*
-$S_{q+1}, \ldots, S_p$ are small). One important property that results from
-calculating the SVD for a double-centered matrix is that $U_{\cdot k} = 0$ and
-$V_{\cdot k} = 0$. That is, the columns of $U$ and $V$ are centered. This
-column centering means that the SVD captures "deviations from the mean"
-represented by the additive model $m + r_i + c_j$.
+$S_{q+1,q+1}, \ldots, S_{p,p}$ are small). One important property that results
+from calculating the SVD for a double-centered matrix is that
+$U_{\cdot k} = 0$ and $V_{\cdot k} = 0$. That is, the columns of $U$ and $V$
+are centered. This column centering means that the SVD captures "deviations
+from the mean" represented by the additive model $m + r_i + c_j$.
 
 #### Assessing dimensionality
 
@@ -235,9 +239,61 @@ denote the $j^{\rm th}$ singular value, where $s_1 \ge s_2 \cdots$. Two
 canonical patterns of decay that may be found are an exponential decay
 $s_j \approx a\cdot \exp(-b\cdot j)$ and a power-law decay
 $s_j \approx a/j^b$. To assess the decay of the eigenvalues, we can consider
-plots of $\log s_j$ against $j$, which is linear in the case of exponential
-decay, and plots of $\log s_j$ against $\log j$, which is linear in the case
+plots of $\log(s_j)$ against $j$, which is linear in the case of exponential
+decay, and plots of $\log(s_j)$ against $\log(j)$, which is linear in the case
 of power-law decay.
+
+## Spectral decomposition of a covariance matrix
+
+Given a collection of $p$ jointly distributed random variables
+$X_1, \ldots, X_p$ with sample space $R$ (i.e. the random variables are
+_quantitative_ and _real-valued_), the covariance matrix $\Sigma$ is a
+$p\times p$ matrix such that $\Sigma_{ij} = {\rm Cov}(X_i, X_j)$.
+
+The covariance matrix is symmetric, since
+${\rm Cov}(X_i, X_j) = {\rm Cov}(X_j, X_i)$. The diagonal elements of a
+covariance matrix are the variances of the variables, since
+${\rm Cov}(X_i, X_i) = {\rm Var}(X_i)$. The covariance matrix has the special
+property of being _positive semi-definite_ (PSD), which means that for any
+vector $v \in {\cal R}^p$, $v^T\Sigma v \ge 0$. Since
+$v^T\Sigma v \ge 0 = {\rm Var}(v^T x)$, where $X = (X_1, \ldots, X_p)^T$, this
+inequality is expected, but the PSD property originates in the study of
+_quadratic forms_ (multivariate quadratic functions), so a PSD matrix defines
+a quadratic form that cannot take on negative values.
+
+The existence of _eigenvalues_ and a complementary orthogonal basis of
+_eigenvectors_ is a complicated question in general. But symmetric matrices
+always have a basis of orthogonal eigenvectors and corresponding real
+eigenvalues. That is, we can write any $p\times p$ symmetric matrix $S$ in the
+form $S = VDV^T$ where $V$ is $p\times p$ with $V^TV = I$, and $D$ is a
+diagonal matrix. If in addition we know that $S$ is PSD, then the diagonal
+elements of $D$ are non-negative. If the diagonal elements of $D$ are strictly
+positive, then $S$ is _positive definite_ (PD). The factorization $S = VDV^T$
+is known as the
+[spectral decomposition](https://en.wikipedia.org/wiki/Eigendecomposition_of_a_matrix).
+
+In practice, we take the spectral decomposition of the sample covariance
+matrix. If $\tilde{X}$ is the column-centered data matrix, then
+$\tilde{X}^T\tilde{X}/n$ is the sample covariance matrix (dividing by $n-1$
+yields an unbiased estimate of the population covariance matrix but this only
+matters for small samples). There is a close connection between the SVD of
+$\tilde{X}$ and the spectral decomposition of the sample covariance matrix.
+Let $\tilde{X} = USV^T$ denote the SVD of the column-centered data matrix, so
+that the sample covariance matrix is
+$\hat{\Sigma} = \tilde{X}^T/\tilde{X}/n = VS^2V^T/n$. Then if
+$\hat{\Sigma} = VDV^T$ is the spectral decomposition of $\hat{\Sigma}$, we see
+that the $V$ terms in these two decompositions are the same, and $D = S^2$.
+
+A small caveat to this discussion is when there are tied eigenvalues (i.e.
+several elements of $S$ are identical). In this case, neither the SVD nor the
+spectral decomposition are unique. The sample covariance matrix will not
+exhibit such ties (except in corner cases where the data are perfectly
+degenerate). However it is difficult to assess whether the population
+covariance matrix has tied eigenvalues. Moreover, when the eigenvalues of
+$\Sigma$ are very similar, even if they are not identical, we will still
+experience the consequences of the near non-uniqueness of the spectral
+decomposition. A special case of tied eigenvalues is when all of the
+eigenvalues are equal, a conditin known as _sphericity_.
 
 ## Dimension reduction of grouped data
 
@@ -360,7 +416,10 @@ uncorrelated scalar random variables, and the $V_j$ are a collection of
 mutually orthogonal fixed vectors of dimension $p$. The expected values of the
 $\eta_j$ are all zero and their variances are non-increasing in $j$. That is,
 $E[\eta_j] = 0$, ${\rm Var}(\eta_1) \ge {\rm Var}(\eta_2) \ge \cdots$, and
-${\rm cor}(\eta_j, \eta_k) = 0$ if $j \ne k$.
+${\rm cor}(\eta_j, \eta_k) = 0$ if $j \ne k$. If $\Sigma$ is the $p\times p$
+covariance matrix of $Y$ and $\Sigma = V\Lambda V^T$ is the spectral
+decomposition of $\Sigma$, then the variance of $\eta_j$ in the KL
+decomposition is \$\\Lambda\_\{jj}.
 
 Each component $\eta_j V_j$ represents random variation in the direction of
 the unit vector $V_j$. The leading term $\eta_1 V_1$ captures the greatest
@@ -426,16 +485,15 @@ both sets of relationships in the same plot.
 
 ### Principal Components Regression
 
-Principal Components Analysis is a method for multivariate data analysis that
-can be used to understand relationships in multivariate data when there is no
-single variable that can be seen as the "response" relative to the other
-variables. PCA can also be used to create covariates for use in a regression
-analysis. This method is called "Principal Components Regression" (PCR). The
-motivation behind PCR is that if we have a large number of covariates and do
-not wish to explicitly include all of them in a regression model, we can use
-PCA to reduce the variables to a smaller vector of scores that capture most of
-the variation in the original variables, and then use the reduced variables
-(scores) as covariates in our regression.
+Principal Components Analysis can be used to understand relationships in
+multivariate data when there is no single variable that can be seen as the
+"response" relative to the other variables. PCA can also be used to create
+covariates for use in a regression analysis, which is called "Principal
+Components Regression" (PCR). The motivation behind PCR is that if we have a
+large number of covariates and do not wish to explicitly include all of them
+in a regression model, we can use PCA to reduce the variables to a smaller
+vector of scores that capture most of the variation in the original variables,
+and then use the reduced variables (scores) as covariates in our regression.
 
 More formally, suppose that $X \in {\mathbb R}^{n\times p}$ is our regression
 design matrix, for a regression with $n$ observations (cases) and $p$
@@ -444,14 +502,15 @@ $Y \in {\mathbb R}^n$, but this is not used in the first few steps of PCR.
 First, the mean should be subtracted from each column of $X$, and we write
 $X = USV^T$ using the SVD. Next we truncate this representation so that
 $\tilde{U} \in {\mathbb R}^{n\times q}$, contains the first $q$ columns of
-$U$. As discussed above, these are the most important columns of $U$ for
-explaining the variation in $X$.
+$U$. As discussed above, these are the columns of $U$ that explain the most
+variation in $X$.
 
-We use $\tilde{U}$ instead of $X$ as covariates in our regression, obtaining a
-linear predictor $\tilde{U}\hat{\beta}$, where $\hat{\beta}$ are coefficients
-obtained using a regression procedure, e.g. least squares or a GLM. To relate
-the coefficients $\hat{\beta}$ back to the original covariates, note that
-$U = XVS^{-1}$, and $\tilde{U} = X(VS^{-1})_{:,1:q}$. Therefore
+We use the columns of $\tilde{U}$ instead of the columns of $X$ as covariates
+in our regression, obtaining a linear predictor $\tilde{U}\hat{\beta}$, where
+$\hat{\beta}$ are coefficients obtained using a regression procedure, e.g.
+least squares or a GLM. To relate the coefficients $\hat{\beta}$ back to the
+original covariates, note that $U = XVS^{-1}$, and
+$\tilde{U} = X(VS^{-1})_{:,1:q}$. Therefore
 
 $$
 \tilde{U}\hat{\beta} = X(VS^{-1})_{:,1:q}\hat{\beta},
