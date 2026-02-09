@@ -253,13 +253,13 @@ $p\times p$ matrix such that $\Sigma_{ij} = {\rm Cov}(X_i, X_j)$.
 The covariance matrix is symmetric, since
 ${\rm Cov}(X_i, X_j) = {\rm Cov}(X_j, X_i)$. The diagonal elements of a
 covariance matrix are the variances of the variables, since
-${\rm Cov}(X_i, X_i) = {\rm Var}(X_i)$. The covariance matrix has the special
-property of being _positive semi-definite_ (PSD), which means that for any
-vector $v \in {\cal R}^p$, $v^T\Sigma v \ge 0$. Since
-$v^T\Sigma v = {\rm Var}(v^T x)$, where $X = (X_1, \ldots, X_p)^T$, this
-inequality is expected, but the PSD property originates in the study of
-_quadratic forms_ (multivariate quadratic functions), so a PSD matrix defines
-a quadratic form that cannot take on negative values.
+${\rm Cov}(X_i, X_i) = {\rm Var}(X_i)$. The covariance matrix is positive
+semi-definite (PSD), which means that for any vector $v \in {\cal R}^p$,
+$v^T\Sigma v \ge 0$. Since $v^T\Sigma v = {\rm Var}(v^T x)$, where
+$X = (X_1, \ldots, X_p)^T$, this inequality is expected, but the PSD property
+originates in the study of _quadratic forms_ (multivariate quadratic
+functions), so a PSD matrix defines a quadratic form that cannot take on
+negative values.
 
 The existence of _eigenvalues_ and a complementary orthogonal basis of
 _eigenvectors_ is a complicated question in general. But symmetric matrices
