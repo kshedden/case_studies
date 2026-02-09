@@ -12,13 +12,14 @@ probability distributions, including the
 (cdf), and the
 [moment generating function](https://en.wikipedia.org/wiki/Moment-generating_function)
 (mgf). The space of probability distributions is infinite-dimensional, so in
-practice we often work with finite dimensional numerical summaries such as the
-mean and variance.
+practice we cannot estimate every aspect of a distribution, and instead work
+with finite dimensional numerical summaries such as the mean and variance.
 
 The field of statistics (as opposed to the field of probability) focuses on
 using data to estimate either the full probability distribution or a summary
 quantity describing certain aspects of a probability distribution. The full
-distribution can be estimated using the
+distribution for a numerical random variable or vector can be estimated using
+the
 [empirical cdf](https://en.wikipedia.org/wiki/Empirical_distribution_function)
 (an estimator of the cdf), or the
 [histogram](https://en.wikipedia.org/wiki/Histogram) (an estimator of the
@@ -79,24 +80,27 @@ $X$ is the function $F(t) = P(X \le t)$, viewed as a function of
 $t \in {\mathbb R}^+$. The *complementary cdf* (ccdf), also known as the
 *survival function*, is the right tail probability
 $S(t) = P(X > t) = 1 - F(t)$. To understand the frequency of extreme (large)
-values, we should consider how rapidly the tail probability converges to zero
-as $t$ increases. In many familiar distributions, the tails are *exponential*
+values, we can consider how rapidly the tail probability converges to zero as
+$t$ increases. In many familiar distributions, the tails are *exponential*
 meaning that $P(X > t) = L(t)\cdot \exp(-t/\mu)$, where $L(t)$ is a
 [slowly varying function](https://en.wikipedia.org/wiki/Slowly_varying_function)
-and $\mu$ is a scale parameter. For our purposes, we can treat $L(t)$ as a
-constant, so having exponential tails implies that
-$P(L > t) \propto \exp(-t/\mu)$.
+and $\mu$ is a scale parameter. If $L(t)$ is constant, we have the exponential
+distribution, but the property of having exponentially decaying tails is much
+more general, and for example, includes all of the gamma distributions. The
+normal distribution has tails that are thinner than exponential ("light
+tailed") since $P(X > t) = L(t) \cdot \exp(-t^2/\mu)$ for appropriate choices
+of $L(t)$ and $\mu$.
 
 In a
 [heavy tailed distribution](https://en.wikipedia.org/wiki/Heavy-tailed_distribution),
-the tail probabilities do not shrink exponentially fast, which means that for
-all $k > 0$,
+the tail probabilities shrink more slowly than an exponential rate, which
+means that for all $k > 0$,
 
 $$
 \lim_{t\rightarrow \infty} \exp(k\cdot t) \cdot P(X > t) = \infty.
 $$
 
-Many heavy-tailed distributions have
+Many heavy-tailed distributions have a
 [power law](https://en.wikipedia.org/wiki/Power_law) tail, meaning that
 $P(X > t) = L(t) / t^\alpha$, where $\alpha$ is the *tail index* or *shape
 parameter* (note that in some settings, the shape parameter is defined to be
