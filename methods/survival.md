@@ -253,16 +253,18 @@ Note that the hazard function is not a probability and can be greater than 1
 (but it must be non-negative). It is also not a density, although if the
 density exists it can be determined from the hazard function.
 
-The hazard function is related to the survival function in that
+When the survival function is smooth, the hazard function is also the
+logarithmic derivative of the survival function:
 
 $$
 h(t) = -\frac{d}{dt} \log S(T).
 $$
 
-To better understand this relationship, first define the *cumulative hazard
-function* as
+Another important quantity to understand is the *cumulative hazard function*
 
-$$ H(t) = \int_0^t h(s)ds.  $$
+$$
+H(t) = \int_0^t h(s)ds.
+$$
 
 Then the identity $S(t) = \exp(-H(t))$ holds. If $T$ has a density $f$, then
 $f = F^\prime = -S^\prime$. Thus
