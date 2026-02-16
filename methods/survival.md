@@ -3,15 +3,16 @@
 Survival analysis comprises a set of techniques for characterizing
 [probability distributions](https://en.wikipedia.org/wiki/Probability_distribution)
 and building
-[statistical models](https://en.wikipedia.org/wiki/Statistical_model). Most
-commonly, survival analysis methods are used with *time to event* or
-*duration* data, where "time to event" refers to the duration of time from an
-origin until some event of interest occurs. Many such examples consider
-*failure times*, such as the duration of time from when a person is diagnosed
-with a disease until they progress to a more advanced stage of the disease.
-There are many other applications of survival analysis methods that have
-nothing to do with "survival" or "failure", and these methods can even be
-applied in settings where time does not play a central role.
+[statistical models](https://en.wikipedia.org/wiki/Statistical_model) for
+partially observed data. Most commonly, survival analysis methods are used
+with *time to event* or *duration* data, where "time to event" refers to the
+duration of time from an origin until some event of interest occurs. Many such
+examples consider *failure times*, such as the duration of time from when a
+person is diagnosed with a disease until they progress to a more advanced
+stage of the disease. There are many other applications of survival analysis
+methods that have nothing to do with "survival" or "failure", and these
+methods can even be applied in settings where time does not play a central
+role.
 
 ## Time origin
 
@@ -38,10 +39,10 @@ studying the probability distribution of a
 [random variable](https://en.wikipedia.org/wiki/Random_variable) $T$,
 corresponding to the time at which an event of interest occurs. In
 conventional survival analysis, the event will always occur if we wait long
-enough, so $P(T < \infty) = 1$. We note that in some situations this may not
-be completely realistic and there is a subdomain of survival analysis called
-"cure modeling" in which this assumption is not made. However this document
-deals exclusively with the conventional setting where $P(T < \infty) = 1$ is
+enough, so $P(T < \infty) = 1$. In some situations this may not be completely
+realistic and there is a subdomain of survival analysis called "cure modeling"
+in which $P(T < \infty) < 1$ is allowed. However this document deals
+exclusively with the conventional setting where $P(T < \infty) = 1$ is
 assumed.
 
 ## Censoring
@@ -56,9 +57,9 @@ scale and let $T$ denote the age when a subject first has stent thrombosis.
 Typically, only a subset of the subjects will have stent thrombosis during our
 study. Other subjects will be followed for a period of time and will never be
 observed to have stent thrombosis. Let $R$ denote the last age at which the
-person is observed. If $T<R$, we observe $T$ but if $T > R$ we do not know the
-value of $T$. More formally, we observe the time $Y={\rm min}(T, R)$ and the
-_status indicator_ $\delta = {\cal I}(Y = T)$. This is called
+person is observed. If $T < R$, we observe $T$ but if $T > R$ we do not know
+the value of $T$. More formally, we observe the time $Y={\rm min}(T, R)$ and
+the _status indicator_ $\delta = {\cal I}(Y = T)$. This is called
 [right censoring](<https://en.wikipedia.org/wiki/Censoring_(statistics)>) --
 we know that the value of $T$ is greater than some known value, but we do not
 know the exact value of $T$. In this context, $R$ is known as the _right
@@ -81,9 +82,9 @@ who are more prone to having an early event (e.g. unhealthy people) do not
 have systematically different censoring times than people are prone to having
 late events.
 
-Since we don't observe $T$ and $R$ together, independent censoring is usually
-an untestable assumption, but in some cases, based on the study design or
-other external information, there may be reason to accept it and in other
+Since we don't observe $T$ and $R$ together, independent censoring is almost
+always an untestable assumption, but in some cases, based on the study design
+or other external information, there may be reason to accept it and in other
 cases there may be good reason to doubt that independent censoring holds.
 There are various methods for effectively handling dependently censored data,
 but that is an advanced topic that we will not consider further here.
@@ -133,8 +134,8 @@ experienced a competing risk before time $t$ is not in the risk set.
 
 ## Recurrent events
 
-In conventional survival analysis, each subject experiences the event one time
-(although we may not observe this occurrence in our study as there may be
+In conventional survival analysis, each subject experiences the event exactly
+once (although we may not observe this occurrence in our study as there may be
 censoring). However some events may be able to recur. For example, suppose
 that we are studying arrests by police and the time $T$ is the duration until
 a person is arrested. There can be subsequent arrests for the same subject and
@@ -252,8 +253,14 @@ Note that the hazard function is not a probability and can be greater than 1
 (but it must be non-negative). It is also not a density, although if the
 density exists it can be determined from the hazard function.
 
-The hazard function is related to the survival function in a fairly simple
-way. First, define the *cumulative hazard function* as
+The hazard function is related to the survival function in that
+
+$$
+h(t) = -\frac{d}{dt} \log S(T).
+$$
+
+To better understand this relationship, first define the *cumulative hazard
+function* as
 
 $$ H(t) = \int_0^t h(s)ds.  $$
 
