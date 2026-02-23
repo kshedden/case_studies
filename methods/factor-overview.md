@@ -682,8 +682,8 @@ covariance ${\rm cov}(X) = {\rm cov}(Y) = {\rm diag}(\mu)$, then the (squared)
 chi-square distance from $X$ to the mean is
 $(X-\mu)^T{\rm diag}(\mu)^{-1}(X-\mu)$, and the squared chi-square distance
 between $X$ and $Y$ is $(X-Y)^T{\rm diag}(\mu)^{-1}(X-Y)$. As discussed
-further below, correspondence analysis arises most naturally when working with
-nominal (categorical) variables, but there are some situations where it makes
+further below, correspondence analysis arises naturally when working with
+nominal (categorical) variables, but there are other situations where it makes
 sense to apply CA when the data are not nominal.
 
 The motivation for embedding using the chi-square metric this is that in many
@@ -706,9 +706,9 @@ $\mu$ and $\Sigma$ are related via a *mean-variance relationship*. A common
 form of mean-variance relationship is ${\rm diag}(\Sigma) \propto \mu$. A
 particular example is the Poisson distribution where
 ${\rm diag}(\Sigma) = \mu$, so the constant of proportionality is $1$. In a
-broader class of settings we may have *over-dispersion* or *under-dispersion*,
-meaning that $\Sigma_{ii} = c\cdot \mu_i$, where $c>1$ or $c<1$ for over and
-under-dispersion, respectively.
+broader class of settings we may have quasi-Poisson *over-dispersion* or
+*under-dispersion*, meaning that $\Sigma_{ii} = c\cdot \mu_i$, where $c>1$ or
+$c<1$ for over and under-dispersion, respectively.
 
 When comparing two random vectors $X$, $Y$ sharing covariance matrix $\Sigma$,
 it is reasonable to use the
@@ -721,17 +721,18 @@ $$
 The chi-square distance is a special case of the Mahalanobis distance in which
 $\Sigma = {\rm diag}(\mu)$.
 
-### Goals of MCA
+### Multiple Correspondence Analysis (MCA)
 
 Suppose we have $n$ observations on $p$ variables, and the data are
 represented in an $n\times p$ matrix $X$ whose rows are the cases
 (observations) and columns are the variables. Correspondence analysis can be
 applied when each $X_{ij} \ge 0$, and where it makes sense to compare any two
-rows or any two columns of $X$ using chi-square distance. Let $P \equiv X/N$,
-where $N = \sum_{ij} X_{ij}$. We introduce the following notation: let
-$P_{i,:}$ denote row $i$ of $P$, let $r \equiv P\cdot 1_p$ denote the row sums
-of $P$, and let $c = P^T\cdot 1_n$ denote the column sums of $P$. Also, let
-$W_r = {\rm diag}(r)\in {\mathbb R}^{n\times n}$ and
+rows or any two columns of $X$ using chi-square distance.
+
+Let $P \equiv X/N$, where $N = \sum_{ij} X_{ij}$. We introduce the following
+notation: let $P_{i,:}$ denote row $i$ of $P$, let $r \equiv P\cdot 1_p$
+denote the row sums of $P$, and let $c = P^T\cdot 1_n$ denote the column sums
+of $P$. Also, let $W_r = {\rm diag}(r)\in {\mathbb R}^{n\times n}$ and
 $W_c = {\rm diag}(c) \in {\mathbb R}^{p\times p}$. Then
 $P^r \equiv W_r^{-1}\cdot P$ are the *row profiles* of $P$, which are simply
 the rows of $P$ (or of $X$) normalized by their sum. Analogously,
@@ -739,8 +740,9 @@ $P^c \equiv P\cdot W_c^{-1}$ are the *column profiles* of $P$ (or of $X$).
 
 The primary goal of MCA is to embed the row profiles $P^r$ into *row scores*
 $F$ and the column profiles $P^c$ into *column scores* $G$, where $F$ is an
-$n\times p$ array and $G$ is a $p\times p$ array, and both embeddings respect
-chi-square distances.
+$n\times p$ array and $G$ is a $p\times p$ array, and both embeddings
+approximate chi-square distances. For any $j=1, 2, \ldots, p$, the
+$j^{\rm th}$ columns of $F$ and $G$ comprise an MCA factor.
 
 In many cases, the row sums will be approximately constant, so
 $W_r \propto 1_n$ and this matrix can effectively be ignored. However it is

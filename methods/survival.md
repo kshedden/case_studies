@@ -129,8 +129,9 @@ of interest.
 
 The *risk set* at a specific time $t$ is the subset of units (e.g. people) who
 could possibly experience the event at time $t$. Anyone who has already had
-the event before time $t$, has been right censored before time $t$, or has
-experienced a competing risk before time $t$ is not in the risk set.
+the event before time $t$, has been right censored before time $t$, has
+experienced a competing risk before time $t$ is not in the risk set, or is
+truncated after time $t$ is not in the risk set at time $t$.
 
 ## Recurrent events
 
@@ -346,7 +347,7 @@ $$ \hat{H}(t) = \sum_{i: t_i \le t} d_i/n_i, $$
 using the same notation as used above when presenting the product-limit
 estimator of the survival function. Since the hazard function $h$ is the
 derivative of the cumulative hazard function $H$, it is possible to estimate
-$h$ by numerically differentiating an estimate of $H$.
+$h$ by numerically differentiating a smooth estimate of $H$.
 
 ## Hazard regression
 
@@ -379,13 +380,13 @@ estimator discussed above.
 
 When interpreting the results of a PH model, the fact that it is based on
 proportionality of the hazard function is key. Thus, a given regression slope
-$\beta_j$ is the *log hazard ratio* when comparing the hazard functions for
-two individuals who differ by one unit on variable $X_j$, and have identical
+$\beta_j$ is the *log hazard ratio* that compares the hazard functions for two
+individuals who differ by one unit on variable $X_j$, and have identical
 values for all other variables. The estimated hazard ratio for the
 $j^{\rm th}$ covariate is simply $\exp(\hat{\beta}_j)$. Since the PH model
 assumes proportionality of the hazard functions, this hazard ratio does not
 depend on $t$ (although the true hazard ratio may depend on $t$ if the PH
-model is incorrectly-specified).
+model is incorrect).
 
 The PH model is essentially a single-index model fit with maximum likelihood
 techniques. Thus, once the concept of the hazard function and proportionality
