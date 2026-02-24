@@ -4,7 +4,7 @@ fixed width format.  This script converts these to CSV files,
 including birth weight and several predictors of birth weight that
 seem to be consistently coded across years.
 
-The data files and documentation are here:
+The data files and documentation are the "Birth data files" from here:
 
 https://www.cdc.gov/nchs/data_access/vitalstatsonline.htm
 
@@ -160,9 +160,9 @@ def download(year):
             shutil.copyfileobj(fin, fout)
     source.unlink()
 
-for year in 1971, 1981, 1991:
+for year in [1971, 1981, 1991]:
     download(year)
 
-for year in [1991]: #[1971, 1981, 1991]:
+for year in [1971, 1981, 1991]:
     da = get_births(year)
     da.to_csv(spath / f"{year}.csv.gz")
