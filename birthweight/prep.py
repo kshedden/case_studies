@@ -31,6 +31,7 @@ colspec_1969_1971={
     "year": (1,1),
     "state": (13,2),
     "county": (15,3),
+    "smsa": (22, 3),
     "sex": (35,1),
     "dadrace": (37,1),
     "momrace": (38,1),
@@ -46,6 +47,7 @@ colspec_1981={
     "year": (1,1),
     "state": (13,2),
     "county": (15,3),
+    "smsa": (22,3),
     "sex": (35,1),
     "dadrace": (37,1),
     "momrace": (38,1),
@@ -61,6 +63,7 @@ colspec_1991={
     "year": (1,4),
     "state": (32,2),
     "county": (34,3),
+    "msa": (54,4),
     "sex": (189,1),
     "dadrace": (160,2),
     "momrace": (80,2),
@@ -109,6 +112,7 @@ def clean_births(da, year):
     da["birthorder"] = da["birthorder"].replace({99: np.nan})
     da["dadage"] = da["dadage"].replace({99: np.nan})
     da["interval"] = da["interval"].replace({888: np.nan, 999: np.nan, 777: -1})
+    da["birthweight"] = da["birthweight"].replace({9999: np.nan})
 
     if 1969 <= year <= 1971:
         da["year"] = da["year"].replace({9: 1969, 0: 1970, 1: 1971})
@@ -160,8 +164,8 @@ def download(year):
             shutil.copyfileobj(fin, fout)
     source.unlink()
 
-for year in [1971, 1981, 1991]:
-    download(year)
+#for year in [1971, 1981, 1991]:
+#    download(year)
 
 for year in [1971, 1981, 1991]:
     da = get_births(year)
