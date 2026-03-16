@@ -11,13 +11,14 @@ https://www.cdc.gov/nchs/data_access/vitalstatsonline.htm
 The same data files seem to also be available here:
 
 https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/natality/
-
 """
 
 import pandas as pd
 import requests
 import shutil
 import gzip
+import os
+import re
 from pathlib import Path
 import numpy as np
 
@@ -59,7 +60,7 @@ colspec_1981={
     "interval": (117, 3)}
 
 # Column specification for 1991 is different from above
-colspec_1991={
+colspec_1991_1992={
     "year": (1,4),
     "state": (32,2),
     "county": (34,3),
@@ -70,7 +71,7 @@ colspec_1991={
     "momage": (70,2),
     "birthorder": (103,2),
     "dadage": (154,2),
-    "birthweight": (193,7),
+    "birthweight": (193,4),
     "plurality": (201,1),
     "interval": (128, 3)}
 
@@ -83,14 +84,14 @@ def make_colspec(colspec):
     return cs, cn
 
 # Load the appropriate column specification for a given year.
-# NOTE: Only tested for 1971, 1981, 1991
+# NOTE: Only tested for 1971, 1981, 1991, 192
 def get_colspec(year):
     if 1969 <= year <= 1971:
         return colspec_1969_1971
     elif year == 1981:
         return colspec_1981
-    elif year == 1991:
-        return colspec_1991
+    elif 1991 <= year <= 1992:
+        return colspec_1991_1992
     else:
         1/0
 
@@ -101,9 +102,11 @@ def recode_race_1971(da):
                        5: "Asian", 6: "Asian", 7: np.nan, 8: "Asian", 9: np.nan})
 
 # Recode numerical race codes to strings, collapsing to four categories.
-def recode_race_1991(da):
+def recode_race_1991_1992(da):
     return da.replace({1: "White", 2: "Black", 3: "Native", 4: "Asian", 5: "Asian",
-                       6: "Asian", 7: "Asian", 8: "Asian", 9: np.nan, 99: np.nan})
+                       6: "Asian", 7: "Asian", 8: "Asian", 9: np.nan, 18: "Asian",
+                       28: "Asian", 38: "Asian", 48: "Asian", 58: "Asian", 68: "Asian",
+                       78: "Asian", 99: np.nan})
 
 # Modify some of the fields to make the values consistent across years.
 def clean_births(da, year):
@@ -111,7 +114,7 @@ def clean_births(da, year):
     da["sex"] = da["sex"].replace({1: "male", 2: "female"})
     da["birthorder"] = da["birthorder"].replace({99: np.nan})
     da["dadage"] = da["dadage"].replace({99: np.nan})
-    da["interval"] = da["interval"].replace({888: np.nan, 999: np.nan, 777: -1})
+    da["interval"] = da["interval"].replace({888: np.nan, 999: np.nan, 777: np.nan})
     da["birthweight"] = da["birthweight"].replace({9999: np.nan})
 
     if 1969 <= year <= 1971:
@@ -122,11 +125,9 @@ def clean_births(da, year):
         da["year"] = da["year"].replace({1: 1981})
         da["momrace"] = recode_race_1971(da["momrace"])
         da["dadrace"] = recode_race_1971(da["dadrace"])
-    elif year == 1991:
-        da["year"] = da["year"].replace({1: 1991})
-        da["birthweight"] /= 1000
-        da["momrace"] = recode_race_1991(da["momrace"])
-        da["dadrace"] = recode_race_1991(da["dadrace"])
+    elif 1991 <= year <= 1992:
+        da["momrace"] = recode_race_1991_1992(da["momrace"])
+        da["dadrace"] = recode_race_1991_1992(da["dadrace"])
 
     return da
 
@@ -153,20 +154,25 @@ def download(year):
     target.unlink()
 
     # Gzip the data file
-    # NOTE: filenames are irregular, only tested on 1971, 1981, 1991
-    if 1975 <= year <= 1985:
-        source = spath / f"NATL{year}.txt"
-    else:
-        source = spath / f"Natl{year}.pub"
+    # NOTE: casing of the raw fwf filenames is irregular, they all
+    # seem to end in 'pub'
+    fnames = os.listdir(spath)
+    r = re.compile(str(year) + "\.(pub|txt)$", re.IGNORECASE)
+    fnames = [f for f in fnames if r.search(f)]
+    assert len(fnames) == 1
+    fname = fnames[0]
+    source = spath / fname
     target = spath / f"Natl{year}.pub.gz"
     with open(source, "rb") as fin:
         with gzip.open(target, "wb") as fout:
             shutil.copyfileobj(fin, fout)
     source.unlink()
 
-#for year in [1971, 1981, 1991]:
-#    download(year)
+years = [1971, 1981, 1991, 1992]
 
-for year in [1971, 1981, 1991]:
+for year in years:
+    download(year)
+
+for year in years:
     da = get_births(year)
-    da.to_csv(spath / f"{year}.csv.gz")
+    da.to_csv(spath / f"{year}.csv.gz", index=False)
