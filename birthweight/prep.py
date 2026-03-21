@@ -11,19 +11,26 @@ https://www.cdc.gov/nchs/data_access/vitalstatsonline.htm
 The same data files seem to also be available here:
 
 https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/natality/
+
+The 1983 RUCC codes can be obtained here:
+
+https://www.ers.usda.gov/data-products/rural-urban-continuum-codes
 """
 
 import pandas as pd
+from pathlib import Path
 import requests
 import shutil
-import gzip
 import os
 import re
-from pathlib import Path
+import gzip
+import pandas as pd
 import numpy as np
 
 # Directory in which to place the data files
 spath = Path("/home/kshedden/data/Teaching/birthweight/births")
+
+years = [1971, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1999, 1991, 1992]
 
 # Column specification for 1969-1971.  The first number of each
 # 2-tuple is the starting position (1-based counting), and the
@@ -41,10 +48,11 @@ colspec_1969_1971={
     "dadage": (69,2),
     "birthweight": (73,4),
     "plurality": (81,1),
-    "interval": (117, 3)}
+    "interval": (117, 3),
+    "popsize": (21, 1)}
 
 # The column specification for 1981 is the same as 1969-1971 for the fields we are using
-colspec_1981={
+colspec_1981_1988={
     "year": (1,1),
     "state": (13,2),
     "county": (15,3),
@@ -57,10 +65,11 @@ colspec_1981={
     "dadage": (69,2),
     "birthweight": (73,4),
     "plurality": (81,1),
-    "interval": (117, 3)}
+    "interval": (117, 3),
+    "popsize": (21, 1)}
 
 # Column specification for 1991 is different from above
-colspec_1991_1992={
+colspec_1989_1992={
     "year": (1,4),
     "state": (32,2),
     "county": (34,3),
@@ -73,7 +82,8 @@ colspec_1991_1992={
     "dadage": (154,2),
     "birthweight": (193,4),
     "plurality": (201,1),
-    "interval": (128, 3)}
+    "interval": (128, 3),
+    "popsize": (26, 1)}
 
 # Convert a column specification for use by Pandas.
 def make_colspec(colspec):
@@ -88,21 +98,21 @@ def make_colspec(colspec):
 def get_colspec(year):
     if 1969 <= year <= 1971:
         return colspec_1969_1971
-    elif year == 1981:
-        return colspec_1981
-    elif 1991 <= year <= 1992:
-        return colspec_1991_1992
+    elif 1981 <= year <= 1988:
+        return colspec_1981_1988
+    elif 1989 <= year <= 1992:
+        return colspec_1989_1992
     else:
         1/0
 
 # Recode numerical race codes to strings, collapsing to four categories.
-# This also works for 1981
-def recode_race_1971(da):
+# This also works for 1981-1989
+def recode_race_1971_1988(da):
     return da.replace({0: "Asian", 1: "White", 2: "Black", 3: "Native", 4: "Asian",
                        5: "Asian", 6: "Asian", 7: np.nan, 8: "Asian", 9: np.nan})
 
 # Recode numerical race codes to strings, collapsing to four categories.
-def recode_race_1991_1992(da):
+def recode_race_1989_1992(da):
     return da.replace({1: "White", 2: "Black", 3: "Native", 4: "Asian", 5: "Asian",
                        6: "Asian", 7: "Asian", 8: "Asian", 9: np.nan, 18: "Asian",
                        28: "Asian", 38: "Asian", 48: "Asian", 58: "Asian", 68: "Asian",
@@ -119,20 +129,20 @@ def clean_births(da, year):
 
     if 1969 <= year <= 1971:
         da["year"] = da["year"].replace({9: 1969, 0: 1970, 1: 1971})
-        da["momrace"] = recode_race_1971(da["momrace"])
-        da["dadrace"] = recode_race_1971(da["dadrace"])
-    elif year == 1981:
-        da["year"] = da["year"].replace({1: 1981})
-        da["momrace"] = recode_race_1971(da["momrace"])
-        da["dadrace"] = recode_race_1971(da["dadrace"])
-    elif 1991 <= year <= 1992:
-        da["momrace"] = recode_race_1991_1992(da["momrace"])
-        da["dadrace"] = recode_race_1991_1992(da["dadrace"])
+        da["momrace"] = recode_race_1971_1988(da["momrace"])
+        da["dadrace"] = recode_race_1971_1988(da["dadrace"])
+    elif 1981 <= year <= 1988:
+        da["year"] += 1980
+        da["momrace"] = recode_race_1971_1988(da["momrace"])
+        da["dadrace"] = recode_race_1971_1988(da["dadrace"])
+    elif 1989 <= year <= 1992:
+        da["momrace"] = recode_race_1989_1992(da["momrace"])
+        da["dadrace"] = recode_race_1989_1992(da["dadrace"])
 
     return da
 
 # Convert the fixed width files to CSV, select and process variables for consistency across years.
-def get_births(year):
+def get_births(year, spath):
     colspec = get_colspec(year)
     cs, cn = make_colspec(colspec)
     da = pd.read_fwf(spath / f"Natl{year}.pub.gz", colspecs=cs, compression="gzip", header=None)
@@ -140,7 +150,7 @@ def get_births(year):
     da = clean_births(da, year)
     return da
 
-def download(year):
+def download(year, spath):
 
     # Download the zip archive
     url_pat = "https://ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/DVS/natality/"
@@ -157,7 +167,7 @@ def download(year):
     # NOTE: casing of the raw fwf filenames is irregular, they all
     # seem to end in 'pub'
     fnames = os.listdir(spath)
-    r = re.compile(str(year) + "\.(pub|txt)$", re.IGNORECASE)
+    r = re.compile(str(year) + "(.pub|.txt|)$", re.IGNORECASE)
     fnames = [f for f in fnames if r.search(f)]
     assert len(fnames) == 1
     fname = fnames[0]
@@ -168,11 +178,9 @@ def download(year):
             shutil.copyfileobj(fin, fout)
     source.unlink()
 
-years = [1971, 1981, 1991, 1992]
+for year in years:
+    download(year, spath)
 
 for year in years:
-    download(year)
-
-for year in years:
-    da = get_births(year)
+    da = get_births(year, spath)
     da.to_csv(spath / f"{year}.csv.gz", index=False)
