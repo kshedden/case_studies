@@ -30,7 +30,7 @@ import numpy as np
 # Directory in which to place the data files
 spath = Path("/home/kshedden/data/Teaching/birthweight/births")
 
-years = [1971, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1999, 1991, 1992]
+years = [1971, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1991, 1992]
 
 # Column specification for 1969-1971.  The first number of each
 # 2-tuple is the starting position (1-based counting), and the
@@ -164,8 +164,8 @@ def download(year, spath):
     target.unlink()
 
     # Gzip the data file
-    # NOTE: casing of the raw fwf filenames is irregular, they all
-    # seem to end in 'pub'
+    # NOTE: casing of the raw fwf filenames is irregular, they
+    # seem to end in 'pub', 'txt', or have no extension.
     fnames = os.listdir(spath)
     r = re.compile(str(year) + "(.pub|.txt|)$", re.IGNORECASE)
     fnames = [f for f in fnames if r.search(f)]
