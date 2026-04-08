@@ -1,0 +1,783 @@
+---
+title: "Data integration and meta-analysis of birthweights"
+output: html_document
+---
+
+# Data integration and meta-analysis of birthweights
+
+This notebook illustrates some methods for meta-analysis and data integration, using the NCHS birth data. See here for background information about the data.
+
+Throughout this notebook, we will be partitioning the population into subpopulations based on geography, time, and demographics. Within each subpopulation we will construct statistical summaries of the birthweight and parental ages, which are viewed as outcomes. Then we will assess how these outcomes vary across the subpopulations. This is an example of data integration or "complete data meta-analysis", since we have access to the individual level data as well as the subpopulation summaries. Most of the methods demonstrated below would also be applicable if we only had access to the summary statistics.
+
+```{r setup, message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(tidyr)
+library(purrr)
+library(broom)
+library(locfdr)
+library(quantreg)
+library(zoo)
+library(numDeriv)
+library(nloptr)
+library(lmom)
+```
+
+Set the cell below to point to the location of all data paths.
+
+```{r}
+pa <- "/home/kshedden/data/Teaching/birthweight/births"
+```
+
+We will use data from four years.
+
+```{r}
+years <- c(1971, 1981, 1991, 1992)
+dax <- lapply(years, function(year) read_csv(gzfile(file.path(pa, paste0(year, ".csv.gz"))), show_col_types = FALSE))
+da <- bind_rows(dax)
+da <- da[, !(names(da) %in% c("smsa", "msa"))]
+dax <- NULL
+```
+
+A core set of variables should always be present, so we drop observations with missing values on any of these variables.
+
+```{r}
+core_vars <- c("year", "state", "county", "sex", "birthorder", "momrace", "momage", "birthweight")
+ii <- complete.cases(da[, core_vars])
+da <- da[ii, ]
+dim(da)
+```
+
+This is what a few observations look like:
+
+```{r}
+head(da)
+```
+
+We allow paternal variables to be missing, and the "interval" variable (time to the mother's previous birth) is always missing for first births since it is undefined.
+
+```{r}
+colSums(is.na(da))
+```
+
+Some of the birthorder values are implausible, so we clip them at 10.
+
+```{r}
+da$birthorder <- pmin(pmax(da$birthorder, 1), 10)
+```
+
+Plurality and birthorder have strong and generally well-understood impacts on birthweight. For simplicity, in this analysis we consider only first born single births so that we do not have to account for these effects.
+
+```{r}
+da <- subset(da, birthorder == 1 & plurality == 1)
+```
+
+# Data integration over spacial/demographic sub-populations
+
+The births occur in US counties, which are uniquely defined by their numeric state and county codes. We combine the two here to produce a single code that uniquely defines each US county.
+
+```{r}
+da$loc <- paste(da$state, da$county, sep = "_")
+length(unique(da$loc))
+```
+
+We begin by considering the evidence for heterogeneity between subpopulations defined by geography and demographics, where geography is based on state/county and demographics is based on year, sex, and maternal race. These are all categorical variables that jointly partition the population into subpopulations, where the number of strata is the number of unique county-year-sex-race combinations. Some strata have little or no data so are not included in the table.
+
+We have three quantitative measures of interest: birthweight, maternal age, and paternal age. We begin by summarizing the distributions of these four measures within subpopulations. We will use the sample mean and the sample standard deviation to capture these two features of each distribution, restricting ourselves to subpopulations with sufficient information to estimate a dispersion parameter.
+
+```{r}
+dg <- da %>%
+  group_by(loc, year, sex, momrace) %>%
+  summarise(
+    birthweight_mean = mean(birthweight, na.rm = TRUE),
+    birthweight_std = sd(birthweight, na.rm = TRUE),
+    birthweight_size = n(),
+    momage_mean = mean(momage, na.rm = TRUE),
+    momage_std = sd(momage, na.rm = TRUE),
+    momage_size = sum(!is.na(momage)),
+    dadage_mean = mean(dadage, na.rm = TRUE),
+    dadage_std = sd(dadage, na.rm = TRUE),
+    dadage_size = sum(!is.na(dadage)),
+    .groups = "drop"
+  ) %>%
+  filter(birthweight_size >= 2)
+
+dg
+```
+
+Since our focus here is on data integration, the information available to us is reflected in both the number of subpopulations, and the number of births (sample size) per subpopulation. The empirical quantile function below shows the distribution of the number of births per subpopulation.
+
+```{r}
+pp <- seq(0, 1, length.out = nrow(dg))
+y <- sort(log10(dg$birthweight_size))
+plot(pp, y, type = "l", xlab = "Probability point", ylab = "log10 birth count")
+grid()
+```
+
+We will also need the standard error of the mean for each county.
+
+```{r}
+dg <- dg %>%
+  mutate(
+    birthweight_se = birthweight_std / sqrt(birthweight_size),
+    momage_se = momage_std / sqrt(momage_size),
+    dadage_se = dadage_std / sqrt(dadage_size)
+  )
+head(dg)
+```
+
+# Intraclass correlation
+
+A common parameter for assessing heterogeneity in clustered data is the intraclass correlation coefficient (ICC). Working with the ICC amounts to a special case of variance components analysis, which we will discuss in more detail below. The ICC is often assessed using restricted maximum likelilhood estimation of mixed effects regression models, but here we will use a simpler estimation approach based on moments.
+
+As seen above, US counties vary dramatically in population size. The county size should not bias the estimation of the ICC, but it is possible that there is a systematic relationship between county size and the ICC, so we estimate the ICC using various levels of filtering based on minimum population size.
+
+```{r}
+get_icc <- function(dg, vname) {
+  means <- dg[[paste0(vname, "_mean")]]
+  varis <- dg[[paste0(vname, "_std")]]^2
+  svars <- dg[[paste0(vname, "_se")]]^2
+  b <- var(means, na.rm = TRUE) - mean(svars, na.rm = TRUE)
+  w <- mean(varis, na.rm = TRUE)
+  b / (b + w)
+}
+
+vnames <- c("birthweight", "momage", "dadage")
+n_mins <- c(20, 50, 100, 500, 1000, 2000)
+
+rslt <- lapply(n_mins, function(n_min) {
+  dg1 <- dg %>% filter(birthweight_size >= n_min)
+  sapply(vnames, function(vname) get_icc(dg1, vname))
+})
+rslt <- as.data.frame(do.call(rbind, rslt))
+colnames(rslt) <- vnames
+rownames(rslt) <- n_mins
+rslt
+```
+
+One way to interpret the ICC is based on it being the proportion of the total variance of an outcome that varies between groups rather than within groups. Maternal age has the strongest subpopulation variation (ICC) in this sense. Below we calculate the total variance of maternal age, then compute the proportion of the total variance that is between groups (based on the ICC values above), and finally convert this to a standard deviation for easier interpretation. We get a value of around 2.3, which means that if the subpopulation means are normal, comparing a sub-population in the upper 15% to one in the lower 15% (+1SD versus -1SD), the difference in mean maternal ages between these sub-populations would be around 4.6 years. The ICC remains valid even if the data are not normal, but this simple interpretation of the ICC depends on normality.
+
+```{r}
+sqrt(var(da$momage, na.rm = TRUE) * rslt[1, "momage"])
+```
+
+Above we used an adjusted variance to obtain the ICC, which we discuss in more detail now. Suppose that a parameter varies over subpopulations indexed by location. It may be of interest to quantify the variation of the value of this parameter over the subpopulations, which is the numerator of the ICC. To accomplish this, suppose we have an unbiased estimate of the parameter within each subpopulation. We can write the estimate as the parameter plus estimation error, so the observed variance contains both structural variation and estimation variation. This allows us to use the variance of the observed estimates, minus the mean squared standard error, to estimate the structural variance.
+
+Above we used this estimation approach to obtain debiased ICC values, but we can also interpret the debiased estimate of the between-group variance, or of its standard deviation, directly. Below we do this analysis using three outcome variables. To assess for systematic differences based on subpopulation size, we consider four different lower bounds on the sample size that are used to define the subpopulations used in the analysis. For each threshold, we present the debiased standard deviation (e.g. `birthweight`) and the unadjusted standard deviation (with an `x` appended to the variable name, e.g. `birthweightx`).
+
+```{r}
+vnames1 <- c("birthweight", "birthweightx", "momage", "momagex", "dadage", "dadagex")
+rslt2 <- lapply(n_mins, function(n_min) {
+  dg1 <- dg %>% filter(birthweight_size >= n_min)
+  row <- c()
+  for (vname in vnames) {
+    b <- var(dg1[[paste0(vname, "_mean")]], na.rm = TRUE)
+    w <- mean(dg1[[paste0(vname, "_se")]]^2, na.rm = TRUE)
+    pva <- b - w
+    pse <- ifelse(pva >= 0, sqrt(pva), 0)
+    row <- c(row, pse, sqrt(b))
+  }
+  row
+})
+rslt2 <- as.data.frame(do.call(rbind, rslt2))
+colnames(rslt2) <- vnames1
+rownames(rslt2) <- n_mins
+rslt2
+```
+
+Above we focused on the ICC, which is defined in terms of the subpopulation means, but the approach can be applied more generally. We now show how a statistic other than the mean can be assessed in terms of how much it varies between sub-populations. For illustration, we consider the Kendall's tau correlation between maternal age and birthweight. We restrict the analysis to mother's of age 30 and under, since the relationship between maternal age and birthweight is suspected to be non-monotone, with lower average birthweights occurring for both younger and older mothers. By restricting to the younger than average mothers, we isolate the monotone risk associated with young motherhood. We first estimate the value of the Kendall's tau correlation at the level of individual births.
+
+```{r}
+da1 <- subset(da, momage <= 30)
+cor(da1$birthweight, da1$momage, method = "kendall", use = "complete.obs")
+```
+
+Next we consider the tau correlation values within each subpopulation.
+
+```{r}
+f_tau <- function(x) {
+  n <- nrow(x)
+  k <- suppressWarnings(cor.test(x$birthweight, x$momage, method = "kendall", exact = FALSE))
+  se <- if (n <= 1) NA_real_ else sqrt(2 * (2 * n + 5) / (9 * n * (n - 1)))
+  data.frame(n = n, cor = unname(k$estimate), p = k$p.value, se = se)
+}
+
+dh <- da1 %>%
+  group_by(loc, year, sex, momrace) %>%
+  group_modify(~ f_tau(.x)) %>%
+  ungroup() %>%
+  filter(n >= 200)
+
+dh
+```
+
+The results below indicate that a typical subpopulation has a correlation of around 0.05, and that the estimated tau correlations fluctuate from county to county with an SD around 0.04.
+
+```{r}
+mean(dh$cor, na.rm = TRUE)
+sd(dh$cor, na.rm = TRUE)
+```
+
+However the SD in the estimated tau correlations is biased upward relative to the structure SD. To assess the structureal SD, we remove the effect of sampling variation due to finite sample sizes within each stratum. This gives us a smaller but more meaningful SD, which implies that (under normality, to facilitate interpretation), some subpopulations may have correlations as low as 0.01 (the mean minus two times the standard deviation), or as high as 0.09 (the mean plus two times the standard deviation).
+
+```{r}
+sqrt(var(dh$cor, na.rm = TRUE) - mean(dh$se^2, na.rm = TRUE))
+```
+
+# False Discovery rates
+
+We will now consider the strength of evidence for the association between maternal age and birthweight within strata. The main tool to be employed here is the local false discovery rate, or local FDR. This approach focuses on the distribution of Z-scores, where a Z-score is an estimated tau correlation coeffient divided by its standard error. Under the global null hypothesis (all subpopulation correlations are zero), these Z-scores approximately follow a standard normal distribution, due to the sample correlation coefficient being asymptotically normal in distribution. The histogram below shows that the observed Z-scores are shifted to the right and more dispersed than a standard normal distribution, so from this visual perspective, the global null hypothesis does not seem to hold.
+
+```{r}
+dh$Z <- dh$cor / dh$se
+hist(dh$Z, prob = TRUE, breaks = 30, xlab = "Z-score", ylab = "Frequency")
+curve(dnorm(x), add = TRUE, col = "purple", lwd = 2)
+```
+
+The mean Z-score is much greater than 0, and the standard deviation of Z-scores is much greater than 1, strongly suggesting that the global null hypothesis is false.
+
+```{r}
+mean(dh$Z, na.rm = TRUE)
+sd(dh$Z, na.rm = TRUE)
+```
+
+Another perspective on the distribution of Z-scores follows from inspection of the quantiles. The plot below shows the empirical quantiles (blue) and the standard normal quantiles (purple).
+
+```{r}
+z <- sort(dh$Z)
+pp <- seq(0, 1, length.out = length(z))
+g <- qnorm(pp)
+plot(pp, z, type = "l", xlab = "Probability point", ylab = "Z-score")
+lines(pp, g, col = "purple")
+grid()
+```
+
+Recall that the local FDR for a specific observation (here a subpopulation) can be estimated as the ratio between the reference null density of the statistic (here standard normal) and the empirical density of all statistic values. Conventionally, ratios below 0.05-0.1 are deemed to be small.
+
+```{r}
+lfdr <- locfdr(dh$Z, plot = 0)$fdr
+plot(sort(lfdr), type = "l", xlab = "Rank", ylab = "local FDR")
+grid()
+```
+
+Some of the FDRs might be large due to low power, which occurs when the sample size in a given subpopulation is small. The plot below shows that the FDRs tend to decrease with increasing sample size. However there are numerous small local FDR values for smaller as well as larger sample sizes.
+
+```{r}
+clogit <- function(x) {
+  x <- pmin(pmax(x, 0.001), 0.999)
+  log(x / (1 - x))
+}
+
+x <- log10(dh$n)
+y <- clogit(lfdr)
+xy <- lowess(x, y, f = 0.3)
+plot(x, y, pch = 16, col = rgb(0.5, 0.5, 0.5, 0.4), xlab = "Log10 sample size", ylab = "Logit local FDR")
+lines(xy, col = "orange", lwd = 2)
+abline(h = clogit(0.1))
+grid()
+```
+
+# Empirical likelihood
+
+In this section we consider a more sophisticated set of approaches for quantifying subpopulation heterogeneity, based on the jackknife and empirical likelihoods. The parameter of interest here is the variance of the stratum means, where the groups are locations and the outcome is measured repeatedly within each group. The parameter captures the dispersion of subpopulation means. In practice it will often be interpreted on the standard deviation scale, yielding the square root of the variance, but estimation and inference is easier to carry out on the variance scale.
+
+As discussed above, we can unbiasedly estimate this quantity using the variance of the sample means minus the average of the squared standard errors, where the second term corrects for the upward bias in the first term due to estimation variance in the sample means. To better understand the precision with which this quantity is estimated, we can use a jackknifing procedure. Specifically, let the deleted estimate denote the estimate obtained when omitting one group, and let the pseudo-values be the usual jackknife pseudo-observations. These are known as the jackknife pseudo-observations, and have the property that their standard deviation is approximately equal to the sampling standard deviation of the target estimator, that is, its standard error. The average of the pseudo-observations will generally be close to, or exactly equal to, the estimate that uses all of the data.
+
+Below we calculate the deleted estimates and pseudo-observations, using some basic algebra to accelerate the computations.
+
+```{r}
+outvar <- "birthweight"
+
+delete_mean <- function(x) {
+  s <- sum(x)
+  n <- length(x)
+  (s - x) / (n - 1)
+}
+
+setup_jackstats <- function(outvar, da) {
+  vn <- rlang::sym(outvar)
+  dg <- da %>%
+    group_by(loc) %>%
+    summarise(
+      mean = mean(!!vn, na.rm = TRUE),
+      std = sd(!!vn, na.rm = TRUE),
+      len = sum(!is.na(!!vn)),
+      .groups = "drop"
+    )
+  dg$se <- dg$std / sqrt(dg$len)
+  n <- nrow(dg)
+  dg$mean1_del <- delete_mean(dg$mean)
+  dg$mean2_del <- delete_mean(dg$mean^2)
+  dg$msva_del <- delete_mean(dg$se^2)
+  dg$varmean_del <- dg$mean2_del - dg$mean1_del^2
+  dg$locvar_del <- dg$varmean_del - dg$msva_del
+  locvar0 <- var(dg$mean) - mean(dg$se^2)
+  locvar <- mean(dg$locvar_del)
+  dg$locvar_pseudo <- n * locvar - (n - 1) * dg$locvar_del
+  list(dg = dg, locvar0 = locvar0)
+}
+```
+
+The point estimate and jackknife standard error for the location-level variance are below.
+
+```{r}
+jack <- setup_jackstats(outvar, da)
+dg_jack <- jack$dg
+locvar0 <- jack$locvar0
+pseudo <- dg_jack$locvar_pseudo
+
+jmn <- mean(pseudo)
+jse <- sd(pseudo) / sqrt(length(pseudo))
+jmn
+jse
+```
+
+Taking this a step further, we can construct confidence intervals for the parameter on the variance scale (and for its square root) using the jackknife empirical likelihood approach. This is mostly useful for smaller sample sizes, where the computations are faster and the asymptotic interval does not cover well. So we subsample the counties below to illustrate.
+
+```{r}
+uloc <- unique(da$loc)[1:200]
+da1 <- da[da$loc %in% uloc, ]
+jack1 <- setup_jackstats(outvar, da1)
+dg1 <- jack1$dg
+pseudo <- dg1$locvar_pseudo
+
+jmn <- mean(pseudo)
+jse <- sd(pseudo) / sqrt(length(pseudo))
+
+nll <- function(w) -sum(log(w))
+
+llprof <- function(t2, pseudo) {
+  m <- length(pseudo)
+  x0 <- rep(1 / m, m)
+  eval_f <- function(w) list(objective = -sum(log(w)), gradient = -1 / w)
+  eval_g_eq <- function(w) rbind(rep(1, m), pseudo)
+  opts <- list(algorithm = "NLOPT_LD_SLSQP", xtol_rel = 1e-8, maxeval = 5000)
+  res <- nloptr(
+    x0 = x0,
+    eval_f = eval_f,
+    lb = rep(1e-10, m),
+    ub = rep(1, m),
+    eval_g_eq = function(w) c(sum(w) - 1, sum(w * pseudo) - t2),
+    opts = opts
+  )
+  res
+}
+
+nfail <- 0
+rslt_el <- lapply(seq(jmn - 3 * jse, jmn + 4 * jse, length.out = 20), function(t2) {
+  r <- try(llprof(t2, pseudo), silent = TRUE)
+  if (inherits(r, "try-error")) {
+    nfail <<- nfail + 1
+    c(t2 = t2, fun = NA_real_)
+  } else {
+    c(t2 = t2, fun = r$objective)
+  }
+})
+rslt_el <- as.data.frame(do.call(rbind, rslt_el))
+cat("Number of failed optimizations:", nfail, "\n")
+```
+
+In the plot below, the blue curve is the profile empirical likelihood, and the region bounded below by the purple line is the 95% confidence region. The orange lines bound the jackknife 95% confidence interval. For easier interpretation, we transform everything to the standard deviation scale.
+
+```{r}
+q <- qchisq(0.95, df = 1)
+keep <- is.finite(rslt_el$fun) & rslt_el$t2 > 0
+plot(sqrt(rslt_el$t2[keep]), -rslt_el$fun[keep], type = "l", xlab = expression(tau), ylab = "Log empirical likelihood")
+abline(h = -min(rslt_el$fun[keep], na.rm = TRUE) - q, col = "purple")
+abline(v = sqrt(jmn - 2 * jse), col = "orange")
+abline(v = sqrt(jmn + 2 * jse), col = "orange")
+grid()
+```
+
+Another application of empirical likelihood is to estimate the distribution of stratum-level birthweight means. This distribution is related to the empirical distribution of stratum-level sample means, but is less dispersed, since the distribution of sample means is influenced by estimation errors in the sample means. Expressed more formally, we have a hierarchical model in which each stratum has a true mean, standard deviation, and sample size. We observe the sample mean from each stratum, which is taken to follow a normal distribution with mean equal to the true stratum mean and standard deviation equal to the stratum-level standard error.
+
+Empirical likelihood allows us to estimate the distribution of the true stratum means nonparametrically. We do this by modeling the distribution on a finite grid centered on the range of plausible values. The empirical likelihood places a probability mass at each grid point, and these masses are estimated using maximum likelihood estimation. If we consider the true birthweight mean for each stratum to be one of the gridpoints, then the class indicators become latent data, and the problem becomes a special case of fitting mixture distributions. This allows us to use the EM algorithm to estimate the unknown probability masses.
+
+```{r}
+jack <- setup_jackstats(outvar, da)
+dg_em <- jack$dg
+
+m <- 100
+y <- dg_em$mean
+s <- dg_em$se
+m0 <- mean(y)
+s0 <- sd(y)
+mean_grid <- seq(m0 - 3 * s0, m0 + 3 * s0, length.out = m)
+
+D <- outer(mean_grid, y, FUN = "-")
+D <- sweep(D, 2, s, "/")
+Q0 <- -D^2 / 2 - matrix(log(s), nrow = m, ncol = length(y), byrow = TRUE)
+
+p <- rep(1 / m, m)
+for (k in seq_len(5000)) {
+  Q <- Q0 + log(p)
+  Q <- sweep(Q, 2, apply(Q, 2, max), "-")
+  Q <- exp(Q)
+  Q <- sweep(Q, 2, colSums(Q), "/")
+  pnew <- rowSums(Q) / ncol(Q)
+  if (max(abs(pnew - p)) < (1 / (10 * m))) break
+  p <- pnew
+}
+```
+
+The empirical likelihood does not exhibhit a smooth mass function, as shown below, but this is not a major problem.
+
+```{r}
+plot(mean_grid, p, type = "l", xlab = "Expected birthweight", ylab = "Probability mass")
+grid()
+```
+
+The cumulative distribution function is smooth.
+
+```{r}
+cp <- cumsum(p)
+plot(mean_grid, cp, type = "l", xlab = "Expected birthweight", ylab = "Cumulative probability")
+grid()
+```
+
+Although the probability masses are not smooth, we can still estimate functionals of them based on quantiles and moments.
+
+For example, the calculation below shows that the empirical distribution is somewhat left skewed.
+
+```{r}
+i1 <- which(cp >= 0.25)[1]
+i2 <- which(cp >= 0.5)[1]
+i3 <- which(cp >= 0.75)[1]
+sk <- mean_grid[i3] - 2 * mean_grid[i2] + mean_grid[i1]
+ds <- mean_grid[i3] - mean_grid[i1]
+sk / ds
+```
+
+This calculation shows the standard deviation of the empirical distribution.
+
+```{r}
+sqrt(sum(mean_grid^2 * p) - sum(mean_grid * p)^2)
+```
+
+# E-values
+
+"Expectation values", referred to as E-values, are an emerging way to conduct statistical inference that claims to overcome some of the shortcomings of the dominant inferential approaches based on p-values. E-values have particular relevance in data integration, since they allow meaningful pooling of evidence under broader conditions that p-values. At the present time, E-values are still rather new, and they require a fairly distinct way of thinking compared to p-values. Moreover, there are not yet default or automatic ways to use E-values in all settings where p-values can be used, so it is not realistic to view E-values as a replacement for p-values at the present time. Here we will give an introduction and some elementary examples of inference using E-values, focusing on applications in data integration and meta-analysis.
+
+Like other approaches to statistical inference based on p-values, Z-scores, and false discovery rates, E-values are used in the setting where we have an explicit null hypothesis, and a statistic used to measure evidence against the null hypothesis. The definition of an E value is straightforward -- it is a non-negative statistic whose expected value when the null hypothesis is true is less than or equal to 1. Analogously, a p-value is a statistic that follows a uniform distribution on the unit interval when the null hypothesis is true, and a Z-score is a statistic that follows a standard normal distribution when the null hypothesis is true. Placing a condition on the expectation is much weaker than placing a condition on the distribution, therefore E-values by definition are less constrained than p-values and Z-scores. In many cases, this makes it easier to construct E-values, and the E-values are generally more robust to assumptions because the requirements imposed on them are weaker.
+
+Thresholds on any evidence scale are somewhat arbitrary, but there is an argument that the reciprocal of an E-value can be viewed as a conservative p-value. Thus, it is said that an E-value around 20 is minimal evidence against the null, roughly comparable to 0.05, and 100 is strong evidence against the null, comparable to 0.01 or below.
+
+When the null hypothesis is not true, it is desirable for E-values to tend to be larger than 1, and as more data are obtained, we can construct an E-process simply by averaging the E-values. This simple average meaningfully reflects the aggregation of evidence with increasing sample size.
+
+An easy way to get started with E-values is to use a p-to-e calibrator, which converts p-values to E-values. The E-values constructed this way are usually not optimal so this tends not to be used much in practice, but it is a way to start building intuition. Below we consider the p-values for testing the null hypothesis of zero tau-correlation between maternal age and birthweight. We use a p-to-e calibrator and plot the E-process on the log scale as we consider more and more subpopulations (i.e. as our sample size grows). The counties are randomly reordered to reflect the fact that there is no fixed ordering to the counties. We see that after we have observed just a few counties (it varies according to the random permutation), we can be quite confident that maternal age and birthweight are not independent. The second plot shows what happens when the p-values used to construct the E-values are perfectly uniform on the unit interval, as when the null hypothesis is true.
+
+The use of an E-process here is illustrative of situations where data are obtained sequentially, and we would stop collecting data once we have enough evidence to reject the null hypothesis. For the NCHS data, all of the data come at once, so this approach is somewhat unnatural here, but we do it for illustration.
+
+```{r}
+p <- dh$p
+for (r in c(FALSE, TRUE)) {
+  plot(NULL, xlim = c(1, 30), ylim = range(log(20), log(100), -5, 10), xlab = "Number of subpopulations", ylab = "Log E process value")
+  grid()
+  for (j in seq_len(10)) {
+    p_use <- if (r) runif(length(p)) else p
+    p_use <- sample(p_use)
+    E <- (1 - p_use + p_use * log(p_use)) / (p_use * log(p_use)^2)
+    P <- log(cumsum(E) / seq_along(E))
+    lines(P[1:30], col = "grey")
+  }
+  abline(h = log(20), col = "purple")
+  abline(h = log(100), col = "orange")
+}
+```
+
+Now we consider two examples where E-values can be used to assess evidence that a quantitative variable (maternal age or birthweight) follows different distributions in two subpopulations (e.g. comparing girl babies to boy babies). Here, a more powerful construction can be employed based on the Mann-Whitney U statistic. This U statistic is asymptotically normal under the null hypothesis. Since E-values must be non-negative, it is natural to exponentiate the statistic after a suitable scaling and translation. The resulting E-value approximately follows a log-normal distribution under the null, and using the properties of this distribution it can easily be verified that its expected value is equal to 1. Hence, it is a valid E value.
+
+The constant in the construction is a tuning parameter whose value affects the power but not the validity of the test. Below we simulate data under the null hypothesis and plot the distribution of the E-values, and calculate the empirical mean which is very close to 1. By experimentation, it turns out that the E-value is extremely skewed unless the tuning constant is chosen to be on the order of the standard deviation scale. Smaller values give a more symmetrically distributed result. It turns out however that perfect symmetry is not desirable -- a fair amount of right skew improves the growth rate of evidence, so values from around 0.75 to 1 seem to work best.
+
+```{r}
+set.seed(123)
+n1 <- 50
+n2 <- 100
+nrep <- 10000
+
+mu <- n1 * n2 / 2
+s <- sqrt(n1 * n2 * (n1 + n2 + 1) / 12)
+b <- 0.75 / s
+
+u <- numeric(nrep)
+e <- numeric(nrep)
+for (i in seq_len(nrep)) {
+  x <- rnorm(n1)
+  y <- rnorm(n2)
+  u[i] <- wilcox.test(x, y, exact = FALSE)$statistic
+  e[i] <- exp(b * u[i] - b * mu - (b * s)^2 / 2)
+}
+
+mean(e)
+hist(e, xlab = "E-value", ylab = "Frequency")
+```
+
+We illustrate the use of E-values to compare two distributions using a Mann-Whitney U statistic using the individual-level NCHS data. Upon selecting a subsample, to illustrate a more challenging power situation, we see that it is easy to achieve strong evidence against the null hypothesis of no sex differences for birthweight but not for maternal age. Thus, there is strong evidence that birthweights differ by sex, but there is no evidence that maternal age differs by sex. Since these are all firstborn children, this indicates that there is no evidence of a directional bias in sex ratios between older and younger mothers.
+
+There are few technical points to consider here. One is that the construction below is one-sided, so we are only able to detect a setting where male babies are heavier than female babies, or where mothers of male babies are older than mothers of female babies. It would be straightforward to check for the other direction (which would be found to yield minimal evidence against either of the null hypotheses). It is also important to note that U-statistics are sensitive to ties, and while there are ways to handle ties, these approaches are tricky to apply. So instead, here we add a small amount of noise to the data to break all the ties.
+
+```{r}
+set.seed(123)
+nmax <- 2000
+n1 <- nmax
+n2 <- nmax
+mu <- n1 * n2 / 2
+s <- sqrt(n1 * n2 * (n1 + n2 + 1) / 12)
+b <- 0.75 / s
+
+for (vname in c("birthweight", "momage")) {
+  f <- da %>% filter(sex == "female") %>% pull(all_of(vname)) %>% .[1:nmax]
+  m <- da %>% filter(sex == "male") %>% pull(all_of(vname)) %>% .[1:nmax]
+  f <- sort(f) + 0.1 * rnorm(nmax)
+  m <- sort(m) + 0.1 * rnorm(nmax)
+  u <- unname(wilcox.test(m, f, exact = FALSE, correct = FALSE)$statistic)
+  v <- b * u - b * mu - (b * s)^2 / 2
+  evalue <- exp(v)
+  cat(vname, evalue, "\n")
+}
+```
+
+# Visual assessment of heterogeneity
+
+We turn now to a more visual way to understand the subpopulation variation in a quantitative outcome such as birthweight. If we summarize the birthweights using two summary statistics, say a measure of location such as the mean, and a measure of scale such as the standard deviation, we can plot each sub-population as a point in the location x scale plane. Then for each variable that identifies a subulation (here location, year, sex, and maternal race), we can compute the centroid of all points in the location x scale plane with a given level for each of these four variables. This allows us to plot each level of each identifying variable as a point in the plane, along with the underlying location and scale values. In the next cell, we write a function that does this generically, for a given outcome (e.g. birthweight), and for given statistical summaries (e.g. mean and standard deviation).
+
+```{r}
+summarize_msa <- function(dg) {
+  rr <- list()
+  for (vname in c("year", "momrace", "sex")) {
+    tmp <- dg %>%
+      group_by(.data[[vname]]) %>%
+      summarise(x = mean(x), y = mean(y), n = n(), .groups = "drop") %>%
+      rename(variable = !!vname)
+    rr[[vname]] <- tmp
+  }
+  bind_rows(rr)
+}
+
+flows <- function(da, outvar, stat1_fun, stat1_label, stat2_fun, stat2_label, minsize = 500) {
+  vn <- rlang::sym(outvar)
+  dg <- da %>%
+    group_by(loc, year, sex, momrace) %>%
+    summarise(
+      x = stat1_fun(!!vn),
+      y = stat2_fun(!!vn),
+      n = n(),
+      .groups = "drop"
+    ) %>%
+    filter(n >= minsize)
+
+  rr <- summarize_msa(dg)
+
+  xmin <- min(rr$x); xmax <- max(rr$x)
+  ymin <- min(rr$y); ymax <- max(rr$y)
+  dx <- 0.05 * (xmax - xmin)
+  dy <- 0.05 * (ymax - ymin)
+  xmin <- xmin - dx; xmax <- xmax + dx
+  ymin <- ymin - dy; ymax <- ymax + dy
+
+  plot(dg$x, dg$y, pch = 16, col = rgb(0.5, 0.5, 0.5, 0.1), xlab = stat1_label, ylab = stat2_label)
+  rect(xmin, ymin, xmax, ymax, border = "red", lwd = 2)
+  grid()
+
+  plot(dg$x, dg$y, pch = 16, col = rgb(0.5, 0.5, 0.5, 0.1), xlab = stat1_label, ylab = stat2_label, xlim = c(xmin, xmax), ylim = c(ymin, ymax))
+  text(rr$x, rr$y, labels = rr$variable)
+  w <- dg$n / sum(dg$n)
+  sx <- sum(dg$x * w)
+  sy <- sum(dg$y * w)
+  points(sx, sy, pch = 16, col = "red")
+  grid()
+
+  invisible(dg)
+}
+```
+
+Now we illustrate the approach using the sample mean and sample standard deviation to characterize the distribution of birthweights for each sub-population. The first plot shows only the mean and standard deviation values, along with a box that will form the boundaries of the subsequent plot, which shows the centroids as described above. This plot shows that the Black subpopulations have lower mean and higher standard deviation, while the Asian subpopulations have lower mean and lower standard deviation. The female populations have lower mean and lower standard deviation, while the male subpopulations have higher mean and higher standard deviation. There is very little difference between the later three years, but birthweights in 1971 were lower and less heterogeneous.
+
+```{r}
+flows(da, "birthweight", mean, "mean", sd, "std")
+```
+
+We provide a second illustration using measures of skewness and kurtosis based on L-moments. Like the more familiar skewness based on classical moments, the L-skewness is positive if the right tail is heavier than the left tail, and is negative if the left tail is heavier than the right tail. The L-kurtosis is a measure of symmetric heaviness of the tails. For reference, the Gaussian distribution has L-kurtosis that is approximately equal to 0.12.
+
+```{r}
+l2 <- function(x) samlmu(x, nmom = 2)[2]
+l3 <- function(x) {
+  lm <- samlmu(x, nmom = 3)
+  lm[3] * lm[2]
+}
+l4 <- function(x) {
+  lm <- samlmu(x, nmom = 4)
+  lm[4] * lm[2]
+}
+tau3 <- function(x) samlmu(x, nmom = 3)[3]
+tau4 <- function(x) samlmu(x, nmom = 4)[4]
+```
+
+The results indicate a substantial inverse relationship between the L-skewness and the L-kurtosis. While nearly all sub-populations have negative L-skewness, those sub-populations that are closest to being symmetric (L-skewness close to zero) have the smallest L-kurtosis, approaching that of a Gaussian distribution. Sub-populations corresponding to Black individuals tend to have lower (more negative) skewness and higher kurtosis.
+
+```{r}
+dg_flow <- flows(da, "birthweight", tau3, "L-skewness", tau4, "L-kurtosis")
+```
+
+# Variance component analysis
+
+Variance component analysis is a special type of random effects or multilevel modeling that arises when the explanatory variables are all categorical. We can use it to gain some insights into our aggregated data, in order to see which factors (year, sex, maternal race, and location) explain the most variation in an outcome (birthweight or maternal age).
+
+One way to approach variance components analysis is through fully-specified models, but the notation and language for describing more complex multilevel models gets quite complex. Also, most variance components analysis is conducted using restricted maximum likelihood (RMLE) methods that are supported in statistical packages such as the `lmer` package in R (similarly powerful capabilities exist for SAS, Stata, and Julia). Although the Python Statsmodels package can fit certain types of linear multilevel models, it lacks capabilities comparable to R. Moreover, there are reasons to consider alternative estimators, since, among other issues, the RMLE approach takes the random effects to be Gaussian, an assumption that is difficult to test, and it is difficult to account for complex heteroscedasticity. There are a number of alternative estimators for variance components models, including the MINQUE approach, as well as Bayesian approaches.
+
+Here we adopt a method of moments approach based on U statistics. An advantage of this approach is that it allows us to directly target variance parameters of interest without explicitly specifying a complete model for the data. Also, it can accommodate arbitrary known heteroscedasticity. For illustration, we focus on a few interesting cases below related to "idiosyncratic" race and sex differences, and illustrate how the parameters of interest can be estimated using just a few lines of code.
+
+Our data are partitioned into thousands of groups, each determined by a combination of location, year, sex, and maternal race. There can be systematic "main effects" for year, sex, and maternal race, as these variables have a small number of distinct levels (no more than four). Location effects would be difficult to model using fixed main effects since there are thousands of counties. As a first illustration, we focus on "idiosyncratic" maternal race differences, where by "idiosyncratic" we mean maternal race differences that are unique to each subpopulation (race differences that are common to all subpopulations are captured through the race fixed effects). To do so, we first residualize the data to eliminate the fixed main effects of year, sex, and maternal race. We then look within each stratum, defined by location, year, and sex, but not stratifying on maternal race. Within each such stratum, we have sample means for up to four races. The squared difference between any two of these means is informative for the idiosyncratic race effect. Similar to above, the raw squared difference between sample means needs to be adjusted downward for the inflation caused by imprecision in the mean estimates, and this is straightforward to do. These squared differences are aggregated over all race pairs, and over all subpopulations defined by location, year, and sex. This makes this a method of moments approach emplyoying U statistics.
+
+The approach described here is unbiased, and does not require the data to follow any particular distribution. It is less statistically efficient than the RMLE approach when the model is correctly specified, but more robust to misspecification of this model. Below we implement a generic function that calculates the idiosyncratic effects for outcome `outvar` between levels of `varvar`, stratifying on the variables in `groupvars`.
+
+```{r}
+varcomp <- function(outvar, varvar, groupvars) {
+  fml <- as.formula(paste0(outvar, " ~ factor(year) + sex + momrace"))
+  m0 <- lm(fml, data = da)
+  print(summary(m0))
+
+  da1 <- da
+  da1$resid <- resid(m0)
+
+  dg <- da1 %>%
+    group_by(across(all_of(c(varvar, groupvars)))) %>%
+    summarise(mean = mean(resid), std = sd(resid), size = n(), .groups = "drop") %>%
+    filter(size >= 50) %>%
+    mutate(se = std / sqrt(size))
+
+  split_groups <- split(dg, interaction(dg[, groupvars], drop = TRUE))
+  U <- 0
+  n <- 0
+  for (dx in split_groups) {
+    mn <- dx$mean
+    se <- dx$se
+    if (nrow(dx) >= 2) {
+      for (i in seq_len(nrow(dx) - 1)) {
+        for (j in seq((i + 1), nrow(dx))) {
+          U <- U + (mn[i] - mn[j])^2 - se[i]^2 - se[j]^2
+          n <- n + 1
+        }
+      }
+    }
+  }
+  U <- U / (2 * n)
+  sqrt(ifelse(U >= 0, U, 0))
+}
+```
+
+The results below show that there is around 32 grams of idiosyncratic birthweight standard deviation between maternal races, within county x year x sex subpopulations. This is about 1/8 of the largest between race fixed difference. We might interpret this to indicate that the relationship between birthweight and race is largely systematic, although there does seem to be additional idiosyncratic variation that is about an order of magnitude smaller than the stable differences. The results for maternal age are similar -- the idiosyncratic variation is around 20% of the stable variation.
+
+```{r}
+for (vname in c("birthweight", "momage")) {
+  s <- varcomp(vname, "momrace", c("loc", "year", "sex"))
+  cat("\nIdiosyncratic SD for", vname, ":\n", sprintf("%12.5f", s), "\n")
+}
+```
+
+As a second example, we can look for stable and idiosyncratic differences in maternal age and birthweight with respect to offspring sex. For birthweight, the stable differences reflect differences in average weight between groups, which are understood to some extent (e.g. male babies are heavier than female babies, and birthweights have been trending upwards over time). The idiosyncratic differences would reflect whether sex differences are heterogeneous across strata defined by year, maternal race, and location. The idiosyncratic differences in birthweight due to sex are small, only round 5% of the stable sex difference. Thus the difference in average weight between male and female babies seems to be mostly invariant to other factors.
+
+Maternal age is arguably a negative control here, we would expect no sex differences in maternal age. This is true for both stable variation, since the main effect for sex is not significantly different from zero, and for idiosyncratic variation, whose variance parameter is estiamted to be negative (it is rounded up to zero when converting to a standard deviation).
+
+```{r}
+for (vname in c("birthweight", "momage")) {
+  s <- varcomp(vname, "sex", c("loc", "year", "momrace"))
+  cat("\nIdiosyncratic SD for", vname, ":\n", sprintf("%12.5f", s), "\n")
+}
+```
+
+# Data integration over time
+
+Another form of heterogeneity is heterogeneity over time, which might also be referred to as "non-stationarity". In this section we illustrate how the results of regression analyses can systematically be compared across years. We use quantile regression models for the 0.1 probability point, since many research questions center on low birthweight. We fit a separate model for each year of data. Since we will use paternal age as a predictor of birthweight, we drop all observations with missing paternal age.
+
+```{r}
+da1 <- da %>% filter(!is.na(dadage))
+
+momage_ref <- 25
+dadage_ref <- 25
+da1$momage_cen <- da1$momage - momage_ref
+da1$dadage_cen <- da1$dadage - dadage_ref
+
+fml <- birthweight ~ sex + momage + I(momage_cen^2) + dadage + I(dadage_cen^2)
+
+rq <- list()
+for (k in sort(unique(da1$year))) {
+  dx <- da1 %>% filter(year == k)
+  rq[[as.character(k)]] <- rq(fml, data = dx, tau = 0.1)
+}
+```
+
+When considering changes over time, we can focus on changes in the marginal distribution of the outcome, changes in the marginal distribution of the predictors, and changes in the conditional distribution of the outcome given the predictors. Changes in the conditional distribution are often most interesting, but changes in the predictors, known as distribution shift, are important to consider as well. For example, below we see that both mothers and fathers are older in more recent years, a form of distribution shift. But as expected there is no meaningful distribution shift in sex.
+
+```{r}
+da1$female <- da1$sex == "female"
+da1 %>%
+  group_by(year) %>%
+  summarise(momage = mean(momage), dadage = mean(dadage), female = mean(female), .groups = "drop")
+```
+
+To assess changes in the marginal distribution of birthweight, we will use a quantile-quantile (QQ) plot to compare the marginal distributions of birthweights in 1971 and 1991. The result suggests a "location shift", in which at each quantile, the 1991 birthweights are greater by about 60 grams.
+
+```{r}
+pp <- seq(0.1, 0.9, by = 0.1)
+q71 <- quantile(subset(da1, year == 1971)$birthweight, pp, na.rm = TRUE)
+q91 <- quantile(subset(da1, year == 1991)$birthweight, pp, na.rm = TRUE)
+
+plot(q71, q91, xlab = "1971", ylab = "1991")
+abline(a = 0, b = 1, col = "grey")
+grid()
+mean(q91 - q71)
+```
+
+Now we turn to comparing the two models for birthweight. One approach would be to compare the coefficients. It appears that the difference between female and male birthweights is declining, but it is more difficult to interpret the changes to the polynomial basis coefficients, since the two basis functions for each parent work together.
+
+```{r}
+cf <- do.call(rbind, lapply(rq, coef))
+cf <- as.data.frame(cf)
+cf$year <- as.integer(rownames(cf))
+cf
+```
+
+An approach that is sometimes useful is to consider the difference in fitted values, and the standardized difference in fitted values. Let the two coefficient estimates be independent estimates of the parameters from two models fit to independent datasets, with corresponding covariance matrices. For any subject with covariate vector `x`, the difference in fitted values is `x^T (beta1 - beta2)`, and the standardized difference is that quantity divided by the square root of `x^T (V1 + V2) x`.
+
+Comparing 1981 to 1971, we see that there are no people for whom the 1981 prediction is significantly less than the 1971 prediction, but there are many cases where the 1981 prediction is significantly greater than the 1971 prediction, with the prediction being up to 300 grams greater in some cases.
+
+```{r}
+cc <- lapply(rq, vcov)
+
+compare_years <- function(y1, y2) {
+  C <- cc[[as.character(y1)]] + cc[[as.character(y2)]]
+  cd <- coef(rq[[as.character(y1)]]) - coef(rq[[as.character(y2)]])
+  dat <- model.frame(rq[[as.character(y1)]])
+  X <- model.matrix(formula(rq[[as.character(y1)]]), dat)
+  F <- dat[, c("sex", "momage", "momage_cen", "dadage", "dadage_cen")]
+  pdiff <- as.vector(X %*% cd)
+  zdiff <- apply(X, 1, function(x) {
+    as.numeric((x %*% cd) / sqrt(x %*% C %*% x))
+  })
+  F$pdiff <- pdiff
+  F$zdiff <- zdiff
+  F
+}
+
+F <- compare_years(1981, 1971)
+plot(F$zdiff, F$pdiff, pch = 16, col = rgb(0, 0, 0, 0.2), xlab = "Standardized difference of predicted values", ylab = "Difference of predicted values")
+grid()
+```
+
+These are the people with the most extreme standardized differences:
+
+```{r}
+Fz <- F[order(F$zdiff), ]
+head(Fz)
+tail(Fz)
+```
+
+These are the people with the most extreme raw differences:
+
+```{r}
+Fp <- F[order(F$pdiff), ]
+head(Fp)
+tail(Fp)
+```

@@ -1,0 +1,690 @@
+# Predictors of birth weight
+
+Important note: this notebook was translated from the original Python version using an LLM.  It has not been carefully checked by a human for correctness.
+
+In this notebook we use data on births in the United States to identify and understand predictors of birth weight. Low birth weight is associated with several immediate risks for the newborn including infection and mortality, as well as longer-term risks for developmental delays and chronic health conditions in adulthood. Low birth weight is defined as the birth weight being less than 2500 grams, and very low birth weight is defined as the birth weight being less than 1500 grams. But these thresholds do not play a role in the analyses below. Instead, we will use quantitative birth weight in grams as an outcome, and consider predictors of birth weight on this quantitative scale.
+
+The data used here are a complete record (a census) of all live births in the United States in specific years. The sample sizes are large; for example, in 1971 there were around 1.8 million births. The raw data and documentation are available from the National Center for Health Statistics (NCHS). You should use the `prep.py` script to download the data and generate the CSV files that are used in the analyses below.
+
+This notebook presents the data and fits some initial models to explain how birth weight varies with respect to several factors. A proper analysis of the data should be driven by a scientific aim or hypothesis. This notebook only provides the scaffolding for such an analysis. It is up to you to build on this scaffold to produce a coherent analytic narrative.
+
+```{r}
+library(tidyverse)
+library(geepack)
+library(quantreg)
+library(splines)
+library(hexbin)
+library(viridis)
+library(Hmisc)
+library(aod)
+library(broom)
+library(scales)
+library(knitr)
+```
+
+```{r}
+pa <- "/home/kshedden/data/Teaching/birthweight/births"
+da <- readr::read_csv(file.path(pa, "1971.csv.gz"), show_col_types = FALSE)
+```
+
+This is the number of observations (rows) and variables (columns) in the data file.
+
+```{r}
+dim(da)
+```
+
+The documentation on the NCHS page explains what the variables mean. Most of the variables are self-explanatory; here is a description of some that may not be:
+
+- `state` and `county` are integer IDs for the US state and county where the child was born; these are not consistently coded across years.
+- `birthorder` is 1 for the first-born child to a mother, 2 for the second-born child, and so on.
+- `interval` is the duration in months to the previous birth; it is missing for first-born children.
+- `plurality` is 1 for a single birth, 2 for twins, 3 for triplets, etc.
+
+```{r}
+head(da)
+```
+
+# Missing values
+
+A few variables have missing values. Rather than impute them, we will do a complete-case analysis, dropping all observations with missing values on any variable that is used in the analysis. However, before we proceed to the complete-case analysis, we will check to see whether there are systematic differences between the cases with and without missing values.
+
+The table below shows how many observations are missing for each variable.
+
+```{r}
+colSums(is.na(da))
+```
+
+Since we will be doing a complete-case analysis, we next drop all observations with missing values on any variable, but also save a copy of the original data to use for further assessment of the missing data patterns.
+
+```{r}
+da0 <- da
+da <- na.omit(da) |> as.data.frame()
+```
+
+Below is a cross-tab showing how often each pair of variables is simultaneously missing. For example, this shows us that `dadrace` and `dadage` are usually missing together.
+
+```{r}
+C <- is.na(da0)
+C_num <- apply(C, 2, as.integer)
+S <- t(C_num) %*% C_num
+cn <- names(da0)
+ii <- which(colSums(S) > 0)
+S <- S[ii, ii, drop = FALSE]
+cn2 <- cn[ii]
+S <- as.data.frame(S)
+colnames(S) <- cn2
+rownames(S) <- cn2
+S
+```
+
+Complementing the contingency table above, we can inspect the correlation matrix between the indicators of different variable pairs being missing for each case. This makes it easy to see that the missingness status of `dadrace` and `dadage` are highly correlated, and the missingness status of `birthorder` and `interval` are also correlated. For all other pairs of variables, missingness seems to be nearly uncorrelated.
+
+```{r}
+round(cor(C_num[, ii, drop = FALSE]), 2)
+```
+
+Birth weight is the key outcome variable in our analysis, so we pay special attention to it when considering the missing data patterns. Below we can see that the birth weight distributions are similar regardless of whether `birthorder` is missing. When `dadage` is missing, birth weight tends to be slightly lower than when `dadage` is observed. Also, cases where `dadage` is missing are more likely to be first-born children (`birthorder = 1`), and when `dadage` is missing, `momage` tends to be somewhat lower than when `dadage` is observed.
+
+These analyses show that the data here are not missing completely at random. But for now, we will not get into the various forms of missing data in any more detail.
+
+```{r, fig.height=8, fig.width=8}
+par(mfrow = c(3, 2), mar = c(4, 4, 2, 1))
+for (missing_vname in c("birthorder", "dadage")) {
+  dmiss <- da0[is.na(da0[[missing_vname]]), , drop = FALSE]
+  dobs  <- da0[!is.na(da0[[missing_vname]]), , drop = FALSE]
+  for (vname in c("birthweight", "birthorder", "momage")) {
+    if (missing_vname != vname) {
+      if (vname == "birthorder") {
+        boxplot(sqrt(na.omit(dmiss[[vname]])), sqrt(na.omit(dobs[[vname]])),
+                names = c(paste("Missing", missing_vname), paste("Not missing", missing_vname)),
+                ylab = vname)
+      } else {
+        boxplot(na.omit(dmiss[[vname]]), na.omit(dobs[[vname]]),
+                names = c(paste("Missing", missing_vname), paste("Not missing", missing_vname)),
+                ylab = vname)
+        if (vname == "birthweight") {
+          ylim <- c(2000, 5000)
+          usr <- par("usr")
+          rect(usr[1], ylim[1], usr[2], ylim[2], col = NA, border = NA)
+          par(usr = c(usr[1], usr[2], ylim[1], ylim[2]))
+          boxplot(na.omit(dmiss[[vname]]), na.omit(dobs[[vname]]), add = TRUE, axes = FALSE)
+        }
+      }
+    }
+  }
+}
+par(mfrow = c(1, 1))
+```
+
+```{r}
+dim(da)
+head(da)
+```
+
+# Marginal distributions of the outcome and covariates
+
+Below is a quantile plot of the birth weight values. This marginal distribution is not of primary interest since our focus will be on the conditional distribution of birth weight relative to potential risk factors. Not surprisingly, the marginal distribution of birth weights is somewhat right-skewed.
+
+```{r}
+u <- seq(0, 1, length.out = nrow(da))
+plot(u, sort(da$birthweight), type = "l", xlab = "Probability point", ylab = "Birth weight", axes = FALSE)
+grid()
+axis(1, at = seq(0, 1, by = 0.1))
+axis(2, at = seq(0, 10000, by = 1000), las = 1)
+```
+
+Maternal and paternal age are both plausible predictors of birth weight. These two variables are correlated, as shown below in the estimated joint log-density of maternal and paternal age.
+
+```{r}
+hbin <- hexbin(da$momage, da$dadage, xbins = 30)
+plot(hbin, colramp = viridis,
+     trans = function(z) log10(1 + z),
+     inv = function(z) 10^z - 1,
+     xlab = "Mother age", ylab = "Father age")
+```
+
+Plurality is the number of births resulting from a single pregnancy. While twin births are fairly common, only a tiny fraction of multiple births involve three or more babies.
+
+```{r}
+table(da$plurality)
+```
+
+Birth order is the order of a given birth among all births to the same mother. `birthorder = 1` is the first-born child to a mother.
+
+```{r}
+bo_tab <- sort(table(da$birthorder), decreasing = FALSE)
+plot(as.numeric(names(bo_tab)), as.numeric(bo_tab), type = "b",
+     xlab = "Birth order", ylab = "Frequency", col = "blue")
+grid()
+```
+
+Some of the birth order values are implausibly high, so we clip this variable to have a maximum value of 10.
+
+```{r}
+da$birthorder <- pmin(pmax(da$birthorder, 1), 10)
+```
+
+# Geographic clustering
+
+We will be interested in the extent to which births in the same county have more similar birth weights than births in different counties. This could be an indication of unobserved county-level heterogeneity (i.e. county-level characteristics that predict birth weight but that are not included as predictors in our regression models). To facilitate this analysis, we create a categorical variable for each state/county combination.
+
+```{r}
+da <- da |>
+  mutate(location = paste0(state, "_", county))
+```
+
+The distribution of group (cluster) sizes is shown below. The median group size is slightly less than 100.
+
+```{r}
+gs <- da |> count(location, name = "n")
+gss <- sort(gs$n)
+pp <- seq(0, 1, length.out = length(gss))
+plot(pp, log10(gss), type = "l", xlab = "Probability point", ylab = "Log10 group size", col = "blue")
+grid()
+```
+
+# Regression analysis for a single year
+
+Our main tool will be generalized linear models (GLM), using the framework known as generalized estimating equations (GEE) that allows us to fit GLMs to clustered data.
+
+When fitting regression models, especially more complicated forms that involve nonlinear and nonadditive components, it is often useful to center any quantitative predictors.
+
+```{r}
+momage_mean <- mean(da$momage)
+da$momage_cen <- da$momage - momage_mean
+
+dadage_mean <- mean(da$dadage)
+da$dadage_cen <- da$dadage - dadage_mean
+```
+
+We begin with a basic model that incorporates some plausible predictors of birth weight that are available in the NCHS data. This model includes main effects for all variables, and models maternal and paternal age quadratically. This initial model is a Gamma GLM, which means that the conditional variance is modeled as being proportional to the square of the conditional mean. Despite the name, this does not require the response variable to follow a Gamma distribution exactly.
+
+```{r}
+fml <- birthweight ~ sex + momage + I(momage_cen^2) + dadage + I(dadage_cen^2) + plurality + birthorder
+
+r0 <- glm(fml, data = da, family = Gamma(link = "log"))
+summary(r0)
+```
+
+The birth weights are likely to be clustered (non-independent) by county. The GEE approach to fitting a GLM accounts for this possibility.
+
+```{r}
+dd <- da
+dd$sex <- factor(dd$sex)
+dd$location <- factor(dd$location)
+
+r1 <- geeglm(
+  formula = fml,
+  id = location,
+  data = dd,
+  family = Gamma(link = "log"),
+  corstr = "independence"
+)
+summary(r1)
+```
+
+A defining property of GLMs is that the residuals are orthogonal to the covariates. This is how we know that all information in the covariates has been incorporated into the model, subject to the way that the model was specified.
+
+```{r}
+X1 <- model.matrix(r1)
+resid_pearson <- residuals(r1, type = "pearson")
+drop(t(X1) %*% resid_pearson)
+```
+
+Clustered data usually contain less information than independent data of the same sample size. The standard errors of an analysis that properly accounts for clustered data will therefore generally be larger than for an analysis that treats the data as independent. We assess this below, and see that indeed the standard errors in the GEE analysis are generally greater than the corresponding standard errors in the GLM analysis.
+
+```{r}
+coef(summary(r1))[, "Std.err"] / coef(summary(r0))[, "Std. Error"]
+```
+
+A more sophisticated way to assess how the uncertainty reported in a GEE model tends to exceed the uncertainty reported in a GLM that treats the data as independent is by assessing the eigenvalues of the difference of parameter covariance matrices. This is a way to assess if the matrices are approximately Loewner ordered.
+
+```{r}
+cv1 <- vcov(r1)
+cv0 <- vcov(r0)
+eigen(cv1 - cv0, symmetric = TRUE)$values
+```
+
+The second model fit above (`r1`) models the birth weight observations as being independent within counties. Importantly, this independence is actually a working independence and does not need to be true. Parameter estimates obtained from the GEE approach are more precise when the working correlation model is correctly specified, but the results remain valid even if this is not the case. It is common to fit working models with independent working correlation structures even when we strongly suspect that the data are not independent.
+
+If we want to get more insight into the within-cluster dependence structure, we can refit the model with an exchangeable within-county correlation model. This allows any two births in the same county to be correlated to the same extent. This provides an intra-class correlation (ICC), estimating the average pairwise correlation between births in the same county.
+
+```{r}
+r2 <- geeglm(
+  formula = fml,
+  id = location,
+  data = dd,
+  family = Gamma(link = "log"),
+  corstr = "exchangeable"
+)
+summary(r2)$geese
+```
+
+Although the ICC is small, when some of the clusters are large, it can still be consequential. It is important to note that this ICC is obtained after adjusting for the covariates in the model (sex, momage, etc.). These factors may themselves be clustered within counties, but this effect is removed by the covariate adjustment.
+
+# Heteroscedasticity and assessing the mean/variance relationship
+
+As noted above, the Gamma GLM/GEE analysis takes the conditional variance to be proportional to the square of the conditional mean. Below we assess whether this is consistent with the data, by grouping the data into bins based on values of the fitted mean and computing empirical quantiles within each bin. If the spacing of these quantiles is similar for all predicted birth weights, then the variance model fits well.
+
+```{r}
+dx <- tibble(
+  fit = fitted(r1),
+  resid = residuals(r1, type = "pearson")
+) |>
+  mutate(aresid = abs(resid)) |>
+  arrange(fit) |>
+  mutate(fitgroup = ntile(fit, 10))
+
+aa <- dx |>
+  dplyr::group_by(fitgroup) |>
+  dplyr::summarize(
+    fit = median(fit),
+    q50 = median(aresid),
+    q10 = quantile(aresid, 0.1),
+    q90 = quantile(aresid, 0.9),
+    .groups = "drop"
+  )
+```
+
+The residuals have a somewhat heavier right tail in the lowest fitted-value bin. A perfect model would not exhibit this anomaly, but it is not a serious problem.
+
+```{r}
+plot(aa$fit, aa$q10, type = "b", col = "blue", ylim = c(0, 0.4), xlab = "Predicted birth weight",
+     ylab = "Absolute Pearson residual quantiles")
+lines(aa$fit, aa$q50, type = "b", col = "orange")
+lines(aa$fit, aa$q90, type = "b", col = "green")
+legend("right", legend = c("q10", "q50", "q90"), lty = 1, pch = 1, bty = "n", col = c("blue", "orange", "green"))
+grid()
+```
+
+# Predictive concordance
+
+Below we calculate a measure of concordance, showing that the model only explains a rather small fraction of the birth weight variation. This is common when working with data on human biological traits. Nevertheless, many of the associations are strongly statistically significant, and the effect sizes are large enough to have important implications.
+
+```{r}
+set.seed(1)
+ii <- sample(seq_len(nrow(da)), 10000)
+
+cor(fitted(r1)[ii], da$birthweight[ii],
+    method = "kendall", use = "complete.obs")
+```
+
+# Interpreting the fitted model
+
+We modeled the roles of parental ages quadratically. For maternal age, this reveals the inverted U-shaped relationship below. This type of plot shows the conditional mean for the dependent variable (birth weight) versus an independent variable of interest (parental age), holding all other covariates fixed. Since there are no interactions, the specific value at which we fix the other variables is unimportant because the choice only translates the graph vertically.
+
+```{r}
+dp <- da[1:100, ]
+
+set_parent_ages <- function(dp, momage, dadage) {
+  dp$momage <- momage
+  dp$momage_cen <- dp$momage - momage_mean
+  dp$dadage <- dadage
+  dp$dadage_cen <- dp$dadage - dadage_mean
+  dp
+}
+
+dp$sex <- "female"
+dp$plurality <- 1
+dp$birthorder <- 1
+```
+
+The plot below shows that the average birth weight is maximized when the mother is around 33 years old. However the conditional mean birth weight remains far from the conventional very low birth weight threshold of 1500 grams, even for mothers who are as young as 15 or as old as 50.
+
+```{r}
+age <- seq(15, 50, length.out = 100)
+dp <- set_parent_ages(dp, age, 25)
+ym <- predict(r1, newdata = dp, type = "response")
+plot(age, ym, type = "l", xlab = "Maternal age", ylab = "Expected birth weight", col = "blue")
+grid()
+```
+
+The mean birth weight seems to decline monotonically with paternal age, but the effect size and significance level are much weaker compared to maternal age.
+
+```{r}
+dp <- set_parent_ages(dp, 25, age)
+yp <- predict(r1, newdata = dp, type = "response")
+plot(age, yp, type = "l", xlab = "Paternal age", ylab = "Expected birth weight", col = "blue")
+grid()
+```
+
+A more insightful comparison of the roles of maternal and paternal age is obtained by plotting the two curves together.
+
+```{r}
+plot(age, ym, type = "l", col = "blue", xlab = "Age", ylab = "Expected birth weight")
+
+lines(age, yp, col = "orange")
+
+legend("right", legend = c("Mom age", "Dad age"), lty = 1, col = c("blue", "orange"), bty = "n")
+
+grid()
+```
+
+Below, in a single plot, we show the mean birth weights for female and male babies, for single and multiple births, and for birth orders from 1 to 5.
+
+```{r}
+dp <- set_parent_ages(dp, 25, 25)
+sex <- c(rep("female", 25), rep("male", 25))
+sex <- c(sex, sex)
+dp$sex <- sex
+plurality <- c(rep(1, 50), rep(2, 50))
+dp$plurality <- plurality
+birthorder <- seq(1, 5, length.out = 25)
+dp$birthorder <- c(birthorder, birthorder, birthorder, birthorder)
+yp <- predict(r1, newdata = dp, type = "response")
+
+plot(birthorder, yp[1:25], ylim = range(yp), type = "l", xlab = "Birthorder", ylab = "Expected birth weight", col = "blue")
+lines(birthorder, yp[26:50], col = "orange")
+lines(birthorder, yp[51:75], col = "green")
+lines(birthorder, yp[76:100], col = "red")
+legend("right",
+       legend = c("Female single", "Male single", "Female twin", "Male twin"),
+       lty = 1, bty = "n",
+       col = c("blue", "orange", "green", "red"))
+axis(1, at = 1:5)
+grid()
+```
+
+# Contrasts
+
+To obtain a more precise result targeting a specific research question, we can devise a contrast that more directly reflects the scientific aim. For example, we may want to focus on the difference between the mother being 35 versus 30 years of age, for a first-born child. Since most births are single births, we can set `plurality = 1`.
+
+One way to proceed would be to take the conditional mean birth weight for a 35-year-old mother minus the conditional mean birth weight for a 30-year-old mother, setting the father's age to the mean age of all fathers. This might be interpreted as the purely biological effect of maternal age. However, as seen above, mother's age and father's age are correlated. For many purposes, a more natural approach would be to hold the father's age fixed at the average father age for the given mother age. To do that, we fit an auxiliary model for father age in relation to mother age.
+
+```{r}
+r3 <- lm(dadage ~ bs(momage, 5), data = da)
+summary(r3)
+```
+
+As usual, we do a bit of verification before using this model.
+
+```{r}
+dp <- da[1:100, ]
+momage <- seq(15, 40, length.out = 100)
+dp <- set_parent_ages(dp, momage, 25)
+yp_aux <- predict(r3, newdata = dp)
+plot(dp$momage, yp_aux, type = "l", xlab = "Mother age", ylab = "Expected father age")
+grid()
+```
+
+Below are the average father ages corresponding to mother ages of 30 and 35.
+
+```{r}
+dq <- da[1:2, , drop = FALSE]
+dq$momage <- c(30, 35)
+yp_father <- predict(r3, newdata = dq)
+yp_father
+```
+
+Below are the estimated average birth weights corresponding to these parent ages.
+
+```{r}
+dp <- da[1:2, , drop = FALSE]
+dp <- set_parent_ages(dp, c(35, 30), yp_father)
+dp$plurality <- 1
+dp$birthorder <- 1
+dp$sex <- c("female", "female")
+yp_birth <- predict(r2, newdata = dp, type = "response")
+yp_birth
+```
+
+The contrast is the difference between these fitted birth weights.
+
+```{r}
+sum(yp_birth * c(1, -1))
+```
+
+Below we estimate the precision with which the contrast is estimated. It is extremely high, so there is little statistical uncertainty here. The greater risks are systematic errors due to model misspecification or confounding.
+
+```{r}
+xlevs <- lapply(da[,sapply(da, is.character), drop = F], function(j){
+  unique(j)
+})
+dm <- model.matrix(terms(r1), data = dp, xlev=xlevs)
+cm <- dm %*% vcov(r1) %*% t(dm)
+d <- c(1, -1)
+c_se <- sqrt(drop(d %*% cm %*% d))
+e_est <- drop(d %*% yp_birth)
+cat("Expected difference (age 35 mother minus age 30 mother): ", e_est, "\n")
+cat("Standard error of the expected difference: ", c_se, "\n")
+```
+
+# Heterogeneity and non-additivity
+
+The models considered above are additive in the sense that the mean structure, on the log scale due to the GLM link function, is an additive function of main effects for each of the covariates. This implies that the change in the log expected birth weight as one factor changes is constant in terms of the other covariates. Below we fit models that do not have this additivity and then compare nested models using Wald tests on the newly added interaction terms.
+
+```{r}
+fml4 <- birthweight ~ sex * (sex + momage + I(momage_cen^2) + dadage + I(dadage_cen^2) + plurality + birthorder)
+r4 <- geeglm(fml4, id = location, data = dd, family = Gamma(link = "log"), corstr = "independence")
+
+fml5 <- birthweight ~ (sex + momage) * (sex + momage + I(momage_cen^2) + dadage + I(dadage_cen^2) + plurality + birthorder)
+r5 <- geeglm(fml5, id = location, data = dd, family = Gamma(link = "log"), corstr = "independence")
+
+fml6 <- birthweight ~ (sex + momage + plurality) * (sex + momage + I(momage_cen^2) + dadage + I(dadage_cen^2) + plurality + birthorder)
+r6 <- geeglm(fml6, id = location, data = dd, family = Gamma(link = "log"), corstr = "independence")
+
+fml7 <- birthweight ~ (sex + momage + dadage + plurality) * (sex + momage + I(momage_cen^2) + dadage + I(dadage_cen^2) + plurality + birthorder)
+r7 <- geeglm(fml7, id = location, data = dd, family = Gamma(link = "log"), corstr = "independence")
+
+fml8 <- birthweight ~ (sex + momage + dadage + plurality + birthorder) * (sex + momage + I(momage_cen^2) + dadage + I(dadage_cen^2) + plurality + birthorder)
+r8 <- geeglm(fml8, id = location, data = dd, family = Gamma(link = "log"), corstr = "independence")
+```
+
+Because `statsmodels` provides a direct score-test comparison for nested GEE models while `geepack` does not provide the same interface, the code below uses Wald tests on the blocks of newly added interaction terms as a close R analogue.
+
+```{r}
+block_wald <- function(full_model, reduced_model) {
+  cf_full <- coef(full_model)
+  vc_full <- vcov(full_model)
+  add_terms <- setdiff(names(cf_full), names(coef(reduced_model)))
+  idx <- match(add_terms, names(cf_full))
+  aod::wald.test(Sigma = vc_full, b = cf_full, Terms = idx)
+}
+
+wald_41 <- block_wald(r4, r1)
+wald_54 <- block_wald(r5, r4)
+wald_65 <- block_wald(r6, r5)
+wald_76 <- block_wald(r7, r6)
+wald_87 <- block_wald(r8, r7)
+
+wald_41
+wald_54
+wald_65
+wald_76
+wald_87
+```
+
+These results generally suggest that the more complex models capture additional nonadditive structure.
+
+We now briefly attempt to understand what non-additivity is expressed by this model. We focus here on the roles of maternal age and birth order. The plot below suggests that for younger mothers, a first-born child is larger than a second-born child, but for older mothers this relationship is reversed.
+
+```{r}
+dp <- da[1:100, ]
+momage1 <- seq(15, 40, length.out = 50)
+momage <- c(momage1, momage1)
+dp <- set_parent_ages(dp, momage, 25)
+dp$plurality <- 1
+dp$sex <- "female"
+dp$birthorder <- c(rep(1, 50), rep(2, 50))
+yp <- predict(r8, newdata = dp, type = "response")
+
+plot(momage1, yp[1:50], type = "l", col = "orange", xlab = "Maternal age", ylab = "Expected birth weight")
+lines(momage1, yp[51:100], col = "purple")
+legend("right", legend = c("1", "2"), col = c("orange", "purple"), lty = 1,
+       title = "Birthorder", bty = "n")
+grid()
+```
+
+# Analysis of birth weight extremes
+
+The analyses above are all based on estimates of the conditional mean. We saw that while predictors such as plurality can have strong effects, there is no combination of covariates within high-density ranges (`15 <= momage, dadage <= 50`, `plurality <= 3`, `birthorder <= 5`) that has a conditional mean birth weight approaching 1500 grams (the threshold for a very low birth weight baby). All very low birth weight babies are unusual, and they all lie far in the left tail of the conditional birth weight distribution, even adjusting for the covariates that we have here.
+
+To explore the left tail of the distribution quantitatively, we can use quantile regression, which is a regression method that models a given quantile of the conditional distribution. To illustrate, we model the 0.005 quantile of the conditional birth weight distribution, using the same model structure considered above. This quantile corresponds to the level such that only 1 in 200 births is below the resulting weight.
+
+```{r}
+r10 <- rq(fml, data = da, tau = 0.005)
+summary(r10)
+```
+
+Interestingly, it does not appear that there are sex differences for the 0.005 quantile of birth weights, and the paternal age effects are weak, although both of these factors were found to be predictors of the conditional mean birth weight in the analyses above.
+
+The fitted curve below suggests that at least 1 in 200 singleton babies will have birth weight under 1500 grams, even under relatively favorable conditions.
+
+```{r}
+dp <- da[1:100, ]
+dp <- set_parent_ages(dp, age, 25)
+dp$sex <- "female"
+dp$plurality <- 1
+dp$birthorder <- 1
+yp <- predict(r10, newdata = dp)
+plot(age, yp, type = "l", xlab = "Maternal age", ylab = "Predicted 0.005 quantile of birth weight", col = "blue")
+grid()
+```
+
+The standard errors for quantile regression at probability point `p` depend on the usual factors that determine precision of estimated regression parameters, namely, sample size, covariate dispersion, collinearity, and residual scatter. In addition, they depend on a quantity known as the quantile density, as illustrated below.
+
+```{r}
+pp_grid <- seq(0.01, 0.99, length.out = 10)
+
+# Quantile regression in R is slow, so subsample the rows.
+da1 <- da %>% group_by(loc) %>% mutate(n=n()) %>% ungroup()
+da1 <- da1 %>% filter(n >= 500)
+da1 <- da1 %>% group_by(loc) %>% slice_head(n=500) %>% ungroup()
+
+rq_list <- lapply(pp_grid, function(p) rq(fml, data = da1, tau = p))
+```
+
+The following calculation shows that the standard errors for quantile regression are approximately equal to the standard errors under least squares, scaled by a factor involving the residual scale and the quantile density. Here we use a Gaussian model for these errors. This is only an illustration intended to give intuition; in practice, this approximation should not be used for data analysis.
+
+```{r}
+X <- model.matrix(rq_list[[1]])
+H <- t(X) %*% X
+Hi <- solve(H)
+
+sigma <- sd(residuals(r8, type = "pearson"))
+
+for (j in seq_along(pp_grid)) {
+  p <- pp_grid[j]
+  d <- dnorm(qnorm(p))
+  se <- sigma * sqrt(p * (1 - p) * diag(Hi)) / d
+  print(round(se / summary(rq_list[[j]], se = "nid")$coefficients[, 2], 2))
+}
+```
+
+# County summaries
+
+We now turn our attention to the counties. For each county, we may wish to estimate the `p`th quantile for births within the county. These quantiles reflect the unique distribution of risk factors within each county.
+
+To accomplish this, we marginalize the birth-level quantiles to produce a single number describing each county's burden of very low birth weight births. This raises an interesting technical challenge: marginalization of conditional means is straightforward, as you simply average the estimated conditional means. However, marginalization of quantiles involves solving an estimating equation. This estimating equation involves an integral that must be evaluated numerically. Ideally, a fine grid would be used, but this is somewhat slow. For illustration, we evaluate the integral on a rather coarse grid.
+
+The function below solves the estimating equation to identify the marginalized quantiles.
+
+```{r}
+marginalize_quantiles <- function(rq_list, pp, da1, ii = NULL) {
+  if (is.null(ii)) ii <- seq_len(nrow(da1))
+  dax <- da1[ii, , drop = FALSE]
+  fitvals <- lapply(rq_list, predict, newdata = dax)
+
+  f <- function(qt) {
+    e <- 0
+    for (j in seq_along(rq_list)) {
+      fittedvalues <- fitvals[[j]]
+      e <- e + mean(fittedvalues <= qt) - pp
+    }
+    e
+  }
+
+  x0 <- min(dax$birthweight) - 1e-6
+  x1 <- max(dax$birthweight) + 1e-6
+  if (f(x0)*f(x1) > 0) {
+    return(NA)
+  } else {
+    uniroot(f, interval = c(x0, x1), tol = 1)$root
+  }
+}
+```
+
+Below we marginalize the 0.01 quantile for each county with over 1000 births. We also compute some county-level characteristics including the population size and the proportions of mothers who are under 18 or over 40.
+
+```{r}
+pp_county <- 0.01
+
+da1$loc <- sprintf("%02d", da1$state) |> paste0(da1$county)
+dq <- tibble(ix = seq_len(nrow(da1)), loc = da1$loc)
+
+rslt <- list()
+keys <- unique(dq$loc)
+for (ky in keys) {
+  dq2 <- dq[dq$loc == ky, , drop = FALSE]
+  ii <- dq2$ix
+  qrt <- marginalize_quantiles(rq_list, pp_county, da1, ii = ii)
+  momages <- da1$momage[ii]
+  rslt[[length(rslt) + 1]] <- data.frame(
+    County = ky,
+    Quantile = qrt,
+    N = nrow(dq2),
+    momage18 = mean(momages < 18),
+    momage40 = mean(momages > 40)
+  )
+}
+rslt <- bind_rows(rslt)
+```
+
+The plot of order statistics below shows that for most counties, the marginal 0.01 quantile is below 1500 grams. That is, at least 1 in 100 babies is born with very low birth weight.
+
+```{r}
+plot(sort(rslt$Quantile), type = "l", xlab = "Rank", ylab = paste(pp_county, "quantile"))
+grid()
+```
+
+
+A plausible explanation for why some counties have a greater burden of very low birth weight births is that these counties have younger mothers, especially a higher proportion of very young mothers under the age of 18.
+
+```{r}
+plot(rslt$momage18, rslt$Quantile, xlab = "Proportion of mothers age < 18",
+     ylab = paste(pp_county, "quantile"))
+grid()
+```
+
+Older mothers (over 40) also have increased risk of having a baby with low birth weight, but this seems not to be predictive of the overall burden of very low birth weight babies.
+
+```{r}
+plot(rslt$momage40, rslt$Quantile, xlab = "Proportion of mothers age > 40",
+     ylab = paste(pp_county, "quantile"))
+grid()
+```
+
+Another way to see the potential impact of young maternal age on the burden of very low birth weight babies is to consider the counterfactual in which all mothers are at least 18 years of age. We can create a data frame in which mothers under 18 have their age set to 18, and repeat the marginalization. This gives the results shown below.
+
+```{r}
+pp_county <- 0.01
+
+db <- da1
+db$momage <- pmax(db$momage, 18)
+db$momage_cen <- db$momage - momage_mean
+
+rsltb <- list()
+for (ky in keys) {
+  dq2 <- dq[dq$loc == ky, , drop = FALSE]
+  ii <- dq2$ix
+  qrt <- marginalize_quantiles(rq_list, pp_county, db, ii = ii)
+  momages <- db$momage[ii]
+  rsltb[[length(rsltb) + 1]] <- data.frame(
+    County = ky,
+    Quantile = qrt,
+    N = nrow(dq2),
+    momage18 = mean(momages < 18),
+    momage40 = mean(momages > 40)
+  )
+}
+rsltb <- bind_rows(rsltb)
+```
+
+Plotting the results, we see that counties with low first percentile points of birth weights would generally experience a substantial increase in the first percentile point if all mothers were at least 18 years old, but minimal such increase would be observed in counties whose first percentile point is around 1450 grams or greater.
+
+```{r}
+plot(rslt$Quantile, rsltb$Quantile, xlab = "Actual data",
+     ylab = "Counterfactual in which all mother ages are >= 18")
+abline(a = 0, b = 1, col = "grey")
+grid()
+```
