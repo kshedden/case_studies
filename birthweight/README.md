@@ -5,5 +5,5 @@ Before around 1988, the US National Center for Health Statistics released data o
 birth weight, parental information, and the county where the birth took place.  More recently, privacy concerns have
 led to less data being released.  Therefore, here we focus on the older datasets.
 
-The [prep.py](https://github.com/kshedden/case_studies/birthweights/prep.py) script downloads and processes the data files for several years.  The agg.py script aggregates these data into
-counts.
+The [prep.py](https://github.com/kshedden/case_studies/blob/main/birthweight/prep.py) script downloads and processes the data files for several years.
+The [agg.py](https://github.com/kshedden/case_studies/blob/main/birthweight/agg.py) script aggregates these data into counts.
