@@ -9,6 +9,10 @@ covariances ${\rm Cov}[y, y^\prime | x, x^\prime]$. Multilevel regression is a
 framework for regression analysis that is especially useful if we have
 covariances between observations.
 
+[Here](https://arnabc74.github.io/linmod/blup.pdf) is an older but still very
+relevant paper expressing some very thoughtful ideas about multilevel
+regression.
+
 __Multilevel regression to accommodate non-independence__
 
 Formally, the data are statistically dependent if the joint pdf does not

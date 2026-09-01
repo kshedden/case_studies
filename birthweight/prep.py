@@ -29,6 +29,7 @@ import numpy as np
 
 # Directory in which to place the data files
 spath = Path("/home/kshedden/data/Teaching/birthweight/births")
+spath.mkdir(parents=True, exist_ok=True)
 
 years = [1971, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1991, 1992]
 

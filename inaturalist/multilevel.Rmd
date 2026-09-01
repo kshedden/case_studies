@@ -107,10 +107,7 @@ icc = sv / (sv + rv)
 print(icc)
 ```
  
-Below we fit a multilevel linear regression with random species intercepts and random day slopes for species.
-These two random effects are correlated with each other.  The estimated variance of the random day slope
-tells us to what extent different species ranges are moving (in terms of latitude) over time at different
-rates.
+Below we fit a multilevel linear regression with random species intercepts and random day slopes for species. These two random effects are correlated with each other.  The estimated variance of the random day slope tells us to what extent different species ranges are moving (in terms of latitude) over time at different rates.
 
 ```{r}
 m2 = lmer(decimalLatitude ~ (1 + day | scientificName) + day + lonrad_sin_cen + lonrad_cos_cen + lonrad_sin2_cen + lonrad_cos2_cen, da)

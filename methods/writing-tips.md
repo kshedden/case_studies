@@ -82,8 +82,11 @@ appropriate to do so.
   support your findings.
 
 - Don't use "hedge words" unnecessarily, but do use qualifications whenever a
-  definitive statement cannot be justified. If you find yourself hedging too
-  frequently, your findings may be too weak to report.
+  definitive statement cannot be justified. However the qualifications should
+  be specific -- avoid generic guidance like telling the reader that something
+  should be interpreted "with caution". If you find yourself hedging too
+  frequently, your findings may be too weak to report or better reported as
+  ambiguous or negative findings.
 
 - Balance confidence and modesty when discussing your findings and their
   implications. Be realistic about what can be accomplished when addressing a
@@ -139,12 +142,12 @@ appropriate to do so.
 - To make the writing more realistic, do not refer to our class as such, or to
   prior assignments.
 
-- Aim to write in a "declarative" rather than an "imperative" style.  This
-  means that you focus on telling us what you aim to obtain in your
-  analysis, not the steps that you followed to obtain it.  As a basic example,
-  instead of writing "first we subtracted the mean, then we divided by
-  the standard deviation", instead write "we linearly transformed the data to have
-  mean zero and unit variance".
+- Aim to write in a "declarative" rather than an "imperative" style. This
+  means that you focus on telling us what you aim to obtain in your analysis,
+  not the steps that you followed to obtain it. As a basic example, instead of
+  writing "first we subtracted the mean, then we divided by the standard
+  deviation", instead write "we linearly transformed the data to have mean
+  zero and unit variance".
 
 # Analysis
 

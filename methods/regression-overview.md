@@ -169,6 +169,31 @@ variable".
   difficult to test assumptions being violated, but often have lower power and
   precision.
 
+## Generative models versus models for specific features of the conditional distribution
+
+Regression analysis usually centers on the conditional distribution of the
+response given the predictors, which can be denoted $P(Y|X)$. In practice, we
+can only aim to recover specific features of this conditional distribution
+such as the conditional mean $E[Y|X]$, the conditional variance
+${\rm Var}[Y|X]$, or conditional quantiles $Q_p[Y|X]$. While it is common to
+discuss regression in the setting of generative models such as
+$Y = X^T\beta + \epsilon$ this is both too ambitious and quite limiting.
+Writing this expression implies that we need to assume a strong model for the
+conditional distribution (in this case an additive model that implies
+homoscedasticity), even when our goal is to estimate specific features such as
+the conditional mean (which, when estimated using least squares does not
+require homoscedasticity to hold).
+
+Important regression procedures such as generalized linear modeling and the
+Cox proportional hazards model cannot easily be expressed in the additive
+generative form. Moreover, focusing on the generative form downplays the
+important role of robustness to failure of certain less important aspects of
+the generative model. For example, as we will see when we discuss GLMs, the
+so-called Poisson regression model does not require the distribution of $Y$
+given $X$ to be Poisson, but instead can apply to any setting where
+$\log E[Y|X=x] = \beta^T x$ and ${\rm Var}[Y|X] = E[Y|X]$ (and this equality
+can easily be relaxed to a proportionality).
+
 ## Models, fitting procedures, and algorithms
 
 It is important to distinguish between the various regression model structures
