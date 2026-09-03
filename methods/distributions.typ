@@ -344,27 +344,27 @@ $
 
 These polynomials form an orthogonal basis on $[0, 1]$.  By studying the graphs of these polynomials, it becomes clear why they are capturing features of a probability distribution that can be interpreted as location, dispersion, skewness, and kurtosis.
 
-= L-moment relationships
+== L-moment relationships
 
 Suppose we have a population that can be meaningfully stratified into many subpopulations, such as county of residence for US adults.  We can then estimate summary statistics such as L-moments within each subpopulation.  In many cases two summary statistics, e.g. measuring location and scale, will be related in informative ways.
 
 When working with classical moments, it is often noted that the mean and variance are related.  This is known as a _mean/variance relationship_.  One possible way this might arise if the distributions follow a family such as the Poisson family, where the variance is equal to the mean.  In other settings, we may find that the variance has a different fixed relationship to the mean, such as the variance being proportional to the mean (_quasi-Poisson_), proportional to the square of the mean (_quasi-gamma_), or a linear combination of the mean and its square (_quasi negative binomial_).
 
-= L-comoments
+== L-comoments
 
 Just as covariance is a bivariate analogue to the univariate variance, the univariate L-moments can be extended to define bivariate measures of association known as #link("https://www.sciencedirect.com/science/article/pii/S0047259X07000103")[L-comoments]. Given a bivariate random vector $(X, Y) in RR^2$, the goal of an L-comoment is to assess the extent to which the value of $X$ predicts where $Y$ falls relative to its marginal distribution $F_Y$.  Unlike conventional covariance and correlation, the L-comoments are not symmetric in $X$, $Y$.
 
 Population L-comoments are defined as
 
 $
-"Cov(X, tilde(P)_(n-1)(Y))",
+"Cov"(X, tilde(P)_(n-1)(Y)),
 $
 
 where as above the $tilde(P)_n$ are shifted Legendre polynomials.
 
 The L-covariance, much like the conventional covariance, tells us whether small values of $X$ tend to co-occur with values of $Y$ falling in one tail of $F_Y$, while large values of $X$ tend to co-occur with values of $Y$ falling in the other tail of $F_Y$.  The L-coskewness tells us whether large values of $X$ tend to co-occur with values of $Y$ falling in either tail of $F_Y$.  The L-cokurtosis tells us whether large values of $X$ tend to co-occur with values of $Y$ that can occur in the far portion of either tail of $F_Y$.
 
-An alternative representation of population L-comoments is based on _concomitants_.  Let $X^((Y))_(j:k)$ denote the value obtained by sampling $k$ iid copies of $(X, Y)$, and taking the value $X_i$ such that $Y_i = Y_(j:k)$.  That is, we sort the pairs $(X_i, Y_i)$ with respect to $Y$ to obtain $Y_(j:k)$, and take the value of $X$ that accompanies $Y_(j:k)$.  The $k^"th"$ L-comoment of $X$ with respect to $Y$ is a linear combination of expected concomitants
+An alternative representation of population L-comoments is based on _concomitants_.  Let $X^((Y))_(j:k)$ denote the value obtained by sampling $k$ iid copies of $(X, Y)$, and taking the value $X_i$ such that $Y_i = Y_(j:k)$.  That is, we sort the pairs $(X_i, Y_i)$ with respect to $Y$ to obtain $Y_(j:k)$, and then take the value of $X$ that accompanies $Y_(j:k)$.  The $k^"th"$ L-comoment of $X$ with respect to $Y$ is a linear combination of expected concomitants
 
 $
 lambda^(X Y)_k = k^(-1) sum_(j=0)^(k-1) (-1)^j binom(k-1, j) E X^((Y))_(k-j:k).
@@ -373,7 +373,7 @@ $
 Unbiased estimates of the L-comoments can be obtained by estimating the concomitants of $X$ with respect to $Y$ in the full sample of size $n$.  Define the coefficients
 
 $
-w_(k r n) = sum_(j=0)^("min"(r-1, k-1)) (-1)^(k-1-j) binom(k-1, j) binom(k-1+j, j) binom(r-1, j) / (n-1, j).
+w_(k r n) = sum_(j=0)^("min"(r-1, k-1)) (-1)^(k-1-j) frac(binom(k-1, j) binom(k-1+j, j) binom(r-1, j), binom(n-1, j), style: "horizontal").
 $
 
 then
@@ -382,4 +382,5 @@ $
 hat(lambda)^(X Y)_k = n^(-1) sum_(r=1)^n w_(k r n) X^((Y))_(r:n).
 $
 
-Comoments based on classical moments also exist but suffer from some of the same practical challenges as other statistics based on higher order moments.  For example, the coskewnesses can be defined as $"Cov"(X, Y^2)$ and $"Cov"(X^2, Y)$.
+Comoments based on classical moments also exist, for example, the coskewnesses can be defined as $"Cov"(X, Y^2)$ and $"Cov"(X^2, Y)$. These suffer from some of the same practical challenges as other statistics based on higher order moments.
+
