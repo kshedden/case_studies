@@ -15,8 +15,7 @@
 
 = Introduction
 
-Probability distributions are the central object of interest in probability theory and statistics. The most general treatment of probability distributions involves #link("https://en.wikipedia.org/wiki/measure_(mathematics)")[measure theory]. In applied work, we usually are able to use more elementary representations of probability distributions, including the
-#link("https://en.wikipedia.org/wiki/Probability_density_function")[probability density function] (pdf), the #link("https://en.wikipedia.org/wiki/Cumulative_distribution_function")[cumulative distribution function] (cdf), the _quantile function_, and the #link("https://en.wikipedia.org/wiki/Moment-generating_function")[moment generating function] (mgf). The space of probability distributions is infinite-dimensional, so in practice we cannot estimate every aspect of a distribution with a finite amount of data, and instead work with finite dimensional numerical summaries such as the mean, variance, and quantiles.
+Probability distributions are the central object of interest in probability theory and statistics. The most general treatment of probability distributions involves #link("https://en.wikipedia.org/wiki/measure_(mathematics)")[measure theory]. In applied work, we usually are able to use more elementary representations of probability distributions, including the #link("https://en.wikipedia.org/wiki/Probability_density_function")[probability density function] (pdf), the #link("https://en.wikipedia.org/wiki/Cumulative_distribution_function")[cumulative distribution function] (cdf), the _quantile function_, and the #link("https://en.wikipedia.org/wiki/Moment-generating_function")[moment generating function] (mgf). The space of probability distributions is infinite-dimensional, so in practice we cannot estimate every aspect of a distribution with a finite amount of data, and instead work with finite dimensional numerical summaries such as the mean, variance, and quantiles.
 
 The field of statistics (as opposed to the field of probability) focuses on using data to estimate either the full probability distribution or a summary quantity describing a certain aspect of a probability distribution. The full distribution for a numerical random variable or vector can be estimated using the #link("https://en.wikipedia.org/wiki/Empirical_distribution_function")[empirical cdf] (an estimator of the cdf), or the #link("https://en.wikipedia.org/wiki/Histogram")[histogram] (an estimator of the pdf). Summary measures often have a natural estimator, such as the sample mean (an estimator of the population mean), and the sample median (an estimator of the population median).
 
@@ -36,11 +35,11 @@ In the statistical study of extremes, we do not attempt to classify individual d
 
 Recall that the cumulative distribution function (cdf) of a random variable $X$ is the function $F(t) = P(X <= t)$, viewed as a function of $t in RR$. The _complementary cdf_ (ccdf), also known as the
 _survival function_, is the right tail probability $S(t) = P(X > t) = 1 - F(t)$. To understand the frequency of extreme (large) values, we can consider how rapidly the tail probability converges to zero as
-$t$ increases. In many familiar distributions, the tails are _exponential_ meaning that 
+$t$ increases. In many familiar distributions, the tails are _exponential_ meaning that
 
 $
 P(X > t) = L(t) dot exp(-frac(t, mu, style: "horizontal")),
-$ 
+$
 
 where $L(t)$ is a #link("https://en.wikipedia.org/wiki/Slowly_varying_function")[slowly varying function] and $mu$ is a scale parameter. If $L(t)$ is constant, we have the exponential distribution, but the property of having exponentially decaying tails is much more general, and includes, for example, all of the gamma distributions. The normal distribution has tails that are thinner than exponential ("light tailed") since $P(X > t) = L(t) dot exp(-frac(t^2, mu, style: "horizontal"))$ for appropriate choices of $L(t)$ and $mu$.
 
@@ -50,7 +49,7 @@ $
 lim_(t arrow.r.long infinity) exp(k dot t) dot P(X > t) = infinity.
 $
 
-The prototypical heavy-tailed distribution has a #link("https://en.wikipedia.org/wiki/Power_law")[power law] tail, meaning that 
+The prototypical heavy-tailed distribution has a #link("https://en.wikipedia.org/wiki/Power_law")[power law] tail, meaning that
 
 $
 P(X > t) = frac(L(t), t^alpha, style: "horizontal"),
@@ -74,11 +73,11 @@ If $T$ is appropriately selected then the exceedances may follow a Pareto or exp
 Before considering formal estimation and inference for the tail of a
 distribution, we will discuss some graphical approaches that capture the structure of the tail of a distribution. These approaches consider the upper _order statistics_ of a sample of data and plot them in log space to best reflect the shape of the tail. Recall that the $j^"th"$ order statistic is the $j^"th"$ sorted value in our data, sorted in increasing order.
 
-Let $X_((j))$ denote the $j^"th"$ order statistic either of our data, or of the exceedances derived from our data. This order statistic corresponds to a _probability point_ or "plotting position". A plotting position that takes the probability represented by the $j^"th"$ order statistic to be 
+Let $X_((j))$ denote the $j^"th"$ order statistic either of our data, or of the exceedances derived from our data. This order statistic corresponds to a _probability point_ or "plotting position". A plotting position that takes the probability represented by the $j^"th"$ order statistic to be
 
 $
 frac(j-a, n+1-2a, style: "vertical")
-$ 
+$
 
 for a parameter $0 < a < 1$. For plotting positions with $a=0$,
 
@@ -89,7 +88,7 @@ $
 Suppose that the tail of $X$ is a power law with tail index $alpha$. Then we have
 
 $
-P(X > X_((j))) &= 
+P(X > X_((j))) &=
 frac(c, X_((j))^alpha, style: "horizontal")\
 & approx 1 - frac(j, (n+1), style: "horizontal").
 $
@@ -292,7 +291,7 @@ From the second expression we can see that the third L-moment measures the asymm
 Finally, the fourth L-moment is
 
 $
-lambda_4 &= frac((E X_(4:4) - 3E X_(3:4) + 3E X_(2:4) - E X_(1:4)),  4, style: "horizontal")\ 
+lambda_4 &= frac((E X_(4:4) - 3E X_(3:4) + 3E X_(2:4) - E X_(1:4)),  4, style: "horizontal")\
 &= frac(((E X_(4:4) - E X_(3:4)) + (E X_(2:4) - E X_(1:4)) - 2(E X_(3:4) - E X_(2:4))),  4, style: "horizontal").
 $
 
@@ -309,11 +308,11 @@ A connection has emerged between L-moments and the study of heavy tails.  The st
 
 == Estimation of L-moments
 
-Population L-moments are defined in terms of the values $E X_(j:k)$ as defined above.  An unbiased estimate of this quantity based on iid data $X_1, ..., X_n$ can be obtained by taking all subsets of size $k$ from the data, selecting the $j^"th"$ largest value from each subset, and averaging these values.  It turns out that this is a linear combination of the order statistics $X_((i))$ of the observed data.  Specifically, $X_((i))$ will be the $j^"th"$ largest of $k$ values exactly 
+Population L-moments are defined in terms of the values $E X_(j:k)$ as defined above.  An unbiased estimate of this quantity based on iid data $X_1, ..., X_n$ can be obtained by taking all subsets of size $k$ from the data, selecting the $j^"th"$ largest value from each subset, and averaging these values.  It turns out that this is a linear combination of the order statistics $X_((i))$ of the observed data.  Specifically, $X_((i))$ will be the $j^"th"$ largest of $k$ values exactly
 
 $
 binom(i-1, j-1) dot.c binom(n-i, i-j)
-$ 
+$
 
 times. If we let
 
@@ -344,3 +343,43 @@ tilde(P)_n = (-1)^n sum_(k=0)^n binom(n, k) binom(n+k, k) (-x)^k.
 $
 
 These polynomials form an orthogonal basis on $[0, 1]$.  By studying the graphs of these polynomials, it becomes clear why they are capturing features of a probability distribution that can be interpreted as location, dispersion, skewness, and kurtosis.
+
+= L-moment relationships
+
+Suppose we have a population that can be meaningfully stratified into many subpopulations, such as county of residence for US adults.  We can then estimate summary statistics such as L-moments within each subpopulation.  In many cases two summary statistics, e.g. measuring location and scale, will be related in informative ways.
+
+When working with classical moments, it is often noted that the mean and variance are related.  This is known as a _mean/variance relationship_.  One possible way this might arise if the distributions follow a family such as the Poisson family, where the variance is equal to the mean.  In other settings, we may find that the variance has a different fixed relationship to the mean, such as the variance being proportional to the mean (_quasi-Poisson_), proportional to the square of the mean (_quasi-gamma_), or a linear combination of the mean and its square (_quasi negative binomial_).
+
+= L-comoments
+
+Just as covariance is a bivariate analogue to the univariate variance, the univariate L-moments can be extended to define bivariate measures of association known as #link("https://www.sciencedirect.com/science/article/pii/S0047259X07000103")[L-comoments]. Given a bivariate random vector $(X, Y) in RR^2$, the goal of an L-comoment is to assess the extent to which the value of $X$ predicts where $Y$ falls relative to its marginal distribution $F_Y$.  Unlike conventional covariance and correlation, the L-comoments are not symmetric in $X$, $Y$.
+
+Population L-comoments are defined as
+
+$
+"Cov(X, tilde(P)_(n-1)(Y))",
+$
+
+where as above the $tilde(P)_n$ are shifted Legendre polynomials.
+
+The L-covariance, much like the conventional covariance, tells us whether small values of $X$ tend to co-occur with values of $Y$ falling in one tail of $F_Y$, while large values of $X$ tend to co-occur with values of $Y$ falling in the other tail of $F_Y$.  The L-coskewness tells us whether large values of $X$ tend to co-occur with values of $Y$ falling in either tail of $F_Y$.  The L-cokurtosis tells us whether large values of $X$ tend to co-occur with values of $Y$ that can occur in the far portion of either tail of $F_Y$.
+
+An alternative representation of population L-comoments is based on _concomitants_.  Let $X^((Y))_(j:k)$ denote the value obtained by sampling $k$ iid copies of $(X, Y)$, and taking the value $X_i$ such that $Y_i = Y_(j:k)$.  That is, we sort the pairs $(X_i, Y_i)$ with respect to $Y$ to obtain $Y_(j:k)$, and take the value of $X$ that accompanies $Y_(j:k)$.  The $k^"th"$ L-comoment of $X$ with respect to $Y$ is a linear combination of expected concomitants
+
+$
+lambda^(X Y)_k = k^(-1) sum_(j=0)^(k-1) (-1)^j binom(k-1, j) E X^((Y))_(k-j:k).
+$
+
+Unbiased estimates of the L-comoments can be obtained by estimating the concomitants of $X$ with respect to $Y$ in the full sample of size $n$.  Define the coefficients
+
+$
+w_(k r n) = sum_(j=0)^("min"(r-1, k-1)) (-1)^(k-1-j) binom(k-1, j) binom(k-1+j, j) binom(r-1, j) / (n-1, j).
+$
+
+then
+
+$
+hat(lambda)^(X Y)_k = n^(-1) sum_(r=1)^n w_(k r n) X^((Y))_(r:n).
+$
+
+Comoments based on classical moments also exist but suffer from some of the same practical challenges as other statistics based on higher order moments.  For example, the coskewnesses can be defined as $"Cov"(X, Y^2)$ and $"Cov"(X^2, Y)$.
