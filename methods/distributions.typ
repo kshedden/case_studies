@@ -231,7 +231,7 @@ It is important to have fluent ways to discuss what we learn by studying moments
 
 _Dispersion_ captures how far observations tend to fall from the central value, and _skewness_ captures whether the most extreme values tend to fall more often on one side of the central value than the other. The interpretation of _kurtosis_ has been debated.  #link("https://www.tandfonline.com/doi/full/10.1080/00031305.2014.917055")[This] reference argues that kurtosis should be viewed solely as a measure of the heaviness of the tails.
 
-A natural question is whether two distributions can always be compared in terms of measures of location, scale, etc.  In the setting of location, the notion of _stochastic dominance_ asserts that $X prec Y$ if $Q_X(p) < Q_Y(p)$ for all $p in [0, 1]$.
+A natural question is whether two distributions can always be compared in terms of measures of location, scale, etc.  In the setting of location, the notion of _stochastic dominance_ asserts that $X prec Y$ if $Q_(X)(p) < Q_(Y)(p)$ for all $p in [0, 1]$.
 
 For the study of dispersion, Bickel and Lehman #link("https://projecteuclid.org/journals/annals-of-statistics/volume-4/issue-6/Descriptive-Statistics-for-Nonparametric-Models-III-Dispersion/10.1214/aos/1176343648.full")[introduced] the notion of _dispersive order_ to assess when probability distributions can be compared based on dispersion.  If $Q_1$ and $Q_2$ are the quantile functions of two distributions, then if
 
@@ -378,7 +378,7 @@ Just as covariance is a bivariate analogue to the univariate variance, the univa
 Population L-comoments are defined as
 
 $
-lambda^(X Y)_m = "Cov"(X, tilde(P)_(m-1)(F_Y^(-1)(Y))),
+lambda^(X Y)_m = "Cov"(X, tilde(P)_(m-1)(F_Y(Y))),
 $
 
 where as above the $tilde(P)_m$ are shifted Legendre polynomials.
