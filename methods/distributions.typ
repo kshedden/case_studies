@@ -346,13 +346,13 @@ is an unbiased estimator of $X_(j:k)$.
 Above we gave definitions for the first four L-moments as special cases.  In general, an L-moment is a linear functional of the quantile function as given by
 
 $
-lambda_m = integral_0^1 Q(p) tilde(P)_(n-1)(p) "dp",
+lambda_m = integral_0^1 Q(p) tilde(P)_(m-1)(p) "dp",
 $
 
-where $tilde(P)_n$ is the $n^"th"$ #link("https://en.wikipedia.org/wiki/Legendre_polynomials#Shifted_Legendre_polynomials")[shifted Legendre polynomial]
+where $tilde(P)_m$ is the $m^"th"$ #link("https://en.wikipedia.org/wiki/Legendre_polynomials#Shifted_Legendre_polynomials")[shifted Legendre polynomial]
 
 $
-tilde(P)_n = (-1)^n sum_(k=0)^n binom(n, k) binom(n+k, k) (-x)^k.
+tilde(P)_m = (-1)^m sum_(k=0)^m binom(m, k) binom(m+k, k) (-x)^k.
 $
 
 These polynomials form an orthogonal basis on $[0, 1]$.  By studying the graphs of these polynomials for $k=1,2,3,4$, it becomes clear why they are capturing features of a probability distribution that can be interpreted as location, dispersion, skewness, and kurtosis.
@@ -378,10 +378,10 @@ Just as covariance is a bivariate analogue to the univariate variance, the univa
 Population L-comoments are defined as
 
 $
-"Cov"(X, tilde(P)_(n-1)(Y)),
+lambda^(X Y)_m = "Cov"(X, tilde(P)_(m-1)(F_Y^(-1)(Y))),
 $
 
-where as above the $tilde(P)_n$ are shifted Legendre polynomials.
+where as above the $tilde(P)_m$ are shifted Legendre polynomials.
 
 The L-covariance, much like the conventional covariance, tells us whether small values of $X$ tend to co-occur with values of $Y$ falling in one tail of $F_Y$, while large values of $X$ tend to co-occur with values of $Y$ falling in the other tail of $F_Y$.  The L-coskewness tells us whether large values of $X$ tend to co-occur with values of $Y$ falling in either tail of $F_Y$.  The L-cokurtosis tells us whether large values of $X$ tend to co-occur with values of $Y$ that can occur in the far portion of either tail of $F_Y$.
 
