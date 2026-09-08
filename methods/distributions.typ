@@ -172,13 +172,13 @@ If the data are exactly Pareto, the maximum likelihood estimate (MLE) of $alpha$
 As noted above, the one-parameter Pareto distribution may not fit many data sets well, and further has an awkward sample space of $[1, infinity)$. To address these issues, the #link("https://en.wikipedia.org/wiki/Generalized_Pareto_distribution")[generalized Pareto distribution] was developed, which has sample space $[0, infinity)$ and complementary CDF
 
 $
-P(X > t) = sigma^(-1)(1 + t/(sigma alpha))^(-alpha).
+P(X > t) = (1 + t/(sigma alpha))^(-alpha).
 $
 
 Note that the ratio of the CCDF's for the Pareto and generalized Pareto satisfies
 
 $
-frac(sigma^(-1)(1 + frac(t, (sigma alpha), style: "horizontal"))^(-alpha), t^(-alpha)) arrow.r.long sigma^(-1)(sigma alpha)^alpha != 0,
+frac((1 + frac(t, (sigma alpha), style: "horizontal"))^(-alpha), t^(-alpha)) arrow.r.long (sigma alpha)^alpha != 0,
 $
 
 so the generalized Pareto and Pareto distributions both have power law tails with the same tail parameter $alpha$.
@@ -226,13 +226,15 @@ If we are working with exceedances, we need to take account of the observations 
 
 A classical statistical moment is defined to be the expected value of a random variable raised to a power. For example, the raw first and second moments are $E[X]$ (the expected value) and $E[X^2]$. In practice we usually work with the _centered moments_ (or _central moments_), for example $E[(X - E X)^2]$ is the centered second moment, which is better known as the variance.
 
-In most situations, if you know all the moments of a distribution then you know everything about the distribution (there are some technical conditions for this claim to be true, as it is based on the invertibility of the moment generating function). But this fact is not very useful in practice because it is nearly impossible to estimate high order moments $E[(X - E X)^k]$ for large values of $k$. The sample estimator of this moment is $n^(-1) sum (X_i - overline(X))^k$, and this estimator is consistent and asymptotically unbiased, but if $k > 2$ it has huge mean squared error for any practically realistic sample size.
+In most situations, if you know all the moments of a distribution then you know everything about the distribution (there are some technical conditions for this claim to be true, as it is based on the invertibility of the moment generating function). But this fact is not very useful in practice because it is nearly impossible to estimate high order moments $E[(X - E X)^k]$ for large values of $k$. The sample estimator of this moment is $n^(-1) sum (X_i - overline(X))^k$, and this estimator is consistent and asymptotically unbiased, but if $k > 2$ it has large mean squared error for any practically realistic sample size.  This is related to the notion of _robustness_, where moments can be corrupted by the introduction of arbitrarily small amounts of strong outliers, which is not true of quantiles.
 
 It is important to have fluent ways to discuss what we learn by studying moments in a data analysis. The _location_ captures the "central value" of a distribution, but exactly what this means depends on what measure of location is being used. Although the mean is so common that we take it for granted, its interpretation follows from a somewhat opaque physical analogy, the balancing point for mass distributed along a line.  The median can be interpreted as the "deepest" point in a distribution in that it is "surrounded by other values on all sides".  The mode is the most common value in the distribution.  The mean can fail to exist or be infinite, and the median and mode may not be uniquely defined.
 
 _Dispersion_ captures how far observations tend to fall from the central value, and _skewness_ captures whether the most extreme values tend to fall more often on one side of the central value than the other. The interpretation of _kurtosis_ has been debated.  #link("https://www.tandfonline.com/doi/full/10.1080/00031305.2014.917055")[This] reference argues that kurtosis should be viewed solely as a measure of the heaviness of the tails.
 
-A natural question is whether two distributions can always be compared in terms of measures of location, scale, etc.  Bickel and Lehman #link("https://projecteuclid.org/journals/annals-of-statistics/volume-4/issue-6/Descriptive-Statistics-for-Nonparametric-Models-III-Dispersion/10.1214/aos/1176343648.full")[answered] this question in the negative.  For example, they introduced the notion of _dispersive order_ to assess when probability distributions can be compared based on dispersion.  If $Q_1$ and $Q_2$ are the quantile functions of two distributions, then if
+A natural question is whether two distributions can always be compared in terms of measures of location, scale, etc.  In the setting of location, the notion of _stochastic dominance_ asserts that $X prec Y$ if $Q_X(p) < Q_Y(p)$ for all $p in [0, 1]$.
+
+Bickel and Lehman #link("https://projecteuclid.org/journals/annals-of-statistics/volume-4/issue-6/Descriptive-Statistics-for-Nonparametric-Models-III-Dispersion/10.1214/aos/1176343648.full")[answered] this question in the negative.  For example, they introduced the notion of _dispersive order_ to assess when probability distributions can be compared based on dispersion.  If $Q_1$ and $Q_2$ are the quantile functions of two distributions, then if
 
 $
 Q_1(p) - Q_1(q) < Q_2(p) - Q_2(q)
@@ -244,19 +246,23 @@ Later we will consider how these ideas can be generalized to multivariate data. 
 
 = Quantile analogues to moments
 
-Moments and quantiles are fundamentally different -- at the sample level, moments involve averaging whereas quantiles involve sorting.  But there are several bridges between moments and quantiles, such as the identity $E[X] = integral_0^1 Q(p)"dp"$, where $Q(dot.c)$ is the quantile function.
+Moments and quantiles are fundamentally different -- at the sample level, moments involve averaging whereas quantiles involve sorting.  But there are several bridges between moments and quantiles.  One such such bridge is the identity $E[X] = integral_0^1 Q(p)"dp"$, where $Q(dot.c)$ is the quantile function.  Another bridge is the fact that $Q(1)$, the maximum of the sample space, is the limit of $E[thin |X|^p]^(1/p)$ as $p$ goes to infinity.
 
 Moments are often used to characterize properties of a distribution such as location, dispersion, and skewness.  There are familiar quantile-based approaches for achieving this same goal.  The median is a quantile-based measure of location and the inter-quartile range (IQR) is a quantile-based measure of dispersion.  But is there a general way to define quantile analogues to all possible moments?
 
 Taking skewness as an example, measures of the form
 
 $
-(Q(p) + Q(1-p) - 2Q(frac(1, 2, style: "horizontal"))) / (Q(p) - Q(1-p)) =
+Q(p) + Q(1-p) - 2Q(frac(1, 2, style: "horizontal")) =
 
-((Q(p) - Q(frac(1, 2, style: "horizontal"))) - (Q(frac(1, 2, style: "horizontal")) - Q(1-p))) / (Q(p) - Q(1-p))
+(Q(p) - Q(frac(1, 2, style: "horizontal"))) - (Q(frac(1, 2, style: "horizontal")) - Q(1-p))
 $
 
-have been proposed, using, e.g. $p=frac(3, 4, style: "horizontal")$ or $p=frac(9, 10, style: "horizontal")$.
+have been proposed, using, e.g. $p=frac(3, 4, style: "horizontal")$ or $p=frac(9, 10, style: "horizontal")$.  A corresponding definition for standardized skewness is
+
+$
+(Q(p) + Q(1-p) - 2Q(frac(1, 2, style: "horizontal"))) / (Q(p) - Q(1-p)).
+$
 
 Kurtosis can be defined as a ratio of a measure of "tail dispersion" to a measure of "inner dispersion", such as
 
@@ -265,6 +271,8 @@ $
 $
 
 where $p > q > 1/2$.
+
+All of these expressions involve finite linear combinations of quantiles, which is equivalent to taking a weighted integral of the quantile function $integral Q(p)"dw"(p)$.  These are integrals against measures that are supported on finite subsets of $[0, 1]$.  A natural question is whether meaningful summary statistics can be constructed by taking continuously weighted integrals of the quantile function in the sense of Lebesgue measure.
 
 These approaches are practically useful, but don't provide a fully satisfying solution since they include tuning parameters (e.g. $p, q$), and do not immediately provide constructions for moments with order greater than 4.
 
@@ -342,13 +350,21 @@ $
 tilde(P)_n = (-1)^n sum_(k=0)^n binom(n, k) binom(n+k, k) (-x)^k.
 $
 
-These polynomials form an orthogonal basis on $[0, 1]$.  By studying the graphs of these polynomials, it becomes clear why they are capturing features of a probability distribution that can be interpreted as location, dispersion, skewness, and kurtosis.
+These polynomials form an orthogonal basis on $[0, 1]$.  By studying the graphs of these polynomials for $k=1,2,3,4$, it becomes clear why they are capturing features of a probability distribution that can be interpreted as location, dispersion, skewness, and kurtosis.
+
+The shifted Legendre polynomials are bounded on $[0, 1]$  From this it follows that $lambda_m$ exists and is finite as long as the mean of $X$ exists.
 
 == L-moment relationships
 
 Suppose we have a population that can be meaningfully stratified into many subpopulations, such as county of residence for US adults.  We can then estimate summary statistics such as L-moments within each subpopulation.  In many cases two summary statistics, e.g. measuring location and scale, will be related in informative ways.
 
-When working with classical moments, it is often noted that the mean and variance are related.  This is known as a _mean/variance relationship_.  One possible way this might arise if the distributions follow a family such as the Poisson family, where the variance is equal to the mean.  In other settings, we may find that the variance has a different fixed relationship to the mean, such as the variance being proportional to the mean (_quasi-Poisson_), proportional to the square of the mean (_quasi-gamma_), or a linear combination of the mean and its square (_quasi negative binomial_).
+When working with classical moments, it is often noted that the mean and variance are related.  This is known as a _mean/variance relationship_.  One possible way this might arise if the distributions follow a family such as the Poisson family, where the variance is equal to the mean.  If each subpopulation follows a Poisson distribution, but with different means, a clear mean variance relationship will emerge.  In other settings, we may find that the variance has a different fixed relationship to the mean, such as the variance being proportional to the mean (_quasi-Poisson_), proportional to the square of the mean (_quasi-gamma_), or a linear combination of the mean and its square (_quasi negative binomial_).
+
+One setting where L-moment relationships can be useful is if we have a second variable $Z$ that is jointly distributed with $X$, and we use the value of $Z$ to stratify the observed values of $X$ into groups.  In this case we can estimate L-moments for the distributions $X|Z in s$ and assess the corresponding L-moment relationships.
+
+The classical notion of a _variance stabilizing transformation_ can be generalized to the realm of L-moments.  Recall that a variance stabilizing transformation $f$ of $X$ is a function such that the variance of $f(X)$ is a constant function of the mean of $f(X)$.  For example, for the Poisson distribution the (first order) variance stabilizing transformation is the square root transformation.  In the setting of L-moments, we can seek transformations $f$ such that the L-moments of $f(X)$ exhibit minimal inter-relationships.
+
+With some technical restrictions, any distribution can be transformed to any other with a monotone transformation, e.g. $Q_Y(F_X^(-1)(X))$ transforms a random variable $X$ to a new random variable sharing a distribution with $Y$.  This is essentially the notion of a _copula_.  Thus, L-moments and heavy tails are fragile in that they can be drastically altered by transformation.  However, if we stratify $X$ on a related variable $Z$, we may find that the overall copula transformation for $X$ does not exhibit the same behavior within each stratum.
 
 == L-comoments
 
@@ -383,4 +399,3 @@ hat(lambda)^(X Y)_k = n^(-1) sum_(r=1)^n w_(k r n) X^((Y))_(r:n).
 $
 
 Comoments based on classical moments also exist, for example, the coskewnesses can be defined as $"Cov"(X, Y^2)$ and $"Cov"(X^2, Y)$. These suffer from some of the same practical challenges as other statistics based on higher order moments.
-
