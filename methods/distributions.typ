@@ -70,8 +70,7 @@ If $T$ is appropriately selected then the exceedances may follow a Pareto or exp
 
 = Tail plots
 
-Before considering formal estimation and inference for the tail of a
-distribution, we will discuss some graphical approaches that capture the structure of the tail of a distribution. These approaches consider the upper _order statistics_ of a sample of data and plot them in log space to best reflect the shape of the tail. Recall that the $j^"th"$ order statistic is the $j^"th"$ sorted value in our data, sorted in increasing order.
+Before considering formal estimation and inference for the tail of a distribution, we will discuss some graphical approaches that capture the structure of the tail of a distribution. These approaches consider the upper _order statistics_ of a sample of data and plot them in log space to best reflect the shape of the tail. Recall that the $j^"th"$ order statistic is the $j^"th"$ sorted value in our data, sorted in increasing order.
 
 Let $X_((j))$ denote the $j^"th"$ order statistic either of our data, or of the exceedances derived from our data. This order statistic corresponds to a _probability point_ or "plotting position". A plotting position that takes the probability represented by the $j^"th"$ order statistic to be
 
@@ -247,6 +246,12 @@ Later we will consider how these ideas can be generalized to multivariate data. 
 = Quantile analogues to moments
 
 Moments and quantiles are fundamentally different -- at the sample level, moments involve averaging whereas quantiles involve sorting.  But there are several bridges between moments and quantiles.  One such such bridge is the identity $E[X] = integral_0^1 Q(p)"dp"$, where $Q(dot.c)$ is the quantile function.  Another bridge is the fact that $Q(1)$, the maximum of the sample space, is the limit of $E[thin |X|^p]^(1/p)$ as $p$ goes to infinity.
+
+Moments are convenient but higher-order moments are not straightforward to interpret, and may not exist.  Quantiles are always defined, using the definition
+
+$
+Q(p) = "inf"{x : F(x) >= p}.
+$
 
 Moments are often used to characterize properties of a distribution such as location, dispersion, and skewness.  There are familiar quantile-based approaches for achieving this same goal.  The median is a quantile-based measure of location and the inter-quartile range (IQR) is a quantile-based measure of dispersion.  But is there a general way to define quantile analogues to all possible moments?
 
