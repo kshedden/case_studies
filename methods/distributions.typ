@@ -234,7 +234,7 @@ _Dispersion_ captures how far observations tend to fall from the central value, 
 
 A natural question is whether two distributions can always be compared in terms of measures of location, scale, etc.  In the setting of location, the notion of _stochastic dominance_ asserts that $X prec Y$ if $Q_X(p) < Q_Y(p)$ for all $p in [0, 1]$.
 
-Bickel and Lehman #link("https://projecteuclid.org/journals/annals-of-statistics/volume-4/issue-6/Descriptive-Statistics-for-Nonparametric-Models-III-Dispersion/10.1214/aos/1176343648.full")[answered] this question in the negative.  For example, they introduced the notion of _dispersive order_ to assess when probability distributions can be compared based on dispersion.  If $Q_1$ and $Q_2$ are the quantile functions of two distributions, then if
+For the study of dispersion, Bickel and Lehman #link("https://projecteuclid.org/journals/annals-of-statistics/volume-4/issue-6/Descriptive-Statistics-for-Nonparametric-Models-III-Dispersion/10.1214/aos/1176343648.full")[introduced] the notion of _dispersive order_ to assess when probability distributions can be compared based on dispersion.  If $Q_1$ and $Q_2$ are the quantile functions of two distributions, then if
 
 $
 Q_1(p) - Q_1(q) < Q_2(p) - Q_2(q)
@@ -312,7 +312,7 @@ invariance (also known as _affine invariance_) are important because they imply 
 
 L-moments are useful descriptive statistics that capture the shape of distributions. They are more robust (less sensitive to contamination) than the classical moments, and one can estimate higher order L-moments than is practical with classical moments.
 
-A connection has emerged between L-moments and the study of heavy tails.  The standardized fourth L-moment $lambda_4^s$ is a measure of tail heaviness. It is not directly equivalent to the tail index $alpha$, but arguably captures a similar characteristic of a distribution. It has been argued (see #link("https://www.tandfonline.com/doi/full/10.1080/00031305.2024.2402898#abstract")[here]) that if the standardized fourth L-moment exceeds 0.35, then the tails are sufficiently heavy that conventional statistical inference is "disrupted".
+A connection has emerged between L-moments and the study of heavy tails.  The standardized fourth L-moment $lambda_4^s$ is a measure of tail heaviness. It is not directly equivalent to the tail index $alpha$, but arguably captures a similar characteristic of a distribution. It has been argued (see #link("https://www.tandfonline.com/doi/full/10.1080/00031305.2024.2402898#abstract")[here]) that if the standardized fourth L-moment exceeds $approx 0.35-0.4$, then the tails are sufficiently heavy that conventional statistical inference is "disrupted".
 
 == Estimation of L-moments
 
@@ -358,13 +358,13 @@ The shifted Legendre polynomials are bounded on $[0, 1]$  From this it follows t
 
 Suppose we have a population that can be meaningfully stratified into many subpopulations, such as county of residence for US adults.  We can then estimate summary statistics such as L-moments within each subpopulation.  In many cases two summary statistics, e.g. measuring location and scale, will be related in informative ways.
 
-When working with classical moments, it is often noted that the mean and variance are related.  This is known as a _mean/variance relationship_.  One possible way this might arise if the distributions follow a family such as the Poisson family, where the variance is equal to the mean.  If each subpopulation follows a Poisson distribution, but with different means, a clear mean variance relationship will emerge.  In other settings, we may find that the variance has a different fixed relationship to the mean, such as the variance being proportional to the mean (_quasi-Poisson_), proportional to the square of the mean (_quasi-gamma_), or a linear combination of the mean and its square (_quasi negative binomial_).
+When working with classical moments, it is often noted that the mean and variance are related.  This is known as a _mean/variance relationship_.  One possible way this might arise is if the distributions follow a family such as the Poisson family, where the variance is equal to the mean.  If each subpopulation follows a Poisson distribution, but with different means, a clear mean/variance relationship will emerge.  In other settings, we may find that the variance has a different fixed relationship to the mean, such as the variance being proportional to the mean (_quasi-Poisson_), proportional to the square of the mean (_quasi-gamma_), or a linear combination of the mean and its square (_quasi negative binomial_).
 
 One setting where L-moment relationships can be useful is if we have a second variable $Z$ that is jointly distributed with $X$, and we use the value of $Z$ to stratify the observed values of $X$ into groups.  In this case we can estimate L-moments for the distributions $X|Z in s$ and assess the corresponding L-moment relationships.
 
 The classical notion of a _variance stabilizing transformation_ can be generalized to the realm of L-moments.  Recall that a variance stabilizing transformation $f$ of $X$ is a function such that the variance of $f(X)$ is a constant function of the mean of $f(X)$.  For example, for the Poisson distribution the (first order) variance stabilizing transformation is the square root transformation.  In the setting of L-moments, we can seek transformations $f$ such that the L-moments of $f(X)$ exhibit minimal inter-relationships.
 
-With some technical restrictions, any distribution can be transformed to any other with a monotone transformation, e.g. $Q_Y(F_X^(-1)(X))$ transforms a random variable $X$ to a new random variable sharing a distribution with $Y$.  This is essentially the notion of a _copula_.  Thus, L-moments and heavy tails are fragile in that they can be drastically altered by transformation.  However, if we stratify $X$ on a related variable $Z$, we may find that the overall copula transformation for $X$ does not exhibit the same behavior within each stratum.
+With some technical restrictions, any distribution can be transformed to any other with a monotone transformation, e.g. $Q_(Y)(F_X^(-1)(X))$ transforms a random variable $X$ to a new random variable sharing a distribution with $Y$.  This is essentially the notion of a _copula_.  Thus, L-moments and heavy tails are fragile in that they can be drastically altered by transformation.  However, if we stratify $X$ on a related variable $Z$, we may find that the overall copula transformation for $X$ does not exhibit the same behavior within each stratum.
 
 == L-comoments
 
