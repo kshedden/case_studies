@@ -311,37 +311,53 @@ $
 From the second expression we can see that the fourth L-moment measures the asymmetry between the outer and inner order statistic differences.
 
 Often we work with the standardized third and fourth L-moments, $lambda_3^s = frac(lambda_3, lambda_2, style: "horizontal")$ and $lambda_4^s = frac(lambda_4, lambda_2, style: "horizontal")$.
-
-Note that these standardized L-moments are _scale invariant_ meaning that their value is not changed by scaling the data. All L-moments except for the first L-moment are _translation invariant_, meaning that their values are not changed by adding a constant to all data values. Scale and translation
-invariance (also known as _affine invariance_) are important because they imply that the result does not depend on the units or origin of the measurement scale.
+These standardized L-moments are _scale invariant_ meaning that their value is not changed by scaling the data. All L-moments except for the first L-moment are _translation invariant_, meaning that their values are not changed by adding a constant to all data values. Scale and translation invariance (also known as _affine invariance_) are important because they imply that the result does not depend on the units or origin of the measurement scale.
 
 L-moments are useful descriptive statistics that capture the shape of distributions. They are more robust (less sensitive to contamination) than the classical moments, and one can estimate higher order L-moments than is practical with classical moments.
 
 A connection has emerged between L-moments and the study of heavy tails.  The standardized fourth L-moment $lambda_4^s$ is a measure of tail heaviness. It is not directly equivalent to the tail index $alpha$, but arguably captures a similar characteristic of a distribution. It has been argued (see #link("https://www.tandfonline.com/doi/full/10.1080/00031305.2024.2402898#abstract")[here]) that if the standardized fourth L-moment exceeds $approx 0.35-0.4$, then the tails are sufficiently heavy that conventional statistical inference is "disrupted".
 
-== Estimation of L-moments
+== L-moments and probability weighted moments
 
-Population L-moments are defined in terms of the values $E X_(j:k)$ as defined above.  An unbiased estimate of this quantity based on iid data $X_1, ..., X_n$ can be obtained by taking all subsets of size $k$ from the data, selecting the $j^"th"$ largest value from each subset, and averaging these values.  It turns out that this is a linear combination of the order statistics $X_((i))$ of the observed data.  Specifically, $X_((i))$ will be the $j^"th"$ largest of $k$ values exactly
-
-$
-binom(i-1, j-1) dot.c binom(n-i, i-j)
-$
-
-times. If we let
+A probability weighted moment (PWM) for a random variable $X$ is a quantity of the form
 
 $
-c_(i j k) = frac(binom(i-1, j-1) dot.c binom(n-i, i-j), binom(n, k), style: "horizontal"),
+beta_(p r s) = E[X^p dot.c F(X)^r dot.c (1 - F(X))^s].
 $
 
-then
+These moments are of interest to us mainly because of their connection to L-moments.  It turns out that L-moments can be expressed as linear combinations of probability weighted moments, specifically the first order PWMs
 
 $
-sum_i c_(i j k) X_((i))
+beta_r equiv beta_(1 r 0) = E[X dot.c F(X)^r] = integral_0^1 Q(p)p^r "dp".
 $
 
-is an unbiased estimator of $X_(j:k)$.
+These can be estimated unbiasedly as
 
-== A general definition for population values of L-moments
+$
+hat(beta)_r = n^(-1) sum_(i=r+1)^n (binom(i-1, r) / binom(n-1, r)) x_((i)).
+$
+
+The expressions for the first four L-moments in terms of probability weighted moments are
+
+$
+lambda_1 = beta_0
+$
+
+$
+lambda_2 = 2 beta_1 - beta_0
+$
+
+$
+lambda_3 = 6 beta_2 - 6 beta_1 + beta_0
+$
+
+$
+lambda_4 = 20 beta_3 - 30 beta_2 + 12 beta_1 - beta_0.
+$
+
+Replace $beta_r$ with $hat(beta)_r$ in these expressions to get unbiased estimators of the L-moments.
+
+== A general definition for population L-moments
 
 Above we gave definitions for the first four L-moments as special cases.  In general, an L-moment is a linear functional of the quantile function as given by
 
@@ -361,15 +377,15 @@ The shifted Legendre polynomials are bounded on $[0, 1]$  From this it follows t
 
 == L-moment relationships
 
-Suppose we have a population that can be meaningfully stratified into many subpopulations, such as county of residence for US adults.  We can then estimate summary statistics such as L-moments within each subpopulation.  In many cases two summary statistics, e.g. measuring location and scale, will be related in informative ways.
+Suppose we have a population that can be meaningfully stratified into many subpopulations, such as county of residence for US adults.  We can then estimate summary statistics such as L-moments within each subpopulation.  In many cases two summary statistics, e.g. measuring location and scale, will be related in informative ways across the subpopulations.
 
-When working with classical moments, it is often noted that the mean and variance are related.  This is known as a _mean/variance relationship_.  One possible way this might arise is if the distributions follow a family such as the Poisson family, where the variance is equal to the mean.  If each subpopulation follows a Poisson distribution, but with different means, a clear mean/variance relationship will emerge.  In other settings, we may find that the variance has a different fixed relationship to the mean, such as the variance being proportional to the mean (_quasi-Poisson_), proportional to the square of the mean (_quasi-gamma_), or a linear combination of the mean and its square (_quasi negative binomial_).
+When working with classical moments, it is often noted that the mean and variance are related across a collection of populations.  This is known as a _mean/variance relationship_.  One possible way this might arise is if the distributions follow a family such as the Poisson family, where the variance is a function of the mean (e.g. in the Poisson family, the variance is equal to the mean).  If each subpopulation follows a Poisson distribution, but with different means, a clear mean/variance relationship will emerge.  In other settings, we may find that the variance has a different fixed relationship to the mean, such as the variance being proportional to the mean (_quasi-Poisson_), proportional to the square of the mean (_quasi-gamma_), or a linear combination of the mean and its square (_quasi negative binomial_).
 
 One setting where L-moment relationships can be useful is if we have a second variable $Z$ that is jointly distributed with $X$, and we use the value of $Z$ to stratify the observed values of $X$ into groups.  In this case we can estimate L-moments for the distributions $X|Z in s$ and assess the corresponding L-moment relationships.
 
 The classical notion of a _variance stabilizing transformation_ can be generalized to the realm of L-moments.  Recall that a variance stabilizing transformation $f$ of $X$ is a function such that the variance of $f(X)$ is a constant function of the mean of $f(X)$.  For example, for the Poisson distribution the (first order) variance stabilizing transformation is the square root transformation.  In the setting of L-moments, we can seek transformations $f$ such that the L-moments of $f(X)$ exhibit minimal inter-relationships.
 
-With some technical restrictions, any distribution can be transformed to any other with a monotone transformation, e.g. $Q_(Y)(F_X^(-1)(X))$ transforms a random variable $X$ to a new random variable sharing a distribution with $Y$.  This is essentially the notion of a _copula_.  Thus, L-moments and heavy tails are fragile in that they can be drastically altered by transformation.  However, if we stratify $X$ on a related variable $Z$, we may find that the overall copula transformation for $X$ does not exhibit the same behavior within each stratum.
+With some technical restrictions, any distribution can be transformed to any other with a monotone transformation, e.g. $Q_(Y)(F_X^(-1)(X))$ transforms a random variable $X$ to a new random variable sharing a distribution with $Y$.  This is essentially the notion of a _copula_.  Thus, L-moments and heavy tails are fragile in that they can be drastically altered by transformation (we can monotonically transform a heavy tailed distribution to a light tailed distribution and vice-versa).
 
 == L-comoments
 
