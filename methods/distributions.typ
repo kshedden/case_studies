@@ -33,9 +33,7 @@ Many important research questions involve the frequency of "extreme" events, for
 
 In the statistical study of extremes, we do not attempt to classify individual data points as being "extreme" or "non-extreme". In some cases there may be non-statistical reasons to define a threshold beyond which an observation is extreme (for example, we may describe a hurricane as extreme if the wind speed exceeds 160 miles per hour). However, there is no objective statistical basis for defining a single observation as being extreme. Instead, we usually study extremes by characterizing the tail of the probability distribution according to its asymptotic rate of decay.  We will also consider an alternative approach to thinking about extremes based on a measure of kurtosis.
 
-Recall that the cumulative distribution function (cdf) of a random variable $X$ is the function $F(t) = P(X <= t)$, viewed as a function of $t in RR$. The _complementary cdf_ (ccdf), also known as the
-_survival function_, is the right tail probability $S(t) = P(X > t) = 1 - F(t)$. To understand the frequency of extreme (large) values, we can consider how rapidly the tail probability converges to zero as
-$t$ increases. In many familiar distributions, the tails are _exponential_ meaning that
+Recall that the cumulative distribution function (cdf) of a random variable $X$ is the function $F(t) = P(X <= t)$, viewed as a function of $t in RR$. The _complementary cdf_ (ccdf), also known as the _survival function_, is the right tail probability $S(t) = P(X > t) = 1 - F(t)$. To understand the frequency of extreme (large) values, we can consider how rapidly the tail probability converges to zero as $t$ increases. In many familiar distributions, the tails are _exponential_ meaning that
 
 $
 P(X > t) = L(t) dot exp(-frac(t, mu, style: "horizontal")),
@@ -277,9 +275,9 @@ $
 
 where $p > q > 1/2$.
 
-All of these expressions involve finite linear combinations of quantiles, which is equivalent to taking a weighted integral of the quantile function $integral Q(p)"dw"(p)$.  These are integrals against measures that are supported on finite subsets of $[0, 1]$.  A natural question is whether meaningful summary statistics can be constructed by taking continuously weighted integrals of the quantile function in the sense of Lebesgue measure.
+All of these expressions involve finite linear combinations of quantiles, which is equivalent to taking a weighted integral of the quantile function $integral Q(p)"dw"(p)$.  These can be viewed as integrals against discrete measures that are supported on finite subsets of $[0, 1]$.  A natural question is whether meaningful summary statistics can be constructed by taking continuously weighted integrals of the quantile function, which is done by L-moments.
 
-These approaches are practically useful, but don't provide a fully satisfying solution since they include tuning parameters (e.g. $p, q$), and do not immediately provide constructions for moments with order greater than 4.
+The approaches discussed in this section are practically useful, but don't provide a fully satisfying solution since they include tuning parameters (e.g. $p, q$), and do not immediately provide constructions for moments with order greater than 4.
 
 = L-moments
 
@@ -355,7 +353,7 @@ $
 lambda_4 = 20 beta_3 - 30 beta_2 + 12 beta_1 - beta_0.
 $
 
-Replace $beta_r$ with $hat(beta)_r$ in these expressions to get unbiased estimators of the L-moments.
+Replace $beta_r$ with $hat(beta)_r$ in these expressions to get unbiased estimators of the L-moments.  These estimators will all have the form $lambda_k = sum_(i=1)^n w^(k,n)_i x_((i))$, a linear combination of order statistics.
 
 == A general definition for population L-moments
 
@@ -394,12 +392,12 @@ Just as covariance is a bivariate analogue to the univariate variance, the univa
 Population L-comoments are defined as
 
 $
-lambda^(X Y)_m = "Cov"(X, tilde(P)_(m-1)(F_Y(Y))),
+lambda^(X Y)_m = "Cov"(X, tilde(P)_(m-1)(F_(Y)(Y))),
 $
 
 where as above the $tilde(P)_m$ are shifted Legendre polynomials.
 
-The L-covariance, much like the conventional covariance, tells us whether small values of $X$ tend to co-occur with values of $Y$ falling in one tail of $F_Y$, while large values of $X$ tend to co-occur with values of $Y$ falling in the other tail of $F_Y$.  The L-coskewness tells us whether large values of $X$ tend to co-occur with values of $Y$ falling in either tail of $F_Y$.  The L-cokurtosis tells us whether large values of $X$ tend to co-occur with values of $Y$ that can occur in the far portion of either tail of $F_Y$.
+The L-covariance, much like the conventional covariance, tells us whether small values of $X$ tend to co-occur with values of $Y$ falling in one tail of $F_Y$, while large values of $X$ tend to co-occur with values of $Y$ falling in the other tail of $F_Y$.  The L-coskewness tells us whether large values of $X$ in a specific direction (positive or negative) tend to co-occur with extreme values of $Y$ (in either the positive or negative direction).  If the L-coskewness is positive, then large positive values of $X$ tend to co-occur with extreme values of $Y$, while large negative values of $X$ tend to co-occur with intermediate values of $Y$. If the L-coskewness is negative, then large negative values of $X$ tend to co-occur with extreme values of $Y$, while large positive values of $X$ tend to co-occur with intermediate values of $Y$.
 
 An alternative representation of population L-comoments is based on _concomitants_.  Let $X^((Y))_(j:k)$ denote the value obtained by sampling $k$ iid copies of $(X, Y)$, and taking the value $X_i$ such that $Y_i = Y_(j:k)$.  That is, we sort the pairs $(X_i, Y_i)$ with respect to $Y$ to obtain $Y_(j:k)$, and then take the value of $X$ that accompanies $Y_(j:k)$.  The $k^"th"$ L-comoment of $X$ with respect to $Y$ is a linear combination of expected concomitants
 
@@ -407,16 +405,14 @@ $
 lambda^(X Y)_k = k^(-1) sum_(j=0)^(k-1) (-1)^j binom(k-1, j) E X^((Y))_(k-j:k).
 $
 
-Unbiased estimates of the L-comoments can be obtained by estimating the concomitants of $X$ with respect to $Y$ in the full sample of size $n$.  Define the coefficients
+Unbiased estimates of the L-comoments can be obtained by estimating the concomitants of $X$ with respect to $Y$ in the full sample of size $n$.  Let $X^Y_i$ denote the $i^"th"$ concomitant of $X$ with respect to $Y$, i.e. if $pi$ is a permutation that sorts $Y$, then $X^Y_i = X_(pi(i))$.  Using the same coefficients $w^(k,n)_i$ employed above to obtain the L-moments, then
 
 $
-w_(k r n) = sum_(j=0)^("min"(r-1, k-1)) (-1)^(k-1-j) frac(binom(k-1, j) binom(k-1+j, j) binom(r-1, j), binom(n-1, j), style: "horizontal").
+hat(lambda^(X Y)_k) = sum_i w^(k,n)_i X^Y_i.
 $
 
-then
+The scaled L-comoments are $frac(lambda^(X Y)_k, lambda^X_k, style: "horizontal")$, where $lambda^X_k$ is the $k^"th"$ L-moment of $X$.  The L-correlation is the second scaled L-comoment $frac(lambda^(X Y)_2, lambda^X_2, style: "horizontal")$.
 
-$
-hat(lambda)^(X Y)_k = n^(-1) sum_(r=1)^n w_(k r n) X^((Y))_(r:n).
-$
+Some identities may help in interpreting the L-comoments.  First, $lambda^(X X)_k = lambda^X_k$ -- that is, the L-comoment of a random variable with itself is just the corresponding L-moment.  Second, the L-correlation always falls between -1 and 1, and is equal to 1 if $X$ is a deterministic monotone increasing function of $Y$.
 
 Comoments based on classical moments also exist, for example, the coskewnesses can be defined as $"Cov"(X, Y^2)$ and $"Cov"(X^2, Y)$. These suffer from some of the same practical challenges as other statistics based on higher order moments.

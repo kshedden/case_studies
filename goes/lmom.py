@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 
 def pwm_coef(n, r):
     """
@@ -33,26 +34,74 @@ def lmom_coef(n, k):
     else:
         raise("Unimplemented L-moment order")
 
+def lmom(x, k, standardize=False):
+    """
+    Returns the estimated L-moment of order k.
+    """
+    xs = np.sort(x)
+    lm = np.dot(lmom_coef(len(x), k), xs)
+    if standardize:
+        if k <= 2:
+            warnings.warn("Standardizing L-moment of order <3.")
+        lm /= np.dot(lmom_coef(len(x), 2), xs)
+    return lm
+
 def l1(x):
     """
     Returns the estimated L-moment of order 1.
     """
-    return np.dot(lmom_coef(len(x), 1), np.sort(x))
+    return lmom(x, 1)
 
 def l2(x):
     """
     Returns the estimated L-moment of order 2.
     """
-    return np.dot(lmom_coef(len(x), 2), np.sort(x))
+    return lmom(x, 2)
 
 def l3(x):
     """
     Returns the estimated L-moment of order 3.
     """
-    return np.dot(lmom_coef(len(x), 3), np.sort(x))
+    return lmom(x, 3)
 
 def l4(x):
     """
     Returns the estimated L-moment of order 4.
     """
-    return np.dot(lmom_coef(len(x), 4), np.sort(x))
+    return lmom(x, 4)
+
+def lmom_del(x, k):
+    """
+    Returns the k^th estimated L-moment of x, deleting each observation in turn.
+    """
+    ii = np.argsort(x)
+    ir = np.argsort(ii)
+    z = x[ii] # order statistics
+    n = len(x)
+    c = lmom_coef(n-1, k)
+    f = np.zeros(n)
+    f[1:] = np.cumsum(c * z[0:-1])
+    b = np.zeros(n)
+    b[0:-1] = np.cumsum(c[::-1] * z[1:][::-1])[::-1]
+    return (f + b)[ir]
+
+def lmom_jack(x, k):
+    """
+    Returns the jack-knife pseudo-observations for the k^th L-moments of x.
+    """
+    n = len(x)
+    lm = lmom(x, k)
+    lmd = lmom_del(x, k)
+    return n*lm - (n - 1)*lmd
+
+def lcomom(x, y, k, standardize=False):
+    """
+    Returns the estimated k^th L-comoment of x and y.
+    """
+    ii = np.argsort(y)
+    z = x[ii]
+    c = lmom_coef(len(x), k)
+    cm = np.dot(z, c)
+    if standardize:
+        cm /= lmom(x, k)
+    return cm
