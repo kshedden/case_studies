@@ -19,13 +19,13 @@ Most commonly, survival analysis methods are used with _time to event_ or _durat
 
 A typical example with more than two states would be one in which subjects can be "healthy", "ill", or "dead", with all transitions allowed except that the "dead" state is absorbing -- once reached, there is no possibility to transition to another state.
 
-An important aspect of survival analysis is that there is often only partial information about each subject's status, usually do to incomplete monitoring time.  For example, in a health study we would rarely be able to wait until all subjects have died, so some subjects will end the study in the "alive" state.  This is an example of "censoring".
+An important aspect of survival analysis is that there is often only partial information about each subject's status, usually due to incomplete monitoring time.  For example, in a health study we would rarely be able to wait until all subjects have died, so some subjects will end the study in the "alive" state.  This is an example of "censoring", which will be defined more formally below.
 
 = Key concepts
 
 == Time origin
 
-Consider a setting where we are monitoring a person over time, and are interested in the time $T$ at which some event of interest occurs. To begin, it is important to explicitly define the time 
+Consider a setting where we are monitoring a person over time, and are interested in the time $T$ at which some event of interest occurs. To begin, it is important to explicitly define the time
 #link("https://en.wikipedia.org/wiki/Unit_of_measurement")[units], e.g. days, months, or years, and the _origin_ from which time is measured, i.e. what is the meaning of time $T=0$? For example, if $T$ denotes the age of a person when an event of interest occurs, the time origin is the date of birth. Alternatively, there may be an event that must occur before the event of interest, and the time of this event may make a more sensible time origin. For example, if $T$ corresponds to graduating from university, we may choose the date of university matriculation (first enrollment) as the time origin, so that e.g. if $T=4$ and the time units are years, then the person graduated four years after beginning their studies.
 
 == Event time distributions
@@ -55,7 +55,7 @@ More formally, if we have left truncation then we are working with the condition
 
 == Competing risks
 
-In a survival analysis there may be other events that "compete" with the event of interest. For example, if we are studying the time $T$ at which a person has a stroke, it is possible that the person dies of another cause before having a stroke. Death unrelated to stroke is a _competing risk_ for the event of interest.  This can be viewed as another example of a multi-state transition model, where each person has a stroke age $T$, a death age $D$, and a censoring age $R$.  Conceptually, there is a joint distribution for $(R, D, T)$, but if $D < T$ we will not know the value of $T$.  
+In a survival analysis there may be other events that "compete" with the event of interest. For example, if we are studying the time $T$ at which a person has a stroke, it is possible that the person dies of another cause before having a stroke. Death unrelated to stroke is a _competing risk_ for the event of interest.  This can be viewed as another example of a multi-state transition model, with states "healthy", "had stroke", and "dead".  Each person has a stroke age $T$, a death age $D$, and a censoring age $R$.  Conceptually, there is a joint distribution for $(R, D, T)$, but if $D < T$ we will not know the value of $T$.  People can transition from "healthy" to "had stroke", from "had stroke" to "dead", and from "healthy" to "dead".
 
 Superficially, $D$ appears to be another form of censoring, so we may consider redefining $R$ as $R' = "min"(R, D)$.  But doing this may create dependent censoring. Even if $R$ is independent of $T$, $R'$ may not be, for example if less healthy subjects are at greater risk for both stroke and death.
 
@@ -76,6 +76,8 @@ Subjects who are right-censored have a maximal _follow-up time_ which is the gre
 A more general notation that is often encountered is that for each subject we have an interval $[L_i, R_i)$ such that the event is known to occur within this interval. For right censored subjects, $R_i = infinity$. For non-censored subjects, $L_i = R_i$. An _interval censored_ subject has $0 < L_i < R_i < infinity$, and a left-censored subject has $0 = L_i < R_i< infinity$.
 
 For more general recurrent event data or when there are more than two states, we can decompose each individual's history into a series of disjoint records $L_j$, $Y_j$, $delta_j$, where $L_j$ denotes the time at the beginning of the record, $Y_j$ denotes the time at the end of the record, and $delta_j$ denotes the state at the end of the record.  Here, instead of $delta_j$ being a binary variable, it is an indicator of the state, with one possible state being "censored".
+
+#link("https://arxiv.org/pdf/2210.07114")[Here] is a thorough treatment of the use of counting process notation in survival analysis.
 
 = Parametric and non-parametric methods
 
@@ -166,7 +168,7 @@ $
 
 using the notation introduced above. Since the hazard function $h$ is the derivative of the cumulative hazard function $H$, it is possible to estimate $h$ by numerically differentiating a smooth estimate of $H$.
 
-== Hazard regression
+== Propotional hazards regression
 
 _Survival regression_ is any method that aims to model conditional distributions $P(T|X)$, where $T$ is an event time variable possibly subject to censoring and/or truncation, and $X$ is a vector of explanatory variables. If $T$ is fully observed, specialized techniques for survival regression are not needed. For example, we may regress $T$ or $log(T)$ on $X$ using least squares or a generalized linear model (GLM). This type of direct approach has been extended to accommodate censoring and truncation, leading to the so-called _transformation models_ and _accelerated failure time_ (AFT) models that we will not discuss further here.
 
@@ -184,9 +186,43 @@ The PH model is essentially a single-index model fit with maximum likelihood tec
 
 As indicated above, proportionality of the conditional hazard functions is a critical assumption in the PH model. This is not always an easy assumption to check, but there are some methods based on residuals that can be employed.  Independent censoring is also an important assumption for the PH model to be meaningful.
 
+== Additive hazards regression
+
+Although much less common than the proportional hazards approach, another approach to survival regression based on hazard functions exists which is useful in some particular situations.  In the _Aalen additive hazard regression model_, the population hazard function has the form
+
+$
+h(t | x) = h_0(t) + sum_(j=1)^p alpha_j (t) x_j (t),
+$
+
+where the $x_j (t)$ are time-varying covariates, and the $alpha_j (t)$ are time-varying coefficients.  The presence of both forms of time-varying structure makes this model very flexible.  The cumulative coefficients $beta_j (t) = integral_(s=0)^t alpha_j (s)"ds"$ play an important role in the estimation and interpretation for this model.  If a covariate function $x_j (dot.c)$ increases by one unit from time $0$ to time $t$, then the cumulative hazard of the event being modeled increases by $beta_j(t)$.
+
+Notably, this model can be fit using ordinary least squares.  For each time $t$ that is an observed event time ($t in {t_1, t_2, ..., t_m}$), let $X^t$ denote the design matrix based on the covariates at time $t$, including only subjects who are at-risk at time $t$.  Similarly, let $y^t$ denote a vector indicating all subjects who have the event at time $t$, also restricted to subjects at risk.  Let $hat(alpha)_t$ denote the ordinary least squares slopes for the linear regression of $y^t$ on $X^t$.  Then define $hat(beta)_t = sum_(s <= t) hat(alpha)_s$.  These $hat(beta)_t$ are estimates of the cumulative coefficient functions $beta_j (t)$.
+
+There is very little information available to estimate the $alpha_j (t)$ parameters -- if there are no ties, then only one failure occurs at each time $t_j$.  Therefore, the $hat(alpha)_j$ do not concentrate well around the $alpha_j (t)$.  However the cumulative coefficients behave much better -- the $hat(beta)_j (t)$ do concentrate around the $beta_j (t)$.  The $hat(beta)_j$ are asymptotically normal and confidence bands can be calculated for them, although the procedure for doing so is somewhat complex.  Further, it is possible to gain a small amount of additional power by using weighted least squares, taking account of the heteroscedasticity inherent in the fact that $y^t$ has binary elements.  A semiparametric version of the method models some of the coefficient functions as constant in time.
+
+In practice, the additive hazard model is most often used when there are one or more time-varying covariates with frequently changing values, and/or when the hazards are unlikely to be proportional, or when they change over time.  Also, the additive hazards model is sometimes used without inference to provide a quick visual check of the shape of the hazard functions and to assess covariate effects.
+
+== Cause-specific hazard regression
+
+If there is a competing risk, it may be meaningful to fit a _cause-specific hazard regression_, treating subjects as being censored when they experience the competing risk.  As noted above when discussing the Kaplan-Meier estimator, it is important to be careful when treating a competing risk as a form of censoring.  When estimating the marginal survival function, it is rarely advisable to do this, due to the risk of introducing dependent censoring.  However in the case of survival regression (proportional or additive), it may be plausible that we have independent censoring after conditioning on covariates.
+
 = Time-varying covariates
 
 In the survival regression model discussed above, all variables are defined at "baseline". That is, every covariate $X_j$ is known at time zero and its value cannot change. There are various approaches to survival regression that can accommodate _time-varying covariates_, e.g. if a subject's status changes in a way that changes their risk for the event of interest. The Cox PH regression model discussed above can be extended to accommodate time-varying covariates, but we do not discuss that further here.
+
+= Cumulative incidence functions
+
+Suppose we are in the competing risks setting, where we have a primary endpoint of interest that occurs at time $T$, and another "competing" event that occurs at time $D$.  A person is censored at time $R$.  The _cumulative incidence_ of the primary endpoint is a function $"CI"(t)$, telling us the probability of having the primary event before time $t$.  It is defined as
+
+$
+"CI"(t) = integral_0^t h_0(t)S_a (t)"dt",
+$
+
+where $S_a(t)$ is the _all cause survival function_ and $h_0$ is the _cause-specific hazard function_.  The all cause survival function is the probability of not having experienced either the primary or the competing event by time $t$.  It can be estimated by defining $Y = "min"(T, D)$ and using the product limit estimator of the survival function.  The cause-specific hazard function is the hazard for having the primary event at time $t$, given that you are at risk at time $t$.  It can be estimated using the Nelson-Aalen estimator of the hazard function, treating death as a form of censoring.
+
+Cumulative incidence is a convenient way to handle competing risks and avoids the challenges of working with so-called _sub-distribution hazards_, which many people find confusing.  It is also possible to introduce covariates into the analysis, to assess how subjects with different characteristics have different cumulative incidences.
+
+Cumulative incidence is most useful when you are interested in the burden (e.g. social or economic) of a condition on individuals or on society.  For example, if the primary event is dementia and the competing risk is death, we may want to know the cumulative incidence (probability) of getting dementia by, say, age 85.  This probability includes people who get dementia and subsequently die before age 85 (i.e. it is not the proportion of living 85 year old people wiith dementia).  On the other hand, if someone dies young, say at age 60, then they are "saved" from getting dementia by their death.  As a result, high risk subpopulations like smokers may appear to have a lower cumulative incidence of dementia, even if smoking increases both the risk of dementia and the risk of death.  In this setting, the cumulative incidence function would be telling us that smokers are less likely to experience dementia in their lifetimes than non-smokers.
 
 = Pseudo-observations
 
@@ -206,7 +242,7 @@ It can be shown that the $u_i$ are approximately independent, that
 
 $
 "Avg"{u_i} approx hat(theta)_n,
-$ 
+$
 
 and that
 
@@ -216,6 +252,6 @@ $
 
 Thus, the pseudo-observations approximately convert estimation and inference for $theta$ into a linear inference problem, analogous to estimating the population mean with the sample mean. This idea could be useful in many settings, but is particularly useful in the setting of survival analysis since we can now treat the pseudo-observations $u_i$ like any other collection of independent quantitative measurements, and analyze them using a wide variety of statistical methods that are not otherwise adapted to survival analysis.
 
-The most common construction of pseudo-observations for survival analysis is based on the Kaplan-Meier (product limit) estimate of the marginal survival function. We can compute $hat(S)(t)$ using all data, and then we can compute $hat(S)_(-i)(t)$ by deleting observation $i$. There are fast approximations for doing this on large samples without repeating the full calculation for each $i$. The pseudo-observation is $u_i (t) = n hat(S)(t) - (n-1)hat(S)_(-i)(t)$. These can be used, for example, in a regression analysis, regressing $u_i$ on covariates $x_i$, since it can be shown that $E[u|x]$ can be interpreted as the probability of surviving to time $t$ when the covariates are equal to $x$. 
+The most common construction of pseudo-observations for survival analysis is based on the Kaplan-Meier (product limit) estimate of the marginal survival function. We can compute $hat(S)(t)$ using all data, and then we can compute $hat(S)_(-i)(t)$ by deleting observation $i$. There are fast approximations for doing this on large samples without repeating the full calculation for each $i$. The pseudo-observation is $u_i (t) = n hat(S)(t) - (n-1)hat(S)_(-i)(t)$. These can be used, for example, in a regression analysis, regressing $u_i$ on covariates $x_i$, since it can be shown that $E[u|x]$ can be interpreted as the probability of surviving to time $t$ when the covariates are equal to $x$.
 
-There are a few limitations of the pseudo-observation approach, but for each there are work-arounds.  Pseudo-observation conditional variances, $"var"[u|x]$, are generally not constant in $x$, i.e. there is heteroscedasticity. Therefore, typically regressions involving pseudo-observations are fit with robust regression techniques such as using the Huber-White type of inference.  A second issue is that pseudo-observation regressions require unconditional independent censoring ($T_i$ is independent of $R_i$ without conditioning on the covariate $X_i$).  This can be handled by using inverse probability weighting to account for censoring that depends on measured covariates.
+There are a few limitations of the pseudo-observation approach, but for each there are work-arounds.  Pseudo-observation conditional variances, $"var"[u|x]$, are generally not constant in $x$, i.e. there is heteroscedasticity. Therefore, typically regressions involving pseudo-observations are fit with robust regression techniques such as using the Huber-White type of inference.  A second issue is that pseudo-observation regressions require unconditional independent censoring ($T_i$ is independent of $R_i$ without conditioning on the covariate $X_i$).  This limitation can be resolved by using inverse probability weighting to account for censoring that depends on measured covariates.
