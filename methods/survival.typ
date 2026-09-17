@@ -13,13 +13,13 @@
   chapter-pagebreak: false
 )
 
-A broad definition of _survival analysis_ would include any research setting in which we are monitoring units who can transition between discrete states over time.  The research aim of the survival analysis could be to gain an understanding any aspect of these transitions, such as the rate at which transitions occur, the dwell time in each state, statistical dependence between transitions, and how any of these phenomena are related to covariates.
+A broad definition of _survival analysis_ would include any research setting in which we are monitoring units that can transition between discrete states over time.  The research aim of the survival analysis could be to gain an understanding any aspect of these transitions, such as the rate at which transitions occur, the distribution of dwell times in each state, statistical dependence between transitions, and how any of these phenomena are related to covariates.
 
 Most commonly, survival analysis methods are used with _time to event_ or _duration_ data, where "time to event" refers to the duration of time from an origin until some event of interest occurs, such as as state transition. In the most basic example, there are usually only two states, typically described as "alive" and "dead".  All subjects begin in the "alive" state and eventually transition to the "dead" state, which is "absorbing".
 
 A typical example with more than two states would be one in which subjects can be "healthy", "ill", or "dead", with all transitions allowed except that the "dead" state is absorbing -- once reached, there is no possibility to transition to another state.
 
-An important aspect of survival analysis is that there is often only partial information about each subject's status, usually due to incomplete monitoring time.  For example, in a health study we would rarely be able to wait until all subjects have died, so some subjects will end the study in the "alive" state.  This is an example of "censoring", which will be defined more formally below.
+An important aspect of survival analysis is that there is often only partial information about each subject's status, usually due to incomplete monitoring.  For example, in a health study we would rarely be able to wait until all subjects have died, so some subjects will end the study in the "alive" state.  This is an example of _censoring_, which will be defined more formally below.
 
 = Key concepts
 
@@ -74,10 +74,11 @@ This setting can be viewed as another example of a multi-state model.  In the ex
 Subjects who are right-censored have a maximal _follow-up time_ which is the greatest time at which they were observed and confirmed not to have yet experienced the event of interest. In survival analysis with right censoring, where $T_i$ is the (possibly unobserved) event time and $R_i$ is the time at which we would no longer be able to observe the subject, we typically write $Y_i = "min"(T_i, R_i)$ as the "observed" time, which is either the follow-up time for censored subjects or the event time for non-censored subjects. Then, we define the _status indicator_ $delta_i$ such that $delta_i=1$ if the event is observed and $delta_i=0$ if the event is not observed. Note that when $delta_i=1$, then $Y_i=T_i$, and if $delta_i=0$ then $T_i > Y_i$.
 
 A more general notation that is often encountered is that for each subject we have an interval $[L_i, R_i)$ such that the event is known to occur within this interval. For right censored subjects, $R_i = infinity$. For non-censored subjects, $L_i = R_i$. An _interval censored_ subject has $0 < L_i < R_i < infinity$, and a left-censored subject has $0 = L_i < R_i< infinity$.
-
 For more general recurrent event data or when there are more than two states, we can decompose each individual's history into a series of disjoint records $L_j$, $Y_j$, $delta_j$, where $L_j$ denotes the time at the beginning of the record, $Y_j$ denotes the time at the end of the record, and $delta_j$ denotes the state at the end of the record.  Here, instead of $delta_j$ being a binary variable, it is an indicator of the state, with one possible state being "censored".
 
-#link("https://arxiv.org/pdf/2210.07114")[Here] is a thorough treatment of the use of counting process notation in survival analysis.
+In counting process notation, for the setting with two states (alive/dead with dead being absorbing), we have a non-decreasing function of time $N_i$ such that $N_i(t) in {0, 1}$ for each $t$. This function reflects whether unit $i$ has died on or before time $t$.  The derivative $"dN"_(i)(t)$ is equal to $1$ at the time $t$ where death occurs, and is equal to zero everywhere else.  It is not a derivative in the usual sense, but formally acts as such.  For example, $N_(i)(t) = integral_(s=0)^t "dN"_(i)(s)"ds"$.
+
+#link("https://pub.math.leidenuniv.nl/~gillrd//stflour0.pdf")[Here] and #link("https://arxiv.org/pdf/2210.07114")[here] are two thorough treatments of the use of counting process notation in survival analysis.
 
 = Parametric and non-parametric methods
 
@@ -97,7 +98,7 @@ The empirical CDF (eCDF) is one of the fundamental objects in statistics. Based 
 As noted above, in survival analysis we usually have censoring and/or truncation. We will consider here only the important subcase where there is right censoring and no truncation. In this setting there is a simple estimator of the survival function $S(t)$ known as the _product limit_ estimator or the
 #link("https://en.wikipedia.org/wiki/Kaplan%E2%80%93Meier_estimator")[Kaplan-Meier] estimator.
 
-The Kaplan-Meier estimator focuses exclusively on the observed event times. Let $t_1 < t_2 < dots.c < t_m$ denote the distinct times at which events are observed to occur, let $d_i$ denote the number of events that occur at time $t_i$, and let $n_i$ denote the size of the risk set just before time $t_i$. The estimated probability of passing through time $t_i$ without experiencing the event is $1 - d_i/n_i$. Thus, the estimated probability of making it from time 0 to time $t$ without experiencing the event is
+The Kaplan-Meier estimator focuses exclusively on the observed event times. Let $t_1 < t_2 < dots.c < t_m$ denote the distinct times at which events are observed to occur, let $d_i$ denote the number of events that occur at time $t_i$, and let $n_i$ denote the size of the risk set just before time $t_i$. The estimated probability of passing through time $t_i$ without experiencing the event is $1 - frac(d_i, n_i, style: "horizontal")$. Thus, the estimated probability of making it from time 0 to time $t$ without experiencing the event is
 
 $
 hat(S)(t) equiv product_(i:t_i<= t)(1 - d_i/n_i).
@@ -141,6 +142,14 @@ f(t) = h(t) exp(-H(t)).
 $
 
 Note that this also implies that when densities exist, $h(t) = frac(f(t), S(t), style: "horizontal")$, giving another natural view of the hazard function.
+
+Finally, we can introduce the notion of a _product integral_ and find that
+
+$
+S(t) = product_0^t (1 - H(s))"ds".
+$
+
+Above, $product$ represents a product integral, which is a limit of products over finite partitions of $[0, t]$, just as the usual integral is a limit of sums over finite partitions of $[0, t]$.  The factors in the product have the form $1 - H(s)Delta s$, where $Delta s$ is the width of a small interval containing $s$.
 
 In many applications, the hazard function may be easier to interpret than the survival function. A common consideration is whether the hazard function is increasing, decreasing, approximately constant, or has some other shape like a "U" ("bathtub") shape. In terms of parametric distributions, the exponential distribution has a constant hazard function, whereas the Weibull distribution can have either an increasing or decreasing hazard function depending on its parameters.
 
@@ -208,7 +217,9 @@ If there is a competing risk, it may be meaningful to fit a _cause-specific haza
 
 = Time-varying covariates
 
-In the survival regression model discussed above, all variables are defined at "baseline". That is, every covariate $X_j$ is known at time zero and its value cannot change. There are various approaches to survival regression that can accommodate _time-varying covariates_, e.g. if a subject's status changes in a way that changes their risk for the event of interest. The Cox PH regression model discussed above can be extended to accommodate time-varying covariates, but we do not discuss that further here.
+In a basic survival regression analysis, the covariates are defined at "baseline". That is, every covariate $X_j$ is known at time zero and its value cannot change. There are various approaches to survival regression that can accommodate _time-varying covariates_, e.g. if a subject's status changes in a way that changes their risk for the event of interest. In doing so, it is important to avoid inadvertently treating a covariate as being defined earlier than it is defined in reality.  For example, suppose we are interested in lifespan, and wish to compare lifespan based on occupation.  People don't have an occupation until they are adults, and some occupations (like CEO) are typically determined later in life than others (like athlete).  The period between birth and when your occupation is set is a type of _immortal time_ -- if you became a CEO at age 43 then you were effectively immortal until you reached that age (if you had died before age 43, you would not have become a CEO).  This bias is exaggerated when different occupations tend to have different immortal times.
+
+The Aalen additive hazards model addresses this by allowing the covariates to inform the hazard at the time the covariate is defined, but not into the future.  The Cox PH regression model discussed above can be extended to accommodate time-varying covariates, by breaking each person's observation time into non-overlapping _spells_ defined by the times when covariate values change.  People are censored at the end of each spell except the final one, where they may (or may not) experience the event of interest.
 
 = Cumulative incidence functions
 
@@ -223,6 +234,10 @@ where $S_a(t)$ is the _all cause survival function_ and $h_0$ is the _cause-spec
 Cumulative incidence is a convenient way to handle competing risks and avoids the challenges of working with so-called _sub-distribution hazards_, which many people find confusing.  It is also possible to introduce covariates into the analysis, to assess how subjects with different characteristics have different cumulative incidences.
 
 Cumulative incidence is most useful when you are interested in the burden (e.g. social or economic) of a condition on individuals or on society.  For example, if the primary event is dementia and the competing risk is death, we may want to know the cumulative incidence (probability) of getting dementia by, say, age 85.  This probability includes people who get dementia and subsequently die before age 85 (i.e. it is not the proportion of living 85 year old people wiith dementia).  On the other hand, if someone dies young, say at age 60, then they are "saved" from getting dementia by their death.  As a result, high risk subpopulations like smokers may appear to have a lower cumulative incidence of dementia, even if smoking increases both the risk of dementia and the risk of death.  In this setting, the cumulative incidence function would be telling us that smokers are less likely to experience dementia in their lifetimes than non-smokers.
+
+= Common biases in survival analysis
+
+The dynamic and partially observed nature of survival data can give rise to many types of bias that are not always obvious.  We have already discussed several of these above, such as biases that may result from dependent censoring, non-proportional hazards (when proportionality is assumed), ignoring truncation, and immortal time bias.  Like any regression analysis, biases can emerge due to omitted covariates, and in the case of survival analysis, these covariates may affect the outcome times, and/or the censoring times.
 
 = Pseudo-observations
 

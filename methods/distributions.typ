@@ -223,7 +223,7 @@ If we are working with exceedances, we need to take account of the observations 
 
 A classical statistical moment is defined to be the expected value of a random variable raised to a power. For example, the raw first and second moments are $E[X]$ (the expected value) and $E[X^2]$. In practice we usually work with the _centered moments_ (or _central moments_), for example $E[(X - E X)^2]$ is the centered second moment, which is better known as the variance.
 
-In most situations, if you know all the moments of a distribution then you know everything about the distribution (there are some technical conditions for this claim to be true, as it is based on the invertibility of the moment generating function). But this fact is not very useful in practice because it is nearly impossible to estimate high order moments $E[(X - E X)^k]$ for large values of $k$. The sample estimator of this moment is $n^(-1) sum (X_i - overline(X))^k$, and this estimator is consistent and asymptotically unbiased, but if $k > 2$ it has large mean squared error for any practically realistic sample size.  This is related to the notion of _robustness_, where moments can be corrupted by the introduction of arbitrarily small amounts of strong outliers, which is not true of quantiles.
+In most situations, if you know all the moments of a distribution then you know everything about the distribution (there are some technical conditions for this claim to be true, as it is based on the invertibility of the moment generating function). But this fact is not very useful in practice because it is very difficult to accurately estimate high order moments $E[(X - E X)^k]$ for large values of $k$. The sample estimator of this moment is $n^(-1) sum (X_i - overline(X))^k$, and this estimator is consistent and asymptotically unbiased, but if $k > 2$ it has large mean squared error for any practically realistic sample size.  This is related to the notion of _robustness_, where moments can be corrupted by the introduction of arbitrarily small amounts of strong outliers, which is not true of quantiles.
 
 It is important to have fluent ways to discuss what we learn by studying moments in a data analysis. The _location_ captures the "central value" of a distribution, but exactly what this means depends on what measure of location is being used. Although the mean is so common that we take it for granted, its interpretation follows from a somewhat opaque physical analogy, the balancing point for mass distributed along a line.  The median can be interpreted as the "deepest" point in a distribution in that it is "surrounded by other values on all sides".  The mode is the most common value in the distribution.  The mean can fail to exist or be infinite, and the median and mode may not be uniquely defined.
 
@@ -243,7 +243,21 @@ Later we will consider how these ideas can be generalized to multivariate data. 
 
 = Quantile analogues to moments
 
-Moments and quantiles are fundamentally different -- at the sample level, moments involve averaging whereas quantiles involve sorting.  But there are several bridges between moments and quantiles.  One such such bridge is the identity $E[X] = integral_0^1 Q(p)"dp"$, where $Q(dot.c)$ is the quantile function.  Another bridge is the fact that $Q(1)$, the maximum of the sample space, is the limit of $E[thin |X|^p]^(1/p)$ as $p$ goes to infinity.
+Moments and quantiles are fundamentally different -- at the sample level, moments involve averaging whereas quantiles involve sorting.  But there are several bridges between moments and quantiles.  One such such bridge is the identity $E[X] = integral_0^1 Q(p)"dp"$, where $Q(dot.c)$ is the quantile function.  Another bridge is the fact that $Q(1)$, the maximum of the sample space, is the limit of $E[thin |X|^p]^(1/p)$ as $p$ goes to infinity.  Finally, we can write both moments and quantiles as minimizers of loss functions, and as solutions to _score equations_.  The loss function and score equation for the $k^"th"$ raw moment are
+
+$
+L(theta) =& EE[(X^k - theta)^2]\
+s(theta) =& EE[X^k - theta] = 0.
+$
+
+The loss function and score equation for the $p^"th"$ quantile are
+
+$
+L(theta) =& EE[(X - theta) dot.c (p - I(X < theta))]\
+s(theta) =& EE[p - I(X < theta)] = 0.
+$
+
+The analytic difficulty of working with quantiles, such as challenges in conducting inference, can be attributed to the discontinuous score equation.  In contrast the score equation for moments is continuous and smooth.
 
 Moments are convenient but higher-order moments are not straightforward to interpret, and may not exist.  Quantiles are always defined, using the definition
 
