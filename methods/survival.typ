@@ -15,7 +15,7 @@
 
 A broad definition of _survival analysis_ would include any research setting in which we are monitoring units that can transition between discrete states over time.  The research aim of the survival analysis could be to gain an understanding any aspect of these transitions, such as the rate at which transitions occur, the distribution of dwell times in each state, statistical dependence between transitions, and how any of these phenomena are related to covariates.
 
-Most commonly, survival analysis methods are used with _time to event_ or _duration_ data, where "time to event" refers to the duration of time from an origin until some event of interest occurs, such as as state transition. In the most basic example, there are usually only two states, typically described as "alive" and "dead".  All subjects begin in the "alive" state and eventually transition to the "dead" state, which is "absorbing".
+Most commonly, survival analysis methods are used with _time to event_ or _duration_ data, where "time to event" refers to the duration of time from an origin until some event of interest occurs, which can be viewed as a state transition. In the most basic example, there are usually only two states, typically described as "alive" and "dead".  All subjects begin in the "alive" state and eventually transition to the "dead" state, which is "absorbing".
 
 A typical example with more than two states would be one in which subjects can be "healthy", "ill", or "dead", with all transitions allowed except that the "dead" state is absorbing -- once reached, there is no possibility to transition to another state.
 
@@ -37,11 +37,13 @@ The theoretical basis of conventional survival analysis is that we are studying 
 
 Data in a survival analysis are often subject to "censoring", which means that we only have partial information about the value of $T$ for many subjects. Suppose we are analyzing data from a medical study where we are studying the incidence of a complication following a medical procedure.  For example, if the population consists of people who have had a cardiac stent implanted, then a common complication would be stent thrombosis (a clot forming near the stent). In this case, we may use age in years as our time scale and let $T$ denote the age when a subject first has stent thrombosis.
 
-Typically, only a subset of the subjects will have stent thrombosis during our study. Other subjects will be followed for a period of time and will never be observed to have stent thrombosis. Let $R$ denote the last age at which the person is observed. If $T < R$, we observe $T$ but if $T > R$ we do not know the value of $T$. More formally, we observe the time $Y = "min"(T, R)$ and the _status indicator_ $delta = "I"(Y = T)$. This is called #link("https://en.wikipedia.org/wiki/Censoring_(statistics)")[right censoring] -- we know that the value of $T$ is greater than some known value, but we do not know the exact value of $T$ for many subjects. In this context, $R$ is known as the _right censoring time_.
+Only a subset of the subjects will have stent thrombosis during our study. Other subjects will be followed for a period of time and will never be observed to have stent thrombosis. Let $R$ denote the last age at which the person could be observed. If $T < R$, we observe $T$ but if $T > R$ we do not know the value of $T$. More formally, we observe the time $Y = "min"(T, R)$ and the _status indicator_ $delta = "I"(Y = T)$. This is called #link("https://en.wikipedia.org/wiki/Censoring_(statistics)")[right censoring] -- we know that the value of $T$ is greater than some known value, but we do not know the exact value of $T$ for many subjects. In this context, $R$ is known as the _right censoring time_.
+
+In some settings it is important to emphasize that $R$ is the last time at which the subject's state could be observed, irrespective of whether they have already had the event by that time.  Whether we know the exact value of $R$ may depend on the nature of the censoring.  If a subject is lost to follow up and $R > T$, we will not know the exact value of $R$, but if $R$ represents a subject's age at the planned end of the study (after which data collection will cease), we may have $R > T$ but still know the exact value of $R$ (assuming that the subect cannot drop out before the end of the study).
 
 Right censoring is the most commonly encountered form of censoring, but in some settings we may have _left censoring_, meaning that we only know that $T$ is less than some observed value. Also, there is _interval censoring_ in which we know, for example, that someone had stent thrombosis between the age of 75 and 77 but we do not know the exact age at which the stent thrombosis occurred.
 
-A common assumption in survival analysis is that of _independent censoring_. We will define this here in the context of right censoring. As above, let $T$ be the event time and $R$ be the right censoring time. We never observe both $T$ and $R$. Nevertheless, we can imagine that both values exist, one being a "latent" value. Independent censoring simply means that $T$ and $R$ are independent random variables (in a regression analysis, we may require the weaker condition that $T$ and $R$ are independent given the covariates). This independence implies, for example, that people who are prone to having an early event (e.g. unhealthy people) do not have systematically different censoring times than people who typically have late events.
+A common assumption in survival analysis is that of _independent censoring_. We will define this here in the context of right censoring. As above, let $T$ be the event time and $R$ be the right censoring time. We usually cannot observe both $T$ and $R$. Nevertheless, we can imagine that both values exist, one being a "latent" value. Independent censoring simply means that $T$ and $R$ are independent random variables (in a regression analysis, we may require the weaker condition that $T$ and $R$ are independent given the covariates). This independence implies, for example, that people who are prone to having an early event (e.g. unhealthy people) do not have systematically different censoring times than people who typically have late events.
 
 Since we don't observe $T$ and $R$ together, independent censoring is almost always an untestable assumption. In some cases, based on the study design or other external information, there may be reason to accept it and in other cases there may be good reason to doubt that independent censoring holds. There are various methods for effectively handling dependently censored data, but that is an advanced topic that we will not consider further here.
 
@@ -49,13 +51,15 @@ Since we don't observe $T$ and $R$ together, independent censoring is almost alw
 
 An important concept in survival analysis is the potential selection bias induced by _truncation_ or _delayed entry_. If units (e.g. people) are selected into the sample conditionally on their event time, then this must be taken into account. The most common form of truncation is _left truncation_ in which there is a value $L$ (which may be specific to each observation) such that if the event occurs before time $L$ (i.e. if $T < L$) then the person would not have been included in our sample.
 
-For example, suppose in our analysis of stent thrombosis following stent placement that we only have access to data from one health insurance provider. People may join this health insurance program at any age, and we can let $L$ denote the age at enrollment. If a person had a stent placed before joining this insurance company's plan, we would not know the exact age when the stent was placed. Therefore, we may choose to eliminate from the analysis all people who already had a stent when joining the health insurance plan. Thus, not having a stent at the beginning of the insurance record is a requirement for being in our study, so the age at which a person began their health insurance coverage would be a left truncation time.
+For example, suppose in our analysis of stent thrombosis following stent placement that we only have access to data from one health insurance provider. People may join this health insurance program at any age, and we can let $L$ denote the age at enrollment. If a person had a stent placed before joining this insurance company's plan, we would not know the exact age when the stent was placed. Therefore, we may choose to eliminate from the analysis all people who already had a stent when joining the health insurance plan.  Not having a stent at the beginning of the insurance record is a requirement for being in our study, so the age at which a person began their health insurance coverage would be a left truncation time.
 
-More formally, if we have left truncation then we are working with the conditional distribution $P(T | T >= L)$, while if there is no left truncation then we are working with the unconditional distribution $P(T)$. If we are doing regression analysis with covariates $X$, then with left truncation we are studying $P(T | T >= L, X)$ and with no such truncation we are studying $P(T | X)$.
+More formally, if we have left truncation then we are working with the conditional distribution $P(T | T >= L)$, while if there is no left truncation then we are working with the unconditional distribution $P(T)$. If we are doing regression analysis with covariates $X$, then with left truncation we are studying $P(T | T >= L, X)$ and with no such truncation we are studying $P(T | X)$.  If the research aim is based on $P(T | X)$ but we have left truncation, we usually will want to adjust the results to account for the difference between $P(T | T >= L, X)$ and $P(T | X)$.
+
+Just as censoring can be independent or informative, left truncation also has this property.  The left truncation is said to be independent if $L$ is independent of $(T, C)$, which in practice is assessed by comparing $L$ to $Y$.  Independent left truncation can be easily handled with "risk set adjustment" methods to be discussed below, but informative left truncation requires more care.  Typically an informative left truncation process is modeled, and inverse probability of inclusion weights are used to account for it.
 
 == Competing risks
 
-In a survival analysis there may be other events that "compete" with the event of interest. For example, if we are studying the time $T$ at which a person has a stroke, it is possible that the person dies of another cause before having a stroke. Death unrelated to stroke is a _competing risk_ for the event of interest.  This can be viewed as another example of a multi-state transition model, with states "healthy", "had stroke", and "dead".  Each person has a stroke age $T$, a death age $D$, and a censoring age $R$.  Conceptually, there is a joint distribution for $(R, D, T)$, but if $D < T$ we will not know the value of $T$.  People can transition from "healthy" to "had stroke", from "had stroke" to "dead", and from "healthy" to "dead".
+In a survival analysis there may be other events that "compete" with the event of interest. For example, if we are studying the time $T$ at which a person has a stroke, it is possible that the person dies of another cause before having a stroke. Death unrelated to stroke is a _competing risk_ for the event of interest.  This can be viewed as another example of a multi-state transition model, with states "healthy", "had stroke", and "dead".  Each person has a stroke age $T$, a death age $D$, and a censoring age $R$.  Conceptually, there is a joint distribution for $(R, D, T)$, but if $D < T$ we will not know the value of $T$.  People can transition from "healthy" to "had stroke", from "had stroke" to "dead", and from "healthy" to "dead".  The remaining transitions have zero probability.
 
 Superficially, $D$ appears to be another form of censoring, so we may consider redefining $R$ as $R' = "min"(R, D)$.  But doing this may create dependent censoring. Even if $R$ is independent of $T$, $R'$ may not be, for example if less healthy subjects are at greater risk for both stroke and death.
 
@@ -65,49 +69,86 @@ The _risk set_ at a specific time $t$ is the subset of units (e.g. people) who c
 
 == Recurrent events
 
-In conventional survival analysis, each subject experiences the event exactly once (although we may not observe this occurrence in our study as there may be censoring). However some events may be able to recur. For example, suppose that we are studying arrests by police and the time $T$ is the duration until a person is arrested. There can be subsequent arrests for the same individual and it may be of interest to study the distribution of event times for all "spells" between one arrest and the next arrest.
+In conventional survival analysis, each subject experiences the event exactly once (although we may not observe this occurrence in our study due to censoring). However some events may be able to recur. For example, suppose that we are studying arrests by police and the time $T$ is the duration until a person is arrested. There can be subsequent arrests for the same individual and it may be of interest to study the distribution of event times for all "spells" between one arrest and the next arrest.
 
-This setting can be viewed as another example of a multi-state model.  In the example, we would have a state for "never arrested", "arrested 1 time", "arrested 2 times", etc.  Subjects can transition from each state to the next one.
+This setting can be viewed as another example of a multi-state model.  In the example, we would have a state for "never arrested", "arrested 1 time", "arrested 2 times", etc.  Subjects can transition from each state to the next one in sequence.
 
 == Counting process notation
 
 Subjects who are right-censored have a maximal _follow-up time_ which is the greatest time at which they were observed and confirmed not to have yet experienced the event of interest. In survival analysis with right censoring, where $T_i$ is the (possibly unobserved) event time and $R_i$ is the time at which we would no longer be able to observe the subject, we typically write $Y_i = "min"(T_i, R_i)$ as the "observed" time, which is either the follow-up time for censored subjects or the event time for non-censored subjects. Then, we define the _status indicator_ $delta_i$ such that $delta_i=1$ if the event is observed and $delta_i=0$ if the event is not observed. Note that when $delta_i=1$, then $Y_i=T_i$, and if $delta_i=0$ then $T_i > Y_i$.
 
 A more general notation that is often encountered is that for each subject we have an interval $[L_i, R_i)$ such that the event is known to occur within this interval. For right censored subjects, $R_i = infinity$. For non-censored subjects, $L_i = R_i$. An _interval censored_ subject has $0 < L_i < R_i < infinity$, and a left-censored subject has $0 = L_i < R_i< infinity$.
-For more general recurrent event data or when there are more than two states, we can decompose each individual's history into a series of disjoint records $L_j$, $Y_j$, $delta_j$, where $L_j$ denotes the time at the beginning of the record, $Y_j$ denotes the time at the end of the record, and $delta_j$ denotes the state at the end of the record.  Here, instead of $delta_j$ being a binary variable, it is an indicator of the state, with one possible state being "censored".
+For more general recurrent event data or when there are more than two states, we can decompose each individual's history into a series of disjoint records $L_j$, $Y_j$, $delta_j$, where $L_j$ denotes the time at the beginning of the record, $Y_j$ denotes the time at the end of the record, and $delta_j$ denotes the state at the end of the record.  Here, instead of $delta_j$ being a binary variable, it is an indicator of the state occupied by the subject at the end of the interval.
 
-In counting process notation, for the setting with two states (alive/dead with dead being absorbing), we have a non-decreasing function of time $N_i$ such that $N_i(t) in {0, 1}$ for each $t$. This function reflects whether unit $i$ has died on or before time $t$.  The derivative $"dN"_(i)(t)$ is equal to $1$ at the time $t$ where death occurs, and is equal to zero everywhere else.  It is not a derivative in the usual sense, but formally acts as such.  For example, $N_(i)(t) = integral_(s=0)^t "dN"_(i)(s)"ds"$.
+In counting process notation, for the setting with two states (alive/dead with dead being absorbing), we have a non-decreasing function of time $E_i$ such that $E_i(t) in {0, 1}$ for each $t$. This function reflects whether unit $i$ has died on or before time $t$.  The derivative $"dE"_(i)(t)$ is equal to $1$ at the time $t$ where death occurs, and is equal to zero everywhere else.  It is not a derivative in the usual sense, but formally acts as such.  For example, $E_(i)(t) = integral_(s=0)^t "dE"_(i)(s)"ds"$.
 
 #link("https://pub.math.leidenuniv.nl/~gillrd//stflour0.pdf")[Here] and #link("https://arxiv.org/pdf/2210.07114")[here] are two thorough treatments of the use of counting process notation in survival analysis.
 
-= Parametric and non-parametric methods
-
-As in other areas of statistics, survival analysis can be conducted using parametric or non-parametric methods. Moreover, "semi-parametric" methods play an important role in survival analysis. While parametric methods can be useful, survival analysis tends to emphasize non-parametric and semi-parametric methods over parametric methods.
-
-The most elementary parametric distribution used for survival times is the #link("https://en.wikipedia.org/wiki/Exponential_distribution")[exponential distribution], although this is usually too simplistic of a model to use in practice. The most commonly-encountered parameterized distribution in survival analysis is arguably the
-#link("https://en.wikipedia.org/wiki/Weibull_distribution")[Weibull distribution], and Gamma and log-normal distributions are also encountered.
-
 = Estimation of the survival function
 
-The _survival function_ of a random variable $T$ is defined to be
-$S(t) equiv P(T>t)$. It is closely related to the
+The _survival function_ of a random variable $T$ is defined to be $S(t) equiv P(T>t)$. It is closely related to the
 #link("https://en.wikipedia.org/wiki/Cumulative_distribution_function")[cumulative distribution function] (CDF), defined to be $F(t) = P(T<= t)$ since $S(t) = 1 - F(t)$. In words, the survival function at time $t$ is the probability that the event has not occurred by time $t$. Another name for the survival function is the _complementary CDF_. We may also refer to this as the _marginal survival function_ to emphasize that it is not conditioned on any covariates.
 
 The empirical CDF (eCDF) is one of the fundamental objects in statistics. Based on an independent and identically distributed (IID) sample from some distribution, the eCDF is defined as $hat(F)(t) = frac(\#{T_i <= t}, n, style: "horizontal")$. If there is no truncation and if the values of $T_i$ are all observed (i.e. there is no censoring) then we can estimate the survival function as $hat(S)(t) = 1 - hat(F)(t)$.
 
-As noted above, in survival analysis we usually have censoring and/or truncation. We will consider here only the important subcase where there is right censoring and no truncation. In this setting there is a simple estimator of the survival function $S(t)$ known as the _product limit_ estimator or the
+In survival analysis we usually have censoring and/or truncation. We will consider here only the important subcase where there is right censoring and no truncation. In this setting there is a simple estimator of the survival function $S(t)$ known as the _product limit_ estimator or the
 #link("https://en.wikipedia.org/wiki/Kaplan%E2%80%93Meier_estimator")[Kaplan-Meier] estimator.
 
-The Kaplan-Meier estimator focuses exclusively on the observed event times. Let $t_1 < t_2 < dots.c < t_m$ denote the distinct times at which events are observed to occur, let $d_i$ denote the number of events that occur at time $t_i$, and let $n_i$ denote the size of the risk set just before time $t_i$. The estimated probability of passing through time $t_i$ without experiencing the event is $1 - frac(d_i, n_i, style: "horizontal")$. Thus, the estimated probability of making it from time 0 to time $t$ without experiencing the event is
+The Kaplan-Meier estimator focuses exclusively on the observed event times. Let $t_1 < t_2 < dots.c < t_m$ denote the distinct times at which events are observed to occur, let $e_i$ denote the number of events that occur at time $t_i$, and let $n_i$ denote the size of the risk set just before time $t_i$. The estimated probability of passing through time $t_i$ without experiencing the event is $1 - frac(e_i, n_i, style: "horizontal")$. Thus, the estimated probability of making it from time 0 to time $t$ without experiencing the event is
 
 $
-hat(S)(t) equiv product_(i:t_i<= t)(1 - d_i/n_i).
+hat(S)(t) equiv product_(i:t_i<= t)(1 - e_i/n_i).
 $
 
-This is the product limit estimator of the survival function. Note that the actual survival function can be any non-increasing right continous function, and thus in general $S(t)$ will change at infinitely many values of $t$. However the Kaplan-Meier estimate of the survival function is a step function that only changes at the observed values of $t$ where an event occurs (just as the eCDF only changes at the observed data values).  A basic exercise is to prove that the product limit estimate $hat(S)$ is the complement of the eCDF, i.e. $hat(S) = 1 - hat(F)$.
+This is the product limit estimator of the survival function. Note that the actual survival function can be any non-increasing right continous function, and thus in general $S(t)$ will change at infinitely many values of $t$. However the Kaplan-Meier estimate of the survival function is a step function that only changes at the observed values of $t$ where an event occurs (just as the eCDF only changes at the observed data values).  A basic exercise is to prove that in the absence of censoring, the product limit estimate $hat(S)$ is the complement of the eCDF, i.e. $hat(S) = 1 - hat(F)$.
+
+While the primary object of interest in survival analysis is the probability distribution of event times $T$ in the absence of censoring, there are also situations where the censoring distribution itself is of interest.  For example, we may want to document that the subjects in a study are followed for a sufficiently long time to achieve high power at all relevant time points.  A useful application of the Kaplan-Meier estimate is the so-called _reverse Kaplan-Meier_ plot, which estimates the censoring distribution $P(R)$.  This is obtained by swapping $delta$ so that $delta' = 1 - delta$.  The resulting probabilities estimate the survival function for the censoring process. This approach assumes independent censoring.
+
+== Left truncation
+
+The survival function can be estimated in the presence of left truncation using _risk set adjustment_.  This simply means that the risk set at time $t_j$ excludes units whose left truncation time $L$ is greater than $t_j$.  However this risk set adjusmtent requires the left truncation to be independent of the event and censoring times.  This can be assessed using _Tsai's test_, which is essentially Kendall's tau correlation adapted to handle truncation and censoring.  Let $Y_i = "min"(T_i, R_i)$ be the observed event or censoring time (the status indicator $delta_i$ does not play a role here).  We will only consider pairs of observations $i$, $j$ that are "comparable", in the sense that the indicator
+
+$
+Q_(i j) = I("max"(L_i, L_j) < "min"(Y_i, Y_j))
+$
+
+is equal to $1$.  This is necesary so that if we swap $Y_i$ and $Y_j$ both observations would remain non-truncated.  The test statistic is
+
+$
+(sum_(i<j) Q_(i j) dot.c "sgn"(L_i-L_j) dot.c "sgn"(Y_i - Y_j)) / (sum_(i<j) Q_(i j)).
+$
+
+The statistic can be calibrated using an asymnptotic variance approximation or using permutation inference (randomly swapping $Y_i$ and $Y_j$ within each pair with probability $frac(1, 2, style: "horizontal")$).
+
+== Inference for the survival function
 
 There are many methods for statistical inference relating to survival functions. The #link("https://en.wikipedia.org/wiki/Logrank_test")[log rank test] is a formal
 #link("https://en.wikipedia.org/wiki/Statistical_hypothesis_test")[hypothesis test] of the null hypothesis that two survival functions are equal, i.e. the null hypothesis $S_0(t) equiv S_1(t)$. It is also possible to put both pointwise and simultaneous confidence intervals (bands) around the estimated survival function $hat(S)(t)$ to convey the precision with which it is estimated.
+
+Here we briefly derive _Greenwood's formula_, which is a simple method for obtaining approximate standard errors for $hat(S)(t)$ at a fixed value of $t$.  Let $hat(p)_i = 1 - frac(e_i, n_i, style: "horizontal")$, so that $hat(S)(t) = product_(i:t_i<= t) hat(p)_i$.  We work on the log scale
+
+$
+log(hat(S)(t)) = sum_(i:t_i<=t) log(hat(p)_i).
+$
+
+By linearization,
+
+$
+"var"[log(hat(p)_i)] approx hat(p)_i^(-2)frac(hat(p)_i (1-hat(p)_i), n_i, style: "horizontal") =
+frac((1-hat(p)_i), (n_i hat(p)_i), style: "horizontal") = frac(e_i, (n_(i)(n_i-e_i)), style: "horizontal").
+$
+
+Thus
+
+$
+"var"[log(hat(S)(t))] approx sum_(i:t_i<=t) frac(e_i, n_(i)(n_i-e_i)).
+$
+
+Another application of linearization allows us to remove the logarithm, yielding
+
+$
+"var"[hat(S)(t)] approx hat(S)(t)^2 sum_(i:t_i<=t) frac(e_i, n_(i)(n_i-e_i)).
+$
 
 = Hazard functions
 
@@ -121,12 +162,12 @@ The hazard function can be interpreted as the "instantaneous event rate". It has
 
 It takes some practice to understand how to interpret this limit. If the time unit is "days" and the hazard is 0.001 at day 100, then this means that approximately 0.1% of the subjects at risk on day 100 will experience the event on that day. Note that this is an approximate statement since we are not actually taking a limit here. This approximate statement is closer to being true over time intervals where the hazard function is approximately constant.
 
-Note that the hazard function is not a probability and can be greater than 1 (but it must be non-negative). It is also not a density, although if the density exists it can be determined from the hazard function.
+Note that the hazard function is not a probability and can be greater than 1 (but it must be non-negative). It is also not a density, although if the density exists it can be determined from the hazard function.  A hazard greater than 1 can be interpreted as follows -- if subjects were able to be resurrected and rejoin the risk set immediately after experiencing the event, then the number of events in a short time interval could be greater than the number at risk at the beginning of the interval.
 
 When the survival function is smooth, the hazard function is also the logarithmic derivative of the survival function:
 
 $
-h(t) = -"d"/"dt" log S(t).
+h(t) = -"d"/"dt" log S(t) = -(S'(t))/(S(t)).
 $
 
 Another important quantity to understand is the _cumulative hazard function_
@@ -135,7 +176,19 @@ $
 H(t) = integral_0^t h(s)"ds".
 $
 
-The identity $S(t) = exp(-H(t))$ holds. If $T$ has a density $f$, then $f = F' = -S'$. Thus
+The identity $S(t) = exp(-H(t))$ holds for the following intuitive reason.  First, take a sequence $t_1 < t_2 < dots.c$, and approximate $S(t)$ using a product
+
+$
+S(t) approx product_(i: t_i <= t) (1 - h(t_i)(t_(i+1)-t_i)).
+$
+
+This is the same idea as used in the Kaplan-Meier estimator, but instead of working with data, here we are approximating the population survival function.  Next use the approximation $1 - h(t_i)(t_(i+1)-t_i) approx exp(-h(t_i)(t_(i+1)-t_i))$.  This allows us to convert the product into a sum
+
+$
+S(t) approx exp(sum_(i: t_i <= t)-h(t_i)(t_(i+1)-t_i)) approx exp(-H(t)).
+$
+
+If $T$ has a density $f$, then $f = F' = -S'$. Thus
 
 $
 f(t) = h(t) exp(-H(t)).
@@ -163,21 +216,39 @@ A similar phenomenon exists with human lifespans, whereby the hazard of dying is
 
 == Hazard ratios and hazard proportionality
 
-A _hazard ratio_ is the ratio between two hazard values. For example, we may have two groups of subjects (e.g. people exposed or not exposed to a risk factor), with each group having a hazard function $h_k (t)$ where $k=0, 1$ corresponds to not exposed and exposed people, respectively. The hazard ratio at time $t$ is $frac(h_1(t), h_0(t), style: "horizontal")$. This is a very useful measure of the "risk" associated with an exposure. For example, if the hazard ratio is 2 then (roughly speaking) exposed people have twice the risk of experiencing the event as non-exposed people.
+A _hazard ratio_ is the ratio between two hazard values. For example, we may have two groups of subjects (e.g. people exposed or not exposed to a risk factor), with each group having a hazard function $h_k (t)$ where $k=0, 1$ corresponds to not exposed and exposed people, respectively. The hazard ratio at time $t$ is $frac(h_1(t), h_0(t), style: "horizontal")$. This is a very useful measure of the "risk" associated with an exposure. For example, if the hazard ratio is 2 then (roughly speaking) exposed people have twice the instantaneous risk of experiencing the event as non-exposed people.
 
-Under an assumption of _proportional hazards_ all hazard ratios are constant, meaning in the present example that $h_1 prop h_0$. As we will see below, many popular methods for survival analysis assume proportional hazards, but it is important to note that this assumed proportionality may not always hold in practice.
+Under an assumption of _proportional hazards_ hazard ratios are constant in time, meaning in the two-group setting that $h_1 prop h_0$. As we will see below, many popular methods for survival analysis assume proportional hazards, but it is important to note that this assumed proportionality may not always hold in practice.
 
-== Estimating marginal hazard functions
+== Estimating the marginal hazard function
 
-The cumulative hazard function is easier to estimate than the hazard function, but is more difficult to interpret. The most basic non-parametric estimate of the cumulative hazard function under right censoring with no truncation is the #link("https://en.wikipedia.org/wiki/Nelson-Aalen_estimator")[Nelson-Aalen] estimator
+Since the hazard is a rate per unit time, a primitive estimate of the hazard function at time $t_i$ is
 
 $
-hat(H)(t) = sum_(i: t_i <= t) frac(d_i, n_i, style: "horizontal")
+caron(h)(t) = sum_i I(t_(i) <= t < t_(i+1)) dot.c frac(e_i, n_i, style: "horizontal") / (t_(i+1)-t_(i)),
 $
 
-using the notation introduced above. Since the hazard function $h$ is the derivative of the cumulative hazard function $H$, it is possible to estimate $h$ by numerically differentiating a smooth estimate of $H$.
+using the notation defined above.  However these estimates fail to concentrate around the true hazards $h(t)$.
 
-== Propotional hazards regression
+The cumulative hazard function is easier to estimate than the hazard function. The most basic non-parametric estimate of the cumulative hazard function under right censoring with no truncation is the #link("https://en.wikipedia.org/wiki/Nelson-Aalen_estimator")[Nelson-Aalen] estimator
+
+$
+hat(H)(t) = sum_(i: t_i <= t) frac(e_i, n_i, style: "horizontal").
+$
+
+Note that
+
+$
+hat(H)(t) = integral_0^t n(s)^(-1) "dE"(s)
+$
+
+where $n(s)$ is the number of units at risk at time $s$ and $E(s)$ is the cumulative number of events up to time $s$ (both are stochastic processes).  The integration is with respect to the "counting measure" $"dE"$.  It is easy to see that the Riemann integral of the step function $integral_0^t caron(h)(s)"ds"$ is identical to $hat(H)(t)$.
+
+Since the hazard function $h$ is the derivative of the cumulative hazard function $H$, it is possible to estimate $h$ by numerically differentiating a smooth estimate of $H$.
+
+If $hat(S)_("KM")$ is the Kaplan-Meier estimate of the survival function and $hat(H)_("NA")$ is the Nelson-Aalen estimate of the cumualtive hazard function, the identity $S_("KM") = exp(-hat(H)_("NA"))$ fails to hold.  This gives rise to another estimator of the marginal survival function called the "Breslow" estimator, defined as $hat(S)_B = exp(-hat(H)_("NA"))$.  This estimator of the survival function is more biased than the Kaplan-Meier estimator, but is sometimes used since it preserves the expected relationship between survival probabilities and cumulative hazards.
+
+== Proportional hazards regression
 
 _Survival regression_ is any method that aims to model conditional distributions $P(T|X)$, where $T$ is an event time variable possibly subject to censoring and/or truncation, and $X$ is a vector of explanatory variables. If $T$ is fully observed, specialized techniques for survival regression are not needed. For example, we may regress $T$ or $log(T)$ on $X$ using least squares or a generalized linear model (GLM). This type of direct approach has been extended to accommodate censoring and truncation, leading to the so-called _transformation models_ and _accelerated failure time_ (AFT) models that we will not discuss further here.
 
@@ -187,7 +258,7 @@ $
 h(t|X=x) = exp(beta^prime x) h_0(t).
 $
 
-The _baseline hazard function_ $h_0$ is unknown and arbitrary, i.e. it is not assumed to follow any parametric family. This is therefore a _semi-parametric_ model since is has a finite-dimensional parameter of interest $beta$ and an infinite-dimensional nuisance parameter $h_0$. It turns out that it is possible to estimate $beta$ using a type of maximum-likelihood technique without simultaneously estimating $h_0$. This makes the PH model feel in practice more like a conventional parametric model estimated using maximum likelihood. The cumulative baseline hazard function can be estimated in a separate step if desired, using a modified version of the Nelson-Aalen estimator discussed above.
+The _baseline hazard function_ $h_0$ is unknown and arbitrary, i.e. it is not assumed to follow any parametric family. This is therefore a _semi-parametric_ model since is has a finite-dimensional parameter of interest $beta$ and an infinite-dimensional nuisance parameter $h_0$. It turns out that it is possible to estimate $beta$ using a type of partial maximum-likelihood technique without simultaneously estimating $h_0$. This makes the PH model feel in practice more like a conventional parametric model estimated using maximum likelihood. The cumulative baseline hazard function can be estimated in a separate step if desired, using a modified version of the Nelson-Aalen estimator discussed above.
 
 When interpreting the results of a PH model, remembering that it is based on proportionality of the hazard function is key. Thus, a given regression slope $beta_j$ is the _log hazard ratio_ that compares the hazard functions for two individuals who differ by one unit on variable $X_j$, and have identical values for all other variables. The estimated hazard ratio for the $j^"th"$ covariate is simply $exp(hat(beta)_j)$. Since the PH model assumes proportionality of the hazard functions, this hazard ratio does not depend on $t$ (although the true hazard ratio may depend on $t$ if the PH model is incorrect).
 
@@ -203,7 +274,7 @@ $
 h(t | x) = h_0(t) + sum_(j=1)^p alpha_j (t) x_j (t),
 $
 
-where the $x_j (t)$ are time-varying covariates, and the $alpha_j (t)$ are time-varying coefficients.  The presence of both forms of time-varying structure makes this model very flexible.  The cumulative coefficients $beta_j (t) = integral_(s=0)^t alpha_j (s)"ds"$ play an important role in the estimation and interpretation for this model.  If a covariate function $x_j (dot.c)$ increases by one unit from time $0$ to time $t$, then the cumulative hazard of the event being modeled increases by $beta_j(t)$.
+where the $x_j (t)$ are time-varying covariates, and the $alpha_j (t)$ are time-varying coefficients.  The presence of both forms of time-varying structure makes this model very flexible.  The cumulative coefficients $beta_j (t) = integral_(s=0)^t alpha_j (s)"ds"$ play an important role in the estimation and interpretation for this model.  If a covariate function $x_j (dot.c)$ increases by one unit from time $0$ to time $t$, then the cumulative hazard of the event being modeled increases by $beta_(j)(t)$.
 
 Notably, this model can be fit using ordinary least squares.  For each time $t$ that is an observed event time ($t in {t_1, t_2, ..., t_m}$), let $X^t$ denote the design matrix based on the covariates at time $t$, including only subjects who are at-risk at time $t$.  Similarly, let $y^t$ denote a vector indicating all subjects who have the event at time $t$, also restricted to subjects at risk.  Let $hat(alpha)_t$ denote the ordinary least squares slopes for the linear regression of $y^t$ on $X^t$.  Then define $hat(beta)_t = sum_(s <= t) hat(alpha)_s$.  These $hat(beta)_t$ are estimates of the cumulative coefficient functions $beta_j (t)$.
 
@@ -238,6 +309,13 @@ Cumulative incidence is most useful when you are interested in the burden (e.g. 
 = Common biases in survival analysis
 
 The dynamic and partially observed nature of survival data can give rise to many types of bias that are not always obvious.  We have already discussed several of these above, such as biases that may result from dependent censoring, non-proportional hazards (when proportionality is assumed), ignoring truncation, and immortal time bias.  Like any regression analysis, biases can emerge due to omitted covariates, and in the case of survival analysis, these covariates may affect the outcome times, and/or the censoring times.
+
+= Parametric and non-parametric methods
+
+As in other areas of statistics, survival analysis can be conducted using parametric or non-parametric methods. Moreover, "semi-parametric" methods play an important role in survival analysis. While parametric methods can be useful, survival analysis tends to emphasize non-parametric and semi-parametric methods over parametric methods.
+
+The most elementary parametric distribution used for survival times is the #link("https://en.wikipedia.org/wiki/Exponential_distribution")[exponential distribution], although this is usually too simplistic of a model to use in practice. The most commonly-encountered parameterized distribution in survival analysis is arguably the
+#link("https://en.wikipedia.org/wiki/Weibull_distribution")[Weibull distribution], and Gamma and log-normal distributions are also encountered.
 
 = Pseudo-observations
 
