@@ -243,7 +243,7 @@ Later we will consider how these ideas can be generalized to multivariate data. 
 
 = Quantile analogues to moments
 
-Moments and quantiles are fundamentally different -- at the sample level, moments involve averaging whereas quantiles involve sorting.  But there are several bridges between moments and quantiles.  One such such bridge is the identity $E[X] = integral_0^1 Q(p)"dp"$, where $Q(dot.c)$ is the quantile function.  Another bridge is the fact that $Q(1)$, the maximum of the sample space, is the limit of $E[thin |X|^p]^(1/p)$ as $p$ goes to infinity.  Finally, we can write both moments and quantiles as minimizers of loss functions, and as solutions to _score equations_.  The loss function and score equation for the $k^"th"$ raw moment are
+Moments and quantiles are fundamentally different -- at the sample level, moments involve averaging whereas quantiles involve sorting.  But there are several bridges between moments and quantiles.  One such such bridge is the identity $E[X] = integral_0^1 Q(p)"dp"$, where $Q(dot.c)$ is the quantile function.  Another such identity that holds only for non-negative random variables is $E[X] = integral_0^1 S(t)"dt"$, where $S(dot.c)$ is the complementary CDF (survival function).  Another bridge is the fact that $Q(1)$, the maximum of the sample space, is the limit of $E[thin |X|^p]^(1/p)$ as $p$ goes to infinity.  Finally, we can write both moments and quantiles as minimizers of loss functions, and as solutions to _score equations_.  The loss function and score equation for the $k^"th"$ raw moment are
 
 $
 L(theta) =& EE[(X^k - theta)^2]\

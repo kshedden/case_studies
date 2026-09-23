@@ -39,7 +39,7 @@ Data in a survival analysis are often subject to "censoring", which means that w
 
 Only a subset of the subjects will have stent thrombosis during our study. Other subjects will be followed for a period of time and will never be observed to have stent thrombosis. Let $R$ denote the last age at which the person could be observed. If $T < R$, we observe $T$ but if $T > R$ we do not know the value of $T$. More formally, we observe the time $Y = "min"(T, R)$ and the _status indicator_ $delta = "I"(Y = T)$. This is called #link("https://en.wikipedia.org/wiki/Censoring_(statistics)")[right censoring] -- we know that the value of $T$ is greater than some known value, but we do not know the exact value of $T$ for many subjects. In this context, $R$ is known as the _right censoring time_.
 
-In some settings it is important to emphasize that $R$ is the last time at which the subject's state could be observed, irrespective of whether they have already had the event by that time.  Whether we know the exact value of $R$ may depend on the nature of the censoring.  If a subject is lost to follow up and $R > T$, we will not know the exact value of $R$, but if $R$ represents a subject's age at the planned end of the study (after which data collection will cease), we may have $R > T$ but still know the exact value of $R$ (assuming that the subect cannot drop out before the end of the study).
+In some settings it is important to emphasize that $R$ is the last time at which the subject's state could be observed, irrespective of whether they have already had the event by that time.  Whether we know the exact value of $R$ may depend on the nature of the censoring.  If a subject is lost to follow up and $R > T$, we will not know the exact value of $R$, but if $R$ represents a subject's age at the planned end of the study (after which data collection will cease), we may have $R > T$ but still know the exact value of $R$ (assuming that the subject cannot drop out before the end of the study).
 
 Right censoring is the most commonly encountered form of censoring, but in some settings we may have _left censoring_, meaning that we only know that $T$ is less than some observed value. Also, there is _interval censoring_ in which we know, for example, that someone had stent thrombosis between the age of 75 and 77 but we do not know the exact age at which the stent thrombosis occurred.
 
@@ -100,25 +100,35 @@ $
 hat(S)(t) equiv product_(i:t_i<= t)(1 - e_i/n_i).
 $
 
-This is the product limit estimator of the survival function. Note that the actual survival function can be any non-increasing right continous function, and thus in general $S(t)$ will change at infinitely many values of $t$. However the Kaplan-Meier estimate of the survival function is a step function that only changes at the observed values of $t$ where an event occurs (just as the eCDF only changes at the observed data values).  A basic exercise is to prove that in the absence of censoring, the product limit estimate $hat(S)$ is the complement of the eCDF, i.e. $hat(S) = 1 - hat(F)$.
+This is the product limit estimator of the survival function. Note that the actual survival function can be any non-increasing right continuous function, and thus in general $S(t)$ will change at infinitely many values of $t$. However the Kaplan-Meier estimate of the survival function is a step function that only changes at the observed values of $t$ where an event occurs (just as the eCDF only changes at the observed data values).  A basic exercise is to prove that in the absence of censoring, the product limit estimate $hat(S)$ is the complement of the eCDF, i.e. $hat(S) = 1 - hat(F)$.
 
 While the primary object of interest in survival analysis is the probability distribution of event times $T$ in the absence of censoring, there are also situations where the censoring distribution itself is of interest.  For example, we may want to document that the subjects in a study are followed for a sufficiently long time to achieve high power at all relevant time points.  A useful application of the Kaplan-Meier estimate is the so-called _reverse Kaplan-Meier_ plot, which estimates the censoring distribution $P(R)$.  This is obtained by swapping $delta$ so that $delta' = 1 - delta$.  The resulting probabilities estimate the survival function for the censoring process. This approach assumes independent censoring.
 
 == Left truncation
 
-The survival function can be estimated in the presence of left truncation using _risk set adjustment_.  This simply means that the risk set at time $t_j$ excludes units whose left truncation time $L$ is greater than $t_j$.  However this risk set adjusmtent requires the left truncation to be independent of the event and censoring times.  This can be assessed using _Tsai's test_, which is essentially Kendall's tau correlation adapted to handle truncation and censoring.  Let $Y_i = "min"(T_i, R_i)$ be the observed event or censoring time (the status indicator $delta_i$ does not play a role here).  We will only consider pairs of observations $i$, $j$ that are "comparable", in the sense that the indicator
+The survival function can be estimated in the presence of left truncation using _risk set adjustment_.  This simply means that the risk set at time $t_j$ excludes units whose left truncation time $L$ is greater than $t_j$.  Specifically, the risk set at time $t$ is
+
+$
+"Risk"(t) = {i: L_i <= t <= Y_i}.
+$
+
+This modified version of the Kaplan-Meier estimator is sometimes known as the _Lynden-Bell estimator_.
+
+The estimation target of this estimator depends on the support of the left truncation distribution $P(L)$.  If this support has a lower bound $L^*$, then the estimation target is the conditional survival function given that the survival time is at least $L^*$, $P(T > t | T >= L^*)$.  A special case is "administrative left truncation" in which everyone has the same left truncation time (say everyone enters a study at age 18).  In this example, the Kaplan-Meier/Lynden-Bell estimate converges to $P(T > t | T >= 18)$.
+
+Risk set adjustment requires the left truncation to be independent of the event and censoring times, otherwise the resulting estimate of the survival function may be severely biased.  This independence can be assessed using _Tsai's test_, which is essentially Kendall's tau correlation adapted to handle truncation and censoring.  Let $Y_i = "min"(T_i, R_i)$ be the observed event or censoring time (the status indicator $delta_i$ does not play a role here).  We will only consider pairs of observations $i$, $j$ that are "comparable", in the sense that the indicator
 
 $
 Q_(i j) = I("max"(L_i, L_j) < "min"(Y_i, Y_j))
 $
 
-is equal to $1$.  This is necesary so that if we swap $Y_i$ and $Y_j$ both observations would remain non-truncated.  The test statistic is
+is equal to $1$.  This is necessary so that if we swap $Y_i$ and $Y_j$ both observations would remain non-truncated.  The test statistic is
 
 $
 (sum_(i<j) Q_(i j) dot.c "sgn"(L_i-L_j) dot.c "sgn"(Y_i - Y_j)) / (sum_(i<j) Q_(i j)).
 $
 
-The statistic can be calibrated using an asymnptotic variance approximation or using permutation inference (randomly swapping $Y_i$ and $Y_j$ within each pair with probability $frac(1, 2, style: "horizontal")$).
+The statistic can be calibrated using an asymptotic variance approximation or using permutation inference (randomly swapping $Y_i$ and $Y_j$ within each pair with probability $frac(1, 2, style: "horizontal")$).
 
 == Inference for the survival function
 
@@ -158,7 +168,7 @@ $
 h(t) equiv lim_(delta arrow.b 0)P(T <= t + delta | T >= t) / delta = lim_(delta arrow.b 0)(S(t) - S(t+delta)) / (delta S(t)).
 $
 
-The hazard function can be interpreted as the "instantaneous event rate". It has units of 1/time so is not dimensionless (the time units matter).
+For simplicity this definition does not consider left truncation, but the generalization is simple.  The hazard function can be interpreted as the "instantaneous event rate". It has units of 1/time so is not dimensionless (the time units matter).
 
 It takes some practice to understand how to interpret this limit. If the time unit is "days" and the hazard is 0.001 at day 100, then this means that approximately 0.1% of the subjects at risk on day 100 will experience the event on that day. Note that this is an approximate statement since we are not actually taking a limit here. This approximate statement is closer to being true over time intervals where the hazard function is approximately constant.
 
@@ -199,10 +209,10 @@ Note that this also implies that when densities exist, $h(t) = frac(f(t), S(t), 
 Finally, we can introduce the notion of a _product integral_ and find that
 
 $
-S(t) = product_0^t (1 - H(s))"ds".
+S(t) = product_0^t (1 - h(s))"ds".
 $
 
-Above, $product$ represents a product integral, which is a limit of products over finite partitions of $[0, t]$, just as the usual integral is a limit of sums over finite partitions of $[0, t]$.  The factors in the product have the form $1 - H(s)Delta s$, where $Delta s$ is the width of a small interval containing $s$.
+Above, $product$ represents a product integral, which is a limit of products over finite partitions of $[0, t]$, just as the usual integral is a limit of sums over finite partitions of $[0, t]$.  The factors in the product have the form $1 - h(s)Delta s$, where $Delta s$ is the width of a small interval containing $s$.
 
 In many applications, the hazard function may be easier to interpret than the survival function. A common consideration is whether the hazard function is increasing, decreasing, approximately constant, or has some other shape like a "U" ("bathtub") shape. In terms of parametric distributions, the exponential distribution has a constant hazard function, whereas the Weibull distribution can have either an increasing or decreasing hazard function depending on its parameters.
 
@@ -216,9 +226,11 @@ A similar phenomenon exists with human lifespans, whereby the hazard of dying is
 
 == Hazard ratios and hazard proportionality
 
-A _hazard ratio_ is the ratio between two hazard values. For example, we may have two groups of subjects (e.g. people exposed or not exposed to a risk factor), with each group having a hazard function $h_k (t)$ where $k=0, 1$ corresponds to not exposed and exposed people, respectively. The hazard ratio at time $t$ is $frac(h_1(t), h_0(t), style: "horizontal")$. This is a very useful measure of the "risk" associated with an exposure. For example, if the hazard ratio is 2 then (roughly speaking) exposed people have twice the instantaneous risk of experiencing the event as non-exposed people.
+A _hazard ratio_ is the ratio between two hazard values. For example, we may have two groups of subjects (e.g. people exposed or not exposed to a risk factor), with each group having a hazard function $h_k (t)$ where $k=0, 1$ corresponds to unexposed and exposed people, respectively. The hazard ratio at time $t$ is $frac(h_1(t), h_0(t), style: "horizontal")$. This is a very useful measure of the "instantaneous risk" associated with an exposure. For example, if the hazard ratio is 2 then exposed people have twice the instantaneous risk of experiencing the event as non-exposed people.
 
-Under an assumption of _proportional hazards_ hazard ratios are constant in time, meaning in the two-group setting that $h_1 prop h_0$. As we will see below, many popular methods for survival analysis assume proportional hazards, but it is important to note that this assumed proportionality may not always hold in practice.
+Under an assumption of _proportional hazards_ hazard ratios are constant in time, meaning in the two-group setting that $h_1 prop h_0$ for all times $t$. As we will see below, many popular methods for survival analysis assume proportional hazards, but it is important to note that this assumed proportionality may not always hold in practice.
+
+One approach to exploring possible non-proportional hazards is through the use of _Schoenfeld residuals_.  The derivation is somewhat involved so we do not give it here.  The _scaled Schoenfeld residuals_ $r_(i j)^*$ are of particular interest.  There is a scaled Schoenfeld residual for every unit experiencing the event (i.e. when $delta_i = 1$) and for every covariate $j=1, ..., p$.  The residual $r^*_(i j)$ captures the deviation from proportional hazards at time $Y_i = T_i$ for the effect of covariate $j$.  If you smooth the $r^*_(i j)$ against the times $Y_i$, you will get a visual sense of whether the covariate effect is proportional (if the smooth is roughly constant), of if the hazard for that covariate changes over time (the pattern of change is reflected in the smoothed residuals).
 
 == Estimating the marginal hazard function
 
@@ -246,7 +258,7 @@ where $n(s)$ is the number of units at risk at time $s$ and $E(s)$ is the cumula
 
 Since the hazard function $h$ is the derivative of the cumulative hazard function $H$, it is possible to estimate $h$ by numerically differentiating a smooth estimate of $H$.
 
-If $hat(S)_("KM")$ is the Kaplan-Meier estimate of the survival function and $hat(H)_("NA")$ is the Nelson-Aalen estimate of the cumualtive hazard function, the identity $S_("KM") = exp(-hat(H)_("NA"))$ fails to hold.  This gives rise to another estimator of the marginal survival function called the "Breslow" estimator, defined as $hat(S)_B = exp(-hat(H)_("NA"))$.  This estimator of the survival function is more biased than the Kaplan-Meier estimator, but is sometimes used since it preserves the expected relationship between survival probabilities and cumulative hazards.
+If $hat(S)_("KM")$ is the Kaplan-Meier estimate of the survival function and $hat(H)_("NA")$ is the Nelson-Aalen estimate of the cumulative hazard function, the identity $S_("KM") = exp(-hat(H)_("NA"))$ fails to hold.  This gives rise to another estimator of the marginal survival function called the "Breslow" estimator, defined as $hat(S)_B = exp(-hat(H)_("NA"))$.  This estimator of the survival function is more biased than the Kaplan-Meier estimator, but is sometimes used since it preserves the expected relationship between survival probabilities and cumulative hazards.
 
 == Proportional hazards regression
 
@@ -258,11 +270,11 @@ $
 h(t|X=x) = exp(beta^prime x) h_0(t).
 $
 
-The _baseline hazard function_ $h_0$ is unknown and arbitrary, i.e. it is not assumed to follow any parametric family. This is therefore a _semi-parametric_ model since is has a finite-dimensional parameter of interest $beta$ and an infinite-dimensional nuisance parameter $h_0$. It turns out that it is possible to estimate $beta$ using a type of partial maximum-likelihood technique without simultaneously estimating $h_0$. This makes the PH model feel in practice more like a conventional parametric model estimated using maximum likelihood. The cumulative baseline hazard function can be estimated in a separate step if desired, using a modified version of the Nelson-Aalen estimator discussed above.
+The _baseline hazard function_ $h_0$ is unknown and arbitrary, i.e. it is not assumed to follow any parametric family. This is therefore a _semi-parametric_ model since is has a finite-dimensional parameter of interest $beta$ and an infinite-dimensional nuisance parameter $h_0$. It turns out that it is possible to estimate $beta$ using partial maximum-likelihood technique without simultaneously estimating $h_0$. This exploits the fact that $h_0$ is orthogonal to $beta$.  The cumulative baseline hazard function $H_0(t) = integral_0^t h_0(s)"ds"$ can be estimated in a separate step if desired, using a modified version of the Breslow estimator discussed above.
 
 When interpreting the results of a PH model, remembering that it is based on proportionality of the hazard function is key. Thus, a given regression slope $beta_j$ is the _log hazard ratio_ that compares the hazard functions for two individuals who differ by one unit on variable $X_j$, and have identical values for all other variables. The estimated hazard ratio for the $j^"th"$ covariate is simply $exp(hat(beta)_j)$. Since the PH model assumes proportionality of the hazard functions, this hazard ratio does not depend on $t$ (although the true hazard ratio may depend on $t$ if the PH model is incorrect).
 
-The PH model is essentially a single-index model fit with maximum likelihood techniques. Thus, once the concept of the hazard function and proportionality of hazard functions is understood, familiar strategies for regression modeling can be employed. For example, we can include interactions, splines, covariate transformations, and conduct step-wise model searches. There are also versions of information-based criteria such as AIC and BIC for model selection with PH models. The PH model can be extended to accommodate left truncation and competing risks.
+The PH model is essentially a single-index model fit with (partial) maximum likelihood techniques. Thus, once the concepts of the hazard function and proportionality of hazard functions are understood, familiar strategies for regression modeling can be employed. For example, we can include interactions, splines, covariate transformations, and conduct step-wise model searches. There are also versions of information-based criteria such as AIC and BIC for model selection with PH models. The PH model can be extended to accommodate left truncation and competing risks.
 
 As indicated above, proportionality of the conditional hazard functions is a critical assumption in the PH model. This is not always an easy assumption to check, but there are some methods based on residuals that can be employed.  Independent censoring is also an important assumption for the PH model to be meaningful.
 
@@ -304,7 +316,7 @@ where $S_a(t)$ is the _all cause survival function_ and $h_0$ is the _cause-spec
 
 Cumulative incidence is a convenient way to handle competing risks and avoids the challenges of working with so-called _sub-distribution hazards_, which many people find confusing.  It is also possible to introduce covariates into the analysis, to assess how subjects with different characteristics have different cumulative incidences.
 
-Cumulative incidence is most useful when you are interested in the burden (e.g. social or economic) of a condition on individuals or on society.  For example, if the primary event is dementia and the competing risk is death, we may want to know the cumulative incidence (probability) of getting dementia by, say, age 85.  This probability includes people who get dementia and subsequently die before age 85 (i.e. it is not the proportion of living 85 year old people wiith dementia).  On the other hand, if someone dies young, say at age 60, then they are "saved" from getting dementia by their death.  As a result, high risk subpopulations like smokers may appear to have a lower cumulative incidence of dementia, even if smoking increases both the risk of dementia and the risk of death.  In this setting, the cumulative incidence function would be telling us that smokers are less likely to experience dementia in their lifetimes than non-smokers.
+Cumulative incidence is most useful when you are interested in the burden (e.g. social or economic) of a condition on individuals or on society.  For example, if the primary event is dementia and the competing risk is death, we may want to know the cumulative incidence (probability) of getting dementia by, say, age 85.  This probability includes people who get dementia and subsequently die before age 85 (i.e. it is not the proportion of living 85 year old people with dementia).  On the other hand, if someone dies young, say at age 60, then they are "saved" from getting dementia by their death.  As a result, high risk subpopulations like smokers may appear to have a lower cumulative incidence of dementia, even if smoking increases both the risk of dementia and the risk of death.  In this setting, the cumulative incidence function would be telling us that smokers are less likely to experience dementia in their lifetimes than non-smokers.
 
 = Common biases in survival analysis
 
@@ -321,23 +333,34 @@ The most elementary parametric distribution used for survival times is the #link
 
 A _pseudo-observation_ (or _pseudo-value_) is a synthetic datapoint that combines the observed time $Y$ and censoring status $delta$ into a single real number. The resulting value can then be used in many forms of statistical analysis, for example as an independent or dependent variable in a regression, or in a multivariate analysis such as PCA. Importantly, as discussed in more detail below, the pseudo-observations are approximately independent and their standard deviation reflects the underlying uncertainty in estimating the parameter of interest. Using pseudo-observations allows survival analysis (both estimation and inference) to be conducted using general-purpose statistical methods instead of requiring specialized methods.
 
-Here we will discuss pseudo-observations for the survival probability (i.e. the function $S(t)$ evaluated at a specific time $t$), but note that it is also possible to construct pseudo-observations for other quantities such as the mean restricted life or the cumulative hazard.
+Here we will discuss pseudo-observations for the survival probability (i.e. the function $S(t)$ evaluated at a specific time $t$) and for the Restricted Mean Survival time (RMST, to be defined below).  It is also possible to construct pseudo-observations for other quantities such as the cumulative hazard.
 
 Pseudo-observations are closely related to the #link("https://en.wikipedia.org/wiki/Jackknife_resampling")[jackknife]. To motivate the technique, let $overline(X) = frac((X_1 + ... + X_n), n, style: "horizontal")$ be the sample mean of $n$ observations from a common distribution. Let $overline(X)_(-i)$ denote the "deleted" version of this statistic (the sample mean with the $i^"th"$ observation deleted). These statistics satisfy the identity $X_i = n overline(X) - (n-1)overline(X)_(-i)$. Now consider the more general setting where we have a statistic $hat(theta)_n$ based on the full sample of size $n$, and then we compute this statistic while deleting observation $i$, to yield $hat(theta)_(-i)$. The pseudo-observation is defined to be
 
 $
-u_i equiv n hat(theta) _ n - (n-1)hat(theta)_(-i),
+u_i equiv n hat(theta)_n - (n-1) hat(theta)_(-i),
 $
 
 and is interpreted as the contribution of $X_i$ to the statistic of interest, $hat(theta)_n$.
 
-It can be shown that the $u_i$ are approximately independent, that
+It can be shown that the $u_i$ are approximately independent, in that
 
 $
-"Avg"{u_i} approx hat(theta)_n,
+"cor"(u_i, u_j) = upright(O)(frac(1, n, style: "horizontal")).
 $
 
-and that
+This leads to an interpretation of pseudo-observations as the "unique contribution of observation $i$ to the estimate".
+
+The average pseudo-observation is close to the original estimate
+
+$
+"Avg"({u_i}) approx hat(theta)_n.
+$
+
+When the statistic is linear in the data, this approximation becomes an identity, but when the statistic is nonlinear,
+the value of $"Avg"({u_i})$ is a less biased estimate than $hat(theta)_n$.  Specifically, it has bias of order $upright(O)(frac(1, n^2, style: "horizontal"))$ rather than the usual bias of order $upright(O)(frac(1, n, style: "horizontal"))$.
+
+We can also obtain a standard error of $hat(theta)_n$ from the pseudo-observations, using
 
 $
 "SD"(u_i) / sqrt(n) approx "SE"[hat(theta)_n].
@@ -345,6 +368,8 @@ $
 
 Thus, the pseudo-observations approximately convert estimation and inference for $theta$ into a linear inference problem, analogous to estimating the population mean with the sample mean. This idea could be useful in many settings, but is particularly useful in the setting of survival analysis since we can now treat the pseudo-observations $u_i$ like any other collection of independent quantitative measurements, and analyze them using a wide variety of statistical methods that are not otherwise adapted to survival analysis.
 
-The most common construction of pseudo-observations for survival analysis is based on the Kaplan-Meier (product limit) estimate of the marginal survival function. We can compute $hat(S)(t)$ using all data, and then we can compute $hat(S)_(-i)(t)$ by deleting observation $i$. There are fast approximations for doing this on large samples without repeating the full calculation for each $i$. The pseudo-observation is $u_i (t) = n hat(S)(t) - (n-1)hat(S)_(-i)(t)$. These can be used, for example, in a regression analysis, regressing $u_i$ on covariates $x_i$, since it can be shown that $E[u|x]$ can be interpreted as the probability of surviving to time $t$ when the covariates are equal to $x$.
+The most common construction of pseudo-observations for survival analysis is based on the Kaplan-Meier (product limit) estimate of the marginal survival function. We can compute $hat(S)(t)$ using all data, and then we can compute $hat(S)_(-i)(t)$ by deleting observation $i$. There are fast approximations for doing this on large samples without repeating the full calculation for each $i$. The pseudo-observation is $u_i (t) = n hat(S)(t) - (n-1)hat(S)_(-i)(t)$. These can be used, for example, in a regression analysis, regressing $u_i$ on covariates $x_i$, since it can be shown that $E[u|x]$ can be interpreted as the conditional probability of surviving to time $t$ when the covariates are equal to $x$.
 
-There are a few limitations of the pseudo-observation approach, but for each there are work-arounds.  Pseudo-observation conditional variances, $"var"[u|x]$, are generally not constant in $x$, i.e. there is heteroscedasticity. Therefore, typically regressions involving pseudo-observations are fit with robust regression techniques such as using the Huber-White type of inference.  A second issue is that pseudo-observation regressions require unconditional independent censoring ($T_i$ is independent of $R_i$ without conditioning on the covariate $X_i$).  This limitation can be resolved by using inverse probability weighting to account for censoring that depends on measured covariates.
+A common use of pseudo-observations is to perform a regression analysis for the restricted mean survival time (RMST).  The RMST is defined as $integral_0^r S(t)"dt"$.  When $r = infinity$ this is just the usual mean.  Setting $r < infinity$ is used to reduce the influence of large values.  The RMST can be estimated using the Kaplan-Meier estimate of the survival function, by taking $sum_(i: t_i <= r) hat(S)(t_i) (t_(i+1)-t_(i))$.  Let $"RMST"_i$ denote the pseudo-observation of RMST for unit $i$.  We then regress the $"RMST"_i$ on covariates $x_i$ using any regression technique (preferably one that is robust to heteroscedasticity), to understand how the RMST varies with covariates.
+
+There are a few limitations of the pseudo-observation approach, but for each limitation there are work-arounds.  Pseudo-observation conditional variances, $"var"[u|x]$, are generally not constant in $x$, i.e. there is heteroscedasticity. Therefore, typically regressions involving pseudo-observations are fit with robust regression techniques such as using the Huber-White type of heteroscedasticity-robust inference.  A second issue is that pseudo-observation regressions require unconditional independent censoring ($T_i$ must be independent of $R_i$ without conditioning on the covariate $X_i$).  This limitation can be resolved by using inverse probability weighting to account for censoring that depends on measured covariates, or by calculating the pseudo-observations within strata defined by the informative covariates.
