@@ -86,7 +86,9 @@ $
 sum_j (sum_k beta_(j k) g_(j k)^('')(x_j))^2.
 $
 
-A true GAM is additive in the sense that $g^(-1)(E[y | x_1, ..., x_p]) = sum_j h_(j)(x_j)$, where each $h_j$ is represented in terms of basis functions. Such a model does not permit any interactions among the covariates.  In practice, strict additivity is often too limiting, so most GAM software supports the inclusion of selected pairwise or higher order interactions, in which case the model is no longer additive, and the "automatic" nature of a pure GAM is lost. Defining tractable smoothing penalties for non-additive models is challenging and remains an area of research.
+A true GAM is additive in the sense that $g^(-1)(E[y | x_1, ..., x_p]) = sum_j h_(j)(x_j)$, where each $h_j$ is represented in terms of basis functions. Such a model does not permit any interactions among the covariates.  The above penalty can be expressed as a quadratic form $beta' P_g beta$, where $P_g$ is a $p times p$ matrix that does not depend on $beta$ or on $y$.
+
+In practice, strict additivity is often too limiting, so most GAM software supports the inclusion of selected pairwise or higher order interactions, in which case the model is no longer additive, and the "automatic" nature of a pure GAM is lost. Defining tractable smoothing penalties for non-additive models is challenging and remains an area of research.
 
 Another form of model that is often encountered is a _partial linear model_.  In this approach we partition the covariates into $x in RR^p$ and $z in RR^q$, and the model has the form
 
