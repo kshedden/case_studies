@@ -250,7 +250,7 @@ $
 
 Intuitively, the direct effect blocks the effect that changing $X$ from $x_0$ to $x_1$ would have on the mediator, and the indirect effect blocks all effects of changing $X$ from $x_0$ to $x_1$ except those that go through the mediator.
 
-Estimation proceeds by building models for $E[Y|X, M]$ and $P(M|X)$ using the observed data.  We can then impute any counterfactual values needed when forming estimates of the direct and indirect effects.  For example, to impute $Y_(i)(M=M(x_1), X=x_0)$, we replace $M(x_1)$ with a sample from the fitted model $hat(P)(M|X=x_0)$.  To account for the fact that $hat(P)(M|X)$ is an estimate of the true model, we should usually either bootstrap the data for each imputation (which is expensive), or, if $hat(P)$ is parameterized by parameters $theta$ for which the estimates $hat(theta)$ are approximately unbiased with estimated variance/covariance matrix $hat(Psi)$, we can replace $hat(theta)$ with $tilde(theta) = hat(theta) + hat(Psi)^(-frac(1, 2, style: "horizontal"))eta$, where $eta$ is an iid standard normal random vector with the same dimension as $theta$.  This is sometimes described as a "quasi-Bayes" approach.
+Estimation proceeds by building models for $E[Y|X, M]$ and $P(M|X)$ using the observed data.  We can then impute any counterfactual values needed when forming estimates of the direct and indirect effects.  For example, to impute $Y_(i)(M=M(x_1), X=x_0)$, we replace $M(x_1)$ with a sample from the fitted model $hat(P)(M|X=x_0)$.  To account for the fact that $hat(P)(M|X)$ is an estimate of the true model, we should usually either bootstrap the data for each imputation (which is expensive), or, if $hat(P)$ is parameterized by parameters $theta$ for which the estimates $hat(theta)$ are approximately unbiased with estimated variance/covariance matrix $hat(Psi)$, we can replace $hat(theta)$ with $tilde(theta) = hat(theta) + hat(Psi)^(frac(1, 2, style: "horizontal"))eta$, where $eta$ is an iid standard normal random vector with the same dimension as $theta$.  This is sometimes described as a "quasi-Bayes" approach.
 
 The models for $P(Y|M, X)$ and $P(M|X)$ can be extended to include additional covariates $Z$, in which case we would have $P(Y|M, X, Z)$ and $P(M|X, Z)$.  These could be possible confounders or precision variables.  Furthermore, $Z$ could interact with $X$ in the model for $M$ or in the model for $Y$, giving rise to _moderated mediation_.  This allows the strength of mediation $X -> M -> Y$ to vary with the value of $Z$.
 
@@ -331,11 +331,11 @@ A _collider_ ($Z$) is a variable that is caused by the exposure $X$ and the outc
   edge(<c>, "<-", <b>),
 )]
 
-= Sensitivity analysis for unmeasured confounding
+= Sensitivity analysis for unmeasured variables
 
-When we fit a regression model using observational data, the associations identified by the model may not represent causal effects due to the possibility of unmeasured confounding.  It is sometimes useful to quantify how strong an unmeasured confounder would need to be in order to strongly or completely attenuate an effect of interest.  This analysis is relatively easy to perform in the setting of ordinary least squares, which we develop here.
+When we fit a regression model using observational data, the associations identified by the model may not represent causal effects due to the possible existence of unmeasured variables, particularly confounders and mediators.  It is sometimes useful to quantify how strong an unmeasured confounder would need to be in order to strongly or completely attenuate an effect of interest.  A related analysis would be to consider how a single mediator could reduce the direct effect of an exposure on an outcome.  These analyses are relatively easy to perform in the setting of ordinary least squares, which we develop here.
 
-Suppose our model based on observed data produces estimates of the form $hat(beta) = M_(x x)^(-1)M_(x y)$, where $M_(x x) = frac(X'X, n, style: "horizontal")$, and $M_(x y) = frac(X'y, n, style: "horizontal")$.  Now suppose that there is an unmeasured confounder $z$, and we augment $M_(x x)$ and $M_(x y)$ to accommodate $z$.  Specifically,
+Suppose our model based on observed data produces estimates of the form $hat(beta) = M_(x x)^(-1)M_(x y)$, where $M_(x x) = frac(X'X, n, style: "horizontal")$, and $M_(x y) = frac(X'y, n, style: "horizontal")$.  Now suppose that there is an unmeasured variable $z$, and we augment $M_(x x)$ and $M_(x y)$ to accommodate $z$.  Specifically,
 
 $
 tilde(M)_(x x) =& mat(M_(x x), v; v', 1)\
@@ -344,7 +344,7 @@ $
 
 where $v = frac(X'z, n, style: "horizontal")$ and $s = frac(y'z, n, style: "horizontal")$, which are unknown.  A necessary and sufficient condition for $tilde(M)_(x x)$ to be PSD is that $v' M_(x x)^(-1)v <= 1$.  Also, the partial $R^2$ of $z$ with respect to $X$ is $v' M_(x x)^(-1)v$.  Without loss of generality, we take $z$ to have unit variance (hence $tilde(M)_(x x)[p+1, p+1] = 1$) and zero mean, so $v[1] = 0$ where the first covariate is the intercept.
 
-Now suppose that there is a subset $iota subset {1, .., p}$, so that $beta[iota]$ are the coefficients corresponding to the effects of interest.  That is, we wish to assess whether $beta[iota]$ would be attenuated or even become zero in absence of confounding from $z$.  For any given $v$, the contribution of the effects of interest can be represented by $L(v, s) = norm(X[:, iota]beta_(v s)[iota])^2$, where $beta_(v s)$ are the coefficients when the moments are augmented with $v$ and $s$.  Further, $L$ can be analytically minimized with respect to $s$ for fixed $v$, since $L(v, s)$ is a quadratic polynomial in $v$.  This allows rapid exploration of the space of possible values of $v$, so as to assess whether $L(v, s)$ can be reduced to a very small value or even to zero, while still having a moderate $R^2$ between $z$ and $x$ (given by $v' M_(x x)^(-1)v$), and a moderate level of correlation between $z$ and $y$ (given by $s = frac(y'z, n, style: "horizontal")$ when $y$ is standardized).
+Now suppose that there is a subset $iota subset {1, .., p}$, so that $beta[iota]$ are the coefficients corresponding to the effects of interest.  That is, we wish to assess whether $beta[iota]$ would be attenuated or even become zero in the absence of any effect from $z$.  For any given $v$, the contribution of the effects of interest can be represented by $L(v, s) = norm(X[:, iota]beta_(v s)[iota])^2$, where $beta_(v s)$ are the coefficients when the moments are augmented with $v$ and $s$.  Further, $L$ can be analytically minimized with respect to $s$ for fixed $v$, since $L(v, s)$ is a quadratic polynomial in $v$.  This allows rapid exploration of the space of possible values of $v$, so as to assess whether $L(v, s)$ can be reduced to a very small value or even to zero, while still having a moderate $R^2$ between $z$ and $x$ (given by $v' M_(x x)^(-1)v$), and a moderate level of correlation between $z$ and $y$ (given by $s = frac(y'z, n, style: "horizontal")$ when $y$ is standardized).
 
 = Automating model specification
 
@@ -359,8 +359,7 @@ EARTH is a greedy algorithm that sequentially searches through the space of basi
 
 == Kernel regression
 
-Since the 1990's new approaches to regression based on _kernels_ have become increasingly widely used. These approaches automatically incorporate non-additivity and non-linearity into the fitted regression function, and use regularization to optimize the fitted values based on the bias/variance tradeoff. They share some properties with regression splines, but do not require specification of an explicit model formula and may perform better in
-higher dimensions due to their use of regularization.
+Since the 1990's new approaches to regression based on _kernels_ have become increasingly widely used. These approaches automatically incorporate non-additivity and non-linearity into the fitted regression function, and use regularization to optimize the fitted values based on the bias/variance tradeoff. They share some properties with regression splines, but do not require specification of an explicit model formula and may perform better in higher dimensions due to their use of regularization.
 
 As an aside, note that the term "kernel" in statistics can have different meanings, and there is a different approach to nonparametric regression based on using kernel weights to localize a regression procedure. That is a different and unrelated use of the term "kernel" to what we are discussing here.
 
@@ -400,6 +399,12 @@ $
 ||y - bold(K) alpha||^2 + lambda alpha' bold(K) alpha.
 $
 
-It turns out that $alpha' bold(K) alpha$ is a form of regularization in that it shrinks the fitted values toward the nullspace of the Reproducing Kernel Hilbert Space (RKHS) corresponding to the kernel K. More concretely, $alpha' bold(K) alpha$ measures and penalizes the non-smoothness of the function $x -> sum_i alpha_i K(x,x_i)$.
+If we write $hat(y) = bold(K) alpha$, then the criterion becomes
+
+$
+||y - bold(K) alpha||^2 + lambda hat(y)' bold(K)^(-1) hat(y).
+$
+
+From this we can see that $alpha' bold(K) alpha = hat(y)' bold(K)^(-1) hat(y)$ is a form of regularization that shrinks the fitted values toward the nullspace of the Reproducing Kernel Hilbert Space (RKHS) corresponding to the kernel K. More concretely, $alpha' bold(K) alpha$ measures and penalizes the non-smoothness of the function $x -> sum_i alpha_i K(x,x_i)$.
 
 A variant of kernel ridge regression is _Kernel Principal Components Regression_ (KPCR), which finds a limited number of leading eigenvectors of $bold(K)$ and uses them as covariates in an OLS or ridge regression. This would be computationally expensive if done directly, but there is an efficient class of algorithms (including the Lanczos method) for finding a limited number of leading eigenvectors of a large symmetric matrix that are much faster than calculating all of the eigenvectors.
