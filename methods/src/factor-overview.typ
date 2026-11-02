@@ -187,7 +187,7 @@ Each component $eta_j V_j$ represents random variation in the direction of the u
 
 == Biplots
 
-Suppose that $tilde(X)$ is the column-centered or double-centered data (where the rows are observations and the columns are variables). Let $tilde(X) = U S V'$ denote the SVD. A _biplot_ is a plot that displays both the variables and the observations in a way that conveys (i) how the variables are related to each other, (ii) how the observations are related to each other, and (iii) how the variables are related to the observations. In other words, the biplot shows which variables load on each of the two displayed components ($j$ and $k$), and simultaneously shows which of the observations most exhibit the characteristics summarized by each component.
+Suppose that $tilde(X)$ is the column-centered or double-centered data (where the rows are observations and the columns are variables). Let $tilde(X) = U S V'$ denote the SVD. A _biplot_ is a plot that displays both the variables and the observations in a way that conveys (i) how the variables are related to each other, (ii) how the observations are related to each other, and (iii) how the variables are related to the observations. In other words, the biplot shows which variables load on each of two displayed components (denoted $j$ and $k$), and simultaneously shows which of the observations most exhibit the characteristics summarized by each component.
 
 To construct the biplot, observation $i$ is plotted as the point $(S_(j j)^alpha U_(i j), S_(k k)^alpha U_(i k))$ (the _object scores_) and variable $ell$ is plotted as the point $(S_(j j)^(1-alpha) V_(ell j), S_(k k)^(1-alpha) V_(ell k))$ (the _variable scores_). Here, $j, k$ are chosen components, usually $j=1$ and $k=2$ (to show the dominant factors). The parameter $0 <= alpha <= 1$ is usually set to either $0$, $frac(1, 2, style: "horizontal")$, or $1$.
 
@@ -200,17 +200,17 @@ $
 
 This shows that the Euclidean distance between two rows of $tilde(X)$ is equal to the Euclidean distance between two rows of $U S$ (which are the object scores if $alpha=1$).
 
-If we set $alpha=0$, then $n^(-1) tilde(X)' tilde(X)$, which is the covariance matrix among the variables, can be written (up to a proportionality constant) as
+The covariance matrix among the variables can be written (up to a proportionality constant) as
 
 $
-tilde(X)' tilde(X) = V S^2 V'.
+n^(-1)tilde(X)' tilde(X) prop V S^2 V'.
 $
 
-This shows that the magnitudes of the variable scores are equal to the variances of the variables, and the cosine of the angles between any two variables scores is equal to the correlation between two variables.
+If we set $alpha=0$, then we see that the magnitudes of the variable scores are proportional to the variances of the variables, and the cosine of the angles between any two variable scores is proportional to the correlation between two variables.
 
 The interpretations of the object and variable scores given above are exact if we consider the non-truncated vectors of object/variable scores. In practice we truncate to the dominant two components, to enable two-dimensional plotting. In this case, the statements above are approximations. In particular, the magnitudes of the variable scores reflect the variance of a variable that is reflected in the biplot, rather than its overall variance.
 
-Another pragmatic issue in biplots is that theoretically we should set $alpha=1$ if we want to focus on the objects and $alpha=0$ if we want to focus on the variables. In practice we may set $alpha=frac(1, 2, style: "horizontal")$ to approximate both sets of relationships in the same plot.
+We should set $alpha=1$ if we want to focus on the objects and $alpha=0$ if we want to focus on the variables. In practice we may choose to set $alpha=frac(1, 2, style: "horizontal")$ to approximate both sets of relationships in the same plot.
 
 == Principal Components Regression
 
