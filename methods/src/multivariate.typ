@@ -19,11 +19,11 @@ This document discusses several modern methods for analyzing multivariate data. 
 
 = Functional data
 
-A particular type of multivariate data is known as _functional data_, in which we observe vectors $v in RR^d$ that arise from evaluating a function at a finite number of points, i.e. the $i^"th"$ observation is 
+A particular type of multivariate data is known as _functional data_, in which we observe vectors $v in RR^d$ that arise from evaluating a function at a finite number of points, i.e. the $i^"th"$ observation is
 
 $
 v_i = [f_(i)(t)]_(t in cal(T)_i).
-$ 
+$
 
 In practice we may only observe $v_i + epsilon_i$, where $epsilon_i$ is random measurement error.  For the functional perspective to be useful, we need to place some constraints on the functions $f_i$, usually involving some form of smoothness.
 
@@ -68,7 +68,7 @@ $
 D_(L_2)(z; {x_i}) = 1 / (1 + "Avg"_i {norm(x_i-z)}).
 $
 
-The Mahalanobis depth incorporates information about the mean $mu$ and covariance $Sigma$ of the pointset ${x_i}$  
+The Mahalanobis depth incorporates information about the mean $mu$ and covariance $Sigma$ of the pointset ${x_i}$
 
 $
 D_(L_2)(z; {x_i}) = 1 / (1 + (z - mu)'Sigma^(-1)(z-mu)).
@@ -117,18 +117,18 @@ Another class of metrics on spaces of probability measures are the Wasserstein d
 A final but very practical class of metrics on spaces of probability distributions is the #link("https://en.wikipedia.org/wiki/Energy_distance")[energy distance].  Given two random vectors $X$ and $Y$, the energy distance between their distributions is
 
 $
-2E norm(X-Y) - E norm(X-X') - E norm(Y-Y'), 
+2E norm(X-Y) - E norm(X-X') - E norm(Y-Y'),
 $
 
 where $X'$ is an independent copy of $X$ and $Y'$ is an independent copy of $Y$.  This idea can be applied whenever the sample spaces for $X$ and $Y$ lie in a common metric space with metric $d$.  We can define the energy distance in this setting as
 
 $
-2E d(X,Y) - E d(X, X') - E d(Y, Y'). 
+2E d(X,Y) - E d(X, X') - E d(Y, Y').
 $
 
-An interpretation of the energy distance is that $F$ is close to $G$ if (i) a random draw from $F$ tends to be close to a random draw from $G$, (ii) two independent random draws from $F$ are far from each other, and (iii) two independent random draws from $G$ are far from each other.  The first of these terms is "attractive" while the latter are "repulsive".  The energy distance is a balance between these attractive and repulsive terms. 
+An interpretation of the energy distance is that $F$ is close to $G$ if (i) a random draw from $F$ tends to be close to a random draw from $G$, (ii) two independent random draws from $F$ are far from each other, and (iii) two independent random draws from $G$ are far from each other.  The first of these terms is "attractive" while the latter are "repulsive".  The energy distance is a balance between these attractive and repulsive terms.
 
-There is a straightforward plug-in estimate of the energy distance, which is simply the energy distance between the empirical distributions $n_x^(-1)sum_i bb(1)_(x_i)$ and $n_y^(-1)sum_i bb(1)_(y_i)$.  
+There is a straightforward plug-in estimate of the energy distance, which is simply the energy distance between the empirical distributions $n_x^(-1)sum_i bb(1)_(x_i)$ and $n_y^(-1)sum_i bb(1)_(y_i)$.
 
 $
 2/(n_x n_y) sum_(i,j) norm(x_i - y_j) - 1/(n_(x)^2) sum_(i,i')norm(x_i - x_(i')) - 1/(n_(y)^2) sum_(i,i')norm(y_i - y_(i')).
@@ -149,7 +149,7 @@ A quantization algorithm aims to represent a multivariate distribution through a
 
 #link("https://arxiv.org/abs/1609.01811")[Support points] are an effective form of quantization that is based on the energy distance. Suppose we are given a distribution function $G$ on $RR^d$ that we wish to quantize, i.e. to approximate with a finite set of points $x_1, ..., x_m$. Let $Y$ denote a random draw from $G$, and let $X$ denote a draw from $m^(-1) sum_j bb(1)_(x_j)$.  The support points are the values of $x_1, ..., x_m$ that minimize the energy distance between $Y$ and $X$.
 
-Construction of support points involves solving a non-convex optimization problem.  There is a natural majorization/maximization approach, and faster gradient approaches are also used. Due to nonconvexity of the loss function, the support points are not uniquely defined, and it is not generally possible to find more than a local minimizer of the loss. The non-uniqueness is evident in particular when the distribution of $X$ has symmetries.  For example, if the distribution is invariant to rotation, any set of points can be rotated without changing its energy distance to $Y$. 
+Construction of support points involves solving a non-convex optimization problem.  There is a natural majorization/maximization approach, and faster gradient approaches are also used. Due to nonconvexity of the loss function, the support points are not uniquely defined, and it is not generally possible to find more than a local minimizer of the loss. The non-uniqueness is evident in particular when the distribution of $X$ has symmetries.  For example, if the distribution is invariant to rotation, any set of points can be rotated without changing its energy distance to $Y$.
 
 = Distance correlation
 
@@ -183,14 +183,14 @@ $
 integral c(x, y) "dP"_(X,Y)(x,y)
 $
 
-over the space of couplings $P_(X,Y)$.  This is known as _optimal transport_.  
+over the space of couplings $P_(X,Y)$.  This is known as _optimal transport_.
 
 There are many applications of this idea in applied statistics that involve interpreting the structure of the optimal coupling.  For example, counterfactual "synthetic controls" can be used in causal analysis.  If ${x_i}$ are a collection of control observations and ${y_i}$ are a collection of treated observations, then we can couple $n_x^(-1)sum_i bb(1)_(x_i)$ with $n_y^(-1)sum_i bb(1)_(y_i)$.  The resulting transport map can be used to infer the matched treated value to each $x_i$ and the matched control value to each $y_i$.
 
 The Wasserstein distance between probability distributions on $cal(S)$ is the solution to an optimal transport problem in which the cost function is a metric on $cal(S)$.  Specifically, the $p^"th"$ Wasserstein distance is
 
 $
-"argmnin"_(P_(X,Y)) [integral d(x, y)^p "dP"_(X,Y)(x,y)]^(1/p).
+"argmin"_(P_(X,Y)) [integral d(x, y)^p "dP"_(X,Y)(x,y)]^(1/p).
 $
 
 
@@ -203,8 +203,7 @@ informative). The sample covariance matrix has some desirable properties includi
 
 To address these limitations, many alternative estimators of the covariance matrix have been devised. Here we describe one of them, the #link("https://arxiv.org/abs/1709.07045")[minimum covariance determinant], or MCD. We will not give full details here, but the main idea is to select a constant $m >= n/2$, where $n$ is the sample size, and define the MCD estimate to be the sample covariance matrix of $m$ observations that has the smallest determinant among all such subsets.
 
-The determinant of a covariance matrix is a measure of its dispersion. If $x$ follows the multivariate normal distribution $N_p(mu, Sigma)$, the squared Mahalanobis distance $(x-mu)' Sigma^(-1)(x-mu)$ follows the $chi^2_p$
-distribution, where $x in RR^p$. It follows that the ellipsoid
+The determinant of a covariance matrix is a measure of its dispersion. If $x$ follows the multivariate normal distribution $N_p(mu, Sigma)$, the squared Mahalanobis distance $(x-mu)' Sigma^(-1)(x-mu)$ follows the $chi^2_p$ distribution, where $x in RR^p$. It follows that the ellipsoid
 
 $
 {x: (x-mu)' Sigma^(-1)(x-mu) <= t}
