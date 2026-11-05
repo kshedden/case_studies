@@ -114,13 +114,13 @@ where $cal(A)$ consists of all measurable sets.  If $P_A$ and $P_B$ have densiti
 
 Another class of metrics on spaces of probability measures are the Wasserstein distances.  These are closely related to the idea of #link("https://en.wikipedia.org/wiki/Transportation_theory_(mathematics)")[optimal transport], which we discuss below.
 
-A final but very practical class of metrics on spaces of probability distributions is the #link("https://en.wikipedia.org/wiki/Energy_distance")[energy distance].  Given two random vectors $X$ and $Y$, the energy distance between their distributions is
+A final but very practical class of metrics on spaces of probability distributions is the #link("https://en.wikipedia.org/wiki/Energy_distance")[energy distance].  Given two random vectors $X$ and $Y$, the squared energy distance between their distributions is
 
 $
 2E norm(X-Y) - E norm(X-X') - E norm(Y-Y'),
 $
 
-where $X'$ is an independent copy of $X$ and $Y'$ is an independent copy of $Y$.  This idea can be applied whenever the sample spaces for $X$ and $Y$ lie in a common metric space with metric $d$.  We can define the energy distance in this setting as
+where $X'$ is an independent copy of $X$ and $Y'$ is an independent copy of $Y$.  This idea can be applied whenever the sample spaces for $X$ and $Y$ lie in a common metric space with metric $d$.  We can define the squared energy distance in this setting as
 
 $
 2E d(X,Y) - E d(X, X') - E d(Y, Y').
@@ -128,14 +128,14 @@ $
 
 An interpretation of the energy distance is that $F$ is close to $G$ if (i) a random draw from $F$ tends to be close to a random draw from $G$, (ii) two independent random draws from $F$ are far from each other, and (iii) two independent random draws from $G$ are far from each other.  The first of these terms is "attractive" while the latter are "repulsive".  The energy distance is a balance between these attractive and repulsive terms.
 
-There is a straightforward plug-in estimate of the energy distance, which is simply the energy distance between the empirical distributions $n_x^(-1)sum_i bb(1)_(x_i)$ and $n_y^(-1)sum_i bb(1)_(y_i)$.
+There is a straightforward plug-in estimate of the energy distance, which is simply the energy distance between the empirical distributions $n_x^(-1)sum_i bb(1)_(x_i)$ and $n_y^(-1)sum_i bb(1)_(y_i)$
 
 $
+hat("ED")^2 =
 2/(n_x n_y) sum_(i,j) norm(x_i - y_j) - 1/(n_(x)^2) sum_(i,i')norm(x_i - x_(i')) - 1/(n_(y)^2) sum_(i,i')norm(y_i - y_(i')).
 $
 
-
-This is a #link("https://en.wikipedia.org/wiki/V-statistic")[V-statistic], and there is a closely related exactly unbiased estimator that is a #link("https://en.wikipedia.org/wiki/U-statistic")[U-statistic]:
+This is a #link("https://en.wikipedia.org/wiki/V-statistic")[V-statistic], and there is a closely related exactly unbiased estimator for the squared energy distance that is a #link("https://en.wikipedia.org/wiki/U-statistic")[U-statistic]:
 
 $
 2/(n_x n_y) sum_(i,j) norm(x_i - y_j) - 1/(n_(x)(n_x-1)) sum_(i != i')norm(x_i - x_(i')) - 1/(n_(y)(n_y-1)) sum_(i != i')norm(y_i - y_(i')).

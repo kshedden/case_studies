@@ -248,11 +248,40 @@ $
 (a^T S_(x y) b) / ((a'S_(x x)a)^(1/2) dot.c (b' S_(y y)b)^(1/2)),
 $
 
-where $S_(x y) = X' frac(Y, n, style: "horizontal")$, $S_(x x) = X' frac(X, n, style: "horizontal")$, and $S_(y y) = Y' frac(Y, n, style: "horizontal")$ are the cross-correlation and correlation matrices.
+where $S_(x y) = X' frac(Y, n, style: "horizontal")$, $S_(x x) = X' frac(X, n, style: "horizontal")$, and $S_(y y) = Y' frac(Y, n, style: "horizontal")$ are the cross-covariance and covariance matrices.
 
-Once we have found the leading canonical loadings, say $a^((1))$ and $b^((1))$, we can maximize the same objective function subject to the constraints $a' S_(x x)a^((1)) = 0$ and $b' S_(y y)b^((1)) = 0$. This can be repeated up to $"min"(p, q)$ times to produce a series of canonical variate loading pairs
+Once we have found the leading canonical loadings, say $a^((1))$ and $b^((1))$, we can maximize the same objective function subject to the constraints $a' S_(x x)a^((1)) = 0$ and $b' S_(y y)b^((1)) = 0$, yielding $a^((2))$ and $b^((2))$. This can be repeated up to $"min"(p, q)$ times to produce a series of canonical variate loading pairs $(a^((j)), b^((j)))$.
+
+These canonical loading pairs concentrate all of the correlation onto the diagonals.  That is,
+$"cor"(a^((j)T)X, b^((j)T)Y)$ is the $j^"th"$ _canonical correlation_, and is maximized to be as large as possible.  But all of the within-variable cross correlations are zero, i.e. $"cor"(a^((j)T)X, a^((k)T)X) = 0$ if $j != k$, and similarly for the $"cor"(b^((j)T)Y, b^((k)T)Y)$.  Also, all of the between-variable cross-correlations are zero, i.e. $"cor"(a^((j)T)X, b^((k)T)Y) = 0$ if $j != k$.
 
 If the dimension is high, CCA can overfit the data. A procedure analogous to principal components regression can be used to address this. We first reduce $X$ and $Y$ to lower dimensions using PCA, then we fit the CCA using these reduced data. The coefficients from the reduced PCA can then be re-expressed in the original coordinates for interpretation.
+
+= Tensor decompositions
+
+Some analyses naturally give rise to data that can be represented as a tensor, which is the higher-order analogue of a matrix.  An order 1 tensor is a vector, an order 2 tensor is a matrix, and so on.  The term "rank" is sometimes used instead of "order", but this can be confused with the traditional definition of the rank of a matrix, which is the common dimension of the row and column spaces.  An order-k tensor has $k$ axes and can be indexed $X[i_1, ..., i_k]$, where $1 <= i_j <= d_j$ for $j=1, ..., k$.
+
+We focus here on tensor analogues to the SVD, which can be used to develop factor analysis-like methods for tensors.  A rank 1 tensor of order $k$ is written $a_1 times.o dots.h.c times.o a_k$, where each $a_j$ is a vector.  Written element-wise, we have
+
+$
+(a_1 times.o dots.h.c times.o a_k)[i_1, ..., i_k] = a_1[i_1] times dots.h.c times a_(k)[i_k].
+$
+
+One approach to obtaining an SVD-like decomposition for tensors is known as #link("https://en.wikipedia.org/wiki/Tensor_rank_decomposition")[parafac] or the _canonical polyadic decomposition_ (CP), which decomposes a tensor as a sum of rank 1 tensors
+
+$
+X = sum_(r=1)^R lambda_r a^((r))_1 times.o dots.h.c times.o a^((r))_k,
+$
+
+where $lambda_1 >= lambda_2 >= dots.h.c$, and the $a^((r))_j$ are all unit vectors.  A critical difference between this representation and the SVD for matrices is that the $a^((r))_j$ are not orthogonal.  In theory, there is a well-defined minimal value of $R$ for which this identity is exact.  However, as a result of the non-orthogonality of the factors $a^((r))_j$, it is difficult to determine this rank.  As $R$ grows, the $a^((r))_j$ become close to parallel (or antiparallel), so that different terms in the representation almost cancel out.  In practice, parafac is mostly useful when we deliberately under-specify the rank to obtain a low-order approximation to the matrix $X$ that has approximately orthogonal factors and a simple interpretable structure.
+
+A different tensor analogue to the SVD is the #link("https://en.wikipedia.org/wiki/Tucker_decomposition")[Tucker decomposition], also known as the high-order SVD (HOSVD).  In the Tucker decomposition, we specify the order for each axis, i.e. the $i^"th"$ axis has rank $R_i$.  Also associated with each axis is a $d_i times R_i$ orthogonal basis matrix $B^((i))$.  For a tensor $G$ which is $R_1 times dots.h.c times R_k$, known as the _core tensor_, the Tucker decomposition is
+
+$
+sum_(i_1, ..., i_k) G[i_1, ..., i_k] B^((1))_(i_1) times.o ... times.o B^((k))_(i_k),
+$
+
+where $B^((j))_(i)$ is the $i^"th"$ column of $B^((j))$.
 
 = Dimension Reduction Regression
 
