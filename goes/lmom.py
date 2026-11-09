@@ -87,7 +87,7 @@ def lmom_del(x, k):
 
 def lmom_jack(x, k):
     """
-    Returns the jack-knife pseudo-observations for the k^th L-moments of x.
+    Returns the jack-knife pseudo-observations for the k^th L-moment of x.
     """
     n = len(x)
     lm = lmom(x, k)

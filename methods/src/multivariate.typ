@@ -25,9 +25,13 @@ $
 v_i = [f_(i)(t)]_(t in cal(T)_i).
 $
 
-In practice we may only observe $v_i + epsilon_i$, where $epsilon_i$ is random measurement error.  For the functional perspective to be useful, we need to place some constraints on the functions $f_i$, usually involving some form of smoothness.
+In practice we may only observe $v_i + epsilon_i$, where $epsilon_i in RR^|cal(T)_i|$ is random measurement error.  For the functional perspective to be useful, we need to place some constraints on the functions $f_i$.  The functions are required to live in a vector space (or "function space") $cal(F)$, usually consisting of functions that posess some form of smoothness, and almost always of infinite dimension.
 
 #link("https://en.wikipedia.org/wiki/Functional_data_analysis")[Functional Data Analysis (FDA)] encompasses many methods for analyzing this type of data. Arguably, this name is misleading since the data themselves are rarely if ever smooth functions in their entirety.  The data we work with in FDA are finite dimensional vectors, and (superficially) have the same form as other types of quantitative multivariate data. But since the data are considered to arise by evaluating smooth functions, we can view the population of interest as consisting of functions, even while the data are vectors.
+
+A premise underlying some methods of functional data analysis is that functions can only be assessed through linear operators lying in the dual space $cal(F)^*$ of our class of functions.  In practice, this means that we can only learn about a function of $f$ by taking linear functionals of the form $integral f(t)w(t)"dt"$.  When we observe finite dimensional vectors $v_i$ as specified above, these linear functionals are approximated as dot products $chevron.l v, w chevron.r$.  Depending on the context, the "evaluation functional" $phi_t: f -> f(t)$ may or may not be a valid functional.  If it is not, then we can only assess $f$, in practice through $v$, by taking inner products $chevron.l v, w chevron.r$, where $w$ is a vector whose elements $w_i$ vary smoothly with $i$.
+
+It will sometimes be useful to measure the smoothness of a function. If the function $f$ is observed in entirety, a common measure of smoothness is the integrated squared second derivative, $integral f''(t)^2 "dt"$.  When evaluated on the grid $t_j = t_0 + j dot.c Delta$, with $v_j = f(t_j)$, the second differences are obtained by convolving the sequence $[1, -2, 1]$ with $v_j$.  This is a linear operator represented by a matrix $D$ whose rows have the form $[0, 0, ..., 1, -2, 1, ..., 0]$.  Thus, the squared second derivative is represented by the quadratic form $v' D v$.
 
 = Data Depth
 

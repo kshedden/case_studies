@@ -31,6 +31,8 @@ Matrix factorization is a powerful idea from linear algebra, and underlies many 
 
 To visualize such a data matrix, we can think in terms of _variable space_ and _case space_ (or _object space_). If there are $n$ cases and $p$ variables, then the cases are points in $RR^p$ and the variables are points in $RR^n$.
 
+Most of the methods discussed below will yield _loading vectors_ $v in RR^p$ that reveal interesting aspects of the data, usually by taking an inner-product $chevron.l v, Y-mu chevron.r$.  When interpreting the loading patterns, it is useful to recall that by the Cauchy-Schwarz inequality, $|chevron.l v, Y-mu chevron.r| <= 1$ with equality if and only if $Y - mu prop v$.  Thus, $v$ selects the centered data vectors whose shape most resembles $v$.
+
 = Embedding
 
 Many methods of factor analysis can be viewed as a way to obtain an #link("https://en.wikipedia.org/wiki/Embedding")[embedding]. Embedding algorithms take input data vectors $x$ and transform them into output data vectors $z$. Many embedding algorithms take the form of a #link("https://en.wikipedia.org/wiki/Dimensionality_reduction")[dimension reduction], so that $q equiv "dim"(z) < "dim"(x) equiv p$. However some embeddings preserve or even increase the dimension. The latter is related to the notion of #link("https://en.wikipedia.org/wiki/Overcompleteness")[overcompleteness] in linear algebra.
